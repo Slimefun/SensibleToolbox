@@ -1,0 +1,3 @@
+log_level: fine
+coloured_console: true
+rename_level_cost: 5
