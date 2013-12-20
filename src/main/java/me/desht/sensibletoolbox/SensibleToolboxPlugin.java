@@ -23,6 +23,7 @@ import me.desht.dhutils.commands.CommandManager;
 import me.desht.sensibletoolbox.commands.RenameCommand;
 import me.desht.sensibletoolbox.commands.SaveCommand;
 import me.desht.sensibletoolbox.items.AngelicBlock;
+import me.desht.sensibletoolbox.items.BlockUpdateDetector;
 import me.desht.sensibletoolbox.items.EnderLeash;
 import me.desht.sensibletoolbox.items.RedstoneClock;
 import me.desht.sensibletoolbox.listeners.BlockListener;
@@ -52,6 +53,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		ConfigurationSerialization.registerClass(AngelicBlock.class);
 		ConfigurationSerialization.registerClass(RedstoneClock.class);
 		ConfigurationSerialization.registerClass(EnderLeash.class);
+		ConfigurationSerialization.registerClass(BlockUpdateDetector.class);
 	}
 
 	@Override
@@ -141,6 +143,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		Bukkit.addRecipe(new AngelicBlock().getRecipe());
 		Bukkit.addRecipe(new EnderLeash().getRecipe());
 		Bukkit.addRecipe(new RedstoneClock().getRecipe());
+		Bukkit.addRecipe(new BlockUpdateDetector().getRecipe());
 	}
 
 	public LocationManager getLocationManager() {

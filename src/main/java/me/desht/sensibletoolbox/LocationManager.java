@@ -5,7 +5,6 @@ import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.NumberConversions;
 
@@ -42,6 +41,12 @@ public class LocationManager {
 			locations.remove(pLoc);
 			saveNeeded = true;
 		}
+	}
+
+	public void updateLocation(Location loc, BaseSTBItem stbItem) {
+		locations.put(new PersistableLocation(loc), stbItem);
+		saveNeeded = true;
+		System.out.println("updated location " + loc + " for " + stbItem);
 	}
 
 	public BaseSTBItem get(Location loc) {

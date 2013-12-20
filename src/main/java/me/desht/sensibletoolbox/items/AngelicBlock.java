@@ -19,17 +19,11 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class AngelicBlock extends BaseSTBItem {
 
-//	@Override
-//	public Map<String, Object> serialize() {
-//		return super.serialize();
-//	}
-
-	public static AngelicBlock deserialize() {
+	public static AngelicBlock deserialize(Map<String, Object> map) {
 		// no specific config for this block
 		return new AngelicBlock();
 	}
@@ -46,7 +40,7 @@ public class AngelicBlock extends BaseSTBItem {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Right-click to place this block in mid-air" };
+		return new String[] { "Right-click: place block in the air" };
 	}
 
 	@Override
@@ -77,7 +71,7 @@ public class AngelicBlock extends BaseSTBItem {
 					p.setItemInHand(new ItemStack(Material.AIR));
 				}
 				b.setType(getBaseMaterial());
-				blockPlaced(b, this);
+				blockPlaced(b);
 			}
 		}
 	}
@@ -97,7 +91,7 @@ public class AngelicBlock extends BaseSTBItem {
 			b.setType(Material.AIR);
 			p.getInventory().addItem(this.toItemStack(1));
 			b.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-			blockRemoved(b, this);
+			blockRemoved(b);
 			event.setCancelled(true);
 		}
 	}

@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
@@ -17,14 +18,48 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EnderLeash extends BaseSTBItem {
-	private EntityType captured;
-	private String entityDetails;
+	private YamlConfiguration capturedConf = null;
+
+	public EnderLeash() {
+	}
+
+	public EnderLeash(ItemStack stack) {
+		Configuration conf = BaseSTBItem.getItemAttributes(stack);
+		if (!conf.getKeys(false).isEmpty()) {
+			capturedConf = new YamlConfiguration();
+			for (String k : conf.getKeys(false)) {
+				capturedConf.set(k, conf.get(k));
+			}
+		}
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> res = new HashMap<String, Object>();
+		if (capturedConf != null) {
+			for (String k : capturedConf.getKeys(false)) {
+				res.put(k, capturedConf.get(k));
+			}
+		}
+		return res;
+	}
+
+	public static EnderLeash deserialize(Map<String, Object> map) {
+		EnderLeash el = new EnderLeash();
+		if (!map.isEmpty()) {
+			el.capturedConf = new YamlConfiguration();
+			for (Map.Entry e : map.entrySet()) {
+				el.capturedConf.set((String) e.getKey(), e.getValue());
+			}
+		}
+		return el;
+	}
 
 	@Override
 	public Material getBaseMaterial() {
@@ -38,7 +73,7 @@ public class EnderLeash extends BaseSTBItem {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Right-click a passive creature to capture it", "Right-click again to place the mob" };
+		return new String[] { "Right-click: capture/release animal" };
 	}
 
 	@Override
@@ -51,110 +86,54 @@ public class EnderLeash extends BaseSTBItem {
 		return recipe;
 	}
 
-	public void processItemMeta(ItemStack stack) {
+	@Override
+	public boolean hasGlow() {
+		return capturedConf != null;
+	}
+
+	public EntityType getCapturedFromItemMeta(ItemStack stack) {
 		List<String> lore = stack.getItemMeta().getLore();
 		for (String s : lore) {
 			if (s.contains("Captured: ")) {
 				String[] fields = ChatColor.stripColor(s).split(": ");
-				EntityType type = EntityType.valueOf(fields[1]);
-				setCaptured(type);
+				return EntityType.valueOf((fields[1].split(" "))[0]);
 			}
 		}
+		return null;
 	}
 
 	@Override
 	public void handleEntityInteraction(PlayerInteractEntityEvent event) {
 		Entity target = event.getRightClicked();
-		System.out.println("ender leash interact entity " + target);
 		Player p = event.getPlayer();
 		if (target instanceof Animals && isPassive(target) && p.getItemInHand().getAmount() == 1) {
-			capture((Animals) target);
-			p.setItemInHand(this.toItemStack(p.getItemInHand().getAmount()));
+			capturedConf = freezeEntity((Animals) target);
+			target.remove();
+			p.setItemInHand(this.toItemStack(1));
 		}
 		event.setCancelled(true);
 	}
 
-	private boolean isPassive(Entity entity) {
-		return !(entity instanceof Wolf) || !((Wolf) entity).isAngry();
-	}
-
-
 	@Override
 	public void handleInteraction(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !isInteractive(event.getClickedBlock().getType())) {
-			processItemMeta(event.getPlayer().getItemInHand());
-			if (getCaptured() != null) {
+			if (getCapturedFromItemMeta(event.getPlayer().getItemInHand()) != null) {
+				Configuration conf = BaseSTBItem.getItemAttributes(event.getPlayer().getItemInHand());
 				Block where = event.getClickedBlock().getRelative(event.getBlockFace());
-				Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), getCaptured());
-				AttributeStorage storage = AttributeStorage.newTarget(event.getPlayer().getItemInHand(), SensibleToolboxPlugin.UNIQUE_ID);
-				thaw((Animals) e, storage.getData(""));
-				setCaptured(null);
+				EntityType type = EntityType.valueOf(conf.getString("type"));
+				Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
+				thawEntity((Animals) e, conf);
 				event.getPlayer().setItemInHand(this.toItemStack(1));
 				event.setCancelled(true);
 			}
 		}
 	}
 
-	private void thaw(Animals entity, String data) {
-		System.out.println("thaw entity: " + entity + ", data:" + data);
-		YamlConfiguration conf = new YamlConfiguration();
-		try {
-			conf.loadFromString(data);
-		} catch (InvalidConfigurationException e1) {
-			e1.printStackTrace();
-			return;
-		}
-
-		entity.setAge(conf.getInt("age"));
-		entity.setAgeLock(conf.getBoolean("ageLock"));
-		entity.setCustomName(conf.getString("name"));
-		entity.setCustomNameVisible(conf.getBoolean("nameVisible"));
-
-		if (entity instanceof Tameable) {
-			((Tameable) entity).setTamed(conf.getBoolean("tamed"));
-		}
-		switch (entity.getType()) {
-			case PIG:
-				((Pig) entity).setSaddle(conf.getBoolean("saddled"));
-				break;
-			case SHEEP:
-				((Sheep) entity).setSheared(conf.getBoolean("sheared"));
-				break;
-			case OCELOT:
-				((Ocelot) entity).setSitting(conf.getBoolean("sitting"));
-				((Ocelot) entity).setCatType(Ocelot.Type.valueOf(conf.getString("catType")));
-				break;
-			case WOLF:
-				((Wolf) entity).setSitting(conf.getBoolean("sitting"));
-				((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collar")));
-				break;
-			case HORSE:
-				Horse h = (Horse) entity;
-				h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
-				h.setVariant(Horse.Variant.valueOf(conf.getString("horseVariant")));
-				h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-				h.setCarryingChest(conf.getBoolean("chest"));
-				h.setJumpStrength(conf.getDouble("jumpStrength"));
-				h.setDomestication(conf.getInt("domestication"));
-				h.setMaxDomestication(conf.getInt("maxDomestication"));
-				if (conf.contains("saddle")) {
-					h.getInventory().setSaddle(new ItemStack(Material.getMaterial(conf.getString("saddle"))));
-				}
-				if (conf.contains("armor")) {
-					h.getInventory().setArmor(new ItemStack(Material.getMaterial(conf.getString("armor"))));
-				}
-				break;
-		}
+	private boolean isPassive(Entity entity) {
+		return !(entity instanceof Wolf) || !((Wolf) entity).isAngry();
 	}
 
-	private void capture(Animals target) {
-		entityDetails = freeze(target);
-		System.out.println("froze " + target + " data = " + entityDetails);
-		setCaptured(target.getType());
-		target.remove();
-	}
-
-	private String freeze(Animals target) {
+	private YamlConfiguration freezeEntity(Animals target) {
 		YamlConfiguration conf = new YamlConfiguration();
 
 		conf.set("type", target.getType().toString());
@@ -200,49 +179,85 @@ public class EnderLeash extends BaseSTBItem {
 					conf.set("armor", armor.getType().toString());
 				}
 				break;
-
 		}
-		return conf.saveToString();
+		return conf;
 	}
+
+	private void thawEntity(Animals entity, Configuration conf) {
+		System.out.println("thaw entity: " + entity + ", data:" + conf.getString("type"));
+
+		entity.setAge(conf.getInt("age"));
+		entity.setAgeLock(conf.getBoolean("ageLock"));
+		entity.setCustomName(conf.getString("name"));
+		entity.setCustomNameVisible(conf.getBoolean("nameVisible"));
+
+		if (entity instanceof Tameable) {
+			((Tameable) entity).setTamed(conf.getBoolean("tamed"));
+		}
+		switch (entity.getType()) {
+			case PIG:
+				((Pig) entity).setSaddle(conf.getBoolean("saddled"));
+				break;
+			case SHEEP:
+				((Sheep) entity).setSheared(conf.getBoolean("sheared"));
+				break;
+			case OCELOT:
+				((Ocelot) entity).setSitting(conf.getBoolean("sitting"));
+				((Ocelot) entity).setCatType(Ocelot.Type.valueOf(conf.getString("catType")));
+				break;
+			case WOLF:
+				((Wolf) entity).setSitting(conf.getBoolean("sitting"));
+				((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collar")));
+				break;
+			case HORSE:
+				Horse h = (Horse) entity;
+				h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
+				h.setVariant(Horse.Variant.valueOf(conf.getString("horseVariant")));
+				h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
+				h.setCarryingChest(conf.getBoolean("chest"));
+				h.setJumpStrength(conf.getDouble("jumpStrength"));
+				h.setDomestication(conf.getInt("domestication"));
+				h.setMaxDomestication(conf.getInt("maxDomestication"));
+				if (conf.contains("saddle")) {
+					h.getInventory().setSaddle(new ItemStack(Material.getMaterial(conf.getString("saddle"))));
+				}
+				if (conf.contains("armor")) {
+					h.getInventory().setArmor(new ItemStack(Material.getMaterial(conf.getString("armor"))));
+				}
+				break;
+		}
+	}
+
+//	@Override
+//	public ItemStack toItemStack(int amount) {
+//		ItemStack stack = super.toItemStack(amount);
+//		if (capturedConf != null) {
+//			// Not using the superclass attribute handling here since that would be inefficient -
+//			// converting a Configuration to a Map and back again unnecessarily
+//			AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
+//			storage.setData(capturedConf.saveToString());
+//			return storage.getTarget();
+//		} else {
+//			return stack;
+//		}
+//	}
 
 	@Override
-	public ItemStack toItemStack(int amount) {
-		ItemStack stack = super.toItemStack(amount);
-		if (captured != null) {
-			ItemMeta im = stack.getItemMeta();
-			List<String> lore = im.getLore();
-			List<String> newLore = new ArrayList<String>(lore);
-			newLore.add(ChatColor.WHITE  + "Captured: " + ChatColor.GOLD + captured.toString());
-			im.setLore(newLore);
-			stack.setItemMeta(im);
-			ItemGlow.setGlowing(stack, true);
-			AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
-			storage.setData(entityDetails);
-			return storage.getTarget();
+	public String[] getExtraLore() {
+		if (capturedConf != null) {
+			String name = capturedConf.getString("name");
+			if (!name.isEmpty()) {
+				name = " (" + name + ")";
+			}
+			String l = ChatColor.WHITE  + "Captured: " + ChatColor.GOLD + getCapturedEntityType().toString() + name;
+			return new String[] { l };
 		} else {
-			return stack;
+			return new String[0];
 		}
 	}
 
-	public static ItemStack setAnimalName(ItemStack stack, String newName) {
-		AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
-		YamlConfiguration conf = new YamlConfiguration();
-		try {
-			conf.loadFromString(storage.getData(""));
-			conf.set("name", newName);
-			storage.setData(conf.saveToString());
-			return storage.getTarget();
-		} catch (InvalidConfigurationException e) {
-			throw new DHUtilsException("can't modify this Ender Leash! (data corrupted?)");
-		}
-	}
-
-	public void setCaptured(EntityType type) {
-		this.captured = type;
-	}
-
-	public EntityType getCaptured() {
-		return captured;
+	public EntityType getCapturedEntityType() {
+		return capturedConf == null ? null : EntityType.valueOf(capturedConf.getString("type"));
 	}
 
 	public boolean isInteractive(Material mat) {
@@ -283,6 +298,13 @@ public class EnderLeash extends BaseSTBItem {
 				return true;
 			default:
 				return false;
+		}
+	}
+
+
+	public void setAnimalName(String newName) {
+		if (capturedConf != null) {
+			capturedConf.set("name", newName);
 		}
 	}
 }
