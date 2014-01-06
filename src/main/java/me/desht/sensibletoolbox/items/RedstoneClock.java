@@ -66,7 +66,7 @@ public class RedstoneClock extends BaseSTBItem {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getItemName() {
 		return "Redstone Clock";
 	}
 

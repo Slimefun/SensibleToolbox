@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import com.google.common.base.Joiner;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
@@ -17,6 +18,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,11 +40,15 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		registerItem(new RedstoneClock());
 		registerItem(new BlockUpdateDetector());
 		registerItem(new BagOfHolding());
+		registerItem(new WateringCan());
+		registerItem(new MoistureChecker());
+		registerItem(new AdvancedMoistureChecker());
 	}
 
 	public abstract Material getBaseMaterial();
 	public Byte getBaseBlockData() { return null; }
-	public abstract String getDisplayName();
+	public abstract String getItemName();
+	public String getDisplaySuffix() { return null; }
 	public abstract String[] getLore();
 	public String[] getExtraLore() { return new String[0]; }
 	public abstract Recipe getRecipe();
@@ -50,6 +56,7 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 
 	// override some or all of these in subclasses
 	public void handleInteraction(PlayerInteractEvent event) { }
+	public void handleConsume(PlayerItemConsumeEvent event) { }
 	public void handleBlockDamage(BlockDamageEvent event) { }
 	public void handleEntityInteraction(PlayerInteractEntityEvent event) { }
 	public void handleBlockPhysics(BlockPhysicsEvent event) { }
@@ -76,7 +83,7 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 			return null;
 		}
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
-		return getItem(disp);
+		return getItem((disp.split(":"))[0]);
 	}
 
 	@Override
@@ -85,14 +92,17 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	}
 
 	private static void registerItem(BaseSTBItem item) {
-		registry.put(item.getPlainDisplayName(), item.getClass());
-		String id = item.getPlainDisplayName().replace(" ", "").toLowerCase();
-		ids.put(id, item.getPlainDisplayName());
+		registry.put(item.getItemName(), item.getClass());
+		String id = item.getItemName().replace(" ", "").toLowerCase();
+		ids.put(id, item.getItemName());
 	}
 
 	public static void setupRecipes() {
 		for (String key : registry.keySet()) {
-			Bukkit.addRecipe(getItem(key).getRecipe());
+			Recipe r = getItem(key).getRecipe();
+			if (r != null) {
+				Bukkit.addRecipe(r);
+			}
 		}
 	}
 
@@ -124,10 +134,10 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 			res.setDurability(getBaseBlockData());
 		}
 		ItemMeta im = res.getItemMeta();
-		im.setDisplayName(DISPLAY_COLOR + getDisplayName());
+		String suffix = getDisplaySuffix() == null ? "" : ": " + getDisplaySuffix();
+		im.setDisplayName(DISPLAY_COLOR + getItemName() + suffix);
 		im.setLore(buildLore());
 		res.setItemMeta(im);
-
 		ItemGlow.setGlowing(res, hasGlow());
 
 		// any serialized data from the object goes in the ItemStack attributes
@@ -181,13 +191,13 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		SensibleToolboxPlugin.getInstance().getLocationManager().updateLocation(b.getLocation(), this);
 	}
 
-	public String getPlainDisplayName() {
-		return ChatColor.stripColor(getDisplayName());
-	}
+//	public String getPlainDisplayName() {
+//		return ChatColor.stripColor(getItemName());
+//	}
 
 	@Override
 	public String toString() {
-		return "STB item: " + getDisplayName() + " <" + getBaseMaterial() + ">";
+		return "STB item: " + getItemName() + " <" + getBaseMaterial() + ">";
 	}
 
 	protected static Configuration getItemAttributes(ItemStack stack) {

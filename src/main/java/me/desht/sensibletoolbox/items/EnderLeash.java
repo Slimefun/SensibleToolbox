@@ -67,7 +67,7 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getItemName() {
 		return "Ender Leash";
 	}
 
@@ -227,20 +227,6 @@ public class EnderLeash extends BaseSTBItem {
 				break;
 		}
 	}
-
-//	@Override
-//	public ItemStack toItemStack(int amount) {
-//		ItemStack stack = super.toItemStack(amount);
-//		if (capturedConf != null) {
-//			// Not using the superclass attribute handling here since that would be inefficient -
-//			// converting a Configuration to a Map and back again unnecessarily
-//			AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
-//			storage.setData(capturedConf.saveToString());
-//			return storage.getTarget();
-//		} else {
-//			return stack;
-//		}
-//	}
 
 	@Override
 	public String[] getExtraLore() {

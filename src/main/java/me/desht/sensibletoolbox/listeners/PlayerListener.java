@@ -5,6 +5,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class PlayerListener extends STBBaseListener {
@@ -27,6 +28,15 @@ public class PlayerListener extends STBBaseListener {
 		BaseSTBItem item = BaseSTBItem.getBaseItem(stack);
 		if (item != null) {
 			item.handleEntityInteraction(event);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+		ItemStack stack = event.getPlayer().getItemInHand();
+		BaseSTBItem item = BaseSTBItem.getBaseItem(stack);
+		if (item != null) {
+			item.handleConsume(event);
 		}
 	}
 }

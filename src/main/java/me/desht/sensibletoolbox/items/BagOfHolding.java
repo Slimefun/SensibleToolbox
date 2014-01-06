@@ -31,7 +31,7 @@ public class BagOfHolding extends BaseSTBItem {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getItemName() {
 		return "Bag Of Holding";
 	}
 
@@ -82,11 +82,14 @@ public class BagOfHolding extends BaseSTBItem {
 	}
 
 	public String getInventoryTitle() {
-		return ChatColor.GOLD + getDisplayName();
+		return ChatColor.GOLD + getItemName();
 	}
 
 	public static void createSaveDirectory(Plugin plugin) {
 		File dir = new File(plugin.getDataFolder(), BAG_SAVE_DIR);
+		if (dir.isDirectory()) {
+			return;
+		}
 		if (!dir.mkdir()) {
 			LogUtils.severe("Can't create " + dir);
 		}

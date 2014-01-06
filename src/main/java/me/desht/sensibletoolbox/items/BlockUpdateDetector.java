@@ -55,7 +55,7 @@ public class BlockUpdateDetector extends BaseSTBItem {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getItemName() {
 		return "Block Update Detector";
 	}
 

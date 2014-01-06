@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
+import me.desht.sensibletoolbox.attributes.Attributes;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +33,16 @@ public class BukkitSerialization {
 				ItemStack stack = inventory.getItem(i);
 				String customData;
 				if (stack != null) {
+					System.out.println("stack = " + stack);
+					Attributes a = new Attributes(stack);
+					for (int j = 0; j < a.size(); j++) {
+						System.out.println(" attribute #" + j);
+						System.out.println("        uuid: " + a.get(j).getUUID());
+						System.out.println("        type: " + a.get(j).getAttributeType().getMinecraftId());
+						System.out.println("        name: " + a.get(j).getName());
+						System.out.println("      amount: " + a.get(j).getAmount());
+						System.out.println("   operation: " + a.get(j).getOperation());
+					}
 					AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
 					customData = storage.getData("");
 				} else {

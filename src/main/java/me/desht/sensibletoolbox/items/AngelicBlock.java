@@ -34,7 +34,7 @@ public class AngelicBlock extends BaseSTBItem {
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getItemName() {
 		return "Angelic Block";
 	}
 
