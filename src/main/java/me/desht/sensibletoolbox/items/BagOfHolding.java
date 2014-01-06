@@ -1,0 +1,99 @@
+package me.desht.sensibletoolbox.items;
+
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.util.BukkitSerialization;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class BagOfHolding extends BaseSTBItem {
+	public static final String BAG_SAVE_DIR = "bagofholding";
+	public static final int BAG_SIZE = 54;
+
+	@Override
+	public Material getBaseMaterial() {
+		return Material.ENDER_PORTAL_FRAME;
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Bag Of Holding";
+	}
+
+	@Override
+	public String[] getLore() {
+		return new String[] { "Right-click to open "};
+	}
+
+	@Override
+	public Recipe getRecipe() {
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		recipe.shape("WGW", "GCG", "WBW");
+		recipe.setIngredient('W', Material.WOOL);
+		recipe.setIngredient('G', Material.GOLD_INGOT);
+		recipe.setIngredient('C', Material.CHEST);
+		recipe.setIngredient('B', Material.GOLD_BLOCK);
+		return recipe;
+	}
+
+	@Override
+	public void handleInteraction(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Player player = event.getPlayer();
+			try {
+				Inventory bagInv;
+				if (getSaveFile(player).exists()) {
+					String encoded = new Scanner(getSaveFile(player)).useDelimiter("\\A").next();
+					Inventory savedInv = BukkitSerialization.fromBase64(encoded);
+					bagInv = Bukkit.createInventory(player, savedInv.getSize(), getInventoryTitle());
+					for (int i = 0; i < savedInv.getSize(); i++) {
+						bagInv.setItem(i, savedInv.getItem(i));
+					}
+				} else {
+					// no saved inventory -  player must not have used the bag before
+					bagInv = Bukkit.createInventory(player, BAG_SIZE, getInventoryTitle());
+				}
+				player.openInventory(bagInv);
+			} catch (IOException e) {
+				MiscUtil.errorMessage(player, "Can't load bag of holding inventory! " + e.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void handleBlockPlace(BlockPlaceEvent event) {
+		// the bag is not placeable in the world
+		event.setCancelled(true);
+	}
+
+	public String getInventoryTitle() {
+		return ChatColor.GOLD + getDisplayName();
+	}
+
+	public static void createSaveDirectory(Plugin plugin) {
+		File dir = new File(plugin.getDataFolder(), BAG_SAVE_DIR);
+		if (!dir.mkdir()) {
+			LogUtils.severe("Can't create " + dir);
+		}
+	}
+
+	public static File getSaveFile(Player player) {
+		File dir = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), BAG_SAVE_DIR);
+		return new File(dir, player.getUniqueId().toString());
+	}
+}

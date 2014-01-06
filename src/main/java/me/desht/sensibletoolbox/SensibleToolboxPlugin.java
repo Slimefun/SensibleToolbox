@@ -20,12 +20,11 @@ package me.desht.sensibletoolbox;
 import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
+import me.desht.sensibletoolbox.commands.GiveCommand;
 import me.desht.sensibletoolbox.commands.RenameCommand;
 import me.desht.sensibletoolbox.commands.SaveCommand;
-import me.desht.sensibletoolbox.items.AngelicBlock;
-import me.desht.sensibletoolbox.items.BlockUpdateDetector;
-import me.desht.sensibletoolbox.items.EnderLeash;
-import me.desht.sensibletoolbox.items.RedstoneClock;
+import me.desht.sensibletoolbox.items.*;
+import me.desht.sensibletoolbox.listeners.BagListener;
 import me.desht.sensibletoolbox.listeners.BlockListener;
 import me.desht.sensibletoolbox.listeners.PlayerListener;
 import org.bukkit.Bukkit;
@@ -72,6 +71,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new BlockListener(this), this);
+		pm.registerEvents(new BagListener(this), this);
 
 		setupProtocolLib();
 
@@ -86,7 +86,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			ItemGlow.init(this);
 		}
 
-		setupRecipes();
+		BaseSTBItem.setupRecipes();
+		BagOfHolding.createSaveDirectory(this);
 
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
 			@Override
@@ -94,7 +95,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 				locationManager.tick();
 			}
 		}, 1L, 1L);
-
 	}
 
 	public void onDisable() {
@@ -118,6 +118,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	private void registerCommands() {
 		cmds.registerCommand(new SaveCommand());
 		cmds.registerCommand(new RenameCommand());
+		cmds.registerCommand(new GiveCommand());
 	}
 
 	@Override
@@ -137,13 +138,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	public static SensibleToolboxPlugin getInstance() {
 		return instance;
-	}
-
-	private void setupRecipes() {
-		Bukkit.addRecipe(new AngelicBlock().getRecipe());
-		Bukkit.addRecipe(new EnderLeash().getRecipe());
-		Bukkit.addRecipe(new RedstoneClock().getRecipe());
-		Bukkit.addRecipe(new BlockUpdateDetector().getRecipe());
 	}
 
 	public LocationManager getLocationManager() {

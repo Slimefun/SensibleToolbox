@@ -4,6 +4,7 @@ import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -29,12 +30,14 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	protected static final ChatColor LORE_COLOR = ChatColor.GRAY;
 
 	private static final Map<String, Class<? extends BaseSTBItem>> registry = new HashMap<String, Class<? extends BaseSTBItem>>();
+	private static final Map<String, String> ids = new HashMap<String, String>();
 
 	static {
 		registerItem(new AngelicBlock());
 		registerItem(new EnderLeash());
 		registerItem(new RedstoneClock());
 		registerItem(new BlockUpdateDetector());
+		registerItem(new BagOfHolding());
 	}
 
 	public abstract Material getBaseMaterial();
@@ -83,6 +86,22 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 
 	private static void registerItem(BaseSTBItem item) {
 		registry.put(item.getPlainDisplayName(), item.getClass());
+		String id = item.getPlainDisplayName().replace(" ", "").toLowerCase();
+		ids.put(id, item.getPlainDisplayName());
+	}
+
+	public static void setupRecipes() {
+		for (String key : registry.keySet()) {
+			Bukkit.addRecipe(getItem(key).getRecipe());
+		}
+	}
+
+	public static BaseSTBItem getItemById(String id) {
+		return ids.containsKey(id) ? BaseSTBItem.getItem(ids.get(id)) : null;
+	}
+
+	public static Set<String> getItemIds() {
+		return ids.keySet();
 	}
 
 	public static BaseSTBItem getItem(String disp) {
