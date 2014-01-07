@@ -16,8 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +25,6 @@ public class WateringCan extends BaseSTBItem {
 	private static final int GROW_CHANCE = 10;
 	private static final int MAX_LEVEL = 100;
 	private static final int FIRE_EXTINGUISH_AMOUNT = 50;
-
-
 
 	private static BlockFace[] faces = new BlockFace[] {
 		BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -126,6 +122,18 @@ public class WateringCan extends BaseSTBItem {
 					waterSoil(player, b);
 					newStack = toItemStack(1);
 				}
+			} else if (b.getType() == Material.COBBLESTONE && getLevel() >= 10) {
+				if (new Random().nextBoolean()) {
+					b.setType(Material.MOSSY_COBBLESTONE);
+				}
+				useSomeWater(player, b, 10);
+				newStack = toItemStack(1);
+			} else if (b.getType() == Material.SMOOTH_BRICK && b.getData() != 1  && getLevel() >= 10) {
+				if (new Random().nextBoolean()) {
+					b.setData((byte) 1);
+				}
+				useSomeWater(player, b, 10);
+				newStack = toItemStack(1);
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			Block b = player.getEyeLocation().getBlock();
@@ -177,7 +185,7 @@ public class WateringCan extends BaseSTBItem {
 					b1.setData((byte) (b1.getData() + 1));
 				}
 				checkForFlooding(b1);
-				useSomeWater(player, b);
+				useSomeWater(player, b, 1);
 			}
 			if (player.isSneaking()) {
 				break; // only water one block if sneaking
@@ -199,7 +207,6 @@ public class WateringCan extends BaseSTBItem {
 	}
 
 	private void maybeGrowCrop(Player player, Block b) {
-//		System.out.println("grow crop? " + b);
 		if (!isCrop(b.getType())) {
 			return;
 		}
@@ -209,7 +216,7 @@ public class WateringCan extends BaseSTBItem {
 			}
 		}
 		checkForFlooding(b.getRelative(BlockFace.DOWN));
-		useSomeWater(player, b);
+		useSomeWater(player, b, 1);
 	}
 
 	private void checkForFlooding(Block soil) {
@@ -219,8 +226,9 @@ public class WateringCan extends BaseSTBItem {
 		saturation = Math.max(0, saturation + 7 - (int) delta);
 		System.out.println("Flood check: " + soil + ", saturation = " + saturation + ", last watered = " + delta + " secs ago");
 		if (saturation > SoilSaturation.MAX_SATURATION && new Random().nextBoolean()) {
-			soil.setType(Material.STATIONARY_WATER);
+			soil.setType(Material.WATER);
 			SoilSaturation.clear(soil);
+			soil.getWorld().dropItemNaturally(soil.getLocation(), new ItemStack(Material.DIRT));
 		} else {
 			SoilSaturation.setLastWatered(soil, System.currentTimeMillis());
 			SoilSaturation.setSaturationLevel(soil, saturation);
@@ -230,18 +238,16 @@ public class WateringCan extends BaseSTBItem {
 		}
 	}
 
-
-
 	public static boolean isCrop(Material m) {
 		return m == Material.CROPS || m == Material.CARROT || m == Material.POTATO || m == Material.PUMPKIN_STEM || m == Material.MELON_STEM;
 	}
 
-	private void useSomeWater(Player p, Block b) {
-		setLevel(getLevel() - 1);
+	private void useSomeWater(Player p, Block b, int amount) {
+		setLevel(Math.max(0, getLevel() - amount));
 		p.playSound(p.getLocation(), Sound.WATER, 1.0f, 2.0f);
 		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
 			Location loc = b.getLocation();
-			ParticleEffect.SPLASH.play(loc.add(0, 0.5, 0), 0.2f, 0.2f, 0.2f, 1.0f, 10);
+			ParticleEffect.SPLASH.play(loc.add(0.5, 0.5, 0.5), 0.2f, 0.2f, 0.2f, 1.0f, 10);
 		}
 	}
 }

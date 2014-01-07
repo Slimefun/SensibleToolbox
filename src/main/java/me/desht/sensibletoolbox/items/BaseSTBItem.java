@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.items;
 
-import com.google.common.base.Joiner;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
@@ -45,6 +44,8 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		registerItem(new AdvancedMoistureChecker());
 	}
 
+	// override some or all of these in subclasses
+
 	public abstract Material getBaseMaterial();
 	public Byte getBaseBlockData() { return null; }
 	public abstract String getItemName();
@@ -54,12 +55,13 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	public abstract Recipe getRecipe();
 	public boolean hasGlow() { return false; }
 
-	// override some or all of these in subclasses
 	public void handleInteraction(PlayerInteractEvent event) { }
 	public void handleConsume(PlayerItemConsumeEvent event) { }
 	public void handleBlockDamage(BlockDamageEvent event) { }
 	public void handleEntityInteraction(PlayerInteractEntityEvent event) { }
 	public void handleBlockPhysics(BlockPhysicsEvent event) { }
+	public boolean handleSignConfigure(SignChangeEvent event) { return false; }
+	public void onServerTick(PersistableLocation pLoc) { }
 
 	public void handleBlockPlace(BlockPlaceEvent event) {
 		blockPlaced(event.getBlock());
@@ -74,23 +76,6 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		event.setCancelled(true);
 	}
 
-	public boolean handleSignConfigure(SignChangeEvent event) { return false; }
-
-	public void onServerTick(PersistableLocation pLoc) { }
-
-	public static BaseSTBItem getBaseItem(ItemStack stack) {
-		if (!isSTBItem(stack)) {
-			return null;
-		}
-		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
-		return getItem((disp.split(":"))[0]);
-	}
-
-	@Override
-	public Map<String, Object> serialize() {
-		return new HashMap<String, Object>();
-	}
-
 	private static void registerItem(BaseSTBItem item) {
 		registry.put(item.getItemName(), item.getClass());
 		String id = item.getItemName().replace(" ", "").toLowerCase();
@@ -99,22 +84,37 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 
 	public static void setupRecipes() {
 		for (String key : registry.keySet()) {
-			Recipe r = getItem(key).getRecipe();
+			Recipe r = getItemByName(key).getRecipe();
 			if (r != null) {
 				Bukkit.addRecipe(r);
 			}
 		}
 	}
 
-	public static BaseSTBItem getItemById(String id) {
-		return ids.containsKey(id) ? BaseSTBItem.getItem(ids.get(id)) : null;
+	@Override
+	public Map<String, Object> serialize() {
+		return new HashMap<String, Object>();
 	}
 
 	public static Set<String> getItemIds() {
 		return ids.keySet();
 	}
 
-	public static BaseSTBItem getItem(String disp) {
+	public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
+		if (!isSTBItem(stack)) {
+			return null;
+		}
+		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
+		BaseSTBItem item = getItemByName((disp.split(":"))[0]);
+		// TODO: get any itemstack attributes into the newly instantiated STB object
+		return item;
+	}
+
+	public static BaseSTBItem getItemById(String id) {
+		return ids.containsKey(id) ? BaseSTBItem.getItemByName(ids.get(id)) : null;
+	}
+
+	public static BaseSTBItem getItemByName(String disp) {
 		Class<? extends BaseSTBItem> c = registry.get(disp);
 		if (c == null) {
 			return null;
@@ -150,7 +150,7 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
 			String data = conf.saveToString();
 			storage.setData(data);
-			System.out.println("serialize to itemstack:\n" + data);
+//			System.out.println("serialize to itemstack:\n" + data);
 			return storage.getTarget();
 		} else {
 			return res;

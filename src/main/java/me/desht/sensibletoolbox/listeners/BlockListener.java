@@ -26,7 +26,7 @@ public class BlockListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		BaseSTBItem item = BaseSTBItem.getBaseItem(event.getItemInHand());
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItemInHand());
 		if (item != null) {
 			item.handleBlockPlace(event);
 		}

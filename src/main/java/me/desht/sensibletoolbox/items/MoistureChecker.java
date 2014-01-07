@@ -85,7 +85,7 @@ public class MoistureChecker extends BaseSTBItem {
 						player.sendBlockChange(loc, loc.getBlock().getType(), loc.getBlock().getData());
 					}
 				}
-			}, 20L);
+			}, 30L);
 			event.setCancelled(true);
 		}
 	}
@@ -95,7 +95,6 @@ public class MoistureChecker extends BaseSTBItem {
 		long delta = (now - SoilSaturation.getLastWatered(b)) / 1000;
 		int saturation = SoilSaturation.getSaturationLevel(b);
 		saturation = Math.max(0, saturation - (int) delta);
-		SoilSaturation.setSaturationLevel(b, saturation);
 		if (saturation < 10) {
 			return DyeColor.YELLOW.getWoolData();
 		} else if (saturation < 30) {
@@ -103,9 +102,9 @@ public class MoistureChecker extends BaseSTBItem {
 		} else if (saturation < 50) {
 			return DyeColor.GREEN.getWoolData();
 		} else if (saturation < 70) {
-			return DyeColor.CYAN.getWoolData();
-		} else if (saturation < 90) {
 			return DyeColor.LIGHT_BLUE.getWoolData();
+		} else if (saturation < 90) {
+			return DyeColor.CYAN.getWoolData();
 		} else {
 			return DyeColor.BLUE.getWoolData();
 		}

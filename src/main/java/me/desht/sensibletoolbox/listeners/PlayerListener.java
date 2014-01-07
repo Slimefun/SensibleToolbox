@@ -16,7 +16,7 @@ public class PlayerListener extends STBBaseListener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		ItemStack stack = event.getPlayer().getItemInHand();
-		BaseSTBItem item = BaseSTBItem.getBaseItem(stack);
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
 			item.handleInteraction(event);
 		}
@@ -25,7 +25,7 @@ public class PlayerListener extends STBBaseListener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEntityEvent event) {
 		ItemStack stack = event.getPlayer().getItemInHand();
-		BaseSTBItem item = BaseSTBItem.getBaseItem(stack);
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
 			item.handleEntityInteraction(event);
 		}
@@ -34,7 +34,7 @@ public class PlayerListener extends STBBaseListener {
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		ItemStack stack = event.getPlayer().getItemInHand();
-		BaseSTBItem item = BaseSTBItem.getBaseItem(stack);
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
 			item.handleConsume(event);
 		}
