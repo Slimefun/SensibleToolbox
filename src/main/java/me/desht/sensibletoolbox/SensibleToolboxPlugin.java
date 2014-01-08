@@ -24,7 +24,7 @@ import me.desht.sensibletoolbox.commands.GiveCommand;
 import me.desht.sensibletoolbox.commands.RenameCommand;
 import me.desht.sensibletoolbox.commands.SaveCommand;
 import me.desht.sensibletoolbox.items.*;
-import me.desht.sensibletoolbox.listeners.BagListener;
+import me.desht.sensibletoolbox.listeners.InventoryListener;
 import me.desht.sensibletoolbox.listeners.BlockListener;
 import me.desht.sensibletoolbox.listeners.PlayerListener;
 import org.bukkit.Bukkit;
@@ -71,7 +71,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new BlockListener(this), this);
-		pm.registerEvents(new BagListener(this), this);
+		pm.registerEvents(new InventoryListener(this), this);
 
 		setupProtocolLib();
 

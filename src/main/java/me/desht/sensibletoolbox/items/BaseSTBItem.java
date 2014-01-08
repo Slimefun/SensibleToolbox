@@ -42,6 +42,10 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		registerItem(new WateringCan());
 		registerItem(new MoistureChecker());
 		registerItem(new AdvancedMoistureChecker());
+		registerItem(new WoodCombineHoe());
+		registerItem(new IronCombineHoe());
+		registerItem(new GoldCombineHoe());
+		registerItem(new DiamondCombineHoe());
 	}
 
 	// override some or all of these in subclasses
@@ -150,7 +154,7 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
 			String data = conf.saveToString();
 			storage.setData(data);
-//			System.out.println("serialize to itemstack:\n" + data);
+			System.out.println("serialize to itemstack:\n" + data);
 			return storage.getTarget();
 		} else {
 			return res;

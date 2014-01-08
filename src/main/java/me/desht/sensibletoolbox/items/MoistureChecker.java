@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.SoilSaturation;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -58,7 +59,7 @@ public class MoistureChecker extends BaseSTBItem {
 		final Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
-			if (WateringCan.isCrop(b.getType())) {
+			if (STBUtil.isCrop(b.getType())) {
 				b = b.getRelative(BlockFace.DOWN);
 			}
 			final List<Location> l = new ArrayList<Location>();

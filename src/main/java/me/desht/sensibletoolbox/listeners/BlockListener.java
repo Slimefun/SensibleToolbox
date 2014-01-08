@@ -2,10 +2,14 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.CombineHoe;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Lever;
@@ -75,6 +79,25 @@ public class BlockListener extends STBBaseListener {
 				if (item != null) {
 					event.setCancelled(true);
 				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void leavesBroken(BlockBreakEvent event) {
+		Block b = event.getBlock();
+		if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
+			Player player = event.getPlayer();
+			ItemStack stack = event.getPlayer().getItemInHand();
+			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+			if (item instanceof CombineHoe) {
+				CombineHoe hoe = (CombineHoe) item;
+				hoe.harvestLayer(player, b);
+				if (!player.isSneaking()) {
+					hoe.harvestLayer(player, b.getRelative(BlockFace.UP));
+					hoe.harvestLayer(player, b.getRelative(BlockFace.DOWN));
+				}
+				hoe.damageHeldItem(player, (short) 1);
 			}
 		}
 	}
