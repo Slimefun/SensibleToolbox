@@ -21,7 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class BagOfHolding extends BaseSTBItem {
+public class BagOfHolding extends BaseSTBBlock {
 	public static final String BAG_SAVE_DIR = "bagofholding";
 	public static final int BAG_SIZE = 54;
 

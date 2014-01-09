@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.listeners;
 
+import me.desht.sensibletoolbox.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.CombineHoe;
@@ -22,7 +23,7 @@ public class BlockListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockDamage(BlockDamageEvent event) {
-		BaseSTBItem item = plugin.getLocationManager().get(event.getBlock().getLocation());
+		BaseSTBBlock item = plugin.getLocationManager().get(event.getBlock().getLocation());
 		if (item != null) {
 			item.handleBlockDamage(event);
 		}
@@ -31,16 +32,16 @@ public class BlockListener extends STBBaseListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItemInHand());
-		if (item != null) {
-			item.handleBlockPlace(event);
+		if (item != null && item instanceof BaseSTBBlock) {
+			((BaseSTBBlock)item).handleBlockPlace(event);
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		BaseSTBItem item = plugin.getLocationManager().get(event.getBlock().getLocation());
-		if (item != null) {
-			item.handleBlockBreak(event);
+		if (item != null && item instanceof BaseSTBBlock) {
+			((BaseSTBBlock)item).handleBlockBreak(event);
 		}
 	}
 
@@ -49,7 +50,7 @@ public class BlockListener extends STBBaseListener {
 		final Block b = event.getBlock();
 		Sign sign = (Sign) b.getState().getData();
 		Block attachedTo = b.getRelative(sign.getAttachedFace());
-		BaseSTBItem item = plugin.getLocationManager().get(attachedTo.getLocation());
+		BaseSTBBlock item = plugin.getLocationManager().get(attachedTo.getLocation());
 		if (item != null) {
 			boolean ret = item.handleSignConfigure(event);
 			if (ret) {
@@ -69,7 +70,7 @@ public class BlockListener extends STBBaseListener {
 	public void onBlockPhysics(BlockPhysicsEvent event) {
 
 		Block block = event.getBlock();
-		BaseSTBItem item = plugin.getLocationManager().get(block.getLocation());
+		BaseSTBBlock item = plugin.getLocationManager().get(block.getLocation());
 		if (item != null) {
 			item.handleBlockPhysics(event);
 		} else {

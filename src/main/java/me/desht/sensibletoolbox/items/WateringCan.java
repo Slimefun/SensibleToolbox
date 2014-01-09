@@ -139,7 +139,6 @@ public class WateringCan extends BaseSTBItem {
 		if (newStack != null) {
 			event.setCancelled(true);
 			player.setItemInHand(newStack);
-			System.out.println("new stack: " + newStack);
 			player.updateInventory();
 		}
 		if (floodWarning) {
@@ -154,7 +153,6 @@ public class WateringCan extends BaseSTBItem {
 		Configuration conf = BaseSTBItem.getItemAttributes(player.getItemInHand());
 		setWaterLevel(conf.getInt("level"));
 		if (player.getFireTicks() > 0 && getWaterLevel() > FIRE_EXTINGUISH_AMOUNT) {
-			System.out.println("fire ticks = " + player.getFireTicks());
 			player.setFireTicks(0);
 			setWaterLevel(getWaterLevel() - FIRE_EXTINGUISH_AMOUNT);
 			MiscUtil.alertMessage(player, "The fire is out!");
@@ -214,7 +212,6 @@ public class WateringCan extends BaseSTBItem {
 		long now = System.currentTimeMillis();
 		long delta = (now - SoilSaturation.getLastWatered(soil)) / 1000;
 		saturation = Math.max(0, saturation + 7 - (int) delta);
-		System.out.println("Flood check: " + soil + ", saturation = " + saturation + ", last watered = " + delta + " secs ago");
 		if (saturation > SoilSaturation.MAX_SATURATION && new Random().nextBoolean()) {
 			soil.setTypeIdAndData(Material.WATER.getId(), (byte) 0, true);
 			SoilSaturation.clear(soil);

@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 
-public class AngelicBlock extends BaseSTBItem {
+public class AngelicBlock extends BaseSTBBlock {
 
 	public static AngelicBlock deserialize(Map<String, Object> map) {
 		// no specific config for this block
@@ -84,7 +84,7 @@ public class AngelicBlock extends BaseSTBItem {
 
 	@Override
 	public void handleBlockDamage(BlockDamageEvent event) {
-		// the angelic block has just been hit by a player
+		// the angelic block has just been hit by a player - insta-break it
 		Player p = event.getPlayer();
 		if (p.hasPermission("stb.break_angelic_block")) {
 			Block b = event.getBlock();

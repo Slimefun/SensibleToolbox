@@ -107,7 +107,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>me.desht.dhutils</pattern>
-                                    <shadedPattern>me.desht.landslide.dhutils</shadedPattern>
+                                    <shadedPattern>me.desht.sensibletoolbox.dhutils</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.mcstats</pattern>

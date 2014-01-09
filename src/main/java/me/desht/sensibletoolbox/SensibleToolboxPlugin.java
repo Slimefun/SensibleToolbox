@@ -53,6 +53,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		ConfigurationSerialization.registerClass(RedstoneClock.class);
 		ConfigurationSerialization.registerClass(EnderLeash.class);
 		ConfigurationSerialization.registerClass(BlockUpdateDetector.class);
+		ConfigurationSerialization.registerClass(TrashCan.class);
 	}
 
 	@Override

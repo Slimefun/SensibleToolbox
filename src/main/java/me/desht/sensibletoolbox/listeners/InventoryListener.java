@@ -3,18 +3,21 @@ package me.desht.sensibletoolbox.listeners;
 import com.google.common.io.Files;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.LocationManager;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.BagOfHolding;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.items.CombineHoe;
+import me.desht.sensibletoolbox.items.*;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Dropper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -43,7 +46,7 @@ public class InventoryListener extends STBBaseListener {
 	}
 
 	@EventHandler
-	public void addItemToCombineHoe(InventoryClickEvent event) {
+	public void onAddItemToCombineHoe(InventoryClickEvent event) {
 		if (!(event.getWhoClicked() instanceof Player)) {
 			return;
 		}
@@ -84,7 +87,7 @@ public class InventoryListener extends STBBaseListener {
 	}
 
 	@EventHandler
-	public void addItemDragToCombineHoe(InventoryDragEvent event) {
+	public void onDragItemToCombineHoe(InventoryDragEvent event) {
 		if (!(event.getWhoClicked() instanceof Player)) {
 			return;
 		}
@@ -139,6 +142,30 @@ public class InventoryListener extends STBBaseListener {
 			}
 			hoe.setSeedBagContents(seedType, count);
 			player.setItemInHand(hoe.toItemStack(1));
+		}
+	}
+
+	@EventHandler
+	public void onTrashCanClosed(InventoryCloseEvent event) {
+		TrashCan can = TrashCan.getTrashCan(event.getInventory());
+		if (can != null) {
+			can.emptyTrash(true);
+		}
+	}
+
+	@EventHandler
+	public void onMoveItemToTrashCan(InventoryMoveItemEvent event) {
+		final TrashCan can = TrashCan.getTrashCan(event.getDestination());
+		if (can != null) {
+			System.out.println("move item " + event.getItem() + " to trash");
+//			event.setCancelled(true);
+//			event.getSource().removeItem(event.getItem());
+			Bukkit.getScheduler().runTask(plugin, new Runnable() {
+				@Override
+				public void run() {
+					can.emptyTrash(false);
+				}
+			});
 		}
 	}
 

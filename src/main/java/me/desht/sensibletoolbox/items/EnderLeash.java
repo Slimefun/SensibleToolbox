@@ -1,15 +1,11 @@
 package me.desht.sensibletoolbox.items;
 
-import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.ItemGlow;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
@@ -26,9 +22,6 @@ import java.util.Map;
 public class EnderLeash extends BaseSTBItem {
 	private YamlConfiguration capturedConf = null;
 
-	public EnderLeash() {
-	}
-
 	public EnderLeash(ItemStack stack) {
 		Configuration conf = BaseSTBItem.getItemAttributes(stack);
 		if (!conf.getKeys(false).isEmpty()) {
@@ -37,6 +30,9 @@ public class EnderLeash extends BaseSTBItem {
 				capturedConf.set(k, conf.get(k));
 			}
 		}
+	}
+
+	public EnderLeash() {
 	}
 
 	@Override
@@ -50,16 +46,16 @@ public class EnderLeash extends BaseSTBItem {
 		return res;
 	}
 
-	public static EnderLeash deserialize(Map<String, Object> map) {
-		EnderLeash el = new EnderLeash();
-		if (!map.isEmpty()) {
-			el.capturedConf = new YamlConfiguration();
-			for (Map.Entry e : map.entrySet()) {
-				el.capturedConf.set((String) e.getKey(), e.getValue());
-			}
-		}
-		return el;
-	}
+//	public static EnderLeash deserialize(Map<String, Object> map) {
+//		EnderLeash el = new EnderLeash();
+//		if (!map.isEmpty()) {
+//			el.capturedConf = new YamlConfiguration();
+//			for (Map.Entry e : map.entrySet()) {
+//				el.capturedConf.set((String) e.getKey(), e.getValue());
+//			}
+//		}
+//		return el;
+//	}
 
 	@Override
 	public Material getBaseMaterial() {
@@ -107,9 +103,16 @@ public class EnderLeash extends BaseSTBItem {
 		Entity target = event.getRightClicked();
 		Player p = event.getPlayer();
 		if (target instanceof Animals && isPassive(target) && p.getItemInHand().getAmount() == 1) {
-			capturedConf = freezeEntity((Animals) target);
-			target.remove();
-			p.setItemInHand(this.toItemStack(1));
+			EntityType type = getCapturedFromItemMeta(p.getItemInHand());
+			if (type == null) {
+				capturedConf = freezeEntity((Animals) target);
+				target.getWorld().playEffect(target.getLocation(), Effect.ENDER_SIGNAL, 0);
+				target.remove();
+				p.setItemInHand(this.toItemStack(1));
+			} else {
+				// workaround CB bug to ensure client is updated properly
+				p.updateInventory();
+			}
 		}
 		event.setCancelled(true);
 	}

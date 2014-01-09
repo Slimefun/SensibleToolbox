@@ -2,11 +2,16 @@ package me.desht.sensibletoolbox;
 
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.PersistableLocation;
+import me.desht.sensibletoolbox.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.NumberConversions;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +23,14 @@ public class LocationManager {
 
 	private final SensibleToolboxPlugin plugin;
 
-	private final Map<PersistableLocation, BaseSTBItem> locations = new HashMap<PersistableLocation, BaseSTBItem>();
+	private final Map<PersistableLocation, BaseSTBBlock> locations = new HashMap<PersistableLocation, BaseSTBBlock>();
 	private boolean saveNeeded;
 
 	public LocationManager(SensibleToolboxPlugin plugin) {
 		this.plugin = plugin;
 	}
 
-	public void registerLocation(Location loc, BaseSTBItem stbItem) {
+	public void registerLocation(Location loc, BaseSTBBlock stbItem) {
 		locations.put(new PersistableLocation(loc), stbItem);
 		saveNeeded = true;
 		System.out.println("registered location " + loc + " for " + stbItem);
@@ -43,21 +48,35 @@ public class LocationManager {
 		}
 	}
 
-	public void updateLocation(Location loc, BaseSTBItem stbItem) {
+	public void updateLocation(Location loc, BaseSTBBlock stbItem) {
 		locations.put(new PersistableLocation(loc), stbItem);
 		saveNeeded = true;
 		System.out.println("updated location " + loc + " for " + stbItem);
 	}
 
-	public BaseSTBItem get(Location loc) {
-		return locations.get(new PersistableLocation(loc));
+	public BaseSTBBlock get(Location loc) {
+		PersistableLocation pLoc = new PersistableLocation(loc);
+		if (locations.containsKey(pLoc)) {
+			return locations.get(pLoc);
+		} else {
+			for (MetadataValue mv : loc.getBlock().getMetadata(BaseSTBItem.STB_MULTI_BLOCK)) {
+				if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
+					Vector vec = (Vector) mv.value();
+					pLoc = new PersistableLocation(loc.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+					if (locations.containsKey(pLoc)) {
+						return locations.get(pLoc);
+					}
+				}
+			}
+			return null;
+		}
 	}
 
 	public void save() {
 		if (saveNeeded) {
 			YamlConfiguration conf = new YamlConfiguration();
 
-			for (Map.Entry<PersistableLocation, BaseSTBItem> e : locations.entrySet()) {
+			for (Map.Entry<PersistableLocation, BaseSTBBlock> e : locations.entrySet()) {
 				String key = String.format("%s,%d,%d,%d",
 						e.getKey().getWorldName(),
 						NumberConversions.floor(e.getKey().getX()),
@@ -93,7 +112,14 @@ public class LocationManager {
 				loc.setX(x);
 				loc.setY(y);
 				loc.setZ(z);
-				locations.put(new PersistableLocation(loc), (BaseSTBItem) conf.get(key));
+				BaseSTBBlock item = (BaseSTBBlock) conf.get(key);
+				locations.put(new PersistableLocation(loc), item);
+				Block origin = loc.getBlock();
+				item.setBaseLocation(loc);
+				for (Vector v : item.getBlockStructure()) {
+					Block b1 = origin.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+					b1.setMetadata(BaseSTBItem.STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), loc.toVector()));
+				}
 			}
  			saveNeeded = false;
 		} catch (Exception e) {
@@ -103,7 +129,7 @@ public class LocationManager {
 	}
 
 	public void tick() {
-		for (Map.Entry<PersistableLocation, BaseSTBItem> e : locations.entrySet()) {
+		for (Map.Entry<PersistableLocation, BaseSTBBlock> e : locations.entrySet()) {
 			e.getValue().onServerTick(e.getKey());
 		}
 		save();

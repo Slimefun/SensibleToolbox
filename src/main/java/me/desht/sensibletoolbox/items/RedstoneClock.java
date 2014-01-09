@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -20,9 +21,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RedstoneClock extends BaseSTBItem {
+public class RedstoneClock extends BaseSTBBlock {
 	private int frequency = 20;
 	private int onDuration = 5;
+//	private BlockState savedState = null;
 
 	public int getFrequency() {
 		return frequency;
@@ -95,10 +97,10 @@ public class RedstoneClock extends BaseSTBItem {
 
 	@Override
 	public void handleBlockPlace(BlockPlaceEvent event) {
+		super.handleBlockPlace(event);
 		Configuration conf = getItemAttributes(event.getItemInHand());
 		setFrequency(conf.getInt("frequency"));
 		setOnDuration(conf.getInt("onDuration"));
-		blockPlaced(event.getBlock());
 	}
 
 	@Override
@@ -108,9 +110,14 @@ public class RedstoneClock extends BaseSTBItem {
 		long time = loc.getWorld().getTime();
 		if (time % getFrequency() == 0 && !b.isBlockIndirectlyPowered()) {
 			// power the neighbours up
+//			savedState = b.getState();
 			b.setType(Material.REDSTONE_BLOCK);
 		} else if (time % getFrequency() == getOnDuration()) {
 			// power the neighbours down
+//			if (savedState != null) {
+//				savedState.update(true);
+//				savedState = null;
+//			}
 			b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
 		} else if (time % 50 == 10) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
@@ -149,7 +156,7 @@ public class RedstoneClock extends BaseSTBItem {
 			event.setLine(3, "");
 		} else if (updated) {
 			MiscUtil.statusMessage(event.getPlayer(),
-					"Clock updated: frequency=&6" + getFrequency() + "&- duration=&6" + getOnDuration());
+					getItemName() + " updated: frequency=&6" + getFrequency() + "&- duration=&6" + getOnDuration());
 			Sign sign = (Sign) event.getBlock().getState();
 			blockUpdated(event.getBlock().getRelative(((Attachable) sign.getData()).getAttachedFace()));
 		} else {

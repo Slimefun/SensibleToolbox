@@ -2,11 +2,13 @@ package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -18,7 +20,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BlockUpdateDetector extends BaseSTBItem {
+public class BlockUpdateDetector extends BaseSTBBlock {
 	private long lastPulse;
 	private int duration = 2;
 
@@ -30,7 +32,6 @@ public class BlockUpdateDetector extends BaseSTBItem {
 	}
 
 	public static BlockUpdateDetector deserialize(Map<String, Object> map) {
-		// no specific config for this block
 		BlockUpdateDetector bud = new BlockUpdateDetector();
 		bud.setDuration((Integer) map.get("duration"));
 		return bud;
@@ -82,10 +83,10 @@ public class BlockUpdateDetector extends BaseSTBItem {
 
 	@Override
 	public void handleBlockPlace(BlockPlaceEvent event) {
+		super.handleBlockPlace(event);
 		Configuration conf = getItemAttributes(event.getItemInHand());
 		lastPulse = event.getBlock().getWorld().getFullTime();
 		duration = conf.getInt("duration");
-		blockPlaced(event.getBlock());
 	}
 
 	@Override
@@ -93,7 +94,6 @@ public class BlockUpdateDetector extends BaseSTBItem {
 		final Block b = event.getBlock();
 		if (b.getWorld().getFullTime() - lastPulse > duration + 1) {
 			// emit a signal for one tick
-			System.out.println("pulse!" + b);
 			b.setType(Material.REDSTONE_BLOCK);
 			lastPulse = b.getWorld().getFullTime();
 			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
@@ -131,7 +131,7 @@ public class BlockUpdateDetector extends BaseSTBItem {
 			event.setLine(3, "");
 		} else if (updated) {
 			MiscUtil.statusMessage(event.getPlayer(),
-					"Block updated: duration=&6" + getDuration());
+					getItemName() + " updated: duration=&6" + getDuration());
 			Sign sign = (Sign) event.getBlock().getState();
 			blockUpdated(event.getBlock().getRelative(((Attachable) sign.getData()).getAttachedFace()));
 		} else {
