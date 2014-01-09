@@ -27,7 +27,7 @@ public class IronCombineHoe extends CombineHoe {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
 		recipe.shape("SSS", "HCW", "SSS");
 		recipe.setIngredient('S', Material.STRING);
 		recipe.setIngredient('H', Material.IRON_HOE);

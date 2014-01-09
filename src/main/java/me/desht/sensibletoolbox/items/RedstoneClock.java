@@ -22,9 +22,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RedstoneClock extends BaseSTBBlock {
+	private static final Pattern intPat = Pattern.compile("(^[df])\\s*(\\d+)");
 	private int frequency = 20;
-	private int onDuration = 5;
 //	private BlockState savedState = null;
+	private int onDuration = 5;
+
+	public static RedstoneClock deserialize(Map<String, Object> map) {
+		RedstoneClock clock = new RedstoneClock();
+		clock.setFrequency((Integer) map.get("frequency"));
+		clock.setOnDuration((Integer) map.get("onDuration"));
+		return clock;
+	}
 
 	public int getFrequency() {
 		return frequency;
@@ -50,13 +58,6 @@ public class RedstoneClock extends BaseSTBBlock {
 		return res;
 	}
 
-	public static RedstoneClock deserialize(Map<String, Object> map) {
-		RedstoneClock clock = new RedstoneClock();
-		clock.setFrequency((Integer) map.get("frequency"));
-		clock.setOnDuration((Integer) map.get("onDuration"));
-		return clock;
-	}
-
 	@Override
 	public Material getBaseMaterial() {
 		return Material.STAINED_CLAY;
@@ -79,7 +80,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe res = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe res = new ShapedRecipe(toItemStack(1, false));
 		res.shape("RSR", "STS", "RSR");
 		res.setIngredient('R', Material.REDSTONE);
 		res.setIngredient('S', Material.STONE);
@@ -109,15 +110,9 @@ public class RedstoneClock extends BaseSTBBlock {
 		Block b = loc.getBlock();
 		long time = loc.getWorld().getTime();
 		if (time % getFrequency() == 0 && !b.isBlockIndirectlyPowered()) {
-			// power the neighbours up
-//			savedState = b.getState();
 			b.setType(Material.REDSTONE_BLOCK);
 		} else if (time % getFrequency() == getOnDuration()) {
 			// power the neighbours down
-//			if (savedState != null) {
-//				savedState.update(true);
-//				savedState = null;
-//			}
 			b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
 		} else if (time % 50 == 10) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
@@ -127,8 +122,6 @@ public class RedstoneClock extends BaseSTBBlock {
 			}
 		}
 	}
-
-	private static final Pattern intPat = Pattern.compile("(^[df])\\s*(\\d+)");
 
 	@Override
 	public boolean handleSignConfigure(SignChangeEvent event) {

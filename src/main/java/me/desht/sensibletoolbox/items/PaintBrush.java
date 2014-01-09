@@ -11,6 +11,22 @@ public class PaintBrush extends BaseSTBItem {
 	private int paintLevel;
 	private DyeColor colour;
 
+	public int getPaintLevel() {
+		return paintLevel;
+	}
+
+	public void setPaintLevel(int paintLevel) {
+		this.paintLevel = paintLevel;
+	}
+
+	public DyeColor getColour() {
+		return colour;
+	}
+
+	public void setColour(DyeColor colour) {
+		this.colour = colour;
+	}
+
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> res = super.serialize();
@@ -36,7 +52,7 @@ public class PaintBrush extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
 		recipe.shape("R", "S", "S");
 		recipe.setIngredient('R', Material.STRING);
 		recipe.setIngredient('S', Material.STICK);

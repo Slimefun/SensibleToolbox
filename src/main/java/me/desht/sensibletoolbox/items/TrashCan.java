@@ -20,6 +20,36 @@ public class TrashCan extends BaseSTBBlock {
 		return new TrashCan();
 	}
 
+	private static BlockFace getRotation(Location loc) {
+		double rot = loc.getYaw() % 360;
+		if (rot < 0) {
+			rot += 360;
+		}
+		if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
+			return BlockFace.NORTH;
+		} else if (45 <= rot && rot < 135) {
+			return BlockFace.EAST;
+		} else if (135 <= rot && rot < 225) {
+			return BlockFace.SOUTH;
+		} else if (225 <= rot && rot < 315) {
+			return BlockFace.WEST;
+		} else {
+			throw new IllegalArgumentException("impossible rotation: " + rot);
+		}
+	}
+
+	public static TrashCan getTrashCan(Inventory inv) {
+		InventoryHolder h = inv.getHolder();
+		if (h instanceof Dropper) {
+			Dropper d = (Dropper) h;
+			BaseSTBBlock stb = SensibleToolboxPlugin.getInstance().getLocationManager().get(d.getLocation());
+			if (stb != null && stb instanceof TrashCan) {
+				return (TrashCan) stb;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public Material getBaseMaterial() {
 		// note: item is multi-block structure when placed; dropper plus skeleton head
@@ -38,7 +68,7 @@ public class TrashCan extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
 		recipe.shape("SSS", "OCO", "OOO");
 		recipe.setIngredient('S', Material.STONE);
 		recipe.setIngredient('C', Material.CHEST);
@@ -80,6 +110,11 @@ public class TrashCan extends BaseSTBBlock {
 		return new Vector[] { new Vector(0, 1, 0) };
 	}
 
+	/**
+	 * Empty this trash can, permanently destroying its contents.
+	 *
+	 * @param noisy if true, play a sound effect if any items were destroyed
+	 */
 	public void emptyTrash(boolean noisy) {
 		Location l = getBaseLocation();
 		if (l != null && l.getBlock().getType() == getBaseMaterial()) {
@@ -96,35 +131,5 @@ public class TrashCan extends BaseSTBBlock {
 			System.out.println("clear trashcan " + d);
 			d.getInventory().clear();
 		}
-	}
-
-	private static BlockFace getRotation(Location loc) {
-		double rot = loc.getYaw() % 360;
-		if (rot < 0) {
-			rot += 360;
-		}
-		if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
-			return BlockFace.NORTH;
-		} else if (45 <= rot && rot < 135) {
-			return BlockFace.EAST;
-		} else if (135 <= rot && rot < 225) {
-			return BlockFace.SOUTH;
-		} else if (225 <= rot && rot < 315) {
-			return BlockFace.WEST;
-		} else {
-			throw new IllegalArgumentException("impossible rotation: " + rot);
-		}
-	}
-
-	public static TrashCan getTrashCan(Inventory inv) {
-		InventoryHolder h = inv.getHolder();
-		if (h instanceof Dropper) {
-			Dropper d = (Dropper) h;
-			BaseSTBBlock stb = SensibleToolboxPlugin.getInstance().getLocationManager().get(d.getLocation());
-			if (stb != null && stb instanceof TrashCan) {
-				return (TrashCan) stb;
-			}
-		}
-		return null;
 	}
 }

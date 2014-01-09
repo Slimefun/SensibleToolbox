@@ -42,7 +42,7 @@ public class BagOfHolding extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
 		recipe.shape("WGW", "GCG", "WBW");
 		recipe.setIngredient('W', Material.WOOL);
 		recipe.setIngredient('G', Material.GOLD_INGOT);

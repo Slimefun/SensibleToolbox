@@ -26,9 +26,16 @@ public class WateringCan extends BaseSTBItem {
 	private static final int GROW_CHANCE = 10;
 	private static final int MAX_LEVEL = 100;
 	private static final int FIRE_EXTINGUISH_AMOUNT = 50;
-
 	private int waterLevel;
 	private boolean floodWarning = false;
+
+	public static WateringCan deserialize(Map<String, Object> map) {
+		WateringCan wc = new WateringCan();
+		if (!map.isEmpty()) {
+			wc.setWaterLevel((Integer) map.get("level"));
+		}
+		return wc;
+	}
 
 	public int getWaterLevel() {
 		return waterLevel;
@@ -43,14 +50,6 @@ public class WateringCan extends BaseSTBItem {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("level", waterLevel);
 		return res;
-	}
-
-	public static WateringCan deserialize(Map<String, Object> map) {
-		WateringCan wc = new WateringCan();
-		if (!map.isEmpty()) {
-			wc.setWaterLevel((Integer) map.get("level"));
-		}
-		return wc;
 	}
 
 	@Override
@@ -75,7 +74,7 @@ public class WateringCan extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
 		Dye d = new Dye();
 		d.setColor(DyeColor.WHITE);
 		recipe.shape("SM ", "SBS", " S ");

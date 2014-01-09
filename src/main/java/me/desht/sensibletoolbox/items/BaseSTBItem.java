@@ -117,26 +117,85 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		}
 	}
 
+	/**
+	 * Get the Bukkit Material used for this item.
+	 *
+	 * @return the Bukkit Material
+	 */
 	public abstract Material getBaseMaterial();
 
+	/**
+	 * Get the block data byte used for this item.
+	 *
+	 * @return the block data
+	 */
 	public Byte getBaseBlockData() { return null; }
 
+	/**
+	 * Get the item's displayed name.
+	 *
+	 * @return the item name
+	 */
 	public abstract String getItemName();
 
+	/**
+	 * Get any suffix to be appended to the item's displayed name.  Override this in
+	 * implementing classes where you wish to represent some or all of the item's state
+	 * in the display name.
+	 *
+	 * @return the display suffix
+	 */
 	public String getDisplaySuffix() { return null; }
 
+	/**
+	 * Get the base lore to display for the item.
+	 *
+	 * @return the item lore
+	 */
 	public abstract String[] getLore();
 
+	/**
+	 * Get extra lore to be appended to the base lore.  verride this in
+	 * implementing classes where you wish to represent some or all of the item's state
+	 * in the item lore.
+	 *
+	 * @return the extra item lore
+	 */
 	public String[] getExtraLore() { return new String[0]; }
 
+	/**
+	 * Get the recipe used to create the item.
+	 *
+	 * @return the recipe
+	 */
 	public abstract Recipe getRecipe();
 
+	/**
+	 * Check if the item should glow.  This will only work if ProtocolLib is installed.
+	 *
+	 * @return true if the item should glow
+	 */
 	public boolean hasGlow() { return false; }
 
+	/**
+	 * Called when a player interacts with something while holding an STB item.
+	 *
+	 * @param event the interaction event.
+	 */
 	public void handleInteraction(PlayerInteractEvent event) { }
 
+	/**
+	 * Called when a player attempts to consume an STB item (which must be food or potion).
+	 *
+	 * @param event the consume event
+	 */
 	public void handleConsume(PlayerItemConsumeEvent event) { }
 
+	/**
+	 * Called when a player interacts with an entity while holding an STB item.
+	 *
+	 * @param event the interaction event
+	 */
 	public void handleEntityInteraction(PlayerInteractEntityEvent event) { }
 
 	@Override
@@ -144,7 +203,24 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		return new HashMap<String, Object>();
 	}
 
+	/**
+	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
+	 *
+	 * @param amount number of items in the stack
+	 * @return the new ItemStack
+	 */
 	public ItemStack toItemStack(int amount) {
+		return toItemStack(amount, true);
+	}
+
+	/**
+	 * Get an ItemStack from this STB item, possibly serializing any item-specific data into the ItemStack.
+	 *
+	 * @param amount number of items in the stack
+	 * @param serialize whether or not to serialize item data into the stack
+	 * @return the new ItemStack
+	 */
+	public ItemStack toItemStack(int amount, boolean serialize) {
 		ItemStack res = new ItemStack(getBaseMaterial(), amount);
 		if (getBaseBlockData() != null) {
 			res.setDurability(getBaseBlockData());
@@ -155,6 +231,10 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		im.setLore(buildLore());
 		res.setItemMeta(im);
 		ItemGlow.setGlowing(res, hasGlow());
+
+		if (!serialize) {
+			return res;
+		}
 
 		// any serialized data from the object goes in the ItemStack attributes
 		Map<String, Object> map = serialize();

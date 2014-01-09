@@ -21,20 +21,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BlockUpdateDetector extends BaseSTBBlock {
+	private static final Pattern intPat = Pattern.compile("(^d)\\s*(\\d+)");
 	private long lastPulse;
 	private int duration = 2;
+
+	public static BlockUpdateDetector deserialize(Map<String, Object> map) {
+		BlockUpdateDetector bud = new BlockUpdateDetector();
+		bud.setDuration((Integer) map.get("duration"));
+		return bud;
+	}
 
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> res = super.serialize();
 		res.put("duration", duration);
 		return res;
-	}
-
-	public static BlockUpdateDetector deserialize(Map<String, Object> map) {
-		BlockUpdateDetector bud = new BlockUpdateDetector();
-		bud.setDuration((Integer) map.get("duration"));
-		return bud;
 	}
 
 	public int getDuration() {
@@ -72,7 +73,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe res = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe res = new ShapedRecipe(toItemStack(1, false));
 		res.shape("SRS", "SPS", "STS");
 		res.setIngredient('S', Material.STONE);
 		res.setIngredient('P', Material.PISTON_STICKY_BASE);
@@ -104,8 +105,6 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 			}, duration);
 		}
 	}
-
-	private static final Pattern intPat = Pattern.compile("(^d)\\s*(\\d+)");
 
 	@Override
 	public boolean handleSignConfigure(SignChangeEvent event) {

@@ -37,7 +37,7 @@ public class MoistureChecker extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
 		recipe.shape("S", "D", "I");
 		recipe.setIngredient('S', Material.SIGN);
 		recipe.setIngredient('D', Material.DIODE);
