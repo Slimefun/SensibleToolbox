@@ -45,7 +45,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(this.toItemStack(1, false));
+		ShapedRecipe recipe = new ShapedRecipe(this.toItemStack(1));
 		recipe.shape(" G ", "FOF");
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		recipe.setIngredient('F', Material.FEATHER);

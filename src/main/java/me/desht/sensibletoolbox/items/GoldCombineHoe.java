@@ -26,7 +26,7 @@ public class GoldCombineHoe extends CombineHoe {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
 		recipe.shape("SSS", "HCW", "SSS");
 		recipe.setIngredient('S', Material.STRING);
 		recipe.setIngredient('H', Material.GOLD_HOE);

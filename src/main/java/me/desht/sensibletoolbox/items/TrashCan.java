@@ -68,7 +68,7 @@ public class TrashCan extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
 		recipe.shape("SSS", "OCO", "OOO");
 		recipe.setIngredient('S', Material.STONE);
 		recipe.setIngredient('C', Material.CHEST);

@@ -74,7 +74,7 @@ public class WateringCan extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1, false));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
 		Dye d = new Dye();
 		d.setColor(DyeColor.WHITE);
 		recipe.shape("SM ", "SBS", " S ");

@@ -210,17 +210,6 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	 * @return the new ItemStack
 	 */
 	public ItemStack toItemStack(int amount) {
-		return toItemStack(amount, true);
-	}
-
-	/**
-	 * Get an ItemStack from this STB item, possibly serializing any item-specific data into the ItemStack.
-	 *
-	 * @param amount number of items in the stack
-	 * @param serialize whether or not to serialize item data into the stack
-	 * @return the new ItemStack
-	 */
-	public ItemStack toItemStack(int amount, boolean serialize) {
 		ItemStack res = new ItemStack(getBaseMaterial(), amount);
 		if (getBaseBlockData() != null) {
 			res.setDurability(getBaseBlockData());
@@ -231,10 +220,6 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		im.setLore(buildLore());
 		res.setItemMeta(im);
 		ItemGlow.setGlowing(res, hasGlow());
-
-		if (!serialize) {
-			return res;
-		}
 
 		// any serialized data from the object goes in the ItemStack attributes
 		Map<String, Object> map = serialize();
