@@ -55,7 +55,7 @@ public class MoistureChecker extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleInteraction(PlayerInteractEvent event) {
+	public void handleItemInteraction(PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
@@ -71,23 +71,25 @@ public class MoistureChecker extends BaseSTBItem {
 					}
 				}
 			}
-			Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
-				@Override
-				public void run() {
-					for (Location loc : l) {
-						player.sendBlockChange(loc, Material.WOOL, getSaturationData(loc.getBlock()));
+			if (!l.isEmpty()) {
+				Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						for (Location loc : l) {
+							player.sendBlockChange(loc, Material.WOOL, getSaturationData(loc.getBlock()));
+						}
 					}
-				}
-			});
-			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
-				@Override
-				public void run() {
-					for (Location loc : l) {
-						player.sendBlockChange(loc, loc.getBlock().getType(), loc.getBlock().getData());
+				});
+				Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						for (Location loc : l) {
+							player.sendBlockChange(loc, loc.getBlock().getType(), loc.getBlock().getData());
+						}
 					}
-				}
-			}, 30L);
-			event.setCancelled(true);
+				}, 30L);
+				event.setCancelled(true);
+			}
 		}
 	}
 

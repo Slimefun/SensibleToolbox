@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.items;
+package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
@@ -54,7 +54,7 @@ public class AngelicBlock extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleInteraction(PlayerInteractEvent event) {
+	public void handleItemInteraction(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			// place the block in the air 2 blocks in the direction the player is looking at
 			Player p = event.getPlayer();

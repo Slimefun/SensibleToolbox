@@ -1,18 +1,19 @@
 package me.desht.sensibletoolbox.items;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.Map;
 
 public class IronCombineHoe extends CombineHoe {
-	public IronCombineHoe() {
 
+	public IronCombineHoe(Configuration conf) {
+		super(conf);
 	}
 
-	public IronCombineHoe(Map<String, Object> map) {
-		super(map);
+	public IronCombineHoe() {
 	}
 
 	@Override

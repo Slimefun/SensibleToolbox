@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.listeners;
 
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.event.EventHandler;
@@ -18,7 +19,13 @@ public class PlayerListener extends STBBaseListener {
 		ItemStack stack = event.getPlayer().getItemInHand();
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
-			item.handleInteraction(event);
+			item.handleItemInteraction(event);
+		}
+		if (event.getClickedBlock() != null) {
+			BaseSTBBlock stb = plugin.getLocationManager().get(event.getClickedBlock().getLocation());
+			if (stb != null) {
+				stb.handleBlockInteraction(event);
+			}
 		}
 	}
 

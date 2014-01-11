@@ -20,10 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 public class EnderLeash extends BaseSTBItem {
-	private YamlConfiguration capturedConf = null;
+	private YamlConfiguration capturedConf;
 
-	public EnderLeash(ItemStack stack) {
-		Configuration conf = BaseSTBItem.getItemAttributes(stack);
+	public EnderLeash(Configuration conf) {
 		if (!conf.getKeys(false).isEmpty()) {
 			capturedConf = new YamlConfiguration();
 			for (String k : conf.getKeys(false)) {
@@ -33,6 +32,7 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	public EnderLeash() {
+		capturedConf = null;
 	}
 
 	@Override
@@ -45,17 +45,6 @@ public class EnderLeash extends BaseSTBItem {
 		}
 		return res;
 	}
-
-//	public static EnderLeash deserialize(Map<String, Object> map) {
-//		EnderLeash el = new EnderLeash();
-//		if (!map.isEmpty()) {
-//			el.capturedConf = new YamlConfiguration();
-//			for (Map.Entry e : map.entrySet()) {
-//				el.capturedConf.set((String) e.getKey(), e.getValue());
-//			}
-//		}
-//		return el;
-//	}
 
 	@Override
 	public Material getBaseMaterial() {
@@ -118,14 +107,16 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleInteraction(PlayerInteractEvent event) {
+	public void handleItemInteraction(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !isInteractive(event.getClickedBlock().getType())) {
-			if (getCapturedFromItemMeta(event.getPlayer().getItemInHand()) != null) {
-				Configuration conf = BaseSTBItem.getItemAttributes(event.getPlayer().getItemInHand());
+//			if (getCapturedFromItemMeta(event.getPlayer().getItemInHand()) != null) {
+//				Configuration conf = BaseSTBItem.getItemAttributes(event.getPlayer().getItemInHand());
+			if (capturedConf != null) {
 				Block where = event.getClickedBlock().getRelative(event.getBlockFace());
-				EntityType type = EntityType.valueOf(conf.getString("type"));
+				EntityType type = EntityType.valueOf(capturedConf.getString("type"));
 				Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
-				thawEntity((Animals) e, conf);
+				thawEntity((Animals) e, capturedConf);
+				capturedConf = null;
 				event.getPlayer().setItemInHand(this.toItemStack(1));
 				event.setCancelled(true);
 			}
@@ -152,6 +143,7 @@ public class EnderLeash extends BaseSTBItem {
 		switch (target.getType()) {
 			case SHEEP:
 				conf.set("sheared", ((Sheep) target).isSheared());
+				conf.set("color", ((Sheep) target).getColor().toString());
 				break;
 			case OCELOT:
 				conf.set("sitting", ((Ocelot) target).isSitting());
@@ -203,6 +195,7 @@ public class EnderLeash extends BaseSTBItem {
 				break;
 			case SHEEP:
 				((Sheep) entity).setSheared(conf.getBoolean("sheared"));
+				((Sheep) entity).setColor(DyeColor.valueOf(conf.getString("color")));
 				break;
 			case OCELOT:
 				((Ocelot) entity).setSitting(conf.getBoolean("sitting"));

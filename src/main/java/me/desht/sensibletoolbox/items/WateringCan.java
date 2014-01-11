@@ -27,14 +27,14 @@ public class WateringCan extends BaseSTBItem {
 	private static final int MAX_LEVEL = 100;
 	private static final int FIRE_EXTINGUISH_AMOUNT = 50;
 	private int waterLevel;
-	private boolean floodWarning = false;
+	private boolean floodWarning;
 
-	public static WateringCan deserialize(Map<String, Object> map) {
-		WateringCan wc = new WateringCan();
-		if (!map.isEmpty()) {
-			wc.setWaterLevel((Integer) map.get("level"));
-		}
-		return wc;
+	public WateringCan(Configuration conf) {
+		setWaterLevel(conf.getInt("level"));
+	}
+
+	public WateringCan() {
+		waterLevel = 0;
 	}
 
 	public int getWaterLevel() {
@@ -85,11 +85,10 @@ public class WateringCan extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleInteraction(PlayerInteractEvent event) {
+	public void handleItemInteraction(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack newStack = null;
-		Configuration conf = BaseSTBItem.getItemAttributes(event.getPlayer().getItemInHand());
-		setWaterLevel(conf.getInt("level"));
+		floodWarning = false;
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
 			Block neighbour = b.getRelative(event.getBlockFace());

@@ -1,21 +1,18 @@
-package me.desht.sensibletoolbox.items;
+package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.Attachable;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,15 +20,21 @@ import java.util.regex.Pattern;
 
 public class RedstoneClock extends BaseSTBBlock {
 	private static final Pattern intPat = Pattern.compile("(^[df])\\s*(\\d+)");
-	private int frequency = 20;
-//	private BlockState savedState = null;
-	private int onDuration = 5;
+	private int frequency;
+	private int onDuration;
+
+	public RedstoneClock(Configuration conf) {
+		setFrequency(conf.getInt("frequency"));
+		setOnDuration(conf.getInt("onDuration"));
+	}
+
+	public RedstoneClock() {
+		frequency = 20;
+		onDuration = 5;
+	}
 
 	public static RedstoneClock deserialize(Map<String, Object> map) {
-		RedstoneClock clock = new RedstoneClock();
-		clock.setFrequency((Integer) map.get("frequency"));
-		clock.setOnDuration((Integer) map.get("onDuration"));
-		return clock;
+		return new RedstoneClock(getConfigFromMap(map));
 	}
 
 	public int getFrequency() {
@@ -91,8 +94,8 @@ public class RedstoneClock extends BaseSTBBlock {
 	@Override
 	public String[] getExtraLore() {
 		String l = BaseSTBItem.LORE_COLOR + " every " + ChatColor.GOLD + getFrequency() +
-				BaseSTBItem.LORE_COLOR + " ticks for " + ChatColor.GOLD + getOnDuration() +
-				BaseSTBItem.LORE_COLOR + " ticks";
+				LORE_COLOR + " ticks for " + ChatColor.GOLD + getOnDuration() +
+				LORE_COLOR + " ticks";
 		return new String[] { l };
 	}
 
@@ -143,15 +146,14 @@ public class RedstoneClock extends BaseSTBBlock {
 			}
 		}
 		if (show) {
-			event.setLine(0, ChatColor.DARK_RED + "F: " + ChatColor.RESET + getFrequency());
-			event.setLine(1, ChatColor.DARK_RED + "D: " + ChatColor.RESET + getOnDuration());
+			event.setLine(0, ChatColor.DARK_RED + "Freq " + ChatColor.RESET + getFrequency());
+			event.setLine(1, ChatColor.DARK_RED + "Duration " + ChatColor.RESET + getOnDuration());
 			event.setLine(2, "");
 			event.setLine(3, "");
 		} else if (updated) {
-			MiscUtil.statusMessage(event.getPlayer(),
-					getItemName() + " updated: frequency=&6" + getFrequency() + "&- duration=&6" + getOnDuration());
-			Sign sign = (Sign) event.getBlock().getState();
-			blockUpdated(event.getBlock().getRelative(((Attachable) sign.getData()).getAttachedFace()));
+			MiscUtil.statusMessage(event.getPlayer(), String.format("%s updated: frequency=&6%d&-, duration=&6%d",
+					getItemName(), getFrequency(), getOnDuration()));
+			updateBlock();
 		} else {
 			MiscUtil.errorMessage(event.getPlayer(), "No valid data found: clock not updated");
 		}

@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox;
 
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.PersistableLocation;
-import me.desht.sensibletoolbox.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -63,6 +63,7 @@ public class LocationManager {
 				if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
 					Vector vec = (Vector) mv.value();
 					pLoc = new PersistableLocation(loc.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+					System.out.println("try to find block @ " + pLoc + " - clicked " + loc);
 					if (locations.containsKey(pLoc)) {
 						return locations.get(pLoc);
 					}
@@ -133,5 +134,9 @@ public class LocationManager {
 			e.getValue().onServerTick(e.getKey());
 		}
 		save();
+	}
+
+	public BaseSTBItem[] listItems() {
+		return locations.values().toArray(new BaseSTBItem[locations.size()]);
 	}
 }

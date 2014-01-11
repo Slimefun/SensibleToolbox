@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.items;
+package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
@@ -7,14 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.Attachable;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,12 +21,18 @@ import java.util.regex.Pattern;
 public class BlockUpdateDetector extends BaseSTBBlock {
 	private static final Pattern intPat = Pattern.compile("(^d)\\s*(\\d+)");
 	private long lastPulse;
-	private int duration = 2;
+	private int duration;
+
+	public BlockUpdateDetector(Configuration conf) {
+		setDuration(conf.getInt("duration"));
+	}
+
+	public BlockUpdateDetector() {
+		duration = 2;
+	}
 
 	public static BlockUpdateDetector deserialize(Map<String, Object> map) {
-		BlockUpdateDetector bud = new BlockUpdateDetector();
-		bud.setDuration((Integer) map.get("duration"));
-		return bud;
+		return new BlockUpdateDetector(getConfigFromMap(map));
 	}
 
 	@Override
@@ -93,10 +97,12 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	@Override
 	public void handleBlockPhysics(BlockPhysicsEvent event) {
 		final Block b = event.getBlock();
-		if (b.getWorld().getFullTime() - lastPulse > duration + 1) {
+		System.out.println("BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
+		if (b.getWorld().getFullTime() - lastPulse > getDuration() + 1) {
 			// emit a signal for one tick
-			b.setType(Material.REDSTONE_BLOCK);
+			System.out.println(" -> pulse!");
 			lastPulse = b.getWorld().getFullTime();
+			b.setType(Material.REDSTONE_BLOCK);
 			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
@@ -129,10 +135,8 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 			event.setLine(2, "");
 			event.setLine(3, "");
 		} else if (updated) {
-			MiscUtil.statusMessage(event.getPlayer(),
-					getItemName() + " updated: duration=&6" + getDuration());
-			Sign sign = (Sign) event.getBlock().getState();
-			blockUpdated(event.getBlock().getRelative(((Attachable) sign.getData()).getAttachedFace()));
+			MiscUtil.statusMessage(event.getPlayer(), getItemName() + " updated: duration=&6" + getDuration());
+			updateBlock();
 		} else {
 			MiscUtil.errorMessage(event.getPlayer(), "No valid data found: clock not updated");
 		}

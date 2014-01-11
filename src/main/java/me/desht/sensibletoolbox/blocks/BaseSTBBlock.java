@@ -1,13 +1,19 @@
-package me.desht.sensibletoolbox.items;
+package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.event.block.*;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
+
+import java.util.Map;
 
 public abstract class BaseSTBBlock extends BaseSTBItem {
 	private PersistableLocation persistableLocation;
@@ -25,6 +31,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 * @param event the block physics event
 	 */
 	public void handleBlockPhysics(BlockPhysicsEvent event) { }
+
+	/**
+	 * Called when an STB block is interacted with by a player
+	 *
+	 * @param event the interaction event
+	 */
+	public void handleBlockInteraction(PlayerInteractEvent event) {	}
 
 	/**
 	 * Called when a sign attached to an STB block is updated.  Override this in implementing
@@ -115,7 +128,20 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		SensibleToolboxPlugin.getInstance().getLocationManager().unregisterLocation(b.getLocation(), this);
 	}
 
-	protected void blockUpdated(Block b) {
-		SensibleToolboxPlugin.getInstance().getLocationManager().updateLocation(b.getLocation(), this);
+	public void updateBlock() {
+		if (getBaseLocation() != null) {
+			Block b = getBaseLocation().getBlock();
+			b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
+			SensibleToolboxPlugin.getInstance().getLocationManager().updateLocation(getBaseLocation(), this);
+		}
+	}
+
+	protected static Configuration getConfigFromMap(Map<String, Object> map) {
+		Configuration conf = new MemoryConfiguration();
+		for (Map.Entry e : map.entrySet()) {
+			System.out.println("GCFM: " + e.getKey() + " = " + e.getValue());
+			conf.set((String) e.getKey(), e.getValue());
+		}
+		return conf;
 	}
 }

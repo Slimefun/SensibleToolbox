@@ -1,17 +1,18 @@
 package me.desht.sensibletoolbox.items;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.Map;
 
 public class GoldCombineHoe extends CombineHoe {
-	public GoldCombineHoe() {
+	public GoldCombineHoe(Configuration conf) {
+		super(conf);
 	}
 
-	public GoldCombineHoe(Map<String, Object> map) {
-		super(map);
+	public GoldCombineHoe() {
 	}
 
 	@Override

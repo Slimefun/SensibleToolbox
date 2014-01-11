@@ -20,13 +20,16 @@ package me.desht.sensibletoolbox;
 import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
+import me.desht.sensibletoolbox.blocks.AngelicBlock;
+import me.desht.sensibletoolbox.blocks.BlockUpdateDetector;
+import me.desht.sensibletoolbox.blocks.RedstoneClock;
+import me.desht.sensibletoolbox.blocks.TrashCan;
 import me.desht.sensibletoolbox.commands.GiveCommand;
 import me.desht.sensibletoolbox.commands.RenameCommand;
 import me.desht.sensibletoolbox.commands.SaveCommand;
+import me.desht.sensibletoolbox.commands.ShowCommand;
 import me.desht.sensibletoolbox.items.*;
-import me.desht.sensibletoolbox.listeners.InventoryListener;
-import me.desht.sensibletoolbox.listeners.BlockListener;
-import me.desht.sensibletoolbox.listeners.PlayerListener;
+import me.desht.sensibletoolbox.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -69,10 +72,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 		LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 
+		BaseSTBItem.registerItems();
+
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new BlockListener(this), this);
-		pm.registerEvents(new InventoryListener(this), this);
+		pm.registerEvents(new BagOfHoldingListener(this), this);
+		pm.registerEvents(new CombineHoeListener(this), this);
+		pm.registerEvents(new TrashCanListener(this), this);
+		pm.registerEvents(new PaintCanListener(this), this);
 
 		setupProtocolLib();
 
@@ -120,6 +128,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		cmds.registerCommand(new SaveCommand());
 		cmds.registerCommand(new RenameCommand());
 		cmds.registerCommand(new GiveCommand());
+		cmds.registerCommand(new ShowCommand());
 	}
 
 	@Override

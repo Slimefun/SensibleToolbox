@@ -1,7 +1,8 @@
-package me.desht.sensibletoolbox.items;
+package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -15,27 +16,10 @@ import org.bukkit.util.Vector;
 import java.util.Map;
 
 public class TrashCan extends BaseSTBBlock {
+
 	public static TrashCan deserialize(Map<String, Object> map) {
 		// no specific config for this block
 		return new TrashCan();
-	}
-
-	private static BlockFace getRotation(Location loc) {
-		double rot = loc.getYaw() % 360;
-		if (rot < 0) {
-			rot += 360;
-		}
-		if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
-			return BlockFace.NORTH;
-		} else if (45 <= rot && rot < 135) {
-			return BlockFace.EAST;
-		} else if (135 <= rot && rot < 225) {
-			return BlockFace.SOUTH;
-		} else if (225 <= rot && rot < 315) {
-			return BlockFace.WEST;
-		} else {
-			throw new IllegalArgumentException("impossible rotation: " + rot);
-		}
 	}
 
 	public static TrashCan getTrashCan(Inventory inv) {
@@ -94,14 +78,7 @@ public class TrashCan extends BaseSTBBlock {
 
 		// put a skull on top of the main block
 		Block above = event.getBlock().getRelative(BlockFace.UP);
-		above.setType(Material.SKULL);
-		Skull skull = (Skull) above.getState();
-		skull.setSkullType(SkullType.PLAYER);
-		skull.setOwner("MHF_TNT2");
-		org.bukkit.material.Skull sk = (org.bukkit.material.Skull) skull.getData();
-		sk.setFacingDirection(BlockFace.SELF);
-		skull.setData(sk);
-		skull.setRotation(getRotation(event.getPlayer().getLocation()));
+		Skull skull = STBUtil.setSkullHead(above, "MHF_TNT2", event.getPlayer());
 		skull.update();
 	}
 

@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.listeners;
 
-import me.desht.sensibletoolbox.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.CombineHoe;

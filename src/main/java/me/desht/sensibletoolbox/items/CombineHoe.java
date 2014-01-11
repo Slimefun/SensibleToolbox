@@ -19,19 +19,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class CombineHoe extends BaseSTBItem {
-	private Material seedType = null;
-	private int amount = 0;
+	private Material seedType;
+	private int amount;
 
-	protected CombineHoe() {
+	public CombineHoe(Configuration conf) {
+		if (conf.contains("seeds") && conf.contains("amount")) {
+			setSeedBagContents(Material.getMaterial(conf.getString("seeds")), conf.getInt("amount"));
+		}
 	}
 
-	public CombineHoe(Map<String, Object> map) {
-		if (!map.isEmpty()) {
-			String seeds = (String) map.get("seeds");
-			if (seeds != null && !seeds.isEmpty()) {
-				setSeedBagContents(Material.getMaterial(seeds), (Integer) map.get("amount"));
-			}
-		}
+	protected CombineHoe() {
+		seedType = null;
+		amount = 0;
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleInteraction(PlayerInteractEvent event) {
+	public void handleItemInteraction(PlayerInteractEvent event) {
 		Block b = event.getClickedBlock();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (b.getType() == Material.SOIL) {

@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.items;
 import me.desht.dhutils.ItemGlow;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
+import me.desht.sensibletoolbox.blocks.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,7 +29,11 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	private static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	private static final Map<String, Class<? extends BaseSTBItem>> registry = new HashMap<String, Class<? extends BaseSTBItem>>();
 	private static final Map<String, String> ids = new HashMap<String, String>();
-	static {
+
+	protected BaseSTBItem() {
+	}
+
+	public static void registerItems() {
 		registerItem(new AngelicBlock());
 		registerItem(new EnderLeash());
 		registerItem(new RedstoneClock());
@@ -43,9 +48,9 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		registerItem(new DiamondCombineHoe());
 		registerItem(new TrashCan());
 		registerItem(new PaintBrush());
+		registerItem(new PaintRoller());
+		registerItem(new PaintCan());
 	}
-
-	// override some or all of these in subclasses
 
 	private static void registerItem(BaseSTBItem item) {
 		registry.put(item.getItemName(), item.getClass());
@@ -71,8 +76,8 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 			return null;
 		}
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
-		// TODO: get any itemstack attributes into the newly instantiated STB object
-		return getItemByName((disp.split(":"))[0]);
+		Configuration conf = BaseSTBItem.getItemAttributes(stack);
+		return getItemByName((disp.split(":"))[0], conf);
 	}
 
 	public static BaseSTBItem getItemById(String id) {
@@ -80,13 +85,22 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	}
 
 	public static BaseSTBItem getItemByName(String disp) {
+		return getItemByName(disp, null);
+	}
+
+	public static BaseSTBItem getItemByName(String disp, Configuration conf) {
 		Class<? extends BaseSTBItem> c = registry.get(disp);
 		if (c == null) {
 			return null;
 		}
 		try {
-			Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor();
-			return cons.newInstance();
+			if (conf == null) {
+				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor();
+				return cons.newInstance();
+			} else {
+				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor(Configuration.class);
+				return cons.newInstance(conf);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -107,10 +121,15 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
 		YamlConfiguration conf = new YamlConfiguration();
 		try {
-			conf.loadFromString(storage.getData(""));
-			System.out.println("get item attributes:");
-			for (String k : conf.getKeys(false)) { System.out.println(" " + k + " = " + conf.get(k)); }
-			return conf;
+			String s = storage.getData("");
+			if (s != null) {
+				conf.loadFromString(s);
+				System.out.println("get item attributes for " + stack + ":");
+				for (String k : conf.getKeys(false)) { System.out.println(" " + k + " = " + conf.get(k)); }
+				return conf;
+			} else {
+				return null;
+			}
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 			return new MemoryConfiguration();
@@ -178,11 +197,11 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	public boolean hasGlow() { return false; }
 
 	/**
-	 * Called when a player interacts with something while holding an STB item.
+	 * Called when a player interacts with a block or air while holding an STB item.
 	 *
 	 * @param event the interaction event.
 	 */
-	public void handleInteraction(PlayerInteractEvent event) { }
+	public void handleItemInteraction(PlayerInteractEvent event) { }
 
 	/**
 	 * Called when a player attempts to consume an STB item (which must be food or potion).
