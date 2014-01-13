@@ -123,11 +123,10 @@ public class PaintBrush extends BaseSTBItem {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
 			BaseSTBBlock stb = SensibleToolboxPlugin.getInstance().getLocationManager().get(b.getLocation());
-			if (stb != null) {
-				if (stb instanceof PaintCan) {
-					refillFromCan((PaintCan) stb);
-					player.setItemInHand(this.toItemStack(1));
-				}
+			PaintCan can = SensibleToolboxPlugin.getInstance().getLocationManager().get(b.getLocation(), PaintCan.class);
+			if (can != null) {
+				refillFromCan(can);
+				player.setItemInHand(this.toItemStack(1));
 				event.setCancelled(true);
 			} else if (STBUtil.isColorable(b.getType()) && getBlockColour(b) != getColour() && getPaintLevel() > 0) {
 				if (player.isSneaking()) {

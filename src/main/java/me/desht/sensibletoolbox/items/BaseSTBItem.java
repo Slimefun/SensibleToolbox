@@ -22,8 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public abstract class BaseSTBItem implements ConfigurationSerializable {
-	public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
+public abstract class BaseSTBItem implements ConfigurationSerializable, Comparable<BaseSTBItem> {
 	protected static final ChatColor LORE_COLOR = ChatColor.GRAY;
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	private static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
@@ -50,6 +49,9 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		registerItem(new PaintBrush());
 		registerItem(new PaintRoller());
 		registerItem(new PaintCan());
+		registerItem(new SoundMuffler());
+		registerItem(new Elevator());
+		registerItem(new TapeMeasure());
 	}
 
 	private static void registerItem(BaseSTBItem item) {
@@ -78,6 +80,15 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
 		Configuration conf = BaseSTBItem.getItemAttributes(stack);
 		return getItemByName((disp.split(":"))[0], conf);
+	}
+
+	public static <T extends BaseSTBItem> T getItemFromItemStack(ItemStack stack, Class<T> type) {
+		BaseSTBItem item = getItemFromItemStack(stack);
+		if (item != null && type.isAssignableFrom(item.getClass())) {
+			return type.cast(item);
+		} else {
+			return null;
+		}
 	}
 
 	public static BaseSTBItem getItemById(String id) {
@@ -238,7 +249,9 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 		im.setDisplayName(DISPLAY_COLOR + getItemName() + suffix);
 		im.setLore(buildLore());
 		res.setItemMeta(im);
-		ItemGlow.setGlowing(res, hasGlow());
+		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+			ItemGlow.setGlowing(res, hasGlow());
+		}
 
 		// any serialized data from the object goes in the ItemStack attributes
 		Map<String, Object> map = serialize();
@@ -272,5 +285,10 @@ public abstract class BaseSTBItem implements ConfigurationSerializable {
 	@Override
 	public String toString() {
 		return "STB item: " + getItemName() + " <" + getBaseMaterial() + ">";
+	}
+
+	@Override
+	public int compareTo(BaseSTBItem other) {
+		return getItemName().compareTo(other.getItemName());
 	}
 }

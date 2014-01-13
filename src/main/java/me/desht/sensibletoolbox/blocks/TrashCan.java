@@ -2,16 +2,21 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.util.BlockPosition;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Skull;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.Vector;
 
 import java.util.Map;
 
@@ -26,10 +31,7 @@ public class TrashCan extends BaseSTBBlock {
 		InventoryHolder h = inv.getHolder();
 		if (h instanceof Dropper) {
 			Dropper d = (Dropper) h;
-			BaseSTBBlock stb = SensibleToolboxPlugin.getInstance().getLocationManager().get(d.getLocation());
-			if (stb != null && stb instanceof TrashCan) {
-				return (TrashCan) stb;
-			}
+			return SensibleToolboxPlugin.getInstance().getLocationManager().get(d.getLocation(), TrashCan.class);
 		}
 		return null;
 	}
@@ -78,13 +80,21 @@ public class TrashCan extends BaseSTBBlock {
 
 		// put a skull on top of the main block
 		Block above = event.getBlock().getRelative(BlockFace.UP);
-		Skull skull = STBUtil.setSkullHead(above, "MHF_TNT2", event.getPlayer());
+		Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", event.getPlayer());
 		skull.update();
 	}
 
 	@Override
-	public Vector[] getBlockStructure() {
-		return new Vector[] { new Vector(0, 1, 0) };
+	public void handleBlockInteraction(PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
+			// attach a label sign
+			attachLabelSign(event);
+		}
+	}
+
+	@Override
+	public BlockPosition[] getBlockStructure() {
+		return new BlockPosition[] { new BlockPosition(0, 1, 0) };
 	}
 
 	/**
@@ -105,7 +115,6 @@ public class TrashCan extends BaseSTBBlock {
 					}
 				}
 			}
-			System.out.println("clear trashcan " + d);
 			d.getInventory().clear();
 		}
 	}

@@ -148,8 +148,8 @@ public class WateringCan extends BaseSTBItem {
 	@Override
 	public void handleConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
-		Configuration conf = BaseSTBItem.getItemAttributes(player.getItemInHand());
-		setWaterLevel(conf.getInt("level"));
+//		Configuration conf = BaseSTBItem.getItemAttributes(player.getItemInHand());
+//		setWaterLevel(conf.getInt("level"));
 		if (player.getFireTicks() > 0 && getWaterLevel() > FIRE_EXTINGUISH_AMOUNT) {
 			player.setFireTicks(0);
 			setWaterLevel(getWaterLevel() - FIRE_EXTINGUISH_AMOUNT);

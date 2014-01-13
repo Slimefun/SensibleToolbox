@@ -4,6 +4,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -71,7 +72,7 @@ public class AngelicBlock extends BaseSTBBlock {
 					p.setItemInHand(new ItemStack(Material.AIR));
 				}
 				b.setType(getBaseMaterial());
-				blockPlaced(b);
+				blockPlaced(loc);
 			}
 		}
 	}
@@ -91,14 +92,13 @@ public class AngelicBlock extends BaseSTBBlock {
 			b.setType(Material.AIR);
 			p.getInventory().addItem(this.toItemStack(1));
 			b.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-			blockRemoved(b);
+			blockRemoved(b.getLocation());
 			event.setCancelled(true);
 		}
 	}
 
 	@Override
-	public void onServerTick(PersistableLocation pLoc) {
-		Location loc = pLoc.getLocation();
+	public void onServerTick(Location loc) {
 		long time = loc.getWorld().getTime();
 		if (time % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {

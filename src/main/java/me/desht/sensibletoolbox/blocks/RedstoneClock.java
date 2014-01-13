@@ -8,9 +8,14 @@ import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
@@ -100,20 +105,12 @@ public class RedstoneClock extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
-		super.handleBlockPlace(event);
-		Configuration conf = getItemAttributes(event.getItemInHand());
-		setFrequency(conf.getInt("frequency"));
-		setOnDuration(conf.getInt("onDuration"));
-	}
-
-	@Override
-	public void onServerTick(PersistableLocation pLoc) {
-		Location loc = pLoc.getLocation();
+	public void onServerTick(Location loc) {
 		Block b = loc.getBlock();
 		long time = loc.getWorld().getTime();
 		if (time % getFrequency() == 0 && !b.isBlockIndirectlyPowered()) {
 			b.setType(Material.REDSTONE_BLOCK);
+//			System.out.println("tick! @ " + getBaseLocation());
 		} else if (time % getFrequency() == getOnDuration()) {
 			// power the neighbours down
 			b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
@@ -124,6 +121,24 @@ public class RedstoneClock extends BaseSTBBlock {
 				loc.getWorld().playEffect(loc.add(0, 0.5, 0), Effect.SMOKE, BlockFace.UP);
 			}
 		}
+	}
+
+	@Override
+	public void handleBlockInteraction(PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
+			// attach a label sign
+			attachLabelSign(event);
+		}
+	}
+
+	@Override
+	public String[] getSignLabel() {
+		return new String[] {
+				getItemName(),
+				ChatColor.DARK_RED + "Freq " + ChatColor.RESET + getFrequency(),
+				ChatColor.DARK_RED + "Duration " + ChatColor.RESET + getOnDuration(),
+				""
+		};
 	}
 
 	@Override
@@ -146,10 +161,10 @@ public class RedstoneClock extends BaseSTBBlock {
 			}
 		}
 		if (show) {
-			event.setLine(0, ChatColor.DARK_RED + "Freq " + ChatColor.RESET + getFrequency());
-			event.setLine(1, ChatColor.DARK_RED + "Duration " + ChatColor.RESET + getOnDuration());
-			event.setLine(2, "");
-			event.setLine(3, "");
+			String l[] = getSignLabel();
+			for (int i = 0; i < 4; i++) {
+				event.setLine(i, l[i]);
+			}
 		} else if (updated) {
 			MiscUtil.statusMessage(event.getPlayer(), String.format("%s updated: frequency=&6%d&-, duration=&6%d",
 					getItemName(), getFrequency(), getOnDuration()));

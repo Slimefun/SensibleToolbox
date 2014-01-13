@@ -8,9 +8,10 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
@@ -19,15 +20,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BlockUpdateDetector extends BaseSTBBlock {
-	private static final Pattern intPat = Pattern.compile("(^d)\\s*(\\d+)");
+	private static final Pattern intPat = Pattern.compile("(^[dq])\\s*(\\d+)");
 	private long lastPulse;
 	private int duration;
+
+	private int quiet;
 
 	public BlockUpdateDetector(Configuration conf) {
 		setDuration(conf.getInt("duration"));
 	}
 
 	public BlockUpdateDetector() {
+		quiet = 1;
 		duration = 2;
 	}
 
@@ -48,6 +52,14 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
+	}
+
+	public int getQuiet() {
+		return quiet;
+	}
+
+	public void setQuiet(int quiet) {
+		this.quiet = quiet;
 	}
 
 	@Override
@@ -87,18 +99,10 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
-		super.handleBlockPlace(event);
-		Configuration conf = getItemAttributes(event.getItemInHand());
-		lastPulse = event.getBlock().getWorld().getFullTime();
-		duration = conf.getInt("duration");
-	}
-
-	@Override
 	public void handleBlockPhysics(BlockPhysicsEvent event) {
 		final Block b = event.getBlock();
 		System.out.println("BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
-		if (b.getWorld().getFullTime() - lastPulse > getDuration() + 1) {
+		if (b.getWorld().getFullTime() - lastPulse > getDuration() + getQuiet()) {
 			// emit a signal for one tick
 			System.out.println(" -> pulse!");
 			lastPulse = b.getWorld().getFullTime();
@@ -124,16 +128,18 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 				if (m.find()) {
 					if (m.group(1).equals("d")) {
 						setDuration(Integer.parseInt(m.group(2)));
+					} else if (m.group(1).equals("q")) {
+						setQuiet(Integer.parseInt(m.group(2)));
 					}
 					updated = true;
 				}
 			}
 		}
 		if (show) {
-			event.setLine(0, ChatColor.DARK_RED + "D: " + ChatColor.RESET + getDuration());
-			event.setLine(1, "");
-			event.setLine(2, "");
-			event.setLine(3, "");
+			String l[] = getSignLabel();
+			for (int i = 0; i < 4; i++) {
+				event.setLine(i, l[i]);
+			}
 		} else if (updated) {
 			MiscUtil.statusMessage(event.getPlayer(), getItemName() + " updated: duration=&6" + getDuration());
 			updateBlock();
@@ -141,5 +147,23 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 			MiscUtil.errorMessage(event.getPlayer(), "No valid data found: clock not updated");
 		}
 		return !show && updated;
+	}
+
+	@Override
+	public void handleBlockInteraction(PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
+			// attach a label sign
+			attachLabelSign(event);
+		}
+	}
+
+	@Override
+	protected String[] getSignLabel() {
+		return new String[] {
+				getItemName(),
+				ChatColor.DARK_RED + "Duration " + ChatColor.RESET + getDuration(),
+				ChatColor.DARK_RED + "Quiet " + ChatColor.RESET + getQuiet(),
+				"",
+		};
 	}
 }

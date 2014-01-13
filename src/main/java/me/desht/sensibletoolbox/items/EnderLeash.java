@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -108,9 +109,7 @@ public class EnderLeash extends BaseSTBItem {
 
 	@Override
 	public void handleItemInteraction(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !isInteractive(event.getClickedBlock().getType())) {
-//			if (getCapturedFromItemMeta(event.getPlayer().getItemInHand()) != null) {
-//				Configuration conf = BaseSTBItem.getItemAttributes(event.getPlayer().getItemInHand());
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !STBUtil.isInteractive(event.getClickedBlock().getType())) {
 			if (capturedConf != null) {
 				Block where = event.getClickedBlock().getRelative(event.getBlockFace());
 				EntityType type = EntityType.valueOf(capturedConf.getString("type"));
@@ -241,48 +240,6 @@ public class EnderLeash extends BaseSTBItem {
 	public EntityType getCapturedEntityType() {
 		return capturedConf == null ? null : EntityType.valueOf(capturedConf.getString("type"));
 	}
-
-	public boolean isInteractive(Material mat) {
-		if (!mat.isBlock()) {
-			return false;
-		}
-		switch (mat) {
-			case DISPENSER:
-			case NOTE_BLOCK:
-			case BED_BLOCK:
-			case CHEST:
-			case WORKBENCH:
-			case FURNACE:
-			case BURNING_FURNACE:
-			case WOODEN_DOOR:
-			case LEVER:
-			case REDSTONE_ORE:
-			case STONE_BUTTON:
-			case JUKEBOX:
-			case CAKE_BLOCK:
-			case DIODE_BLOCK_ON:
-			case DIODE_BLOCK_OFF:
-			case TRAP_DOOR:
-			case FENCE_GATE:
-			case ENCHANTMENT_TABLE:
-			case BREWING_STAND:
-			case DRAGON_EGG:
-			case ENDER_CHEST:
-			case COMMAND:
-			case BEACON:
-			case WOOD_BUTTON:
-			case ANVIL:
-			case TRAPPED_CHEST:
-			case REDSTONE_COMPARATOR_ON:
-			case REDSTONE_COMPARATOR_OFF:
-			case HOPPER:
-			case DROPPER:
-				return true;
-			default:
-				return false;
-		}
-	}
-
 
 	public void setAnimalName(String newName) {
 		if (capturedConf != null) {

@@ -5,6 +5,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -54,6 +55,9 @@ public class BagOfHolding extends BaseSTBBlock {
 	@Override
 	public void handleItemInteraction(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (event.getClickedBlock() != null && STBUtil.isInteractive(event.getClickedBlock().getType())) {
+				return;
+			}
 			Player player = event.getPlayer();
 			try {
 				Inventory bagInv;
@@ -69,6 +73,7 @@ public class BagOfHolding extends BaseSTBBlock {
 					bagInv = Bukkit.createInventory(player, BAG_SIZE, getInventoryTitle());
 				}
 				player.openInventory(bagInv);
+				event.setCancelled(true);
 			} catch (IOException e) {
 				MiscUtil.errorMessage(player, "Can't load bag of holding inventory! " + e.getMessage());
 			}

@@ -20,17 +20,16 @@ import java.util.Map;
 
 public abstract class CombineHoe extends BaseSTBItem {
 	private Material seedType;
-	private int amount;
+	private int seedAmount;
 
 	public CombineHoe(Configuration conf) {
-		if (conf.contains("seeds") && conf.contains("amount")) {
-			setSeedBagContents(Material.getMaterial(conf.getString("seeds")), conf.getInt("amount"));
-		}
+		setSeedAmount(conf.getInt("amount"));
+		setSeedType(Material.getMaterial(conf.getString("seeds")));
 	}
 
 	protected CombineHoe() {
 		seedType = null;
-		amount = 0;
+		seedAmount = 0;
 	}
 
 	@Override
@@ -45,8 +44,16 @@ public abstract class CombineHoe extends BaseSTBItem {
 		return seedType;
 	}
 
+	public void setSeedType(Material seedType) {
+		this.seedType = seedType;
+	}
+
 	public int getSeedAmount() {
-		return amount;
+		return seedAmount;
+	}
+
+	public void setSeedAmount(int seedAmount) {
+		this.seedAmount = seedAmount;
 	}
 
 	@Override
@@ -91,8 +98,6 @@ public abstract class CombineHoe extends BaseSTBItem {
 				event.setCancelled(true);
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-			Configuration conf = BaseSTBItem.getItemAttributes(event.getPlayer().getItemInHand());
-			setSeedBagContents(Material.getMaterial(conf.getString("seeds")), conf.getInt("amount"));
 			Inventory inv = Bukkit.createInventory(event.getPlayer(), 9, getInventoryTitle());
 			populateSeedBag(inv);
 			event.getPlayer().openInventory(inv);
@@ -117,8 +122,6 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	private void plantSeeds(Player player, Block b) {
-		Configuration conf = BaseSTBItem.getItemAttributes(player.getItemInHand());
-		setSeedBagContents(Material.getMaterial(conf.getString("seeds")), conf.getInt("amount"));
 		if (getSeedType() == null || getSeedAmount() == 0) {
 			return;
 		}
@@ -136,7 +139,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 				}
 			}
 		}
-		setSeedBagContents(getSeedType(), amountLeft);
+		setSeedAmount(amountLeft);
 		player.setItemInHand(toItemStack(1));
 		player.updateInventory();
 	}
@@ -188,10 +191,5 @@ public abstract class CombineHoe extends BaseSTBItem {
 		} else {
 			player.setItemInHand(stack);
 		}
-	}
-
-	public void setSeedBagContents(Material seedType, int count) {
-		this.seedType = count > 0 ? seedType : null;
-		this.amount = count;
 	}
 }

@@ -27,17 +27,13 @@ public class CombineHoeListener extends STBBaseListener {
 			return;
 		}
 		Player player = (Player) event.getWhoClicked();
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
-		if (!(item instanceof CombineHoe)) {
-			return;
-		}
-		CombineHoe hoe = (CombineHoe) item;
-		System.out.println("inventory click event: " + event.getAction() + " " + event.getClick() + " " + event.getCursor() + " -> " + event.getCurrentItem() + event.getSlot());
-		if (event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
+		CombineHoe hoe = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), CombineHoe.class);
+		if (hoe != null && event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
+//			System.out.println("inventory click event: " + event.getAction() + " " + event.getClick() + " " + event.getCursor() + " -> " + event.getCurrentItem() + event.getSlot());
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
 			InventoryAction action = event.getAction();
-			System.out.println("click in " + event.getInventory().getTitle() + " slot = " + event.getSlot() + ", raw slot = " + event.getRawSlot() + " cursor = " + cursor.getType());
+//			System.out.println("click in " + event.getInventory().getTitle() + " slot = " + event.getSlot() + ", raw slot = " + event.getRawSlot() + " cursor = " + cursor.getType());
 			Inventory topInv = event.getView().getTopInventory();
 			if (event.getRawSlot() < 9) {
 				// in the hoe's 9-slot inventory
@@ -68,12 +64,8 @@ public class CombineHoeListener extends STBBaseListener {
 			return;
 		}
 		Player player = (Player) event.getWhoClicked();
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
-		if (!(item instanceof CombineHoe)) {
-			return;
-		}
-		CombineHoe hoe = (CombineHoe) item;
-		if (event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
+		CombineHoe hoe = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), CombineHoe.class);
+		if (hoe != null && event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
 			for (int slot : event.getRawSlots()) {
 				if (slot < 9 && STBUtil.getCropType(event.getOldCursor().getType()) == null) {
 					event.setCancelled(true);
@@ -88,12 +80,8 @@ public class CombineHoeListener extends STBBaseListener {
 			return;
 		}
 		Player player = (Player) event.getPlayer();
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
-		if (!(item instanceof CombineHoe)) {
-			return;
-		}
-		CombineHoe hoe = (CombineHoe) item;
-		if (event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
+		CombineHoe hoe = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), CombineHoe.class);
+		if (hoe != null && event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
 			Inventory topInv = event.getView().getTopInventory();
 			Material seedType = null;
 			int count = 0;
@@ -116,7 +104,8 @@ public class CombineHoeListener extends STBBaseListener {
 			if (err != null) {
 				MiscUtil.errorMessage(player, err);
 			}
-			hoe.setSeedBagContents(seedType, count);
+			hoe.setSeedAmount(count);
+			hoe.setSeedType(seedType);
 			player.setItemInHand(hoe.toItemStack(1));
 		}
 	}

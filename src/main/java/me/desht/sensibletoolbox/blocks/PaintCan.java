@@ -4,6 +4,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
+import me.desht.sensibletoolbox.util.BlockPosition;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -18,14 +19,12 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.util.Vector;
 
 import java.util.Map;
 
@@ -119,9 +118,10 @@ public class PaintCan extends BaseSTBBlock {
 	@Override
 	public void handleBlockInteraction(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		ItemStack stack = player.getItemInHand();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
-			if (!player.isSneaking() && (item == null || !(item instanceof PaintBrush))) {
+			PaintBrush brush = BaseSTBItem.getItemFromItemStack(stack, PaintBrush.class);
+			if (!player.isSneaking() && brush == null) {
 				// open inventory to mix more paint
 				Inventory inv = Bukkit.createInventory(player, 9, getMixerTitle());
 				player.openInventory(inv);
@@ -130,28 +130,8 @@ public class PaintCan extends BaseSTBBlock {
 						new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), getBaseLocation()));
 				event.setCancelled(true);
 			}
-		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			ItemStack stack = player.getItemInHand();
-			if (stack.getType() == Material.SIGN) {
-				// attach a label sign
-				Block signBlock = event.getClickedBlock().getRelative(event.getBlockFace());
-				signBlock.setType(Material.WALL_SIGN);
-				Sign sign = (Sign) signBlock.getState();
-				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
-				s.setFacingDirection(event.getBlockFace());
-				sign.setData(s);
-				String[] text = getSignText();
-				for (int i = 0; i < text.length; i++) {
-					sign.setLine(i, text[i]);
-				}
-				sign.update();
-				if (stack.getAmount() > 1) {
-					stack.setAmount(stack.getAmount() - 1);
-					player.setItemInHand(stack);
-				} else {
-					player.setItemInHand(null);
-				}
-			}
+		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && stack.getType() == Material.SIGN) {
+			attachLabelSign(event);
 		}
 	}
 
@@ -161,8 +141,8 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public Vector[] getBlockStructure() {
-		return new Vector[] { new Vector(0, 1, 0) };
+	public BlockPosition[] getBlockStructure() {
+		return new BlockPosition[] { new BlockPosition(0, 1, 0) };
 	}
 
 	@Override
@@ -181,7 +161,8 @@ public class PaintCan extends BaseSTBBlock {
 		skull.update();
 	}
 
-	private String[] getSignText() {
+	@Override
+	protected String[] getSignLabel() {
 		String res[] = new String[4];
 		ChatColor cc = STBUtil.toChatColor(getColour());
 		res[0] = getItemName();
@@ -203,6 +184,8 @@ public class PaintCan extends BaseSTBBlock {
 	public boolean tryMix(Inventory inventory) {
 		int bucketSlot = -1;
 		int dyeSlot = -1;
+		int woolSlot = -1;
+
 		// first try to find a milk bucket and a dye
 		for (int i = 0; i < inventory.getSize(); i++) {
 			if (inventory.getItem(i) != null) {
@@ -210,23 +193,40 @@ public class PaintCan extends BaseSTBBlock {
 					bucketSlot = i;
 				} else if (inventory.getItem(i).getType() == Material.INK_SACK && dyeSlot == -1) {
 					dyeSlot = i;
+				} else if (inventory.getItem(i).getType() == Material.WOOL && woolSlot == -1) {
+					woolSlot = i;
 				} else {
 					// eject the item
 					getBaseLocation().getWorld().dropItemNaturally(getBaseLocation(), inventory.getItem(i));
 				}
 			}
 		}
+		System.out.println("wool slot = " + woolSlot);
 
 		if (bucketSlot >= 0 && dyeSlot >= 0) {
 			// ok, we have the items - mix it up!
 			DyeColor newColour = DyeColor.getByDyeData((byte)inventory.getItem(dyeSlot).getDurability());
 			int amount = inventory.getItem(dyeSlot).getAmount();
 			int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / PAINT_PER_DYE, amount);
-			if (getColour() != newColour) {
-				// maybe one day we'll allow mixing colours but for now just replace it
-				setColour(newColour);
-				setPaintLevel(PAINT_PER_DYE * toUse);
+			if (toUse == 0) {
+				// not enough room for any mixing
+				return false;
+			}
+			if (getColour() != newColour && getPaintLevel() > 0) {
+				// two different colours - do they mix?
+				DyeColor mixedColour = mixDyes(getColour(), newColour);
+				if (mixedColour == null) {
+					// no - just replace the can with the new colour
+					toUse = Math.min(getMaxPaintLevel() / PAINT_PER_DYE, amount);
+					setColour(newColour);
+					setPaintLevel(PAINT_PER_DYE * toUse);
+				} else {
+					// yes, they mix
+					setColour(mixedColour);
+					setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
+				}
 			} else {
+				setColour(newColour);
 				setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
 			}
 			System.out.println("paint mixed! now " + getPaintLevel() + " " + getColour());
@@ -239,6 +239,14 @@ public class PaintCan extends BaseSTBBlock {
 			} else {
 				inventory.setItem(dyeSlot, null);
 			}
+			return true;
+		} else if (woolSlot >= 0 && getPaintLevel() > 0) {
+			// soak up any paint with the wool, dye it and return it
+			System.out.println("wool soak!");
+			setPaintLevel(0);
+			ItemStack stack = inventory.getItem(woolSlot);
+			stack.setDurability(getColour().getWoolData());
+			inventory.setItem(woolSlot, stack);
 			return true;
 		} else {
 			return false;
@@ -254,7 +262,7 @@ public class PaintCan extends BaseSTBBlock {
 				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
 				if (sign.getLine(0).equals(getItemName())) {
 					if (s.getAttachedFace() == face.getOppositeFace()) {
-						String[] text = getSignText();
+						String[] text = getSignLabel();
 						for (int i = 0; i < text.length; i++) {
 							sign.setLine(i, text[i]);
 						}
@@ -270,5 +278,38 @@ public class PaintCan extends BaseSTBBlock {
 	public void updateBlock() {
 		super.updateBlock();
 		maybeUpdateSign();
+	}
+
+	private DyeColor mixDyes(DyeColor dye1, DyeColor dye2) {
+		if (dye1.compareTo(dye2) > 0) {
+			DyeColor tmp = dye2;
+			dye2 = dye1;
+			dye1 = tmp;
+		} else if (dye1 == dye2) {
+			return dye1;
+		}
+		System.out.println("try mixing: " + dye1 + " " + dye2);
+		if (dye1 == DyeColor.YELLOW && dye2 == DyeColor.RED) {
+			return DyeColor.ORANGE;
+		} else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.RED) {
+			return DyeColor.PINK;
+		} else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.GREEN) {
+			return DyeColor.CYAN;
+		} else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.RED) {
+			return DyeColor.PURPLE;
+		}  else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLACK) {
+			return DyeColor.GRAY;
+		} else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLUE) {
+			return DyeColor.LIGHT_BLUE;
+		} else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GREEN) {
+			return DyeColor.LIME;
+		} else if (dye1 == DyeColor.PINK && dye2 == DyeColor.PURPLE) {
+			return DyeColor.MAGENTA;
+		} else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
+			return DyeColor.SILVER;
+		} else {
+			// colours don't mix
+			return null;
+		}
 	}
 }

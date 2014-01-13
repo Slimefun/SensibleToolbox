@@ -22,9 +22,8 @@ public class PaintCanListener extends STBBaseListener {
 			Player player = (Player) event.getPlayer();
 			Object o = STBUtil.getMetadataValue(player, PaintCan.STB_PAINT_CAN);
 			if (o != null && o instanceof Location) {
-				BaseSTBBlock stb = plugin.getLocationManager().get((Location) o);
-				if (stb != null && stb instanceof PaintCan) {
-					PaintCan can = (PaintCan) stb;
+				PaintCan can = plugin.getLocationManager().get((Location) o, PaintCan.class);
+				if (can != null) {
 					if (can.tryMix(event.getInventory())) {
 						player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 1.0f, 1.0f);
 						player.removeMetadata(PaintCan.STB_PAINT_CAN, plugin);

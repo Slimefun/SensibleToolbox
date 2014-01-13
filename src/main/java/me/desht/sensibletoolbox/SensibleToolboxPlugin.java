@@ -45,10 +45,19 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	public static final UUID UNIQUE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
 	private static SensibleToolboxPlugin instance = null;
+	private final CommandManager cmds = new CommandManager(this);
 	private LocationManager locationManager;
 	private ConfigurationManager configManager;
-	private final CommandManager cmds = new CommandManager(this);
 	private boolean protocolLibEnabled = false;
+	private SoundMufflerListener soundMufflerListener;
+
+	public static SensibleToolboxPlugin getInstance() {
+		return instance;
+	}
+
+	public SoundMufflerListener getSoundMufflerListener() {
+		return soundMufflerListener;
+	}
 
 	@Override
 	public void onLoad() {
@@ -72,18 +81,23 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 		LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 
+		setupProtocolLib();
 		BaseSTBItem.registerItems();
 
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new BlockListener(this), this);
+		pm.registerEvents(new WorldListener(this), this);
 		pm.registerEvents(new BagOfHoldingListener(this), this);
 		pm.registerEvents(new CombineHoeListener(this), this);
 		pm.registerEvents(new TrashCanListener(this), this);
 		pm.registerEvents(new PaintCanListener(this), this);
+		pm.registerEvents(new ElevatorListener(this), this);
 
-		setupProtocolLib();
-
+		if (isProtocolLibEnabled()) {
+			soundMufflerListener = new SoundMufflerListener(this);
+			soundMufflerListener.start();
+		}
 		registerCommands();
 
 		locationManager = new LocationManager(this);
@@ -107,6 +121,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	}
 
 	public void onDisable() {
+		if (soundMufflerListener != null) {
+			soundMufflerListener.clear();
+		}
 		locationManager.save();
 
 		instance = null;
@@ -144,10 +161,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		return cmds.onTabComplete(sender, command, label, args);
-	}
-
-	public static SensibleToolboxPlugin getInstance() {
-		return instance;
 	}
 
 	public LocationManager getLocationManager() {

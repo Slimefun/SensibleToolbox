@@ -39,9 +39,9 @@ public class BlockListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		BaseSTBItem item = plugin.getLocationManager().get(event.getBlock().getLocation());
-		if (item != null && item instanceof BaseSTBBlock) {
-			((BaseSTBBlock)item).handleBlockBreak(event);
+		BaseSTBBlock item = plugin.getLocationManager().get(event.getBlock().getLocation());
+		if (item != null) {
+			item.handleBlockBreak(event);
 		}
 	}
 
@@ -90,9 +90,8 @@ public class BlockListener extends STBBaseListener {
 		if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
 			Player player = event.getPlayer();
 			ItemStack stack = event.getPlayer().getItemInHand();
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
-			if (item instanceof CombineHoe) {
-				CombineHoe hoe = (CombineHoe) item;
+			CombineHoe hoe = BaseSTBItem.getItemFromItemStack(stack, CombineHoe.class);
+			if (hoe != null) {
 				hoe.harvestLayer(player, b);
 				if (!player.isSneaking()) {
 					hoe.harvestLayer(player, b.getRelative(BlockFace.UP));
