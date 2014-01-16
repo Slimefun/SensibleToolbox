@@ -7,6 +7,7 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
@@ -16,14 +17,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EnderLeash extends BaseSTBItem {
 	private YamlConfiguration capturedConf;
 
-	public EnderLeash(Configuration conf) {
+	public EnderLeash(ConfigurationSection conf) {
 		if (!conf.getKeys(false).isEmpty()) {
 			capturedConf = new YamlConfiguration();
 			for (String k : conf.getKeys(false)) {
@@ -37,11 +36,11 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = new HashMap<String, Object>();
+	public YamlConfiguration freeze() {
+		YamlConfiguration res = super.freeze();
 		if (capturedConf != null) {
 			for (String k : capturedConf.getKeys(false)) {
-				res.put(k, capturedConf.get(k));
+				res.set(k, capturedConf.get(k));
 			}
 		}
 		return res;

@@ -9,10 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,18 +23,18 @@ public class CombineHoeListener extends STBBaseListener {
 		if (!(event.getWhoClicked() instanceof Player)) {
 			return;
 		}
+		if (!(event.getInventory().getTitle().equals(CombineHoe.getInventoryTitle()))) {
+			return;
+		}
 		Player player = (Player) event.getWhoClicked();
 		CombineHoe hoe = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), CombineHoe.class);
-		if (hoe != null && event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
-//			System.out.println("inventory click event: " + event.getAction() + " " + event.getClick() + " " + event.getCursor() + " -> " + event.getCurrentItem() + event.getSlot());
+		if (hoe != null) {
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
 			InventoryAction action = event.getAction();
-//			System.out.println("click in " + event.getInventory().getTitle() + " slot = " + event.getSlot() + ", raw slot = " + event.getRawSlot() + " cursor = " + cursor.getType());
 			Inventory topInv = event.getView().getTopInventory();
 			if (event.getRawSlot() < 9) {
 				// in the hoe's 9-slot inventory
-				System.out.println("upper inv! size = " + topInv.getSize() + " type = " + topInv.getType());
 				if (action == InventoryAction.PLACE_ALL || action == InventoryAction.PLACE_ONE || action == InventoryAction.PLACE_SOME || action == InventoryAction.SWAP_WITH_CURSOR) {
 					if (STBUtil.getCropType(cursor.getType()) == null) {
 						event.setCancelled(true);
@@ -63,9 +60,12 @@ public class CombineHoeListener extends STBBaseListener {
 		if (!(event.getWhoClicked() instanceof Player)) {
 			return;
 		}
+		if (!(event.getInventory().getTitle().equals(CombineHoe.getInventoryTitle()))) {
+			return;
+		}
 		Player player = (Player) event.getWhoClicked();
 		CombineHoe hoe = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), CombineHoe.class);
-		if (hoe != null && event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
+		if (hoe != null) {
 			for (int slot : event.getRawSlots()) {
 				if (slot < 9 && STBUtil.getCropType(event.getOldCursor().getType()) == null) {
 					event.setCancelled(true);
@@ -79,9 +79,12 @@ public class CombineHoeListener extends STBBaseListener {
 		if (!(event.getPlayer() instanceof Player)) {
 			return;
 		}
+		if (!(event.getInventory().getTitle().equals(CombineHoe.getInventoryTitle()))) {
+			return;
+		}
 		Player player = (Player) event.getPlayer();
 		CombineHoe hoe = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), CombineHoe.class);
-		if (hoe != null && event.getInventory().getTitle().equals(hoe.getInventoryTitle())) {
+		if (hoe != null) {
 			Inventory topInv = event.getView().getTopInventory();
 			Material seedType = null;
 			int count = 0;

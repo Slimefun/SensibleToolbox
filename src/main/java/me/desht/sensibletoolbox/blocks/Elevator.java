@@ -1,20 +1,21 @@
 package me.desht.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.Dye;
 
 import java.util.Map;
 
@@ -25,18 +26,15 @@ public class Elevator extends BaseSTBBlock {
 		color = DyeColor.WHITE;
 	}
 
-	public Elevator(Configuration conf) {
+	public Elevator(ConfigurationSection conf) {
+		super(conf);
 		color = DyeColor.valueOf(conf.getString("color"));
 	}
 
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = super.serialize();
-		map.put("color", color.toString());
-		return map;
-	}
-
-	public static Elevator deserialize(Map<String, Object> map) {
-		return new Elevator(getConfigFromMap(map));
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("color", color.toString());
+		return conf;
 	}
 
 	public DyeColor getColor() {
@@ -82,12 +80,12 @@ public class Elevator extends BaseSTBBlock {
 	public Elevator findOtherElevator(BlockFace direction) {
 		Validate.isTrue(direction == BlockFace.UP || direction == BlockFace.DOWN, "direction must be UP or DOWN");
 
-		Block b = getBaseLocation().getBlock();
+		Block b = getLocation().getBlock();
 		Elevator res = null;
 		while (b.getY() > 0 && b.getY() < b.getWorld().getMaxHeight()) {
 			b = b.getRelative(direction);
 			if (b.getType().isSolid()) {
-				res = SensibleToolboxPlugin.getInstance().getLocationManager().get(b.getLocation(), Elevator.class);
+				res = LocationManager.getManager().get(b.getLocation(), Elevator.class);
 				break;
 			}
 		}

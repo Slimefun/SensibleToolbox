@@ -1,8 +1,9 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.util.BlockPosition;
+import me.desht.sensibletoolbox.storage.BlockPosition;
+import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,6 +13,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Skull;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -21,17 +24,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Map;
 
 public class TrashCan extends BaseSTBBlock {
+	public TrashCan() {
+	}
 
-	public static TrashCan deserialize(Map<String, Object> map) {
-		// no specific config for this block
-		return new TrashCan();
+	public TrashCan(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	public static TrashCan getTrashCan(Inventory inv) {
 		InventoryHolder h = inv.getHolder();
 		if (h instanceof Dropper) {
 			Dropper d = (Dropper) h;
-			return SensibleToolboxPlugin.getInstance().getLocationManager().get(d.getLocation(), TrashCan.class);
+			return LocationManager.getManager().get(d.getLocation(), TrashCan.class);
 		}
 		return null;
 	}
@@ -93,8 +97,8 @@ public class TrashCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public BlockPosition[] getBlockStructure() {
-		return new BlockPosition[] { new BlockPosition(0, 1, 0) };
+	public RelativePosition[] getBlockStructure() {
+		return new RelativePosition[] { new RelativePosition(0, 1, 0) };
 	}
 
 	/**
@@ -103,7 +107,7 @@ public class TrashCan extends BaseSTBBlock {
 	 * @param noisy if true, play a sound effect if any items were destroyed
 	 */
 	public void emptyTrash(boolean noisy) {
-		Location l = getBaseLocation();
+		Location l = getLocation();
 		if (l != null && l.getBlock().getType() == getBaseMaterial()) {
 			Dropper d = (Dropper) l.getBlock().getState();
 			// TODO: handle item filters

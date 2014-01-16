@@ -7,7 +7,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -15,7 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,24 +26,21 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	private int quiet;
 
-	public BlockUpdateDetector(Configuration conf) {
-		setDuration(conf.getInt("duration"));
-	}
-
 	public BlockUpdateDetector() {
 		quiet = 1;
 		duration = 2;
 	}
 
-	public static BlockUpdateDetector deserialize(Map<String, Object> map) {
-		return new BlockUpdateDetector(getConfigFromMap(map));
+	public BlockUpdateDetector(ConfigurationSection conf) {
+		super(conf);
+		setDuration(conf.getInt("duration"));
 	}
 
 	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = super.serialize();
-		res.put("duration", duration);
-		return res;
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("duration", duration);
+		return conf;
 	}
 
 	public int getDuration() {
@@ -84,7 +81,10 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	@Override
 	public String[] getExtraLore() {
-		return new String[] { "Pulse duration: " + ChatColor.GOLD + getDuration() + " ticks"};
+		return new String[] {
+				"Pulse duration: " + ChatColor.GOLD + getDuration() + " ticks",
+				"Sleep time after pulse: " + ChatColor.GOLD + getQuiet() + " ticks",
+		};
 	}
 
 	@Override
@@ -101,10 +101,10 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	@Override
 	public void handleBlockPhysics(BlockPhysicsEvent event) {
 		final Block b = event.getBlock();
-		System.out.println("BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
+//		System.out.println("BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
 		if (b.getWorld().getFullTime() - lastPulse > getDuration() + getQuiet()) {
-			// emit a signal for one tick
-			System.out.println(" -> pulse!");
+			// emit a signal for one or more ticks
+//			System.out.println(" -> pulse!");
 			lastPulse = b.getWorld().getFullTime();
 			b.setType(Material.REDSTONE_BLOCK);
 			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {

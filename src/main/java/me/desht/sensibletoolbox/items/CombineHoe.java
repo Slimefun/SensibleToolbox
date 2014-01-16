@@ -8,21 +8,19 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class CombineHoe extends BaseSTBItem {
 	private Material seedType;
 	private int seedAmount;
 
-	public CombineHoe(Configuration conf) {
+	public CombineHoe(ConfigurationSection conf) {
 		setSeedAmount(conf.getInt("amount"));
 		setSeedType(Material.getMaterial(conf.getString("seeds")));
 	}
@@ -33,11 +31,11 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = new HashMap<String, Object>();
-		res.put("seeds", getSeedType() == null ? "" : getSeedType().toString());
-		res.put("amount", getSeedAmount());
-		return res;
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("amount", getSeedAmount());
+		conf.set("seeds", getSeedType() == null ? "" : getSeedType().toString());
+		return conf;
 	}
 
 	public Material getSeedType() {
@@ -117,8 +115,8 @@ public abstract class CombineHoe extends BaseSTBItem {
 		}
 	}
 
-	public String getInventoryTitle() {
-		return ChatColor.DARK_GREEN + getItemName() + ": Seed Bag";
+	public static String getInventoryTitle() {
+		return ChatColor.DARK_GREEN + "Seed Bag";
 	}
 
 	private void plantSeeds(Player player, Block b) {

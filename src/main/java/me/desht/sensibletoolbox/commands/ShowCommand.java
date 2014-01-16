@@ -3,10 +3,8 @@ package me.desht.sensibletoolbox.commands;
 import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.LocationManager;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -21,18 +19,15 @@ public class ShowCommand extends AbstractCommand {
 
 	@Override
 	public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
-		LocationManager mgr = ((SensibleToolboxPlugin) plugin).getLocationManager();
+		LocationManager mgr = LocationManager.getManager();
 		MessagePager pager = MessagePager.getPager(sender).clear();
 		for (World w : Bukkit.getWorlds()) {
-			for (BaseSTBItem item : mgr.listItems(w, true)) {
-				if (item instanceof BaseSTBBlock) {
-					BaseSTBBlock stb = (BaseSTBBlock) item;
-					String name = item.getItemName();
-					if (item.getDisplaySuffix() != null) {
-						name = name + ": " + item.getDisplaySuffix();
-					}
-					pager.addListItem(MiscUtil.formatLocation(stb.getBaseLocation()) + " - " + name);
+			for (BaseSTBBlock stb : mgr.listBlocks(w, true)) {
+				String name = stb.getItemName();
+				if (stb.getDisplaySuffix() != null) {
+					name = name + ": " + stb.getDisplaySuffix();
 				}
+				pager.addListItem(MiscUtil.formatLocation(stb.getLocation()) + " - " + name);
 			}
 		}
 		pager.add(Bukkit.getWorlds().get(0).getLoadedChunks().length + " loaded chunks");

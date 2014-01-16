@@ -24,12 +24,12 @@ import me.desht.sensibletoolbox.blocks.AngelicBlock;
 import me.desht.sensibletoolbox.blocks.BlockUpdateDetector;
 import me.desht.sensibletoolbox.blocks.RedstoneClock;
 import me.desht.sensibletoolbox.blocks.TrashCan;
-import me.desht.sensibletoolbox.commands.GiveCommand;
-import me.desht.sensibletoolbox.commands.RenameCommand;
-import me.desht.sensibletoolbox.commands.SaveCommand;
-import me.desht.sensibletoolbox.commands.ShowCommand;
-import me.desht.sensibletoolbox.items.*;
+import me.desht.sensibletoolbox.commands.*;
+import me.desht.sensibletoolbox.items.BagOfHolding;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.items.EnderLeash;
 import me.desht.sensibletoolbox.listeners.*;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,7 +46,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	public static final UUID UNIQUE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
 	private static SensibleToolboxPlugin instance = null;
 	private final CommandManager cmds = new CommandManager(this);
-	private LocationManager locationManager;
 	private ConfigurationManager configManager;
 	private boolean protocolLibEnabled = false;
 	private SoundMufflerListener soundMufflerListener;
@@ -57,15 +56,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	public SoundMufflerListener getSoundMufflerListener() {
 		return soundMufflerListener;
-	}
-
-	@Override
-	public void onLoad() {
-		ConfigurationSerialization.registerClass(AngelicBlock.class);
-		ConfigurationSerialization.registerClass(RedstoneClock.class);
-		ConfigurationSerialization.registerClass(EnderLeash.class);
-		ConfigurationSerialization.registerClass(BlockUpdateDetector.class);
-		ConfigurationSerialization.registerClass(TrashCan.class);
 	}
 
 	@Override
@@ -93,15 +83,19 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new TrashCanListener(this), this);
 		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
+		pm.registerEvents(new AnvilListener(this), this);
 
 		if (isProtocolLibEnabled()) {
 			soundMufflerListener = new SoundMufflerListener(this);
 			soundMufflerListener.start();
 		}
+
 		registerCommands();
 
-		locationManager = new LocationManager(this);
-		locationManager.load();
+		MessagePager.setPageCmd("/stb page [#|n|p]");
+		MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
+
+		LocationManager.getManager().load();
 
 		saveDefaultConfig();
 
@@ -115,7 +109,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
 			@Override
 			public void run() {
-				locationManager.tick();
+				LocationManager.getManager().tick();
 			}
 		}, 1L, 1L);
 	}
@@ -124,7 +118,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		if (soundMufflerListener != null) {
 			soundMufflerListener.clear();
 		}
-		locationManager.save();
+		LocationManager.getManager().save();
 
 		instance = null;
 	}
@@ -146,6 +140,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		cmds.registerCommand(new RenameCommand());
 		cmds.registerCommand(new GiveCommand());
 		cmds.registerCommand(new ShowCommand());
+		cmds.registerCommand(new ChargeCommand());
 	}
 
 	@Override
@@ -161,10 +156,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		return cmds.onTabComplete(sender, command, label, args);
-	}
-
-	public LocationManager getLocationManager() {
-		return locationManager;
 	}
 
 	@Override

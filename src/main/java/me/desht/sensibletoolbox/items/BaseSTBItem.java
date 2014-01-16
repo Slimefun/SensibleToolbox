@@ -1,20 +1,24 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.ItemGlow;
+import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,15 +26,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public abstract class BaseSTBItem implements ConfigurationSerializable, Comparable<BaseSTBItem> {
+public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBItem> {
 	protected static final ChatColor LORE_COLOR = ChatColor.GRAY;
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	private static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	private static final Map<String, Class<? extends BaseSTBItem>> registry = new HashMap<String, Class<? extends BaseSTBItem>>();
 	private static final Map<String, String> ids = new HashMap<String, String>();
-
-	protected BaseSTBItem() {
-	}
+	private Map<Enchantment,Integer> enchants;
 
 	public static void registerItems() {
 		registerItem(new AngelicBlock());
@@ -52,12 +54,12 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 		registerItem(new SoundMuffler());
 		registerItem(new Elevator());
 		registerItem(new TapeMeasure());
+		registerItem(new BuildersMultiTool());
 	}
 
 	private static void registerItem(BaseSTBItem item) {
 		registry.put(item.getItemName(), item.getClass());
-		String id = item.getItemName().replace(" ", "").toLowerCase();
-		ids.put(id, item.getItemName());
+		ids.put(item.getItemID(), item.getItemName());
 	}
 
 	public static void setupRecipes() {
@@ -79,7 +81,11 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 		}
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
 		Configuration conf = BaseSTBItem.getItemAttributes(stack);
-		return getItemByName((disp.split(":"))[0], conf);
+		BaseSTBItem item = getItemByName((disp.split(":"))[0], conf);
+		if (item != null) {
+			item.storeEnchants(stack);
+		}
+		return item;
 	}
 
 	public static <T extends BaseSTBItem> T getItemFromItemStack(ItemStack stack, Class<T> type) {
@@ -109,7 +115,7 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor();
 				return cons.newInstance();
 			} else {
-				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor(Configuration.class);
+				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor(ConfigurationSection.class);
 				return cons.newInstance(conf);
 			}
 		} catch (Exception e) {
@@ -145,6 +151,23 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 			e.printStackTrace();
 			return new MemoryConfiguration();
 		}
+	}
+
+	protected static String getChargeString(Chargeable ch) {
+		double d = ch.getCharge() / ch.getMaxCharge();
+		ChatColor cc;
+		if (d < 0.333) {
+			cc = ChatColor.RED;
+		} else if (d < 0.666) {
+			cc = ChatColor.GOLD;
+		} else {
+			cc = ChatColor.GREEN;
+		}
+		return ChatColor.WHITE + "\u2301 " + cc + Math.round(ch.getCharge()) + "/" + ch.getMaxCharge();
+	}
+
+	private void storeEnchants(ItemStack stack) {
+		enchants = stack.getEnchantments();
 	}
 
 	/**
@@ -228,10 +251,17 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 	 */
 	public void handleEntityInteraction(PlayerInteractEntityEvent event) { }
 
-	@Override
-	public Map<String, Object> serialize() {
-		return new HashMap<String, Object>();
-	}
+//	@Override
+//	public Map<String, Object> serialize() {
+//		return new HashMap<String, Object>();
+//	}
+
+	/**
+	 * Called when a player rolls the mouse wheel while sneaking and holding an STB item.
+	 *
+	 * @param event the held item change event
+	 */
+	public void handleMouseWheel(PlayerItemHeldEvent event) { }
 
 	/**
 	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
@@ -249,17 +279,25 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 		im.setDisplayName(DISPLAY_COLOR + getItemName() + suffix);
 		im.setLore(buildLore());
 		res.setItemMeta(im);
+		if (enchants != null) {
+			res.addUnsafeEnchantments(enchants);
+		}
 		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
 			ItemGlow.setGlowing(res, hasGlow());
 		}
 
+		if (this instanceof Chargeable && res.getType().getMaxDurability() > 0) {
+			// encode the STB item's charge level into the itemstack's damage bar
+			Chargeable ch = (Chargeable) this;
+			short max = res.getType().getMaxDurability();
+			double d = ch.getCharge() / (double) ch.getMaxCharge();
+			short dur = (short)(max * d);
+			res.setDurability((short)(max - dur));
+		}
+
 		// any serialized data from the object goes in the ItemStack attributes
-		Map<String, Object> map = serialize();
-		if (!map.isEmpty()) {
-			YamlConfiguration conf = new YamlConfiguration();
-			for (Map.Entry e : map.entrySet()) {
-				conf.set((String) e.getKey(), e.getValue());
-			}
+		YamlConfiguration conf = freeze();
+		if (conf.getKeys(false).size() > 0) {
 			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
 			String data = conf.saveToString();
 			storage.setData(data);
@@ -268,6 +306,20 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 		} else {
 			return res;
 		}
+//		Map<String, Object> map = serialize();
+//		if (!map.isEmpty()) {
+//			YamlConfiguration conf = new YamlConfiguration();
+//			for (Map.Entry<String,Object> e : map.entrySet()) {
+//				conf.set(e.getKey(), e.getValue());
+//			}
+//			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
+//			String data = conf.saveToString();
+//			storage.setData(data);
+//			System.out.println("serialize to itemstack:\n" + data);
+//			return storage.getTarget();
+//		} else {
+//			return res;
+//		}
 	}
 
 	private List<String> buildLore() {
@@ -283,6 +335,11 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 	}
 
 	@Override
+	public YamlConfiguration freeze() {
+		return new YamlConfiguration();
+	}
+
+	@Override
 	public String toString() {
 		return "STB item: " + getItemName() + " <" + getBaseMaterial() + ">";
 	}
@@ -290,5 +347,9 @@ public abstract class BaseSTBItem implements ConfigurationSerializable, Comparab
 	@Override
 	public int compareTo(BaseSTBItem other) {
 		return getItemName().compareTo(other.getItemName());
+	}
+
+	public String getItemID() {
+		return getItemName().replace(" ", "").replace("'", "").toLowerCase();
 	}
 }

@@ -4,6 +4,7 @@ import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.CombineHoe;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,7 +24,7 @@ public class BlockListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockDamage(BlockDamageEvent event) {
-		BaseSTBBlock item = plugin.getLocationManager().get(event.getBlock().getLocation());
+		BaseSTBBlock item = LocationManager.getManager().get(event.getBlock().getLocation());
 		if (item != null) {
 			item.handleBlockDamage(event);
 		}
@@ -39,7 +40,7 @@ public class BlockListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		BaseSTBBlock item = plugin.getLocationManager().get(event.getBlock().getLocation());
+		BaseSTBBlock item = LocationManager.getManager().get(event.getBlock().getLocation());
 		if (item != null) {
 			item.handleBlockBreak(event);
 		}
@@ -50,7 +51,7 @@ public class BlockListener extends STBBaseListener {
 		final Block b = event.getBlock();
 		Sign sign = (Sign) b.getState().getData();
 		Block attachedTo = b.getRelative(sign.getAttachedFace());
-		BaseSTBBlock item = plugin.getLocationManager().get(attachedTo.getLocation());
+		BaseSTBBlock item = LocationManager.getManager().get(attachedTo.getLocation());
 		if (item != null) {
 			boolean ret = item.handleSignConfigure(event);
 			if (ret) {
@@ -68,15 +69,14 @@ public class BlockListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPhysics(BlockPhysicsEvent event) {
-
 		Block block = event.getBlock();
-		BaseSTBBlock item = plugin.getLocationManager().get(block.getLocation());
+		BaseSTBBlock item = LocationManager.getManager().get(block.getLocation());
 		if (item != null) {
 			item.handleBlockPhysics(event);
 		} else {
 			if (block.getType() == Material.LEVER) {
 				Lever l = (Lever) block.getState().getData();
-				item = plugin.getLocationManager().get(block.getRelative(l.getAttachedFace()).getLocation());
+				item = LocationManager.getManager().get(block.getRelative(l.getAttachedFace()).getLocation());
 				if (item != null) {
 					event.setCancelled(true);
 				}

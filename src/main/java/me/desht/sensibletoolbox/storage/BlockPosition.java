@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.util;
+package me.desht.sensibletoolbox.storage;
 
 import org.bukkit.Location;
 
@@ -28,7 +28,6 @@ public class BlockPosition {
 		BlockPosition that = (BlockPosition) o;
 
 		return x == that.x && y == that.y && z == that.z;
-
 	}
 
 	@Override
@@ -49,5 +48,15 @@ public class BlockPosition {
 
 	public int getZ() {
 		return z;
+	}
+
+	public static BlockPosition fromString(String s) {
+		String[] f = s.split(",");
+		return new BlockPosition(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2]));
+	}
+
+	@Override
+	public String toString() {
+		return getX() + "," + getY() + "," + getZ();
 	}
 }

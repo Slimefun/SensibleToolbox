@@ -24,7 +24,6 @@ public class TrashCanListener extends STBBaseListener {
 	public void onMoveItemToTrashCan(InventoryMoveItemEvent event) {
 		final TrashCan can = TrashCan.getTrashCan(event.getDestination());
 		if (can != null) {
-			System.out.println("move item " + event.getItem() + " to trash");
 			Bukkit.getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {

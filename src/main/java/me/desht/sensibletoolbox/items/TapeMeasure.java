@@ -5,14 +5,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-
-import java.util.Map;
 
 public class TapeMeasure extends BaseSTBItem {
 	private String world;
@@ -23,19 +22,19 @@ public class TapeMeasure extends BaseSTBItem {
 		x = y = z = 0;
 	}
 
-	public TapeMeasure(Configuration conf) {
+	public TapeMeasure(ConfigurationSection conf) {
 		world = conf.getString("world");
 		x = conf.getInt("x");
 		y = conf.getInt("y");
 		z = conf.getInt("z");
 	}
 
-	public Map<String,Object> serialize() {
-		Map<String, Object> res = super.serialize();
-		res.put("world", world);
-		res.put("x", x);
-		res.put("y", y);
-		res.put("z", z);
+	public YamlConfiguration freeze() {
+		YamlConfiguration res = super.freeze();
+		res.set("world", world);
+		res.set("x", x);
+		res.set("y", y);
+		res.set("z", z);
 		return res;
 	}
 
@@ -51,7 +50,7 @@ public class TapeMeasure extends BaseSTBItem {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Shift-right-click block: set anchor", "Right-click block: get measurement" };
+		return new String[] { "⇧ + R-click block: set anchor", "R-click block: get measurement" };
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public class TapeMeasure extends BaseSTBItem {
 			Location anchorLoc = new Location(b.getWorld(), x, y, z);
 			double dist = b.getLocation().distance(anchorLoc);
 			MiscUtil.statusMessage(p,
-					String.format("Measurement: " + ChatColor.WHITE + "X=%d Y=%d Z=%d total=%5.2f",
+					String.format("Measurement: " + ChatColor.WHITE + "X=%d Y=%d Z=%d total=%.2f",
 							xOff, yOff, zOff, dist));
 		}
 	}

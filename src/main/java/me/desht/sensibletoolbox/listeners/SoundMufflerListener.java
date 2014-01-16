@@ -31,7 +31,7 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
 				int z = event.getPacket().getIntegers().read(2) >> 3;
 				Location loc = new Location(event.getPlayer().getWorld(), x, y, z);
 				for (SoundMuffler sm : mufflers) {
-					if (loc.distanceSquared(sm.getBaseLocation()) < distance) {
+					if (loc.distanceSquared(sm.getLocation()) < distance) {
 //						String soundName = event.getPacket().getStrings().read(0);
 //						System.out.println("muffle sound " + soundName + " @ " + loc);
 						if (sm.getVolume() == 0) {
@@ -46,12 +46,12 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
 	}
 
 	public void registerMuffler(SoundMuffler m) {
-		System.out.println("register muffler @ " + m.getBaseLocation());
+		System.out.println("register muffler @ " + m.getLocation());
 		mufflers.add(m);
 	}
 
 	public void unregisterMuffler(SoundMuffler m) {
-		System.out.println("unregister muffler @ " + m.getBaseLocation());
+		System.out.println("unregister muffler @ " + m.getLocation());
 		mufflers.remove(m);
 	}
 

@@ -38,7 +38,7 @@ public class BagOfHolding extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Right-click to open "};
+		return new String[] { "R-click: open bag"};
 	}
 
 	@Override

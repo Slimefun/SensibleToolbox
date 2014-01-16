@@ -4,7 +4,8 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
-import me.desht.sensibletoolbox.util.BlockPosition;
+import me.desht.sensibletoolbox.storage.BlockPosition;
+import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -16,6 +17,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -35,7 +38,8 @@ public class PaintCan extends BaseSTBBlock {
 	private int paintLevel;
 	private DyeColor colour;
 
-	public PaintCan(Configuration conf) {
+	public PaintCan(ConfigurationSection conf) {
+		super(conf);
 		setPaintLevel(conf.getInt("paintLevel"));
 		setColour(DyeColor.valueOf(conf.getString("paintColour")));
 	}
@@ -43,10 +47,6 @@ public class PaintCan extends BaseSTBBlock {
 	public PaintCan() {
 		paintLevel = 0;
 		colour = DyeColor.WHITE;
-	}
-
-	public static PaintCan deserialize(Map<String,Object> map) {
-		return new PaintCan(getConfigFromMap(map));
 	}
 
 	public static String getMixerTitle() {
@@ -57,11 +57,11 @@ public class PaintCan extends BaseSTBBlock {
 		return MAX_PAINT_LEVEL;
 	}
 
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = super.serialize();
-		res.put("paintColour", getColour().toString());
-		res.put("paintLevel", getPaintLevel());
-		return res;
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("paintColour", getColour().toString());
+		conf.set("paintLevel", getPaintLevel());
+		return conf;
 	}
 
 	public int getPaintLevel() {
@@ -93,9 +93,9 @@ public class PaintCan extends BaseSTBBlock {
 	@Override
 	public String[] getLore() {
 		return new String[] {
-				"Right-click block with Paint Brush",
+				"R-click block with Paint Brush",
 				" to refill the brush",
-				"Right-click block with anything else",
+				"R-click block with anything else",
 				" to open mixer; place milk bucket and",
 				" a dye inside to mix some paint"
 		};
@@ -127,7 +127,7 @@ public class PaintCan extends BaseSTBBlock {
 				player.openInventory(inv);
 				// make a note of which block this inventory is connected to
 				player.setMetadata(STB_PAINT_CAN,
-						new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), getBaseLocation()));
+						new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), getLocation()));
 				event.setCancelled(true);
 			}
 		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && stack.getType() == Material.SIGN) {
@@ -141,8 +141,8 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public BlockPosition[] getBlockStructure() {
-		return new BlockPosition[] { new BlockPosition(0, 1, 0) };
+	public RelativePosition[] getBlockStructure() {
+		return new RelativePosition[] { new RelativePosition(0, 1, 0) };
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public class PaintCan extends BaseSTBBlock {
 					woolSlot = i;
 				} else {
 					// eject the item
-					getBaseLocation().getWorld().dropItemNaturally(getBaseLocation(), inventory.getItem(i));
+					getLocation().getWorld().dropItemNaturally(getLocation(), inventory.getItem(i));
 				}
 			}
 		}
@@ -254,7 +254,7 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	private void maybeUpdateSign() {
-		Block b = getBaseLocation().getBlock();
+		Block b = getLocation().getBlock();
 		for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH} ) {
 			if (b.getRelative(face).getType() == Material.WALL_SIGN) {
 				System.out.println(" update sign " + face);

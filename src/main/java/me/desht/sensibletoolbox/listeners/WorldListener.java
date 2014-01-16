@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -15,12 +16,12 @@ public class WorldListener extends STBBaseListener {
 
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
-		plugin.getLocationManager().worldLoaded(event.getWorld());
+		LocationManager.getManager().worldLoaded(event.getWorld());
 	}
 
 	@EventHandler
 	public void onWorldUnLoad(WorldUnloadEvent event) {
-		plugin.getLocationManager().worldUnloaded(event.getWorld());
+		LocationManager.getManager().worldUnloaded(event.getWorld());
 	}
 
 //	@EventHandler(priority = EventPriority.MONITOR)

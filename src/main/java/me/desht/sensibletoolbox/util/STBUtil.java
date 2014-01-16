@@ -5,16 +5,27 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 
-public class STBUtil {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-	private static BlockFace[] faces = new BlockFace[] {
+public class STBUtil {
+	public static final BlockFace[] directFaces = {
+			BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST
+	};
+	public static final BlockFace[] horizontalFaces = new BlockFace[] {
 			BlockFace.SELF,
 			BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,
 			BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH
+	};
+	private static final int gravelChance[] = new int[] {
+			0, 14, 25, 100
 	};
 
 	/**
@@ -59,13 +70,12 @@ public class STBUtil {
 	 * @return array of all blocks around the given block, including the given block as the first element
 	 */
 	public static Block[] getSurroundingBlocks(Block b) {
-		Block[] result = new Block[faces.length];
-		for (int i = 0; i < faces.length; i++) {
-			result[i] = b.getRelative(faces[i]);
+		Block[] result = new Block[horizontalFaces.length];
+		for (int i = 0; i < horizontalFaces.length; i++) {
+			result[i] = b.getRelative(horizontalFaces[i]);
 		}
 		return result;
 	}
-
 
 	public static Material getCropType(Material seedType) {
 		switch (seedType) {
@@ -160,6 +170,23 @@ public class STBUtil {
 	}
 
 	/**
+	 * Check if the given material is obtainable - if false, then even silk touch won't help.
+	 *
+	 * @param mat the material to check
+	 * @return true if the material can be obtained normally (including with silk touch)
+	 */
+	public static boolean isObtainable(Material mat) {
+		switch (mat) {
+			case CAKE_BLOCK: case CARROT: case COCOA: case DOUBLE_STEP: case WOOD_DOUBLE_STEP:
+				case FIRE: case SOIL: case MELON_STEM: case MOB_SPAWNER: case NETHER_WARTS:
+				case POTATO: case PUMPKIN_STEM: case SNOW: case SUGAR_CANE_BLOCK: case LONG_GRASS:
+				case DOUBLE_PLANT: case CROPS:
+				return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Create a skull with the given player skin
 	 *
 	 * @param b block in which to create the skull
@@ -171,7 +198,6 @@ public class STBUtil {
 		b.setType(Material.SKULL);
 		Skull skull = (Skull) b.getState();
 		skull.setSkullType(SkullType.PLAYER);
-		System.out.println("set skull name = " + name);
 		skull.setOwner(name);
 		org.bukkit.material.Skull sk = (org.bukkit.material.Skull) skull.getData();
 		sk.setFacingDirection(BlockFace.SELF);
@@ -195,6 +221,93 @@ public class STBUtil {
 			return BlockFace.SOUTH;
 		} else if (225 <= rot && rot < 315) {
 			return BlockFace.WEST;
+		} else {
+			throw new IllegalArgumentException("impossible rotation: " + rot);
+		}
+	}
+
+	/**
+	 * Get the drops which the given block would produce, given the tool used to break it,
+	 * taking into account any silk touch or looting enchantment on the tool (but not caring
+	 * about the type of tool).
+	 *
+	 * @param b the block
+	 * @param tool the tool
+	 * @return a list of items which would drop from the block, if broken
+	 */
+	public static List<ItemStack> calculateDrops(Block b, ItemStack tool) {
+		List<ItemStack> res = new ArrayList<ItemStack>();
+		if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1 && isObtainable(b.getType())) {
+			res.add(b.getState().getData().toItemStack(1));
+		} else if (tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) > 0) {
+			Random r = new Random();
+			res.addAll(b.getDrops());
+			int fortune = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+			switch (b.getType()) {
+				case DIAMOND_ORE: case COAL_ORE: case EMERALD_ORE: case QUARTZ_ORE: case LAPIS_ORE:
+					int n = r.nextInt(fortune + 2);
+					res.get(0).setAmount(Math.max(1, n));
+					break;
+				case REDSTONE_ORE: case NETHER_WARTS: case POTATO: case CARROT:
+					res.get(0).setAmount(res.get(0).getAmount() + fortune);
+					break;
+				case GLOWSTONE:
+					res.get(0).setAmount(Math.min(4, res.get(0).getAmount() + fortune));
+					break;
+				case MELON_BLOCK:
+					res.get(0).setAmount(Math.min(9, res.get(0).getAmount() + fortune));
+					break;
+				case CROPS:
+					for (ItemStack drop : res) {
+						if (drop.getType() == Material.SEEDS) {
+							drop.setAmount(drop.getAmount() + fortune);
+						}
+					}
+					break;
+				case GRAVEL:
+					if (res.get(0).getType() == Material.GRAVEL) {
+						if (r.nextInt(100) < gravelChance[Math.min(fortune, gravelChance.length)]) {
+							res.set(0, new ItemStack(Material.FLINT));
+						}
+					}
+					break;
+			}
+		} else {
+			res.addAll(b.getDrops());
+		}
+
+		System.out.println("Block " + b + " would drop:");
+		for (ItemStack stack : res) { System.out.println(" - " + stack); }
+
+		return res;
+	}
+
+	public static boolean isExposed(Block b, BlockFace face) {
+		return !b.getRelative(face).getType().isSolid();
+	}
+
+	public static boolean isExposed(Block b) {
+		for (BlockFace face : directFaces) {
+			if (isExposed(b, face)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static BlockFace getFaceFromYaw(float yaw) {
+		double rot = yaw % 360;
+		if (rot < 0) {
+			rot += 360;
+		}
+		if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
+			return BlockFace.SOUTH;
+		} else if (45 <= rot && rot < 135) {
+			return BlockFace.WEST;
+		} else if (135 <= rot && rot < 225) {
+			return BlockFace.NORTH;
+		} else if (225 <= rot && rot < 315) {
+			return BlockFace.EAST;
 		} else {
 			throw new IllegalArgumentException("impossible rotation: " + rot);
 		}

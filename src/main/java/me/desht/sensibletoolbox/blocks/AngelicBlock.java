@@ -2,14 +2,14 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
-import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import org.bukkit.Bukkit;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -23,10 +23,11 @@ import org.bukkit.util.Vector;
 import java.util.Map;
 
 public class AngelicBlock extends BaseSTBBlock {
+	public AngelicBlock() {
+	}
 
-	public static AngelicBlock deserialize(Map<String, Object> map) {
-		// no specific config for this block
-		return new AngelicBlock();
+	public AngelicBlock(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Right-click: place block in the air" };
+		return new String[] { "R-click: place block in the air", "L-click block: insta-break it" };
 	}
 
 	@Override
@@ -72,6 +73,7 @@ public class AngelicBlock extends BaseSTBBlock {
 					p.setItemInHand(new ItemStack(Material.AIR));
 				}
 				b.setType(getBaseMaterial());
+				setFacing(STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
 				blockPlaced(loc);
 			}
 		}
@@ -98,7 +100,8 @@ public class AngelicBlock extends BaseSTBBlock {
 	}
 
 	@Override
-	public void onServerTick(Location loc) {
+	public void onServerTick() {
+		Location loc = getLocation();
 		long time = loc.getWorld().getTime();
 		if (time % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {

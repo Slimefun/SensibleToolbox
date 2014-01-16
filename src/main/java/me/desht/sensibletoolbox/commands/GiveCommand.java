@@ -17,7 +17,7 @@ public class GiveCommand extends AbstractCommand {
 	public GiveCommand() {
 		super("stb give", 1);
 		setPermissionNode("stb.commands.give");
-		setUsage("/stb give <item-name> [<amount>] [<player-name>]");
+		setUsage("/<command> give <item-name> [<amount>] [<player-name>]");
 		setQuotedArgs(true);
 	}
 

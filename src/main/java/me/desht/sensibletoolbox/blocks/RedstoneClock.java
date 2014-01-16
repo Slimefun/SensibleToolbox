@@ -2,20 +2,17 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.ParticleEffect;
-import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
@@ -28,7 +25,8 @@ public class RedstoneClock extends BaseSTBBlock {
 	private int frequency;
 	private int onDuration;
 
-	public RedstoneClock(Configuration conf) {
+	public RedstoneClock(ConfigurationSection conf) {
+		super(conf);
 		setFrequency(conf.getInt("frequency"));
 		setOnDuration(conf.getInt("onDuration"));
 	}
@@ -36,10 +34,6 @@ public class RedstoneClock extends BaseSTBBlock {
 	public RedstoneClock() {
 		frequency = 20;
 		onDuration = 5;
-	}
-
-	public static RedstoneClock deserialize(Map<String, Object> map) {
-		return new RedstoneClock(getConfigFromMap(map));
 	}
 
 	public int getFrequency() {
@@ -59,11 +53,11 @@ public class RedstoneClock extends BaseSTBBlock {
 	}
 
 	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = super.serialize();
-		res.put("frequency", frequency);
-		res.put("onDuration", onDuration);
-		return res;
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("frequency", frequency);
+		conf.set("onDuration", onDuration);
+		return conf;
 	}
 
 	@Override
@@ -105,12 +99,12 @@ public class RedstoneClock extends BaseSTBBlock {
 	}
 
 	@Override
-	public void onServerTick(Location loc) {
+	public void onServerTick() {
+		Location loc = getLocation();
 		Block b = loc.getBlock();
 		long time = loc.getWorld().getTime();
 		if (time % getFrequency() == 0 && !b.isBlockIndirectlyPowered()) {
 			b.setType(Material.REDSTONE_BLOCK);
-//			System.out.println("tick! @ " + getBaseLocation());
 		} else if (time % getFrequency() == getOnDuration()) {
 			// power the neighbours down
 			b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);

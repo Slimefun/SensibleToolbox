@@ -5,10 +5,14 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.SoilSaturation;
-import org.bukkit.*;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -18,8 +22,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class WateringCan extends BaseSTBItem {
@@ -29,12 +31,12 @@ public class WateringCan extends BaseSTBItem {
 	private int waterLevel;
 	private boolean floodWarning;
 
-	public WateringCan(Configuration conf) {
-		setWaterLevel(conf.getInt("level"));
-	}
-
 	public WateringCan() {
 		waterLevel = 0;
+	}
+
+	public WateringCan(ConfigurationSection conf) {
+		setWaterLevel(conf.getInt("level"));
 	}
 
 	public int getWaterLevel() {
@@ -46,9 +48,9 @@ public class WateringCan extends BaseSTBItem {
 	}
 
 	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = new HashMap<String, Object>();
-		res.put("level", waterLevel);
+	public YamlConfiguration freeze() {
+		YamlConfiguration res = super.freeze();
+		res.set("level", waterLevel);
 		return res;
 	}
 
@@ -69,7 +71,7 @@ public class WateringCan extends BaseSTBItem {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Right-click to irrigate crops.", "Right-click in water to refill", "Don't over-use!" };
+		return new String[] { "R-click to irrigate crops.", "R-click in water to refill", "Don't over-use!" };
 	}
 
 	@Override
@@ -148,8 +150,6 @@ public class WateringCan extends BaseSTBItem {
 	@Override
 	public void handleConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
-//		Configuration conf = BaseSTBItem.getItemAttributes(player.getItemInHand());
-//		setWaterLevel(conf.getInt("level"));
 		if (player.getFireTicks() > 0 && getWaterLevel() > FIRE_EXTINGUISH_AMOUNT) {
 			player.setFireTicks(0);
 			setWaterLevel(getWaterLevel() - FIRE_EXTINGUISH_AMOUNT);

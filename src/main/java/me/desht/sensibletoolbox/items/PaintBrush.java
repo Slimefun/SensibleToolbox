@@ -1,15 +1,16 @@
 package me.desht.sensibletoolbox.items;
 
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.blocks.PaintCan;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -21,21 +22,20 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class PaintBrush extends BaseSTBItem {
-	private int paintLevel = 0;
+	private int paintLevel;
 	private DyeColor colour;
-
-	public PaintBrush(Configuration conf) {
-		setPaintLevel(conf.getInt("paintLevel"));
-		setColour(DyeColor.valueOf(conf.getString("colour")));
-	}
 
 	public PaintBrush() {
 		colour = DyeColor.WHITE;
+		paintLevel = 0;
+	}
+
+	public PaintBrush(ConfigurationSection conf) {
+		setPaintLevel(conf.getInt("paintLevel"));
+		setColour(DyeColor.valueOf(conf.getString("colour")));
 	}
 
 	public int getMaxPaintLevel() {
@@ -59,10 +59,10 @@ public class PaintBrush extends BaseSTBItem {
 	}
 
 	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> res = super.serialize();
-		res.put("paintLevel", paintLevel);
-		res.put("colour", colour == null ? "" : colour.toString());
+	public YamlConfiguration freeze() {
+		YamlConfiguration res = super.freeze();
+		res.set("paintLevel", paintLevel);
+		res.set("colour", colour == null ? "" : colour.toString());
 		return res;
 	}
 
@@ -81,9 +81,9 @@ public class PaintBrush extends BaseSTBItem {
 		return new String[] {
 				"Paints colourable blocks:",
 				" Wool, carpet, stained clay/glass",
-				"Right-click block: paint up to " + getMaxBlocksAffected() + " blocks",
-				"Shift-right-click block: paint block",
-				"Shift-right-click air: empty brush",
+				"R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
+				"⇧ + R-click block: paint block",
+				"⇧ + R-click air: empty brush",
 		};
 	}
 
@@ -122,8 +122,8 @@ public class PaintBrush extends BaseSTBItem {
 		Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
-			BaseSTBBlock stb = SensibleToolboxPlugin.getInstance().getLocationManager().get(b.getLocation());
-			PaintCan can = SensibleToolboxPlugin.getInstance().getLocationManager().get(b.getLocation(), PaintCan.class);
+			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+			PaintCan can = LocationManager.getManager().get(b.getLocation(), PaintCan.class);
 			if (can != null) {
 				refillFromCan(can);
 				player.setItemInHand(this.toItemStack(1));

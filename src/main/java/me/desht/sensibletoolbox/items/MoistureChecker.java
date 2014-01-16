@@ -32,7 +32,7 @@ public class MoistureChecker extends BaseSTBItem {
 	@Override
 	public String[] getLore() {
 		int r = getRadius() * 2 + 1;
-		return new String[] { "Tests the saturation level", "of a " + r + "x" + r + " area of farmland.", "Right-click to use." };
+		return new String[] { "Tests the saturation level", " of a " + r + "x" + r + " area of farmland.", "R-click to use." };
 	}
 
 	@Override

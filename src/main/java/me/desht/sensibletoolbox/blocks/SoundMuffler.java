@@ -1,13 +1,13 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.ParticleEffect;
-import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -25,29 +25,29 @@ public class SoundMuffler extends BaseSTBBlock {
 		volume = 10;
 	}
 
-	public SoundMuffler(Configuration conf) {
+	public SoundMuffler(ConfigurationSection conf) {
+		super(conf);
 		volume = conf.getInt("volume");
 	}
 
-	public Map<String,Object> serialize() {
-		Map<String,Object> res = super.serialize();
-		res.put("volume", volume);
-		return res;
-	}
-
-	public static SoundMuffler deserialize(Map<String, Object> map) {
-		SoundMuffler sm = new SoundMuffler(getConfigFromMap(map));
-		return sm;
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("volume", volume);
+		return conf;
 	}
 
 	@Override
-	public void setBaseLocation(Location loc) {
-		if (loc == null && getBaseLocation() != null && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-			SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
-		}
-		super.setBaseLocation(loc);
-		if (loc != null && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-			SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+	public void setLocation(Location loc) {
+		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+			if (loc == null && getLocation() != null) {
+				SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
+			}
+			super.setLocation(loc);
+			if (loc != null) {
+				SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+			}
+		} else {
+			super.setLocation(loc);
 		}
 	}
 
@@ -96,7 +96,8 @@ public class SoundMuffler extends BaseSTBBlock {
 	}
 
 	@Override
-	public void onServerTick(Location loc) {
+	public void onServerTick() {
+		Location loc = getLocation();
 		long time = loc.getWorld().getTime();
 		if (time % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {

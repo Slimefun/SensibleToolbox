@@ -1,0 +1,263 @@
+package me.desht.sensibletoolbox.storage;
+
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.metadata.MetadataValue;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.*;
+
+public class LocationManager {
+	private static final long MIN_SAVE_INTERVAL = 10000;  // 10 sec
+	private static LocationManager instance;
+	private final STBWorldMap worldMap;
+	private final Map<String, Set<ChunkCoords>> dirtyChunks;
+	private boolean saveNeeded = false;
+	private final File saveDir;
+	private final Set<String> unloadedWorlds = new HashSet<String>();
+	private long lastSave;
+
+	private static final FilenameFilter ymlFilter = new FilenameFilter() {
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.endsWith(".yml");
+		}
+	};
+
+	private LocationManager() {
+		lastSave = System.currentTimeMillis();
+		worldMap = new STBWorldMap();
+		dirtyChunks = new HashMap<String, Set<ChunkCoords>>();
+		saveDir = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), "blocks");
+		if (!saveDir.exists()) {
+			if (!saveDir.mkdir()) {
+				LogUtils.severe("can't create directory" + saveDir);
+			}
+		}
+	}
+
+	public static synchronized LocationManager getManager() {
+		if (instance == null) {
+			instance = new LocationManager();
+		}
+		return instance;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+
+	public void registerLocation(Location loc, BaseSTBBlock stbBlock) {
+		String worldName = loc.getWorld().getName();
+		Chunk chunk = loc.getChunk();
+		BlockPosition pos = new BlockPosition(loc);
+		stbBlock.setLocation(loc);
+		worldMap.get(worldName).get(chunk).put(pos, stbBlock);
+		markChunkDirty(worldName, pos);
+	}
+
+	public void unregisterLocation(Location loc) {
+		BaseSTBBlock stb = get(loc);
+		if (stb != null) {
+			String worldName = loc.getWorld().getName();
+			Chunk chunk = loc.getChunk();
+			BlockPosition pos = new BlockPosition(loc);
+			stb.setLocation(null);
+			worldMap.get(worldName).get(chunk).remove(pos);
+			markChunkDirty(worldName, pos);
+		}
+
+	}
+
+	/**
+	 * Get the STB block at the given location.
+	 *
+	 * @param loc the location to check at
+	 * @return the STB block item at the given location, or null if no matching item
+	 */
+	public BaseSTBBlock get(Location loc) {
+		String worldName = loc.getWorld().getName();
+		Chunk chunk = loc.getChunk();
+		BlockPosition pos = new BlockPosition(loc);
+
+		BaseSTBBlock stb = worldMap.get(worldName).get(chunk).get(pos);
+		if (stb == null) {
+			List<MetadataValue> l = loc.getBlock().getMetadata(BaseSTBBlock.STB_MULTI_BLOCK);
+			for (MetadataValue mv : l) {
+				if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
+					BlockPosition pos2 = (BlockPosition) mv.value();
+					return worldMap.get(worldName).get(chunk).get(pos2);
+				}
+			}
+			return null;
+		} else {
+			return stb;
+		}
+	}
+
+	public void tick() {
+		worldMap.tick();
+		if (System.currentTimeMillis() - lastSave > MIN_SAVE_INTERVAL) {
+			save();
+		}
+	}
+
+	/**
+	 * Get the STB block of the given type at the given location.
+	 *
+	 * @param loc the location to check at
+	 * @param type the type of STB block required
+	 * @param <T> a subclass of BaseSTBBlock
+	 * @return the STB block item at the given location, or null if no matching item
+	 */
+	public <T extends BaseSTBBlock> T get(Location loc, Class<T> type) {
+		BaseSTBBlock stbBlock = get(loc);
+		if (stbBlock != null && type.isAssignableFrom(stbBlock.getClass())) {
+			return type.cast(stbBlock);
+		} else {
+			return null;
+		}
+	}
+
+	public void save() {
+		if (!saveNeeded) {
+			return;
+		}
+
+		for (Map.Entry<String, Set<ChunkCoords>> entry : dirtyChunks.entrySet()) {
+			for (ChunkCoords cc : entry.getValue()) {
+				YamlConfiguration conf = worldMap.get(entry.getKey()).get(cc).freeze();
+				File dir = getWorldFolder(entry.getKey());
+				File f = new File(dir, "C_" + cc.getX() + "_" + cc.getZ() + ".yml");
+				try {
+					System.out.println("saving " + conf.getKeys(false).size() + " objects to " + f);
+					conf.save(f);
+				} catch (IOException e) {
+					LogUtils.severe("can't save data to " + f);
+				}
+			}
+			entry.getValue().clear();
+		}
+
+		saveNeeded = false;
+	}
+
+	public void load() {
+		for (File worldDir : saveDir.listFiles()) {
+			String worldName = worldDir.getName();
+			World world = Bukkit.getWorld(worldName);
+			if (world != null) {
+				load(world);
+			} else {
+				// defer loading
+				unloadedWorlds.add(worldName);
+			}
+		}
+	}
+
+	public void load(World world) {
+		String worldName = world.getName();
+		File worldDir = new File(saveDir, worldName);
+		if (worldDir.exists()) {
+			for (File saveFile : worldDir.listFiles(ymlFilter)) {
+				try {
+					YamlConfiguration conf = new YamlConfiguration();
+					conf.load(saveFile);
+					for (String k : conf.getKeys(false)) {
+						ConfigurationSection cs = conf.getConfigurationSection(k);
+						BlockPosition pos = BlockPosition.fromString(k);
+						Location loc = new Location(world, pos.getX(), pos.getY(), pos.getZ());
+						String type = cs.getString("TYPE");
+						BaseSTBItem tmpl = BaseSTBItem.getItemById(type);
+						if (tmpl != null) {
+							if (tmpl instanceof BaseSTBBlock) {
+								BaseSTBBlock tmplB = (BaseSTBBlock) tmpl;
+								Constructor<? extends BaseSTBBlock> ctor = tmplB.getClass().getDeclaredConstructor(ConfigurationSection.class);
+								BaseSTBBlock stb = ctor.newInstance(cs);
+								registerLocation(loc, stb);
+							} else {
+								LogUtils.severe("STB item " + type + " @ " + loc + " is not a block!");
+							}
+						} else {
+							// defer it - could be registered by another plugin later
+						}
+					}
+					System.out.println("loaded " + conf.getKeys(false).size() + " objects from " + saveFile);
+				} catch (Exception e) {
+					LogUtils.severe("can't load " + saveFile + ": " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}
+		dirtyChunks.get(worldName).clear();
+		saveNeeded = false;
+	}
+
+//	private void loadCommonData(BaseSTBBlock stb, ConfigurationSection cs) {
+//		if (cs != null) {
+//			stb.setFacing(BlockFace.valueOf(cs.getString("facing", "SELF")));
+//		}
+//	}
+
+	/**
+	 * The given world has just become unloaded..
+	 *
+	 * @param world the world that has been unloaded
+	 */
+	public void worldUnloaded(World world) {
+		String worldName = world.getName();
+		worldMap.remove(worldName);
+		unloadedWorlds.add(worldName);
+	}
+
+	/**
+	 * The given world has just become loaded.
+	 *
+	 * @param world the world that has been loaded
+	 */
+	public void worldLoaded(World world) {
+		load(world);
+		unloadedWorlds.remove(world.getName());
+	}
+
+	private void markChunkDirty(String worldName, BlockPosition pos) {
+		if (!dirtyChunks.containsKey(worldName)) {
+			dirtyChunks.put(worldName, new HashSet<ChunkCoords>());
+		}
+		dirtyChunks.get(worldName).add(new ChunkCoords(pos));
+		saveNeeded = true;
+	}
+
+	private File getWorldFolder(String worldName) {
+		File f = new File(saveDir, worldName);
+		if (!f.exists()) {
+			if (!f.mkdir()) {
+				LogUtils.severe("can't create directory " + f);
+			}
+ 		}
+		return f;
+	}
+
+	public BaseSTBBlock[] listBlocks(World world, boolean sorted) {
+		STBChunkMap stcm = worldMap.get(world.getName());
+		List<? extends BaseSTBBlock> stb = stcm.list();
+		return sorted ?
+				MiscUtil.asSortedList(stb).toArray(new BaseSTBBlock[stb.size()]) :
+				stb.toArray(new BaseSTBBlock[stb.size()]);
+	}
+}

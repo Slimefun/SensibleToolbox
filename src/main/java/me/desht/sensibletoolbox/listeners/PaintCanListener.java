@@ -1,8 +1,8 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.blocks.PaintCan;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -22,13 +22,13 @@ public class PaintCanListener extends STBBaseListener {
 			Player player = (Player) event.getPlayer();
 			Object o = STBUtil.getMetadataValue(player, PaintCan.STB_PAINT_CAN);
 			if (o != null && o instanceof Location) {
-				PaintCan can = plugin.getLocationManager().get((Location) o, PaintCan.class);
+				PaintCan can = LocationManager.getManager().get((Location) o, PaintCan.class);
 				if (can != null) {
 					if (can.tryMix(event.getInventory())) {
 						player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 1.0f, 1.0f);
 						player.removeMetadata(PaintCan.STB_PAINT_CAN, plugin);
-						can.getBaseLocation().getBlock().setType(can.getBaseMaterial());
-						can.getBaseLocation().getBlock().setData(can.getBaseBlockData());
+						can.getLocation().getBlock().setType(can.getBaseMaterial());
+						can.getLocation().getBlock().setData(can.getBaseBlockData());
 					}
 					// return any items left in the inventory to the player
 					for (ItemStack item : event.getInventory()) {
