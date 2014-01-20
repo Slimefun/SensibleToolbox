@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Lever;
 import org.bukkit.material.Sign;
@@ -26,7 +27,7 @@ public class BlockListener extends STBBaseListener {
 	public void onBlockDamage(BlockDamageEvent event) {
 		BaseSTBBlock item = LocationManager.getManager().get(event.getBlock().getLocation());
 		if (item != null) {
-			item.handleBlockDamage(event);
+			item.onBlockDamage(event);
 		}
 	}
 
@@ -34,7 +35,7 @@ public class BlockListener extends STBBaseListener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItemInHand());
 		if (item != null && item instanceof BaseSTBBlock) {
-			((BaseSTBBlock)item).handleBlockPlace(event);
+			((BaseSTBBlock)item).onBlockPlace(event);
 		}
 	}
 
@@ -42,7 +43,7 @@ public class BlockListener extends STBBaseListener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		BaseSTBBlock item = LocationManager.getManager().get(event.getBlock().getLocation());
 		if (item != null) {
-			item.handleBlockBreak(event);
+			item.onBlockBreak(event);
 		}
 	}
 
@@ -53,7 +54,7 @@ public class BlockListener extends STBBaseListener {
 		Block attachedTo = b.getRelative(sign.getAttachedFace());
 		BaseSTBBlock item = LocationManager.getManager().get(attachedTo.getLocation());
 		if (item != null) {
-			boolean ret = item.handleSignConfigure(event);
+			boolean ret = item.onSignChange(event);
 			if (ret) {
 				// pop the sign off next tick; it's done its job
 				Bukkit.getScheduler().runTask(plugin, new Runnable() {
@@ -72,7 +73,7 @@ public class BlockListener extends STBBaseListener {
 		Block block = event.getBlock();
 		BaseSTBBlock item = LocationManager.getManager().get(block.getLocation());
 		if (item != null) {
-			item.handleBlockPhysics(event);
+			item.onBlockPhysics(event);
 		} else {
 			if (block.getType() == Material.LEVER) {
 				Lever l = (Lever) block.getState().getData();
@@ -98,6 +99,16 @@ public class BlockListener extends STBBaseListener {
 					hoe.harvestLayer(player, b.getRelative(BlockFace.DOWN));
 				}
 				hoe.damageHeldItem(player, (short) 1);
+			}
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onEntityExplode(EntityExplodeEvent event) {
+		for (Block b : event.blockList()) {
+			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+			if (stb != null) {
+				stb.onEntityExplode(event);
 			}
 		}
 	}

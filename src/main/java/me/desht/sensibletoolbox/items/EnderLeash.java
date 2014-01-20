@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -126,6 +127,7 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	private YamlConfiguration freezeEntity(Animals target) {
+		Debugger.getInstance().debug(this + ": freeze entity " + target);
 		YamlConfiguration conf = new YamlConfiguration();
 
 		conf.set("type", target.getType().toString());
@@ -177,7 +179,7 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	private void thawEntity(Animals entity, Configuration conf) {
-		System.out.println("thaw entity: " + entity + ", data:" + conf.getString("type"));
+		Debugger.getInstance().debug("thaw entity: " + entity + ", data:" + conf.getString("type"));
 
 		entity.setAge(conf.getInt("age"));
 		entity.setAgeLock(conf.getBoolean("ageLock"));

@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.util;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -276,8 +277,10 @@ public class STBUtil {
 			res.addAll(b.getDrops());
 		}
 
-		System.out.println("Block " + b + " would drop:");
-		for (ItemStack stack : res) { System.out.println(" - " + stack); }
+		if (Debugger.getInstance().getLevel() >= 2) {
+			Debugger.getInstance().debug(2, "Block " + b + " would drop:");
+			for (ItemStack stack : res) { Debugger.getInstance().debug(2, " - " + stack); }
+		}
 
 		return res;
 	}

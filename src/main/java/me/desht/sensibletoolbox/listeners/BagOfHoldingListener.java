@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
 import com.google.common.io.Files;
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BagOfHolding;
@@ -24,11 +25,10 @@ public class BagOfHoldingListener extends STBBaseListener {
 		if (event.getPlayer() instanceof Player && event.getInventory().getTitle().equals(new BagOfHolding().getInventoryTitle())) {
 			Player player = (Player) event.getPlayer();
 			String encoded = BukkitSerialization.toBase64(event.getInventory());
-//			System.out.println("save: encoded = " + encoded);
 			File file = BagOfHolding.getSaveFile(player);
 			try {
 				Files.write(encoded, file, Charset.forName("UTF-8"));
-				System.out.println("saved bag of holding to " + file);
+				Debugger.getInstance().debug("saved bag of holding to " + file);
 			} catch (IOException e) {
 				MiscUtil.errorMessage(player, "Can't save bag contents! " + e.getMessage());
 			}

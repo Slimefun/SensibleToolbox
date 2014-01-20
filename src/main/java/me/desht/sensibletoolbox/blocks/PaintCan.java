@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.blocks;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
-import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.StringUtils;
@@ -16,7 +16,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -28,8 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Map;
 
 public class PaintCan extends BaseSTBBlock {
 	public static final String STB_PAINT_CAN = "STB_Paint_Can";
@@ -116,7 +113,7 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockInteraction(PlayerInteractEvent event) {
+	public void onInteractBlock(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack stack = player.getItemInHand();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -146,7 +143,7 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {
 		// ensure there's enough room
 		if (!event.getBlockPlaced().getRelative(BlockFace.UP).isEmpty()) {
 			MiscUtil.errorMessage(event.getPlayer(), "Not enough room here (need one empty block above).");
@@ -154,7 +151,7 @@ public class PaintCan extends BaseSTBBlock {
 			return;
 		}
 
-		super.handleBlockPlace(event);
+		super.onBlockPlace(event);
 
 		Block above = event.getBlock().getRelative(BlockFace.UP);
 		Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", event.getPlayer());
@@ -201,7 +198,7 @@ public class PaintCan extends BaseSTBBlock {
 				}
 			}
 		}
-		System.out.println("wool slot = " + woolSlot);
+		Debugger.getInstance().debug(this + ": wool=" + woolSlot + " dye=" + dyeSlot + " milk=" + bucketSlot);
 
 		if (bucketSlot >= 0 && dyeSlot >= 0) {
 			// ok, we have the items - mix it up!
@@ -229,7 +226,7 @@ public class PaintCan extends BaseSTBBlock {
 				setColour(newColour);
 				setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
 			}
-			System.out.println("paint mixed! now " + getPaintLevel() + " " + getColour());
+			Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColour());
 			updateBlock();
 			inventory.setItem(bucketSlot, new ItemStack(Material.BUCKET));
 			ItemStack dyeStack = inventory.getItem(dyeSlot);
@@ -242,7 +239,7 @@ public class PaintCan extends BaseSTBBlock {
 			return true;
 		} else if (woolSlot >= 0 && getPaintLevel() > 0) {
 			// soak up any paint with the wool, dye it and return it
-			System.out.println("wool soak!");
+			Debugger.getInstance().debug(this + ": wool soak!");
 			setPaintLevel(0);
 			ItemStack stack = inventory.getItem(woolSlot);
 			stack.setDurability(getColour().getWoolData());
@@ -257,7 +254,7 @@ public class PaintCan extends BaseSTBBlock {
 		Block b = getLocation().getBlock();
 		for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH} ) {
 			if (b.getRelative(face).getType() == Material.WALL_SIGN) {
-				System.out.println(" update sign " + face);
+				Debugger.getInstance().debug(this + ": update sign " + face);
 				Sign sign = (Sign) b.getRelative(face).getState();
 				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
 				if (sign.getLine(0).equals(getItemName())) {
@@ -288,7 +285,7 @@ public class PaintCan extends BaseSTBBlock {
 		} else if (dye1 == dye2) {
 			return dye1;
 		}
-		System.out.println("try mixing: " + dye1 + " " + dye2);
+		Debugger.getInstance().debug(this + ": try mixing: " + dye1 + " " + dye2);
 		if (dye1 == DyeColor.YELLOW && dye2 == DyeColor.RED) {
 			return DyeColor.ORANGE;
 		} else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.RED) {

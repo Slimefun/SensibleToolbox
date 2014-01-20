@@ -20,8 +20,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.util.Vector;
 
-import java.util.Map;
-
 public class AngelicBlock extends BaseSTBBlock {
 	public AngelicBlock() {
 	}
@@ -73,20 +71,19 @@ public class AngelicBlock extends BaseSTBBlock {
 					p.setItemInHand(new ItemStack(Material.AIR));
 				}
 				b.setType(getBaseMaterial());
-				setFacing(STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
-				blockPlaced(loc);
+				placeBlock(b, STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
 			}
 		}
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {
 		// we don't allow normal placing of angelic blocks
 		event.setCancelled(true);
 	}
 
 	@Override
-	public void handleBlockDamage(BlockDamageEvent event) {
+	public void onBlockDamage(BlockDamageEvent event) {
 		// the angelic block has just been hit by a player - insta-break it
 		Player p = event.getPlayer();
 		if (p.hasPermission("stb.break_angelic_block")) {
@@ -94,9 +91,14 @@ public class AngelicBlock extends BaseSTBBlock {
 			b.setType(Material.AIR);
 			p.getInventory().addItem(this.toItemStack(1));
 			b.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-			blockRemoved(b.getLocation());
+			breakBlock(b);
 			event.setCancelled(true);
 		}
+	}
+
+	@Override
+	public boolean shouldTick() {
+		return true;
 	}
 
 	@Override
@@ -110,6 +112,5 @@ public class AngelicBlock extends BaseSTBBlock {
 				loc.getWorld().playEffect(loc.add(0, 0.5, 0), Effect.SMOKE, BlockFace.UP);
 			}
 		}
-
 	}
 }

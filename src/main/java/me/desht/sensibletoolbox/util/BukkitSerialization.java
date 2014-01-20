@@ -36,7 +36,6 @@ public class BukkitSerialization {
 			for (int i = 0; i < inventory.getSize(); i++) {
 				ItemStack stack = inventory.getItem(i);
 				Attributes attributes = stack == null ? null : new Attributes(stack);
-//				System.out.println("<- i = " + i + " stack = " + stack);
 				dataOutput.writeObject(stack);
 				if (attributes != null) {
 					dataOutput.writeInt(attributes.size());
@@ -45,7 +44,6 @@ public class BukkitSerialization {
 								a.getUUID().toString(), a.getOperation(), a.getName(),
 								a.getAmount(), a.getAttributeType().getMinecraftId()
 						);
-//						System.out.println("  <- attr : " + s);
 						dataOutput.writeObject(s);
 					}
 				} else {
@@ -70,14 +68,12 @@ public class BukkitSerialization {
 			// Read the serialized inventory
 			for (int i = 0; i < inventory.getSize(); i++) {
 				ItemStack stack = (ItemStack) dataInput.readObject();
-//				System.out.println("-> i = " + i + " stack = " + stack);
 				int nAttrs = dataInput.readInt();
 				if (nAttrs > 0) {
 					Attributes attributes = new Attributes(stack);
 					for (int n = 0; n < nAttrs; n++) {
 						String s = (String) dataInput.readObject();
 						String[] fields = s.split(";;");
-//						System.out.println("  -> attr #" + n + " : " + Arrays.toString(fields));
 						attributes.add(Attributes.Attribute.newBuilder().
 								name(fields[2]).
 								amount(Double.parseDouble(fields[3])).

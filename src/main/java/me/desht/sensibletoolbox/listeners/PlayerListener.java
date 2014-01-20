@@ -26,7 +26,7 @@ public class PlayerListener extends STBBaseListener {
 		if (event.getClickedBlock() != null) {
 			BaseSTBBlock stb = LocationManager.getManager().get(event.getClickedBlock().getLocation());
 			if (stb != null) {
-				stb.handleBlockInteraction(event);
+				stb.onInteractBlock(event);
 			}
 		}
 	}

@@ -20,20 +20,16 @@ package me.desht.sensibletoolbox;
 import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
-import me.desht.sensibletoolbox.blocks.AngelicBlock;
-import me.desht.sensibletoolbox.blocks.BlockUpdateDetector;
-import me.desht.sensibletoolbox.blocks.RedstoneClock;
-import me.desht.sensibletoolbox.blocks.TrashCan;
+import me.desht.dhutils.nms.NMSHelper;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.items.BagOfHolding;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.items.EnderLeash;
+import me.desht.sensibletoolbox.listeners.FloodlightListener;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,14 +44,24 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	private final CommandManager cmds = new CommandManager(this);
 	private ConfigurationManager configManager;
 	private boolean protocolLibEnabled = false;
+	private boolean isNMSenabled = false;
 	private SoundMufflerListener soundMufflerListener;
+	private FloodlightListener floodlightListener;
 
 	public static SensibleToolboxPlugin getInstance() {
 		return instance;
 	}
 
+	public boolean isNMSenabled() {
+		return isNMSenabled;
+	}
+
 	public SoundMufflerListener getSoundMufflerListener() {
 		return soundMufflerListener;
+	}
+
+	public FloodlightListener getFloodlightListener() {
+		return floodlightListener;
 	}
 
 	@Override
@@ -69,39 +75,32 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		MiscUtil.init(this);
 		MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
+		Debugger.getInstance().setPrefix("[STB] ");
+		setupNMS();
+		if (!isNMSenabled) {
+			LogUtils.warning("Unable to initialize NMS abstraction API - looks like this version of CraftBukkit isn't supported.");
+			LogUtils.warning("Sensible Toolbox will continue to run with reduced functionality:");
+			LogUtils.warning("  Floodlight, Interdiction Lamp items disabled");
+		}
+
 		LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 
 		setupProtocolLib();
-		BaseSTBItem.registerItems();
-
-		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvents(new PlayerListener(this), this);
-		pm.registerEvents(new BlockListener(this), this);
-		pm.registerEvents(new WorldListener(this), this);
-		pm.registerEvents(new BagOfHoldingListener(this), this);
-		pm.registerEvents(new CombineHoeListener(this), this);
-		pm.registerEvents(new TrashCanListener(this), this);
-		pm.registerEvents(new PaintCanListener(this), this);
-		pm.registerEvents(new ElevatorListener(this), this);
-		pm.registerEvents(new AnvilListener(this), this);
-
-		if (isProtocolLibEnabled()) {
-			soundMufflerListener = new SoundMufflerListener(this);
-			soundMufflerListener.start();
+		if (protocolLibEnabled) {
+			ItemGlow.init(this);
+		} else {
+			LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
+			LogUtils.warning("  No glowing items, reduced particle effects, Sound Muffler item disabled");
 		}
 
+		BaseSTBItem.registerItems(this);
+		registerEventListeners();
 		registerCommands();
 
 		MessagePager.setPageCmd("/stb page [#|n|p]");
 		MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
 		LocationManager.getManager().load();
-
-		saveDefaultConfig();
-
-		if (protocolLibEnabled) {
-			ItemGlow.init(this);
-		}
 
 		BaseSTBItem.setupRecipes();
 		BagOfHolding.createSaveDirectory(this);
@@ -112,6 +111,35 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 				LocationManager.getManager().tick();
 			}
 		}, 1L, 1L);
+	}
+
+	private void setupNMS() {
+		try {
+			NMSHelper.init(this);
+			isNMSenabled = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			// do nothing
+		}
+	}
+
+	private void registerEventListeners() {
+		PluginManager pm = this.getServer().getPluginManager();
+		pm.registerEvents(new PlayerListener(this), this);
+		pm.registerEvents(new BlockListener(this), this);
+		pm.registerEvents(new WorldListener(this), this);
+		pm.registerEvents(new BagOfHoldingListener(this), this);
+		pm.registerEvents(new CombineHoeListener(this), this);
+		pm.registerEvents(new TrashCanListener(this), this);
+		pm.registerEvents(new PaintCanListener(this), this);
+		pm.registerEvents(new ElevatorListener(this), this);
+		pm.registerEvents(new AnvilListener(this), this);
+		if (isProtocolLibEnabled()) {
+			soundMufflerListener = new SoundMufflerListener(this);
+			soundMufflerListener.start();
+		}
+		floodlightListener = new FloodlightListener(this);
+		pm.registerEvents(floodlightListener, this);
 	}
 
 	public void onDisable() {
@@ -141,6 +169,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		cmds.registerCommand(new GiveCommand());
 		cmds.registerCommand(new ShowCommand());
 		cmds.registerCommand(new ChargeCommand());
+		cmds.registerCommand(new GetcfgCommand());
+		cmds.registerCommand(new SetcfgCommand());
+		cmds.registerCommand(new DebugCommand());
+		cmds.registerCommand(new ParticleCommand());
 	}
 
 	@Override
@@ -166,5 +198,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	@Override
 	public void onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
 		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public ConfigurationManager getConfigManager() {
+		return configManager;
 	}
 }

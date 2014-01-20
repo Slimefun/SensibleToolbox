@@ -81,7 +81,7 @@ public class BagOfHolding extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {
 		// the bag is not placeable in the world
 		event.setCancelled(true);
 	}

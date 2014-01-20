@@ -29,8 +29,10 @@ public class STBBlockMap {
 		YamlConfiguration conf = new YamlConfiguration();
 		for (Map.Entry<BlockPosition, BaseSTBBlock> entry : map.entrySet()) {
 			ConfigurationSection cs = conf.createSection(entry.getKey().toString());
-			cs.set("TYPE", entry.getValue().getItemID());
-			YamlConfiguration objConf = entry.getValue().freeze();
+			BaseSTBBlock stb = entry.getValue();
+			cs.set("TYPE", stb.getItemID());
+			cs.set("facing", stb.getFacing() == null ? "SELF" : stb.getFacing().toString());
+			YamlConfiguration objConf = stb.freeze();
 			for (String k : objConf.getKeys(false)) {
 				cs.set(k, objConf.get(k));
 			}

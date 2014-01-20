@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.blocks.SoundMuffler;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
@@ -15,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SoundMufflerListener extends PacketAdapter implements Listener {
-	private Set<SoundMuffler> mufflers = new HashSet<SoundMuffler>();
+	private final Set<SoundMuffler> mufflers = new HashSet<SoundMuffler>();
 
 	public SoundMufflerListener(Plugin plugin) {
 		super(plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, Packets.Server.NAMED_SOUND_EFFECT);
@@ -31,9 +32,7 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
 				int z = event.getPacket().getIntegers().read(2) >> 3;
 				Location loc = new Location(event.getPlayer().getWorld(), x, y, z);
 				for (SoundMuffler sm : mufflers) {
-					if (loc.distanceSquared(sm.getLocation()) < distance) {
-//						String soundName = event.getPacket().getStrings().read(0);
-//						System.out.println("muffle sound " + soundName + " @ " + loc);
+					if (loc.getWorld().equals(sm.getLocation().getWorld()) && loc.distanceSquared(sm.getLocation()) < distance) {
 						if (sm.getVolume() == 0) {
 							event.setCancelled(true);
 						} else {
@@ -46,12 +45,12 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
 	}
 
 	public void registerMuffler(SoundMuffler m) {
-		System.out.println("register muffler @ " + m.getLocation());
+		Debugger.getInstance().debug("register sound muffler @ " + m.getLocation());
 		mufflers.add(m);
 	}
 
 	public void unregisterMuffler(SoundMuffler m) {
-		System.out.println("unregister muffler @ " + m.getLocation());
+		Debugger.getInstance().debug("unregister sound muffler @ " + m.getLocation());
 		mufflers.remove(m);
 	}
 

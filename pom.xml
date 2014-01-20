@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>2.7.3</version>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -103,7 +103,21 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <minimizeJar>true</minimizeJar>
+                            <!-- <minimizeJar>true</minimizeJar> -->
+			    <filters>
+                                <filter>
+                                    <artifact>me.desht:dhutils-lib</artifact>
+                                    <excludes>
+                                        <exclude>me/desht/dhutils/ExperienceManager*</exclude>
+                                        <exclude>me/desht/dhutils/I18N*</exclude>
+                                        <exclude>me/desht/dhutils/ItemMessage*</exclude>
+                                        <exclude>me/desht/dhutils/repo/*</exclude>
+                                        <exclude>me/desht/dhutils/MapUtil*</exclude>
+                                        <exclude>me/desht/dhutils/TextMarkup*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+
                             <relocations>
                                 <relocation>
                                     <pattern>me.desht.dhutils</pattern>

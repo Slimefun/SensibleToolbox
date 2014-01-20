@@ -1,7 +1,9 @@
 package me.desht.sensibletoolbox.storage;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -9,8 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.metadata.MetadataValue;
@@ -23,20 +23,21 @@ import java.util.*;
 
 public class LocationManager {
 	private static final long MIN_SAVE_INTERVAL = 10000;  // 10 sec
-	private static LocationManager instance;
-	private final STBWorldMap worldMap;
-	private final Map<String, Set<ChunkCoords>> dirtyChunks;
-	private boolean saveNeeded = false;
-	private final File saveDir;
-	private final Set<String> unloadedWorlds = new HashSet<String>();
-	private long lastSave;
-
 	private static final FilenameFilter ymlFilter = new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
 			return name.endsWith(".yml");
 		}
 	};
+	private static LocationManager instance;
+	private final STBWorldMap worldMap;
+	private final Map<String, Set<ChunkCoords>> dirtyChunks;
+	private final File saveDir;
+	private final Set<String> unloadedWorlds = new HashSet<String>();
+	private final Map<String, Map<PersistableLocation,ConfigurationSection>> deferredBlocks =
+			new HashMap<String, Map<PersistableLocation, ConfigurationSection>>();
+	private boolean saveNeeded = false;
+	private long lastSave;
 
 	private LocationManager() {
 		lastSave = System.currentTimeMillis();
@@ -81,7 +82,6 @@ public class LocationManager {
 			worldMap.get(worldName).get(chunk).remove(pos);
 			markChunkDirty(worldName, pos);
 		}
-
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class LocationManager {
 				File dir = getWorldFolder(entry.getKey());
 				File f = new File(dir, "C_" + cc.getX() + "_" + cc.getZ() + ".yml");
 				try {
-					System.out.println("saving " + conf.getKeys(false).size() + " objects to " + f);
+					Debugger.getInstance().debug("saving " + conf.getKeys(false).size() + " objects to " + f);
 					conf.save(f);
 				} catch (IOException e) {
 					LogUtils.severe("can't save data to " + f);
@@ -195,9 +195,10 @@ public class LocationManager {
 							}
 						} else {
 							// defer it - could be registered by another plugin later
+							deferBlockLoad(world, pos, cs);
 						}
 					}
-					System.out.println("loaded " + conf.getKeys(false).size() + " objects from " + saveFile);
+					Debugger.getInstance().debug("loaded " + conf.getKeys(false).size() + " objects from " + saveFile);
 				} catch (Exception e) {
 					LogUtils.severe("can't load " + saveFile + ": " + e.getMessage());
 					e.printStackTrace();
@@ -208,11 +209,15 @@ public class LocationManager {
 		saveNeeded = false;
 	}
 
-//	private void loadCommonData(BaseSTBBlock stb, ConfigurationSection cs) {
-//		if (cs != null) {
-//			stb.setFacing(BlockFace.valueOf(cs.getString("facing", "SELF")));
-//		}
-//	}
+	private void deferBlockLoad(World world, BlockPosition pos, ConfigurationSection cs) {
+		String type = cs.getString("TYPE");
+		if (!deferredBlocks.containsKey(type)) {
+			deferredBlocks.put(type, new HashMap<PersistableLocation, ConfigurationSection>());
+		}
+		PersistableLocation pl = new PersistableLocation(world, pos.getX(), pos.getY(), pos.getZ());
+		Debugger.getInstance().debug(2, "block loading for " + type + " @ " + pl + " deferred - no registration for it yet");
+		deferredBlocks.get(type).put(pl, cs);
+	}
 
 	/**
 	 * The given world has just become unloaded..

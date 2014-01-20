@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -80,7 +81,6 @@ public class TapeMeasure extends BaseSTBItem {
 				MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point set.");
 				event.setCancelled(true);
 			} else {
-				System.out.println("make measurement");
 				makeMeasurement(event.getPlayer(), event.getClickedBlock());
 				event.getPlayer().updateInventory();
 				event.setCancelled(true);
@@ -94,6 +94,7 @@ public class TapeMeasure extends BaseSTBItem {
 	}
 
 	private void makeMeasurement(Player p, Block b) {
+		Debugger.getInstance().debug(this + ": make measurement at " + b);
 		if (world != null && world.equals(b.getWorld().getName())) {
 			int xOff = b.getX() - x;
 			int yOff = b.getY() - y;

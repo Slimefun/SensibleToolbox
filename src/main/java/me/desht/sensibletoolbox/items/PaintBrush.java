@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.blocks.PaintCan;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -117,8 +118,6 @@ public class PaintBrush extends BaseSTBItem {
 
 	@Override
 	public void handleItemInteraction(PlayerInteractEvent event) {
-		System.out.println("paintbrush interact " + event.getAction());
-
 		Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
@@ -129,6 +128,7 @@ public class PaintBrush extends BaseSTBItem {
 				player.setItemInHand(this.toItemStack(1));
 				event.setCancelled(true);
 			} else if (STBUtil.isColorable(b.getType()) && getBlockColour(b) != getColour() && getPaintLevel() > 0) {
+				// Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
 				if (player.isSneaking()) {
 					// paint a single block
 					paintBlocks(b);
@@ -155,15 +155,15 @@ public class PaintBrush extends BaseSTBItem {
 			needed = this.getMaxPaintLevel();
 		}
 		int actual = Math.min(needed, can.getPaintLevel());
-		System.out.println("paint can has " + can.getPaintLevel() + " of " + can.getColour());
-		System.out.println("want to fill brush with " + needed + ", actual = " + actual);
+		Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColour());
+		Debugger.getInstance().debug("try to fill brush with " + needed + ", actual = " + actual);
 		if (actual > 0) {
 			this.setColour(can.getColour());
 			this.setPaintLevel(this.getPaintLevel() + actual);
 			can.setPaintLevel(can.getPaintLevel() - actual);
 			can.updateBlock();
-			System.out.println("brush now = " + this.getPaintLevel() + " " + this.getColour());
-			System.out.println("can now = " + can.getPaintLevel() + " " + can.getColour());
+			Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColour());
+			Debugger.getInstance().debug("can now = " + can.getPaintLevel() + " " + can.getColour());
 		}
 	}
 
@@ -207,9 +207,15 @@ public class PaintBrush extends BaseSTBItem {
 
 	private void paintBlocks(Block... blocks) {
 		for (Block b : blocks) {
-			System.out.println("painting! " + b + "  " + getPaintLevel() + " " + getColour());
-			DyeColor c = DyeColor.getByWoolData(b.getData());
-			b.setData(getColour().getWoolData());
+			Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
+			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+			if (stb != null && stb instanceof Colorable) {
+				((Colorable) stb).setColor(getColour());
+				stb.updateBlock();
+			} else {
+				DyeColor c = DyeColor.getByWoolData(b.getData());
+				b.setData(getColour().getWoolData());
+			}
 			setPaintLevel(getPaintLevel() - 1);
 			if (getPaintLevel() <= 0) {
 				break;

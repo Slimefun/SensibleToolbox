@@ -1,27 +1,20 @@
 package me.desht.sensibletoolbox.blocks;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Skull;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Map;
 
 public class TrashCan extends BaseSTBBlock {
 	public TrashCan() {
@@ -67,7 +60,7 @@ public class TrashCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {
 		// ensure there's enough room
 		if (!event.getBlockPlaced().getRelative(BlockFace.UP).isEmpty()) {
 			MiscUtil.errorMessage(event.getPlayer(), "Not enough room here (need one empty block above).");
@@ -75,12 +68,9 @@ public class TrashCan extends BaseSTBBlock {
 			return;
 		}
 
-		// the item's displayname becomes the inventory's title - let's make it stand out
-		ItemMeta meta = event.getItemInHand().getItemMeta();
-		meta.setDisplayName(ChatColor.DARK_RED + "!!! " + getItemName() + " !!!");
-		event.getItemInHand().setItemMeta(meta);
+		setInventoryTitle(event, ChatColor.DARK_RED + "!!! " + getItemName() + " !!!");
 
-		super.handleBlockPlace(event);
+		super.onBlockPlace(event);
 
 		// put a skull on top of the main block
 		Block above = event.getBlock().getRelative(BlockFace.UP);
@@ -89,7 +79,7 @@ public class TrashCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockInteraction(PlayerInteractEvent event) {
+	public void onInteractBlock(PlayerInteractEvent event) {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
 			// attach a label sign
 			attachLabelSign(event);
@@ -119,6 +109,7 @@ public class TrashCan extends BaseSTBBlock {
 					}
 				}
 			}
+			Debugger.getInstance().debug(this + ": trash emptied");
 			d.getInventory().clear();
 		}
 	}

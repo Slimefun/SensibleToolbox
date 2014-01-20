@@ -16,10 +16,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.Colorable;
 
 import java.util.Map;
 
-public class Elevator extends BaseSTBBlock {
+public class Elevator extends BaseSTBBlock implements Colorable {
 	private DyeColor color;
 
 	public Elevator() {
@@ -92,33 +93,33 @@ public class Elevator extends BaseSTBBlock {
 		return (res != null && res.getColor() == getColor()) ? res : null;
 	}
 
-	@Override
-	public void handleBlockInteraction(PlayerInteractEvent event) {
-		Player player = event.getPlayer();
-		ItemStack stack = player.getItemInHand();
-		if (stack.getType() == Material.INK_SACK) {
-			DyeColor newColor = DyeColor.getByDyeData((byte)stack.getDurability());
-			if (newColor == getColor()) {
-				return;
-			}
-			if (stack.getAmount() > 1) {
-				stack.setAmount(stack.getAmount() - 1);
-			} else {
-				stack = null;
-			}
-			player.setItemInHand(stack);
-			setColor(newColor);
-			updateBlock();
-			event.setCancelled(true);
-		} else {
-			PaintBrush brush = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), PaintBrush.class);
-			if (brush != null && brush.getPaintLevel() > 0 && brush.getColour() != getColor()) {
-				brush.setPaintLevel(brush.getPaintLevel() - 1);
-				player.setItemInHand(brush.toItemStack(1));
-				setColor(brush.getColour());
-				updateBlock();
-				event.setCancelled(true);
-			}
-		}
-	}
+//	@Override
+//	public void onInteractBlock(PlayerInteractEvent event) {
+//		Player player = event.getPlayer();
+//		ItemStack stack = player.getItemInHand();
+//		if (stack.getType() == Material.INK_SACK) {
+//			DyeColor newColor = DyeColor.getByDyeData((byte)stack.getDurability());
+//			if (newColor == getColor()) {
+//				return;
+//			}
+//			if (stack.getAmount() > 1) {
+//				stack.setAmount(stack.getAmount() - 1);
+//			} else {
+//				stack = null;
+//			}
+//			player.setItemInHand(stack);
+//			setColor(newColor);
+//			updateBlock();
+//			event.setCancelled(true);
+//		} else {
+//			PaintBrush brush = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), PaintBrush.class);
+//			if (brush != null && brush.getPaintLevel() > 0 && brush.getColour() != getColor()) {
+//				brush.setPaintLevel(brush.getPaintLevel() - 1);
+//				player.setItemInHand(brush.toItemStack(1));
+//				setColor(brush.getColour());
+//				updateBlock();
+//				event.setCancelled(true);
+//			}
+//		}
+//	}
 }

@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.blocks;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -7,21 +9,21 @@ import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Map;
 
 public abstract class BaseSTBBlock extends BaseSTBItem {
 	public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
@@ -31,24 +33,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	protected BaseSTBBlock() {
 	}
 
-//	protected static Configuration getConfigFromMap(Map<String, Object> map) {
-//		Configuration conf = new MemoryConfiguration();
-//		for (Map.Entry<String,Object> e : map.entrySet()) {
-//			conf.set(e.getKey(), e.getValue());
-//		}
-//		return conf;
-//	}
-
 	public BaseSTBBlock(ConfigurationSection conf) {
 		setFacing(BlockFace.valueOf(conf.getString("facing", "SELF")));
 	}
 
-	@Override
-	public YamlConfiguration freeze() {
-		YamlConfiguration conf = super.freeze();
-		conf.set("facing", facing == null ? "SELF" : facing.toString());
-		return conf;
-	}
+//	@Override
+//	public YamlConfiguration freeze() {
+//		YamlConfiguration conf = super.freeze();
+//		conf.set("facing", facing == null ? "SELF" : facing.toString());
+//		return conf;
+//	}
 
 	public BlockFace getFacing() {
 		return facing;
@@ -63,43 +57,65 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 * subclasses.
 	 * @param event the block damage event
 	 */
-	public void handleBlockDamage(BlockDamageEvent event) { }
+	public void onBlockDamage(BlockDamageEvent event) { }
 
 	/**
 	 * Called when an STB block receives a physics event.  Override this in implementing
 	 * subclasses.
 	 * @param event the block physics event
 	 */
-	public void handleBlockPhysics(BlockPhysicsEvent event) { }
+	public void onBlockPhysics(BlockPhysicsEvent event) { }
 
 	/**
 	 * Called when an STB block is interacted with by a player
 	 *
 	 * @param event the interaction event
 	 */
-	public void handleBlockInteraction(PlayerInteractEvent event) {	}
+	public void onInteractBlock(PlayerInteractEvent event) {	}
 
 	/**
 	 * Called when a sign attached to an STB block is updated.  Override this in implementing
 	 * subclasses.
 	 *
 	 * @param event the sign change event
+	 * @return true if the sign should be popped off the block
 	 */
-	public boolean handleSignConfigure(SignChangeEvent event) { return false; }
+	public boolean onSignChange(SignChangeEvent event) { return false; }
+
+	/**
+	 * Called when this STB block has been hit by an explosion.
+	 *
+	 * @param event the explosion event
+	 * @return true if the explosion should cause the block to break, false otherwise
+	 */
+	public boolean onEntityExplode(EntityExplodeEvent event) {
+		return true;
+	}
 
 	/**
 	 * Get a list of extra blocks this STB block has.  By default this returns an empty list,
 	 * but multi-block structures should override this.  Each element of the list is a vector
 	 * containing a relative offset from the item's base location.
 	 *
-	 * @return a list of offset vectors for extra blocks in the item
+	 * @return an array of relative offsets for extra blocks in the item
 	 */
 	public RelativePosition[] getBlockStructure() { return new RelativePosition[0]; }
 
 	/**
-	 * Called every tick for each STB block that is placed in the world.
+	 * Called every tick for each STB block that is placed in the world, for any STB block where
+	 * shouldTick() returns true.
 	 */
 	public void onServerTick() { }
+
+	/**
+	 * Check if this block needs to tick, i.e. have onServerTick() called every tick.  Only override
+	 * this to return true for block which need to tick, for performance reasons.
+	 *
+	 * @return true if the block should tick
+	 */
+	public boolean shouldTick() {
+		return false;
+	}
 
 	/**
 	 * Get the location of the base block of this STB block.  This could be null if called
@@ -128,7 +144,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 			BlockPosition pos0 = new BlockPosition(origin.getLocation());
 			for (RelativePosition pos : getBlockStructure()) {
 				Block b1 = getMultiBlock(pos);
-				System.out.println("multiblock for " + this + " -> " + b1);
+				Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + b1);
 				b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), pos0));
 			}
 		} else {
@@ -164,10 +180,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 *
 	 * @param event the block place event
 	 */
-	public void handleBlockPlace(BlockPlaceEvent event) {
-		Block origin = event.getBlock();
-		setFacing(STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
-		blockPlaced(origin.getLocation());
+	public void onBlockPlace(BlockPlaceEvent event) {
+		placeBlock(event.getBlock(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
 	}
 
 	/**
@@ -176,26 +190,25 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 *
 	 * @param event the block break event
 	 */
-	public void handleBlockBreak(BlockBreakEvent event) {
-		Block brokenBlock = event.getBlock();
-		brokenBlock.getWorld().dropItemNaturally(brokenBlock.getLocation(), toItemStack(1));
-		System.out.println("broken!");
-		Block origin = getLocation().getBlock();
-		origin.setType(Material.AIR);
-		for (RelativePosition pos : getBlockStructure()) {
-			Block b = getMultiBlock(pos);
-			b.setType(Material.AIR);
-		}
-		blockRemoved(getLocation());
+	public void onBlockBreak(BlockBreakEvent event) {
+		breakBlock(event.getBlock());
 		event.setCancelled(true);
 	}
 
-	protected void blockPlaced(Location loc) {
-		LocationManager.getManager().registerLocation(loc, this);
+	protected void placeBlock(Block b, BlockFace facing) {
+		setFacing(facing);
+		LocationManager.getManager().registerLocation(b.getLocation(), this);
 	}
 
-	protected void blockRemoved(Location loc) {
-		LocationManager.getManager().unregisterLocation(loc);
+	protected void breakBlock(Block b) {
+		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack(1));
+		Block origin = getLocation().getBlock();
+		origin.setType(Material.AIR);
+		for (RelativePosition pos : getBlockStructure()) {
+			Block b1 = getMultiBlock(pos);
+			b1.setType(Material.AIR);
+		}
+		LocationManager.getManager().unregisterLocation(getLocation());
 	}
 
 	@Override
@@ -251,5 +264,40 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
 	protected String[] getSignLabel() {
 		return new String[] { getItemName(), "", "", "" };
+	}
+
+	@Override
+	public String toString() {
+		return "STB block: " + getItemName() + " @ " +
+				(getLocation() == null ? "(null)" : MiscUtil.formatLocation(getLocation()));
+	}
+
+	/**
+	 * Temporarily override the item display name, just before the item is placed.  The item
+	 * display name is used as the inventory title for blocks such as the dropper.
+	 *
+	 * @param event the block place event
+	 */
+	protected void setInventoryTitle(BlockPlaceEvent event, final String tempTitle) {
+		ItemStack inHand = event.getItemInHand();
+		final Player player = event.getPlayer();
+		ItemMeta meta = inHand.getItemMeta();
+		meta.setDisplayName(tempTitle);
+		inHand.setItemMeta(meta);
+		if (inHand.getAmount() > 1) {
+			// any remaining items need to have their proper title restored
+			Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+				@Override
+				public void run() {
+					ItemStack inHand = player.getItemInHand();
+					if (inHand.getType() == getBaseMaterial()) {
+						ItemMeta meta = inHand.getItemMeta();
+						if (meta.getDisplayName().equals(tempTitle)) {
+							player.setItemInHand(toItemStack(inHand.getAmount()));
+						}
+					}
+				}
+			});
+		}
 	}
 }

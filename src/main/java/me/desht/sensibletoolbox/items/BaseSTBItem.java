@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
@@ -29,12 +30,12 @@ import java.util.*;
 public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBItem> {
 	protected static final ChatColor LORE_COLOR = ChatColor.GRAY;
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
-	private static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
+	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	private static final Map<String, Class<? extends BaseSTBItem>> registry = new HashMap<String, Class<? extends BaseSTBItem>>();
 	private static final Map<String, String> ids = new HashMap<String, String>();
 	private Map<Enchantment,Integer> enchants;
 
-	public static void registerItems() {
+	public static void registerItems(SensibleToolboxPlugin plugin) {
 		registerItem(new AngelicBlock());
 		registerItem(new EnderLeash());
 		registerItem(new RedstoneClock());
@@ -51,10 +52,13 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new PaintBrush());
 		registerItem(new PaintRoller());
 		registerItem(new PaintCan());
-		registerItem(new SoundMuffler());
 		registerItem(new Elevator());
 		registerItem(new TapeMeasure());
 		registerItem(new BuildersMultiTool());
+		registerItem(new Floodlight());
+		if (plugin.isProtocolLibEnabled()) {
+			registerItem(new SoundMuffler());
+		}
 	}
 
 	private static void registerItem(BaseSTBItem item) {
@@ -79,6 +83,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		if (!isSTBItem(stack)) {
 			return null;
 		}
+		System.out.println("get item from stack : " + stack);
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
 		Configuration conf = BaseSTBItem.getItemAttributes(stack);
 		BaseSTBItem item = getItemByName((disp.split(":"))[0], conf);
@@ -141,8 +146,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			String s = storage.getData("");
 			if (s != null) {
 				conf.loadFromString(s);
-				System.out.println("get item attributes for " + stack + ":");
-				for (String k : conf.getKeys(false)) { System.out.println(" " + k + " = " + conf.get(k)); }
+				Debugger.getInstance().debug("get item attributes for " + stack + ":");
+				for (String k : conf.getKeys(false)) { Debugger.getInstance().debug("- " + k + "=" + conf.get(k)); }
 				return conf;
 			} else {
 				return null;
@@ -251,11 +256,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 */
 	public void handleEntityInteraction(PlayerInteractEntityEvent event) { }
 
-//	@Override
-//	public Map<String, Object> serialize() {
-//		return new HashMap<String, Object>();
-//	}
-
 	/**
 	 * Called when a player rolls the mouse wheel while sneaking and holding an STB item.
 	 *
@@ -301,25 +301,12 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
 			String data = conf.saveToString();
 			storage.setData(data);
-			System.out.println("serialize to itemstack:\n" + data);
+			Debugger.getInstance().debug("serialize to itemstack:\n" + data);
 			return storage.getTarget();
 		} else {
+			System.out.println("return plain itemstack " + res);
 			return res;
 		}
-//		Map<String, Object> map = serialize();
-//		if (!map.isEmpty()) {
-//			YamlConfiguration conf = new YamlConfiguration();
-//			for (Map.Entry<String,Object> e : map.entrySet()) {
-//				conf.set(e.getKey(), e.getValue());
-//			}
-//			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
-//			String data = conf.saveToString();
-//			storage.setData(data);
-//			System.out.println("serialize to itemstack:\n" + data);
-//			return storage.getTarget();
-//		} else {
-//			return res;
-//		}
 	}
 
 	private List<String> buildLore() {
@@ -341,7 +328,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 	@Override
 	public String toString() {
-		return "STB item: " + getItemName() + " <" + getBaseMaterial() + ">";
+		return "STB item: " + getItemName();
 	}
 
 	@Override

@@ -1,3 +1,23 @@
 log_level: fine
 coloured_console: true
 rename_level_cost: 5
+enable:
+  angelicblock: true
+  blockupdatedetector: true
+  elevator: true
+  paintcan: true
+  redstoneclock: true
+  soundmuffler: true
+  trashcan: true
+  advancedmoisturechecker: true
+  bagofholding: true
+  buildersmultitool: true
+  diamondcombinehoe: true
+  goldcombinehoe: true
+  ironcombinehoe: true
+  woodcombinehoe: true
+  moisturechecker: true
+  paintbrush: true
+  paintroller: true
+  tapemeasure: true
+  wateringcan: true

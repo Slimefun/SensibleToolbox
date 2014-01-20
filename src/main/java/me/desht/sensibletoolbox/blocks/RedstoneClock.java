@@ -99,6 +99,11 @@ public class RedstoneClock extends BaseSTBBlock {
 	}
 
 	@Override
+	public boolean shouldTick() {
+		return true;
+	}
+
+	@Override
 	public void onServerTick() {
 		Location loc = getLocation();
 		Block b = loc.getBlock();
@@ -118,7 +123,7 @@ public class RedstoneClock extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockInteraction(PlayerInteractEvent event) {
+	public void onInteractBlock(PlayerInteractEvent event) {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
 			// attach a label sign
 			attachLabelSign(event);
@@ -136,7 +141,7 @@ public class RedstoneClock extends BaseSTBBlock {
 	}
 
 	@Override
-	public boolean handleSignConfigure(SignChangeEvent event) {
+	public boolean onSignChange(SignChangeEvent event) {
 		boolean updated = false, show = false;
 
 		for (String line : event.getLines()) {

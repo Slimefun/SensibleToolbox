@@ -5,7 +5,6 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -14,8 +13,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-
-import java.util.Map;
 
 public class SoundMuffler extends BaseSTBBlock {
 	public static final int DISTANCE = 8;
@@ -84,15 +81,20 @@ public class SoundMuffler extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPlace(BlockPlaceEvent event) {
-		super.handleBlockPlace(event);
-//		SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+	public void onBlockPlace(BlockPlaceEvent event) {
+		super.onBlockPlace(event);
+		SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
 	}
 
 	@Override
-	public void handleBlockBreak(BlockBreakEvent event) {
-		super.handleBlockBreak(event);
+	public void onBlockBreak(BlockBreakEvent event) {
+		super.onBlockBreak(event);
 		SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
+	}
+
+	@Override
+	public boolean shouldTick() {
+		return true;
 	}
 
 	@Override
@@ -107,7 +109,7 @@ public class SoundMuffler extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockInteraction(PlayerInteractEvent event) {
+	public void onInteractBlock(PlayerInteractEvent event) {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
 			// attach a label sign
 			attachLabelSign(event);

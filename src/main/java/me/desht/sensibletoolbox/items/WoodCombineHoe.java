@@ -2,13 +2,14 @@ package me.desht.sensibletoolbox.items;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.Map;
 
 public class WoodCombineHoe extends CombineHoe {
-	public WoodCombineHoe(Configuration conf) {
+	public WoodCombineHoe(ConfigurationSection conf) {
 		super(conf);
 	}
 

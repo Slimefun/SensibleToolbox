@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.Bukkit;
@@ -99,12 +100,11 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockPhysics(BlockPhysicsEvent event) {
+	public void onBlockPhysics(BlockPhysicsEvent event) {
 		final Block b = event.getBlock();
-//		System.out.println("BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
+		Debugger.getInstance().debug(this + ": BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
 		if (b.getWorld().getFullTime() - lastPulse > getDuration() + getQuiet()) {
 			// emit a signal for one or more ticks
-//			System.out.println(" -> pulse!");
 			lastPulse = b.getWorld().getFullTime();
 			b.setType(Material.REDSTONE_BLOCK);
 			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
@@ -117,7 +117,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	}
 
 	@Override
-	public boolean handleSignConfigure(SignChangeEvent event) {
+	public boolean onSignChange(SignChangeEvent event) {
 		boolean updated = false, show = false;
 
 		for (String line : event.getLines()) {
@@ -150,7 +150,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleBlockInteraction(PlayerInteractEvent event) {
+	public void onInteractBlock(PlayerInteractEvent event) {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
 			// attach a label sign
 			attachLabelSign(event);

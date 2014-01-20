@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.block.MaterialWithData;
 import me.desht.dhutils.cost.ItemCost;
@@ -186,7 +187,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 				int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
 				int max = (int) (MAX_REPLACED * Math.pow(1.2, sharpness));
 				Block[] blocks = getReplacementCandidates(player, event.getClickedBlock(), max);
-				System.out.println("replacing " + blocks.length + " blocks");
+				Debugger.getInstance().debug(this + ": replacing " + blocks.length + " blocks");
 				done = doExchange(player, blocks) > 0;
 			}
 			event.setCancelled(true);
@@ -306,10 +307,6 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 			int nAffected = Math.min(blocks.size(), howMuchDoesPlayerHave(player, mwd));
 			List<Block> actualBlocks = blocks.subList(0, nAffected);
 
-			System.out.println("found blocks: ");
-			for (Block bb : actualBlocks) {
-				System.out.println(" - " + bb);
-			}
 			if (!actualBlocks.isEmpty()) {
 				if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					doBuild(player, event.getClickedBlock(), actualBlocks);
