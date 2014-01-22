@@ -118,7 +118,7 @@ public class PaintCan extends BaseSTBBlock {
 		ItemStack stack = player.getItemInHand();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			PaintBrush brush = BaseSTBItem.getItemFromItemStack(stack, PaintBrush.class);
-			if (!player.isSneaking() && brush == null) {
+			if (brush == null) {
 				// open inventory to mix more paint
 				Inventory inv = Bukkit.createInventory(player, 9, getMixerTitle());
 				player.openInventory(inv);
@@ -127,8 +127,8 @@ public class PaintCan extends BaseSTBBlock {
 						new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), getLocation()));
 				event.setCancelled(true);
 			}
-		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && stack.getType() == Material.SIGN) {
-			attachLabelSign(event);
+		} else {
+			super.onInteractBlock(event);
 		}
 	}
 

@@ -103,8 +103,8 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!-- <minimizeJar>true</minimizeJar> -->
-			    <filters>
+                            <minimizeJar>true</minimizeJar>
+			    <!--<filters>
                                 <filter>
                                     <artifact>me.desht:dhutils-lib</artifact>
                                     <excludes>
@@ -116,7 +116,7 @@
                                         <exclude>me/desht/dhutils/TextMarkup*</exclude>
                                     </excludes>
                                 </filter>
-                            </filters>
+                            </filters>-->
 
                             <relocations>
                                 <relocation>

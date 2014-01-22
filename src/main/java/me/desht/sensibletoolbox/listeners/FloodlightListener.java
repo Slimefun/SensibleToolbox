@@ -42,7 +42,7 @@ public class FloodlightListener extends STBBaseListener {
 		for (MetadataValue mv : item.getMetadata(Floodlight.STB_FLOODLIGHT_FLAME)) {
 			if (mv.getOwningPlugin() == plugin) {
 				Floodlight light = (Floodlight) mv.value();
-				light.addFlame();
+//				light.addFlame();
 				break;
 			}
 		}

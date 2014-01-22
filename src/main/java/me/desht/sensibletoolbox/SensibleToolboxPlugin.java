@@ -28,8 +28,11 @@ import me.desht.sensibletoolbox.listeners.FloodlightListener;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -125,8 +128,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	private void registerEventListeners() {
 		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvents(new PlayerListener(this), this);
-		pm.registerEvents(new BlockListener(this), this);
+		pm.registerEvents(new GeneralListener(this), this);
 		pm.registerEvents(new WorldListener(this), this);
 		pm.registerEvents(new BagOfHoldingListener(this), this);
 		pm.registerEvents(new CombineHoeListener(this), this);
@@ -134,6 +136,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
 		pm.registerEvents(new AnvilListener(this), this);
+		pm.registerEvents(new MachineListener(this), this);
 		if (isProtocolLibEnabled()) {
 			soundMufflerListener = new SoundMufflerListener(this);
 			soundMufflerListener.start();

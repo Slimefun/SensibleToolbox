@@ -37,13 +37,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		setFacing(BlockFace.valueOf(conf.getString("facing", "SELF")));
 	}
 
-//	@Override
-//	public YamlConfiguration freeze() {
-//		YamlConfiguration conf = super.freeze();
-//		conf.set("facing", facing == null ? "SELF" : facing.toString());
-//		return conf;
-//	}
-
 	public BlockFace getFacing() {
 		return facing;
 	}
@@ -53,29 +46,38 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	}
 
 	/**
-	 * Called when an STB block receives a damage event.  Override this in implementing
-	 * subclasses.
+	 * Called when an STB block receives a damage event.  The default behaviour is to ignore
+	 * the event.
+	 *
 	 * @param event the block damage event
 	 */
 	public void onBlockDamage(BlockDamageEvent event) { }
 
 	/**
-	 * Called when an STB block receives a physics event.  Override this in implementing
-	 * subclasses.
+	 * Called when an STB block receives a physics event.  The default behaviour is to ignore
+	 * the event.
+	 *
 	 * @param event the block physics event
 	 */
 	public void onBlockPhysics(BlockPhysicsEvent event) { }
 
 	/**
-	 * Called when an STB block is interacted with by a player
+	 * Called when an STB block is interacted with by a player.  The default behaviour allows
+	 * for the block to be labelled by left-clicking it with a sign in hand.  If you override
+	 * this method and want to keep this behaviour, be sure to call super.onInteractBlock()
 	 *
 	 * @param event the interaction event
 	 */
-	public void onInteractBlock(PlayerInteractEvent event) {	}
+	public void onInteractBlock(PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
+			// attach a label sign
+			attachLabelSign(event);
+		}
+	}
 
 	/**
-	 * Called when a sign attached to an STB block is updated.  Override this in implementing
-	 * subclasses.
+	 * Called when a sign attached to an STB block is updated.  The default behaviour is to ignore
+	 * the event.
 	 *
 	 * @param event the sign change event
 	 * @return true if the sign should be popped off the block
@@ -83,7 +85,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	public boolean onSignChange(SignChangeEvent event) { return false; }
 
 	/**
-	 * Called when this STB block has been hit by an explosion.
+	 * Called when this STB block has been hit by an explosion.  The default behaviour is to return
+	 * true; STB blocks will break and drop their item form if hit by an explosion.
 	 *
 	 * @param event the explosion event
 	 * @return true if the explosion should cause the block to break, false otherwise
@@ -106,6 +109,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 * shouldTick() returns true.
 	 */
 	public void onServerTick() { }
+
+	/**
+	 * Called when the chunk that an STB block is in gets loaded.
+	 */
+	public void onChunkLoad() { }
+
+	/**
+	 * Called when the chunk that an STB block is in gets unloaded.
+	 */
+	public void onChunkUnload() { }
 
 	/**
 	 * Check if this block needs to tick, i.e. have onServerTick() called every tick.  Only override
@@ -200,7 +213,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		LocationManager.getManager().registerLocation(b.getLocation(), this);
 	}
 
-	protected void breakBlock(Block b) {
+	public void breakBlock(Block b) {
 		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack(1));
 		Block origin = getLocation().getBlock();
 		origin.setType(Material.AIR);
@@ -230,10 +243,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	}
 
 	public void updateBlock() {
+		updateBlock(true);
+	}
+
+	public void updateBlock(boolean redraw) {
 		if (getLocation() != null) {
-			Block b = getLocation().getBlock();
-			b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
-			LocationManager.getManager().registerLocation(getLocation(), this);
+			if (redraw) {
+				Block b = getLocation().getBlock();
+				b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
+			}
+			LocationManager.getManager().updateLocation(getLocation());
 		}
 	}
 

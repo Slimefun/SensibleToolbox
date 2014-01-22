@@ -72,6 +72,12 @@ public class LocationManager {
 		markChunkDirty(worldName, pos);
 	}
 
+	public void updateLocation(Location loc) {
+		String worldName = loc.getWorld().getName();
+		BlockPosition pos = new BlockPosition(loc);
+		markChunkDirty(worldName, pos);
+	}
+
 	public void unregisterLocation(Location loc) {
 		BaseSTBBlock stb = get(loc);
 		if (stb != null) {
@@ -108,6 +114,19 @@ public class LocationManager {
 		} else {
 			return stb;
 		}
+	}
+
+	/**
+	 * Get all the STB blocks in the given chunk
+	 *
+	 * @param chunk the chunk to check
+	 * @return an array of STB block objects
+	 */
+	public BaseSTBBlock[] get(Chunk chunk) {
+		String worldName = chunk.getWorld().getName();
+		STBBlockMap stbm = worldMap.get(worldName).get(chunk);
+		List<? extends BaseSTBBlock> l = stbm.list();
+		return l.toArray(new BaseSTBBlock[l.size()]);
 	}
 
 	public void tick() {

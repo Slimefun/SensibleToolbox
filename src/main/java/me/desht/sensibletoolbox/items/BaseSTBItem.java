@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
+import me.desht.sensibletoolbox.blocks.machines.Masher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,6 +35,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	private static final Map<String, Class<? extends BaseSTBItem>> registry = new HashMap<String, Class<? extends BaseSTBItem>>();
 	private static final Map<String, String> ids = new HashMap<String, String>();
+	private static final Map<Material,Class<? extends BaseSTBItem>> customSmelts = new HashMap<Material, Class<? extends BaseSTBItem>>();
 	private Map<Enchantment,Integer> enchants;
 
 	public static void registerItems(SensibleToolboxPlugin plugin) {
@@ -56,6 +59,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new TapeMeasure());
 		registerItem(new BuildersMultiTool());
 		registerItem(new Floodlight());
+		registerItem(new Masher());
+		registerItem(new IronDust());
+		registerItem(new GoldDust());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -68,11 +74,22 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 	public static void setupRecipes() {
 		for (String key : registry.keySet()) {
-			Recipe r = getItemByName(key).getRecipe();
+			BaseSTBItem item = getItemByName(key);
+			Recipe r = item.getRecipe();
 			if (r != null) {
 				Bukkit.addRecipe(r);
 			}
+			ItemStack stack = item.getSmeltingResult();
+			if (stack != null) {
+				FurnaceRecipe fr = new FurnaceRecipe(stack, item.getBaseMaterial());
+				Bukkit.addRecipe(fr);
+				customSmelts.put(item.getBaseMaterial(), item.getClass());
+			}
 		}
+	}
+
+	public static Class<? extends BaseSTBItem> getCustomSmelt(Material mat) {
+		return customSmelts.get(mat);
 	}
 
 	public static Set<String> getItemIds() {
@@ -130,6 +147,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	public static boolean isSTBItem(ItemStack stack) {
+		if (stack == null) {
+			return false;
+		}
 		ItemMeta im = stack.getItemMeta();
 		if (im != null && im.hasLore()) {
 			List<String> lore = im.getLore();
@@ -158,7 +178,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		}
 	}
 
-	protected static String getChargeString(Chargeable ch) {
+	public static String getChargeString(Chargeable ch) {
 		double d = ch.getCharge() / ch.getMaxCharge();
 		ChatColor cc;
 		if (d < 0.333) {
@@ -264,6 +284,13 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	public void handleMouseWheel(PlayerItemHeldEvent event) { }
 
 	/**
+	 * Get the item into which this object would be smelted into
+	 *
+	 * @return the resulting itemstack, or null if this object does not smelt
+	 */
+	public ItemStack getSmeltingResult() { return null; }
+
+	/**
 	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
 	 *
 	 * @param amount number of items in the stack
@@ -304,7 +331,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			Debugger.getInstance().debug("serialize to itemstack:\n" + data);
 			return storage.getTarget();
 		} else {
-			System.out.println("return plain itemstack " + res);
 			return res;
 		}
 	}

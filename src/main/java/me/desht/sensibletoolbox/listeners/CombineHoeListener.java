@@ -6,9 +6,12 @@ import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.CombineHoe;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -110,6 +113,24 @@ public class CombineHoeListener extends STBBaseListener {
 			hoe.setSeedAmount(count);
 			hoe.setSeedType(seedType);
 			player.setItemInHand(hoe.toItemStack(1));
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void leavesBroken(BlockBreakEvent event) {
+		Block b = event.getBlock();
+		if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
+			Player player = event.getPlayer();
+			ItemStack stack = event.getPlayer().getItemInHand();
+			CombineHoe hoe = BaseSTBItem.getItemFromItemStack(stack, CombineHoe.class);
+			if (hoe != null) {
+				hoe.harvestLayer(player, b);
+				if (!player.isSneaking()) {
+					hoe.harvestLayer(player, b.getRelative(BlockFace.UP));
+					hoe.harvestLayer(player, b.getRelative(BlockFace.DOWN));
+				}
+				hoe.damageHeldItem(player, (short) 1);
+			}
 		}
 	}
 

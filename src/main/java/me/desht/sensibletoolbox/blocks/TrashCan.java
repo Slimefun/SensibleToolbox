@@ -79,14 +79,6 @@ public class TrashCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public void onInteractBlock(PlayerInteractEvent event) {
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
-			// attach a label sign
-			attachLabelSign(event);
-		}
-	}
-
-	@Override
 	public RelativePosition[] getBlockStructure() {
 		return new RelativePosition[] { new RelativePosition(0, 1, 0) };
 	}

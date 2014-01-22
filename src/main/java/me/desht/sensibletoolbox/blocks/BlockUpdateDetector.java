@@ -142,19 +142,11 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 			}
 		} else if (updated) {
 			MiscUtil.statusMessage(event.getPlayer(), getItemName() + " updated: duration=&6" + getDuration());
-			updateBlock();
+			updateBlock(false);
 		} else {
 			MiscUtil.errorMessage(event.getPlayer(), "No valid data found: clock not updated");
 		}
 		return !show && updated;
-	}
-
-	@Override
-	public void onInteractBlock(PlayerInteractEvent event) {
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
-			// attach a label sign
-			attachLabelSign(event);
-		}
 	}
 
 	@Override
