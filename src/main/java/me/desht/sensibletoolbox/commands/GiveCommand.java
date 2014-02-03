@@ -43,7 +43,7 @@ public class GiveCommand extends AbstractCommand {
 		BaseSTBItem item = BaseSTBItem.getItemById(id);
 		DHValidate.notNull(item, "Unknown SensibleToolbox item: " + args[0]);
 		target.getInventory().addItem(item.toItemStack(amount));
-		MiscUtil.statusMessage(target, "You received a &6" + item.getItemName() + "&-.");
+		MiscUtil.statusMessage(target, "You received " + amount + " x &6" + item.getItemName() + "&-.");
 		return true;
 	}
 

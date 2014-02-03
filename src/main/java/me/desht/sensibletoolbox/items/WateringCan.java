@@ -87,7 +87,7 @@ public class WateringCan extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack newStack = null;
 		floodWarning = false;
@@ -148,7 +148,7 @@ public class WateringCan extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleConsume(PlayerItemConsumeEvent event) {
+	public void onItemConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
 		if (player.getFireTicks() > 0 && getWaterLevel() > FIRE_EXTINGUISH_AMOUNT) {
 			player.setFireTicks(0);

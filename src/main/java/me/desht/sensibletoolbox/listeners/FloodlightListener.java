@@ -19,7 +19,6 @@ public class FloodlightListener extends STBBaseListener {
 
 	public FloodlightListener(SensibleToolboxPlugin plugin) {
 		super(plugin);
-		System.out.println("listener created!");
 	}
 
 	@EventHandler
@@ -36,25 +35,25 @@ public class FloodlightListener extends STBBaseListener {
 		}
 	}
 
-	@EventHandler
-	public void onItemDespawn(ItemDespawnEvent event) {
-		Item item = event.getEntity();
-		for (MetadataValue mv : item.getMetadata(Floodlight.STB_FLOODLIGHT_FLAME)) {
-			if (mv.getOwningPlugin() == plugin) {
-				Floodlight light = (Floodlight) mv.value();
+//	@EventHandler
+//	public void onItemDespawn(ItemDespawnEvent event) {
+//		Item item = event.getEntity();
+//		for (MetadataValue mv : item.getMetadata(Floodlight.STB_FLOODLIGHT_FLAME)) {
+//			if (mv.getOwningPlugin() == plugin) {
+//				Floodlight light = (Floodlight) mv.value();
 //				light.addFlame();
-				break;
-			}
-		}
-	}
+//				break;
+//			}
+//		}
+//	}
 
 	public void registerFloodlight(Floodlight light) {
-		System.out.println("register light @ " + light.getLocation());
+		Debugger.getInstance().debug("register light @ " + light.getLocation());
 		lights.add(light);
 	}
 
 	public void unregisterFloodlight(Floodlight light) {
-		System.out.println("unregister light @ " + light.getLocation());
+		Debugger.getInstance().debug("unregister light @ " + light.getLocation());
 		lights.remove(light);
 	}
 }

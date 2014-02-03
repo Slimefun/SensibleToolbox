@@ -73,7 +73,7 @@ public class TapeMeasure extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (event.getPlayer().isSneaking()) {
 				setAnchor(event.getClickedBlock());

@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.storage;
 
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import org.bukkit.Chunk;
+import org.bukkit.World;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,9 +40,13 @@ public class STBChunkMap {
 		return c.getX() + ((long) c.getZ() << 32);
 	}
 
-	public void tick() {
-		for (STBBlockMap stbm : map.values()) {
-			stbm.tick();
+	public void tick(World w) {
+		for (Map.Entry<Long, STBBlockMap> entry : map.entrySet()) {
+			int cx = entry.getKey().intValue();
+			int cz = (int)((entry.getKey() >> 32));
+			if (w.isChunkLoaded(cx, cz)) {
+				entry.getValue().tick();
+			}
 		}
 	}
 

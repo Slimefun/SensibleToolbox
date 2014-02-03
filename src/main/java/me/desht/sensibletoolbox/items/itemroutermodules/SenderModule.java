@@ -1,0 +1,156 @@
+package me.desht.sensibletoolbox.items.itemroutermodules;
+
+import me.desht.dhutils.ParticleEffect;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.blocks.ItemRouter;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapelessRecipe;
+
+public class SenderModule extends DirectionalItemRouterModule {
+	private static final int MAX_SENDER_DISTANCE = 10;
+
+	public SenderModule() {}
+
+	public SenderModule(ConfigurationSection conf) {
+		super(conf);
+	}
+
+	@Override
+	public String getItemName() {
+		return "Item Router Sender Module";
+	}
+
+	@Override
+	public String[] getLore() {
+		return new String[] {
+				"Insert into an Item Router",
+				"Sends items elsewhere:" ,
+				" - An adjacent inventory",
+				" - Item Router with Receiver Module",
+				"   Item Router must be inline, within 10 blocks",
+				"   and Receiver Module must face Sender"
+		};
+	}
+
+	@Override
+	public Recipe getRecipe() {
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		recipe.addIngredient(Material.PAPER); // in fact, a Blank Module
+		recipe.addIngredient(Material.ARROW);
+		return recipe;
+	}
+
+	@Override
+	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
+		return mat == Material.PAPER ? BlankModule.class : null;
+	}
+
+	@Override
+	public boolean execute() {
+		if (getOwner() != null && getOwner().getBufferItem() != null) {
+			System.out.println("sender in " + getOwner() + " has: " + STBUtil.describeItemStack(getOwner().getBufferItem()));
+			Block b = getOwner().getLocation().getBlock();
+			Block target = b.getRelative(getDirection());
+			int nToInsert = getOwner().getStackSize();
+			if (allowsItemsThrough(target.getType())) {
+				// search for a visible Item Router with an installed Receiver Module
+				ReceiverModule receiver = findReceiver();
+				if (receiver != null) {
+					ItemStack toSend = getOwner().getBufferItem().clone();
+					toSend.setAmount(Math.min(nToInsert, toSend.getAmount()));
+					int received = receiver.receiveItem(toSend);
+					getOwner().reduceBuffer(received);
+					if (received > 0 && SensibleToolboxPlugin.getInstance().getConfig().getInt("particle_effects") >= 2) {
+						playSenderParticles(getOwner(), receiver.getOwner());
+
+					}
+					return received > 0;
+				}
+			} else {
+				BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+				if (stb instanceof STBInventoryHolder) {
+					ItemStack toInsert = getOwner().getBufferItem().clone();
+					toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
+					int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace());
+					getOwner().reduceBuffer(nInserted);
+					return nInserted > 0;
+				} else {
+					// vanilla inventory holder?
+					return vanillaInsertion(target, nToInsert);
+				}
+			}
+		}
+		return false;
+	}
+
+	private void playSenderParticles(ItemRouter src, ItemRouter dest) {
+		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+			Location s = src.getLocation();
+			Location d = dest.getLocation();
+			double xOff = (d.getX() - s.getX()) / 2;
+			double zOff = (d.getZ() - s.getZ()) / 2;
+			Location mid = s.add(xOff + 0.5, 0.5, zOff + 0.5);
+			ParticleEffect.RED_DUST.play(mid, (float)xOff / 4, 0, (float)zOff / 4, 0.0f, 15);
+		}
+	}
+
+	private ReceiverModule findReceiver() {
+		Block b = getOwner().getLocation().getBlock();
+		for (int i = 0; i < MAX_SENDER_DISTANCE; i++) {
+			b = b.getRelative(getDirection());
+			if (!allowsItemsThrough(b.getType())) {
+				break;
+			}
+		}
+		ItemRouter rtr = LocationManager.getManager().get(b.getLocation(), ItemRouter.class);
+		if (rtr != null) {
+			for (ItemRouterModule mod : rtr.getInstalledModules()) {
+				if (mod instanceof ReceiverModule && ((ReceiverModule)mod).getDirection() == getDirection().getOppositeFace()) {
+					return (ReceiverModule) mod;
+				}
+			}
+		}
+		return null;
+	}
+
+	private boolean vanillaInsertion(Block target, int amount) {
+		ItemStack buffer = getOwner().getBufferItem();
+		int nInserted = STBUtil.vanillaInsertion(target, buffer, amount);
+		if (nInserted == 0) {
+			// no insertion happened
+			return false;
+		} else {
+			// some or all items were inserted, buffer size has been adjusted accordingly
+			getOwner().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
+			return true;
+		}
+	}
+
+	private boolean allowsItemsThrough(Material mat) {
+		if (mat.isTransparent()) {
+			return true;
+		}
+		switch (mat) {
+			case GLASS:
+			case THIN_GLASS:
+			case STAINED_GLASS:
+			case STAINED_GLASS_PANE:
+			case WATER:
+			case ICE:
+			case WALL_SIGN:
+			case SIGN_POST:
+				return true;
+		}
+		return false;
+	}
+}

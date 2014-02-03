@@ -1,18 +1,20 @@
 package me.desht.sensibletoolbox.util;
 
 import me.desht.dhutils.Debugger;
+import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.Chargeable;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Skull;
+import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -286,7 +288,7 @@ public class STBUtil {
 	}
 
 	public static boolean isExposed(Block b, BlockFace face) {
-		return !b.getRelative(face).getType().isSolid();
+		return !b.getRelative(face).getType().isOccluding();
 	}
 
 	public static boolean isExposed(Block b) {
@@ -314,5 +316,112 @@ public class STBUtil {
 		} else {
 			throw new IllegalArgumentException("impossible rotation: " + rot);
 		}
+	}
+
+	public static String getChargeString(Chargeable ch) {
+		double d = ch.getCharge() / ch.getMaxCharge();
+		ChatColor cc;
+		if (d < 0.333) {
+			cc = ChatColor.RED;
+		} else if (d < 0.666) {
+			cc = ChatColor.GOLD;
+		} else {
+			cc = ChatColor.GREEN;
+		}
+		return ChatColor.WHITE + "\u2301 " + cc + Math.round(ch.getCharge()) + "/" + ch.getMaxCharge() + " SCU";
+	}
+
+	public static int roundUp(int n, int nearestMultiple)
+	{
+		return n + nearestMultiple - 1 - (n - 1) % nearestMultiple;
+	}
+
+	public static String describeItemStack(ItemStack stack) {
+		if (stack == null) { return "nothing"; }
+		String res = stack.getAmount() + " x ";
+		if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()) {
+			res += stack.getItemMeta().getDisplayName();
+		} else {
+			res += ItemNames.lookup(stack);
+		}
+		return res;
+	}
+
+	/**
+	 * Attempt to insert items from the given buffer into the given block, which should be a
+	 * vanilla inventory holder.  Items successfully inserted will be removed from the buffer stack.
+	 * Any items which could not be inserted will be returned.
+	 *
+	 * @param target the block to insert into
+	 * @param buffer the item stack to take items from
+	 * @param amount the number of items to insert
+	 * @return the number of items actually inserted
+	 */
+	public static int vanillaInsertion(Block target, ItemStack buffer, int amount) {
+		if (buffer == null || buffer.getAmount() == 0) {
+			return 0;
+		}
+		Inventory targetInv = null;
+		switch (target.getType()) {
+			case CHEST:
+				Chest c = (Chest) target.getState();
+				if (c.getInventory().getHolder() instanceof DoubleChest) {
+					DoubleChest dc = (DoubleChest) c.getInventory().getHolder();
+					targetInv = dc.getInventory();
+				} else {
+					targetInv = c.getBlockInventory();
+				}
+				break;
+			case DISPENSER:
+				Dispenser d = (Dispenser) target.getState();
+				targetInv = d.getInventory();
+				break;
+			case HOPPER:
+				Hopper h = (Hopper) target.getState();
+				targetInv = h.getInventory();
+				break;
+			case DROPPER:
+				Dropper dr = (Dropper) target.getState();
+				targetInv = dr.getInventory();
+				break;
+			// TODO other vanilla inventory types
+			default:
+				break;
+		}
+		if (targetInv != null) {
+			ItemStack stack = buffer.clone();
+			stack.setAmount(Math.min(amount, stack.getAmount()));
+			buffer.setAmount(buffer.getAmount() - stack.getAmount());
+			System.out.println("insert " + STBUtil.describeItemStack(stack) + " into " + target);
+			HashMap<Integer,ItemStack> res = targetInv.addItem(stack);
+			if (!res.isEmpty()) {
+				for (ItemStack s : res.values()) {
+					if (s.isSimilar(buffer)) {
+						buffer.setAmount((buffer.getAmount() - stack.getAmount()) + s.getAmount());
+						return stack.getAmount() - s.getAmount();
+					}
+				}
+				return stack.getAmount(); // shouldn't get here
+			} else {
+				buffer.setAmount(buffer.getAmount() - stack.getAmount());
+				return stack.getAmount();
+			}
+		}
+		return 0;
+	}
+
+	private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
+
+	public static String[] formatFilterLore(Filter filter) {
+		String[] lore = new String[(filter.size() + 1) / 2 + 1];
+		String what = filter.isWhiteList() ? "white-listed" : "black-listed";
+		lore[0] = ChatColor.WHITE.toString() + filter.size() + " items " + what;
+		int i = 2;
+		for (String item : filter.listFiltered()) {
+			int n = i / 2;
+			lore[n] = lore[n] == null ? LIST_ITEM + item : lore[n] + " " + LIST_ITEM + item;
+			i++;
+		}
+		return lore;
 	}
 }

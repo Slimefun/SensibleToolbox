@@ -117,7 +117,7 @@ public class PaintBrush extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();

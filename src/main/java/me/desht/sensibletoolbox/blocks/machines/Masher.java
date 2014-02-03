@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.dhutils.ParticleEffect;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
 import org.bukkit.DyeColor;
@@ -12,10 +14,9 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
 
 public class Masher extends SimpleProcessingMachine {
-	private static CustomRecipeCollection recipes = new CustomRecipeCollection();
+	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
 
 	static {
-		System.out.println("adding masher recipes");
 		recipes.addCustomRecipe(new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120);
 		recipes.addCustomRecipe(new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80);
 		Dye white = new Dye();
@@ -70,28 +71,38 @@ public class Masher extends SimpleProcessingMachine {
 	}
 
 	@Override
-	public boolean insertItem(ItemStack item, BlockFace face) {
-		return false;
-	}
-
-	@Override
-	public ItemStack extractItem(BlockFace face) {
-		return null;
-	}
-
-	@Override
 	public int[] getInputSlots() {
 		return new int[] { 10 };
 	}
 
 	@Override
 	public int[] getOutputSlots() {
-		return new int[] { 14 };
+		return new int[] { 14, 15 };
+	}
+
+	@Override
+	public int[] getUpgradeSlots() {
+		return new int[] { 41, 42, 43, 44 };
+	}
+
+	@Override
+	public int getUpgradeLabelSlot() {
+		return 40;
+	}
+
+	@Override
+	public int getEnergyCellSlot() {
+		return 36;
+	}
+
+	@Override
+	public int getChargeDirectionSlot() {
+		return 37;
 	}
 
 	@Override
 	protected int getInventorySize() {
-		return 36;
+		return 45;
 	}
 
 	@Override
@@ -100,11 +111,15 @@ public class Masher extends SimpleProcessingMachine {
 	}
 
 	@Override
-	public boolean acceptsItemType(ItemStack item) {
-		System.out.println("do we accept " + item + " ? " + recipes.hasRecipe(item));
-		return recipes.hasRecipe(item);
+	public int getChargeRate() {
+		return 20;
 	}
 
+	@Override
+	public boolean acceptsItemType(ItemStack item) {
+		System.out.println("does " + this + " accept " + item + " ? " + recipes.hasRecipe(item));
+		return recipes.hasRecipe(item);
+	}
 
 	@Override
 	protected CustomRecipeCollection.CustomRecipe getCustomRecipeFor(ItemStack stack) {
@@ -119,5 +134,17 @@ public class Masher extends SimpleProcessingMachine {
 	@Override
 	protected int getProgressCounterSlot() {
 		return 3;
+	}
+
+	@Override
+	protected Material getProgressIcon() {
+		return Material.GOLD_PICKAXE;
+	}
+
+	@Override
+	protected void playActiveParticleEffect() {
+		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getLocation().getWorld().getFullTime() % 20 == 0) {
+			ParticleEffect.LARGE_SMOKE.play(getLocation().add(0.5, 1.0, 0.5), 0.2f, 1.0f, 0.2f, 0.001f, 5);
+		}
 	}
 }

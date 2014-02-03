@@ -8,6 +8,7 @@ import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -44,7 +45,6 @@ public class ChargeCommand extends AbstractCommand {
 				}
 				stb = LocationManager.getManager().get(b.getLocation());
 				if (stb != null && stb instanceof Chargeable) {
-					System.out.println("found stb block");
 					c = (Chargeable) stb;
 				}
 			}
@@ -68,7 +68,7 @@ public class ChargeCommand extends AbstractCommand {
 			player.setItemInHand(item.toItemStack(1));
 		} else if (stb != null) {
 			stb.updateBlock();
-			MiscUtil.statusMessage(player, "STB Block " + stb + " now has &e" + c.getCharge() + "&- charge.");
+			MiscUtil.statusMessage(player, "&6" + stb.getItemName() + "&- charged to " + STBUtil.getChargeString(c));
 		}
 		return true;
 	}

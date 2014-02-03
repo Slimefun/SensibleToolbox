@@ -10,6 +10,7 @@ public class CustomRecipeCollection {
 
 	public void addCustomRecipe(ItemStack input, ItemStack result, int processingTime) {
 		recipes.put(getSingle(input), new CustomRecipe(result, processingTime));
+		System.out.println("added custom recipe: " + input + " -> " + get(input).toString());
 	}
 
 	public CustomRecipe get(ItemStack input) {
@@ -17,6 +18,9 @@ public class CustomRecipeCollection {
 	}
 
 	public boolean hasRecipe(ItemStack input) {
+//		for (ItemStack key : recipes.keySet()) {
+//			System.out.println(" get recipe: " + key + " => " + recipes.get(key).toString());
+//		}
 		return recipes.containsKey(getSingle(input));
 	}
 
@@ -45,6 +49,11 @@ public class CustomRecipeCollection {
 
 		public ItemStack getResult() {
 			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "Custom recipe: " + result + " in " + processingTime + " ticks";
 		}
 	}
 }

@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
@@ -50,12 +51,18 @@ public class MoistureChecker extends BaseSTBItem {
 		return true;
 	}
 
+	@Override
+	public boolean isIngredientFor(ItemStack result) {
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
+		return item != null && item instanceof AdvancedMoistureChecker;
+	}
+
 	protected int getRadius() {
 		return 1;
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();

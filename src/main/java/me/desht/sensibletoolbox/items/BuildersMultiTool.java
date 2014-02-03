@@ -1,11 +1,13 @@
 package me.desht.sensibletoolbox.items;
 
+import com.google.common.collect.Lists;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.block.MaterialWithData;
 import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.*;
@@ -23,6 +25,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -30,6 +33,7 @@ import java.util.*;
 public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	private static final int MAX_REPLACED = 21;
 	public static final int MAX_BUILD_BLOCKS = 9;
+	public static final int CHARGE_PER_OPERATION = 40;
 	private Mode mode;
 	private double charge;
 	private MaterialWithData mat;
@@ -62,7 +66,12 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	}
 
 	public int getMaxCharge() {
-		return 250;
+		return 10000;
+	}
+
+	@Override
+	public int getChargeRate() {
+		return 100;
 	}
 
 	@Override
@@ -108,19 +117,25 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 
 	@Override
 	public String[] getExtraLore() {
-		return new String[] { getChargeString(this) };
+		return new String[] { STBUtil.getChargeString(this) };
 	}
 
 	@Override
 	public Recipe getRecipe() {
 		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
-		recipe.shape("DPD", "IEI", " B ");
+		ItemStack cell = new ItemStack(Material.LEATHER_HELMET, 1, Material.LEATHER_HELMET.getMaxDurability());
+		recipe.shape("DPD", "BEB", " I ");
 		recipe.setIngredient('D', Material.DIAMOND);
 		recipe.setIngredient('P', Material.DIAMOND_AXE);
 		recipe.setIngredient('I', Material.IRON_INGOT);
-		recipe.setIngredient('E', Material.ENDER_PEARL);
+		recipe.setIngredient('E', cell.getData()); // an empty 10k energy cell
 		recipe.setIngredient('B', Material.IRON_FENCE);
 		return recipe;
+	}
+
+	@Override
+	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
+		return mat == Material.LEATHER_HELMET ? TenKEnergyCell.class : null;
 	}
 
 	@Override
@@ -141,7 +156,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		switch (getMode()) {
 			case BUILD:
 				handleBuildMode(event);
@@ -153,7 +168,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	}
 
 	@Override
-	public void handleMouseWheel(PlayerItemHeldEvent event) {
+	public void onItemHeld(PlayerItemHeldEvent event) {
 		int delta = event.getNewSlot() - event.getPreviousSlot();
 		if (delta == 0) {
 			return;
@@ -208,18 +223,36 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	}
 
 	private Block[] getReplacementCandidates(Player player, Block b, int max) {
-		if (!canReplace(player, b) || mat.getBukkitMaterial() == b.getType() && mat.getData() == b.getData()) {
+		if (!canReplace(player, b) || mat == null || mat.getBukkitMaterial() == b.getType() && mat.getData() == b.getData()) {
 			return new Block[0];
 		}
 
 		if (max <= 1) {
 			return new Block[] { b };
 		} else {
-			Set<Block> res = new HashSet<Block>();
+			Set<Block> res = new HashSet<Block>(max * 4 / 3, 0.75f);
 			recursiveExchangeScan(player, b, b.getType(), b.getData(), res, max, BlockFace.SELF);
+//			floodFillScan(player, b, new MaterialData(b.getType(), b.getData()), res, max);
 			return res.toArray(new Block[res.size()]);
 		}
 	}
+
+//	private void floodFillScan(Player player, Block b, MaterialData targetMat, Set<Block> blocks, int max) {
+//		if (b.getType() != targetMat.getItemType() && b.getData() != targetMat.getData() || blocks.size() > max
+//				|| blocks.contains(b) || !STBUtil.isExposed(b) || !canReplace(player, b)) {
+//			return;
+//		}
+//		blocks.add(b);
+//		for (int x = -1; x <= 1; x++) {
+//			for (int y = -1; y <= 1; y++) {
+//				for (int z = -1; z <= 1; z++) {
+//					if (x != 0 || y != 0 || z != 0) {
+//						floodFillScan(player, b.getRelative(x, y, z), targetMat, blocks, max);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	private void recursiveExchangeScan(Player player, Block b, Material mat, byte data, Set<Block> blocks, int max, BlockFace fromDirection) {
 		if (b.getType() != mat || b.getData() != data || blocks.size() > max || blocks.contains(b)
@@ -251,7 +284,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 		ItemStack inHand = player.getItemInHand();
 
 		int nAffected = Math.min(blocks.length, howMuchDoesPlayerHave(player, mat));
-		double chargeNeeded = nAffected * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
+		double chargeNeeded = CHARGE_PER_OPERATION * nAffected * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
 		if (nAffected > 0 && getCharge() >= chargeNeeded) {
 			setCharge(getCharge() - chargeNeeded);
 			ItemCost taken = new ItemCost(mat.getBukkitMaterial(), mat.getData(), nAffected);
@@ -339,7 +372,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 
 	private void doBuild(Player player, Block source, List<Block> actualBlocks) {
 		ItemStack inHand = player.getItemInHand();
-		double chargeNeeded = actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
+		double chargeNeeded = CHARGE_PER_OPERATION * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
 		if (getCharge() >= chargeNeeded) {
 			setCharge(getCharge() - chargeNeeded);
 			ItemCost cost = new ItemCost(source.getType(), source.getData(), actualBlocks.size());
@@ -357,57 +390,75 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	private List<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
 		int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
 		int max = MAX_BUILD_BLOCKS + sharpness * 2;
-		Block b = clickedBlock.getRelative(blockFace);
-		List<Block> blocks = new ArrayList<Block>(max);
-		if (b.isEmpty()) {
-			blocks.add(b);
-			if (player.isSneaking()) {
-				return blocks;
-			}
-			for (int i = 1; i < 10; i++) {
-				List<Block> found = findSquare(player, clickedBlock, blockFace, i, blocks.size(), max);
-				blocks.addAll(found);
-				if (found.isEmpty()) {
-					break;
-				}
-			}
+		if (player.isSneaking()) {
+			max = 1;
 		}
-
-		return blocks;
+		Set<Block> blocks = new HashSet<Block>(max * 4 / 3, 0.75f);
+		floodFill2D(player, clickedBlock.getRelative(blockFace),
+				new MaterialData(clickedBlock.getType(), clickedBlock.getData()),
+				blockFace.getOppositeFace(), getBuildFaces(blockFace), max, blocks);
+		return Lists.newArrayList(blocks);
 	}
 
-	private List<Block> findSquare(Player player, Block centre, BlockFace face, int radius, int currentAmount, int max) {
-		Block b = centre.getRelative(face);
-		BlockFace oppositeFace = face.getOppositeFace();
-		List<Block> res = new ArrayList<Block>();
-		LOOP: for (int i = -radius; i <= radius; i++) {
-			for (int j = -radius; j <= radius; j++) {
-				if (i > -radius && i < radius && j == -radius + 1) {
-					j = radius;
-				}
-				Block toCheck;
-				switch (face) {
-					case NORTH: case SOUTH: toCheck = b.getRelative(i, j, 0); break;
-					case UP: case DOWN: toCheck = b.getRelative(i, 0, j); break;
-					case EAST: case WEST: toCheck = b.getRelative(0, i, j); break;
-					default: throw new IllegalArgumentException("invalid face " + face);
-				}
-				if (toCheck.isEmpty()) {
-					Block rel = toCheck.getRelative(oppositeFace);
-					if (rel.getType() == centre.getType() && rel.getData() == centre.getData() && canReplace(player, toCheck)) {
-						res.add(toCheck);
-					}
-				}
-				if (currentAmount + res.size() >= max) {
-					break LOOP;
-				}
-			}
+	private void floodFill2D(Player player, Block b, MaterialData target, BlockFace face, BlockFace[] faces, int max, Set<Block> blocks) {
+		Block b0 = b.getRelative(face);
+		if (!b.isEmpty() && !b.isLiquid() || b0.getType() != target.getItemType() || b0.getData() != target.getData()
+				|| blocks.size() > max || blocks.contains(b) || !canReplace(player, b)) {
+			return;
 		}
-		return res;
+		blocks.add(b);
+		for (BlockFace dir : faces) {
+			floodFill2D(player, b.getRelative(dir), target, face, faces, max, blocks);
+		}
 	}
+
+	private BlockFace[] getBuildFaces(BlockFace face) {
+		switch (face) {
+			case NORTH:case SOUTH: return BuildFaces.ns;
+			case EAST:case WEST: return BuildFaces.ew;
+			case UP:case DOWN: return BuildFaces.ud;
+		}
+		throw new IllegalArgumentException("invalid face: " + face);
+	}
+
+//	private List<Block> findSquare(Player player, Block centre, BlockFace face, int radius, int currentAmount, int max) {
+//		Block b = centre.getRelative(face);
+//		BlockFace oppositeFace = face.getOppositeFace();
+//		List<Block> res = new ArrayList<Block>();
+//		LOOP: for (int i = -radius; i <= radius; i++) {
+//			for (int j = -radius; j <= radius; j++) {
+//				if (i > -radius && i < radius && j == -radius + 1) {
+//					j = radius;
+//				}
+//				Block toCheck;
+//				switch (face) {
+//					case NORTH: case SOUTH: toCheck = b.getRelative(i, j, 0); break;
+//					case UP: case DOWN: toCheck = b.getRelative(i, 0, j); break;
+//					case EAST: case WEST: toCheck = b.getRelative(0, i, j); break;
+//					default: throw new IllegalArgumentException("invalid face " + face);
+//				}
+//				if (toCheck.isEmpty()) {
+//					Block rel = toCheck.getRelative(oppositeFace);
+//					if (rel.getType() == centre.getType() && rel.getData() == centre.getData() && canReplace(player, toCheck)) {
+//						res.add(toCheck);
+//					}
+//				}
+//				if (currentAmount + res.size() >= max) {
+//					break LOOP;
+//				}
+//			}
+//		}
+//		return res;
+//	}
 
 	private enum Mode {
 		BUILD, EXCHANGE
+	}
+
+	private static class BuildFaces {
+		private static final BlockFace[] ns = {  BlockFace.EAST, BlockFace.DOWN, BlockFace.WEST, BlockFace.UP };
+		private static final BlockFace[] ew = {  BlockFace.NORTH, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.UP };
+		private static final BlockFace[] ud = {  BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
 	}
 
 	private static class ExchangeFaces {

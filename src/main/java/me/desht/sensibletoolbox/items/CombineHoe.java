@@ -80,7 +80,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		Block b = event.getClickedBlock();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (b.getType() == Material.SOIL) {

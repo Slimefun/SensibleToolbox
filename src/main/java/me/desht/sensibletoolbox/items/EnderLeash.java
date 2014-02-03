@@ -108,7 +108,7 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !STBUtil.isInteractive(event.getClickedBlock().getType())) {
 			if (capturedConf != null) {
 				Block where = event.getClickedBlock().getRelative(event.getBlockFace());

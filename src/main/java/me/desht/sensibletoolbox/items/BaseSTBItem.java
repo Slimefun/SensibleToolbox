@@ -8,6 +8,14 @@ import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.Masher;
+import me.desht.sensibletoolbox.blocks.machines.Smelter;
+import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
+import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
+import me.desht.sensibletoolbox.items.filter.ItemFilter;
+import me.desht.sensibletoolbox.items.filter.ReverseItemFilter;
+import me.desht.sensibletoolbox.items.itemroutermodules.*;
+import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
+import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,6 +25,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -59,9 +68,24 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new TapeMeasure());
 		registerItem(new BuildersMultiTool());
 		registerItem(new Floodlight());
+		registerItem(new Smelter());
 		registerItem(new Masher());
 		registerItem(new IronDust());
 		registerItem(new GoldDust());
+		registerItem(new ItemFilter());
+		registerItem(new ReverseItemFilter());
+		registerItem(new ItemRouter());
+		registerItem(new BlankModule());
+		registerItem(new PullerModule());
+		registerItem(new DropperModule());
+		registerItem(new SenderModule());
+		registerItem(new ReceiverModule());
+		registerItem(new StackModule());
+		registerItem(new SpeedModule());
+		registerItem(new TenKEnergyCell());
+		registerItem(new FiftyKEnergyCell());
+		registerItem(new SpeedUpgrade());
+		registerItem(new EjectorUpgrade());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -88,6 +112,17 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		}
 	}
 
+	/**
+	 * Given a material name, return the type of STB item that crafting ingredients of this type
+	 * must be to count as a valid crafting ingredient for this item.
+	 *
+	 * @param mat the ingredient material
+	 * @return null for no restriction, or a BaseSTBItem subclass to specify a restriction
+	 */
+	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
+		return null;
+	}
+
 	public static Class<? extends BaseSTBItem> getCustomSmelt(Material mat) {
 		return customSmelts.get(mat);
 	}
@@ -100,7 +135,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		if (!isSTBItem(stack)) {
 			return null;
 		}
-		System.out.println("get item from stack : " + stack);
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
 		Configuration conf = BaseSTBItem.getItemAttributes(stack);
 		BaseSTBItem item = getItemByName((disp.split(":"))[0], conf);
@@ -123,11 +157,15 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		return ids.containsKey(id) ? BaseSTBItem.getItemByName(ids.get(id)) : null;
 	}
 
+	public static BaseSTBItem getItemById(String id, ConfigurationSection conf) {
+		return ids.containsKey(id) ? BaseSTBItem.getItemByName(ids.get(id), conf) : null;
+	}
+
 	public static BaseSTBItem getItemByName(String disp) {
 		return getItemByName(disp, null);
 	}
 
-	public static BaseSTBItem getItemByName(String disp, Configuration conf) {
+	public static BaseSTBItem getItemByName(String disp, ConfigurationSection conf) {
 		Class<? extends BaseSTBItem> c = registry.get(disp);
 		if (c == null) {
 			return null;
@@ -147,11 +185,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	public static boolean isSTBItem(ItemStack stack) {
-		if (stack == null) {
+		if (stack == null || !stack.hasItemMeta()) {
 			return false;
 		}
 		ItemMeta im = stack.getItemMeta();
-		if (im != null && im.hasLore()) {
+		if (im.hasLore()) {
 			List<String> lore = im.getLore();
 			return !lore.isEmpty() && lore.get(0).equals(STB_LORE_LINE);
 		} else {
@@ -178,18 +216,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		}
 	}
 
-	public static String getChargeString(Chargeable ch) {
-		double d = ch.getCharge() / ch.getMaxCharge();
-		ChatColor cc;
-		if (d < 0.333) {
-			cc = ChatColor.RED;
-		} else if (d < 0.666) {
-			cc = ChatColor.GOLD;
-		} else {
-			cc = ChatColor.GREEN;
-		}
-		return ChatColor.WHITE + "\u2301 " + cc + Math.round(ch.getCharge()) + "/" + ch.getMaxCharge();
-	}
 
 	private void storeEnchants(ItemStack stack) {
 		enchants = stack.getEnchantments();
@@ -260,14 +286,14 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @param event the interaction event.
 	 */
-	public void handleItemInteraction(PlayerInteractEvent event) { }
+	public void onInteractItem(PlayerInteractEvent event) { }
 
 	/**
 	 * Called when a player attempts to consume an STB item (which must be food or potion).
 	 *
 	 * @param event the consume event
 	 */
-	public void handleConsume(PlayerItemConsumeEvent event) { }
+	public void onItemConsume(PlayerItemConsumeEvent event) { }
 
 	/**
 	 * Called when a player interacts with an entity while holding an STB item.
@@ -281,7 +307,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @param event the held item change event
 	 */
-	public void handleMouseWheel(PlayerItemHeldEvent event) { }
+	public void onItemHeld(PlayerItemHeldEvent event) { }
 
 	/**
 	 * Get the item into which this object would be smelted into
@@ -289,6 +315,24 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @return the resulting itemstack, or null if this object does not smelt
 	 */
 	public ItemStack getSmeltingResult() { return null; }
+
+	/**
+	 * Check if this item is used as an ingredient for the given resulting item.
+	 *
+	 * @param result the resulting item
+	 * @return true if this item may be used, false otherwise
+	 */
+	public boolean isIngredientFor(ItemStack result) { return false; }
+
+	/**
+	 * Called when an attempt is made to craft this item.  Default behaviour is to allow it;
+	 * override this if the recipe involves special ingredients (e.g. other STB items) and
+	 * you need to validate metadata etc.
+	 *
+	 * @param event the PrepareItemCraftEvent
+	 * @return true if crafting should proceed, false otherwise
+	 */
+	public boolean onCraftingAttempt(PrepareItemCraftEvent event) { return true; }
 
 	/**
 	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
@@ -354,7 +398,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 	@Override
 	public String toString() {
-		return "STB item: " + getItemName();
+		return "STB " + getItemName();
 	}
 
 	@Override

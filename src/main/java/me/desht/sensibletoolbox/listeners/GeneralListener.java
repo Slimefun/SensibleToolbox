@@ -3,14 +3,13 @@ package me.desht.sensibletoolbox.listeners;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.IronDust;
+import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.*;
@@ -23,6 +22,7 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.Sign;
 
 import java.util.Iterator;
+import java.util.Map;
 
 public class GeneralListener extends STBBaseListener {
 	public GeneralListener(SensibleToolboxPlugin plugin) {
@@ -34,9 +34,9 @@ public class GeneralListener extends STBBaseListener {
 		ItemStack stack = event.getPlayer().getItemInHand();
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
-			item.handleItemInteraction(event);
+			item.onInteractItem(event);
 		}
-		if (event.getClickedBlock() != null && !event.getPlayer().isSneaking()) {
+		if (event.getClickedBlock() != null) {
 			BaseSTBBlock stb = LocationManager.getManager().get(event.getClickedBlock().getLocation());
 			if (stb != null) {
 				stb.onInteractBlock(event);
@@ -58,7 +58,7 @@ public class GeneralListener extends STBBaseListener {
 		ItemStack stack = event.getPlayer().getItemInHand();
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
-			item.handleConsume(event);
+			item.onItemConsume(event);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class GeneralListener extends STBBaseListener {
 			ItemStack stack = event.getPlayer().getItemInHand();
 			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 			if (item != null) {
-				item.handleMouseWheel(event);
+				item.onItemHeld(event);
 				event.setCancelled(true);
 			}
 		}
@@ -152,19 +152,46 @@ public class GeneralListener extends STBBaseListener {
 	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void onItemCraft(CraftItemEvent event) {
+	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+		System.out.println("resulting item: " + event.getInventory().getResult());
 		// prevent STB items being used in vanilla crafting recipes
-		for (ItemStack stack : event.getInventory().getMatrix()) {
-			if (BaseSTBItem.isSTBItem(stack)) {
-				event.setCancelled(true);
+		for (ItemStack ingredient : event.getInventory().getMatrix()) {
+			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(ingredient);
+			if (item != null && !item.isIngredientFor(event.getRecipe().getResult())) {
+				System.out.println(item + " is not an ingredient for " + event.getRecipe().getResult());
+				event.getInventory().setResult(null);
 				break;
 			}
 		}
+
+		// and ensure vanilla items can't be used in place of custom STB ingredients
+		BaseSTBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
+		if (result != null) {
+			System.out.println("check restrictions - " + result);
+			for (ItemStack ingredient : event.getInventory().getMatrix()) {
+				if (ingredient != null) {
+					Class<? extends BaseSTBItem> c = result.getCraftingRestriction(ingredient.getType());
+					if (c != null) {
+						System.out.println(" - " + ingredient.getType() + " needs to be a " + c.getName());
+						BaseSTBItem item = BaseSTBItem.getItemFromItemStack(ingredient, c);
+						if (item == null) {
+							System.out.println(" but it isn't !");
+							event.getInventory().setResult(null);
+							break;
+						} else {
+							System.out.println(" and it is!");
+						}
+					}
+				}
+			}
+		}
+		System.out.println("resulting item now: " + event.getInventory().getResult());
 	}
 
 	@EventHandler
 	public void onBurn(FurnaceBurnEvent event) {
-		System.out.println("furnace burn!");
+		// for those STB items which can be smelted, ensure the vanilla item using
+		// that material can't also be smelted (a furnace recipe will have been added previously)
 		Block b = event.getBlock();
 		Furnace f = (Furnace) b.getState();
 		ItemStack stack = f.getInventory().getSmelting();
@@ -174,6 +201,37 @@ public class GeneralListener extends STBBaseListener {
 			System.out.println("no smelting vanilla item: " + stack);
 			b.getLocation().getWorld().dropItemNaturally(b.getLocation(), stack);
 			f.getInventory().setSmelting(null);
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+//		System.out.println("inv click, slot=" + event.getSlot() + " raw=" + event.getRawSlot() + " type=" + event.getSlotType());
+//		System.out.println("  inv type=" + event.getInventory().getType() + " action=" + event.getAction());
+		if (event.getInventory().getType() == InventoryType.CRAFTING) {
+			if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {
+				if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+					BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem());
+					if (item != null && item instanceof EnergyCell) {
+						// no shift-clicking a energy cell into the helmet slot
+						event.setCancelled(true);
+					}
+				}
+			} else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
+				BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor());
+				if (item != null && item instanceof EnergyCell) {
+					// no placing an energy cell into the helmet slot
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onBlockDispense(BlockDispenseEvent event) {
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+		if (item != null && item instanceof EnergyCell) {
 			event.setCancelled(true);
 		}
 	}

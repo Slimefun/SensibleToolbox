@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.items;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 
 public class AdvancedMoistureChecker extends MoistureChecker {
 	@Override
@@ -12,12 +13,15 @@ public class AdvancedMoistureChecker extends MoistureChecker {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
-		recipe.shape("S", "D", "I");
-		recipe.setIngredient('S', Material.SIGN);
-		recipe.setIngredient('D', Material.DIODE);
-		recipe.setIngredient('I', Material.DIAMOND_SWORD);
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		recipe.addIngredient(Material.GHAST_TEAR); // in fact, a Moisture Checker - see below
+		recipe.addIngredient(Material.DIAMOND);
 		return recipe;
+	}
+
+	@Override
+	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
+		return mat == Material.GHAST_TEAR ? MoistureChecker.class : null;
 	}
 
 	protected int getRadius() {

@@ -54,7 +54,7 @@ public class AngelicBlock extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			// place the block in the air 2 blocks in the direction the player is looking at
 			Player p = event.getPlayer();

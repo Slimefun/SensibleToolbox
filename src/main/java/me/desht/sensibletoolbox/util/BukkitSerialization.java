@@ -25,15 +25,22 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
  */
 public class BukkitSerialization {
 	public static String toBase64(Inventory inventory) {
+		return toBase64(inventory, 0);
+	}
+
+	public static String toBase64(Inventory inventory, int maxItems) {
+		if (maxItems <= 0) maxItems = inventory.getSize();
+		else if (maxItems > inventory.getSize()) maxItems = inventory.getSize();
+
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
 
 			// Write the size of the inventory
-			dataOutput.writeInt(inventory.getSize());
+			dataOutput.writeInt(maxItems);
 
 			// Save every element in the list
-			for (int i = 0; i < inventory.getSize(); i++) {
+			for (int i = 0; i < maxItems; i++) {
 				ItemStack stack = inventory.getItem(i);
 				Attributes attributes = stack == null ? null : new Attributes(stack);
 				dataOutput.writeObject(stack);
@@ -54,7 +61,7 @@ public class BukkitSerialization {
 			// Serialize that array
 			dataOutput.close();
 			return Base64Coder.encodeLines(outputStream.toByteArray());
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new IllegalStateException("Unable to save item stacks.", e);
 		}
 	}
@@ -63,10 +70,12 @@ public class BukkitSerialization {
 		try {
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
 			BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-			Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt());
+			int maxItems = dataInput.readInt();
+			int invSize = STBUtil.roundUp(maxItems, 9);  // Bukkit inventory size must be multiple of 9
+			Inventory inventory = Bukkit.getServer().createInventory(null, invSize);
 
 			// Read the serialized inventory
-			for (int i = 0; i < inventory.getSize(); i++) {
+			for (int i = 0; i < maxItems; i++) {
 				ItemStack stack = (ItemStack) dataInput.readObject();
 				int nAttrs = dataInput.readInt();
 				if (nAttrs > 0) {

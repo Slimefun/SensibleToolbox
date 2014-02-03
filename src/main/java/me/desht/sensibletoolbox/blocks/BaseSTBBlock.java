@@ -16,7 +16,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -162,7 +161,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 			}
 		} else {
 			if (persistableLocation != null) {
-				Block origin = persistableLocation.getBlock();
 				for (RelativePosition pos : getBlockStructure()) {
 					Block b1 = getMultiBlock(pos);
 					b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
@@ -214,7 +212,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	}
 
 	public void breakBlock(Block b) {
-		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack(1));
 		Block origin = getLocation().getBlock();
 		origin.setType(Material.AIR);
 		for (RelativePosition pos : getBlockStructure()) {
@@ -222,6 +219,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 			b1.setType(Material.AIR);
 		}
 		LocationManager.getManager().unregisterLocation(getLocation());
+		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack(1));
 	}
 
 	@Override
@@ -258,6 +256,24 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
 	protected void attachLabelSign(PlayerInteractEvent event) {
 		Block signBlock = event.getClickedBlock().getRelative(event.getBlockFace());
+
+		if (!signBlock.isEmpty()) {
+			// could be a carpet or something like that there
+			BlockBreakEvent breakEvent = new BlockBreakEvent(signBlock, event.getPlayer());
+			Bukkit.getPluginManager().callEvent(breakEvent);
+			if (event.isCancelled()) {
+				return;
+			}
+			signBlock.breakNaturally();
+		}
+
+		BlockPlaceEvent placeEvent = new BlockPlaceEvent(signBlock, signBlock.getState(), event.getClickedBlock(), event.getItem(), event.getPlayer(), true);
+		Bukkit.getPluginManager().callEvent(placeEvent);
+		if (event.isCancelled()) {
+			return;
+		}
+
+		// ok, player is allowed to put a sign here
 		signBlock.setTypeIdAndData(event.getBlockFace() == BlockFace.UP ? Material.SIGN_POST.getId() : Material.WALL_SIGN.getId(), (byte) 0, false);
 		Sign sign = (Sign) signBlock.getState();
 		org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
@@ -273,12 +289,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		}
 		sign.update();
 		ItemStack stack = event.getPlayer().getItemInHand();
-		if (stack.getAmount() > 1) {
-			stack.setAmount(stack.getAmount() - 1);
-			event.getPlayer().setItemInHand(stack);
-		} else {
-			event.getPlayer().setItemInHand(null);
-		}
+		stack.setAmount(stack.getAmount() - 1);
+		event.getPlayer().setItemInHand(stack.getAmount() <= 0 ? null : stack);
 	}
 
 	protected String[] getSignLabel() {
@@ -287,7 +299,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
 	@Override
 	public String toString() {
-		return "STB block: " + getItemName() + " @ " +
+		return "STB " + getItemName() + " @ " +
 				(getLocation() == null ? "(null)" : MiscUtil.formatLocation(getLocation()));
 	}
 

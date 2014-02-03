@@ -53,7 +53,7 @@ public class BagOfHolding extends BaseSTBBlock {
 	}
 
 	@Override
-	public void handleItemInteraction(PlayerInteractEvent event) {
+	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (event.getClickedBlock() != null && STBUtil.isInteractive(event.getClickedBlock().getType())) {
 				return;

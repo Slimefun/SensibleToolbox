@@ -1,5 +1,8 @@
 package me.desht.sensibletoolbox.storage;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +25,11 @@ public class STBWorldMap {
 	}
 
 	public void tick() {
-		for (STBChunkMap stcm : map.values()) {
-			stcm.tick();
+		for (String worldName : map.keySet()) {
+			World w = Bukkit.getWorld(worldName);
+			if (w != null) {
+				map.get(worldName).tick(w);
+			}
 		}
 	}
 

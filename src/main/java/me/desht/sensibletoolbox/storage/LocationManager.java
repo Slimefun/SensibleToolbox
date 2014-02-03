@@ -22,7 +22,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class LocationManager {
-	private static final long MIN_SAVE_INTERVAL = 10000;  // 10 sec
+	private static final long MIN_SAVE_INTERVAL = 30000;  // 10 sec
 	private static final FilenameFilter ymlFilter = new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
@@ -58,6 +58,7 @@ public class LocationManager {
 		return instance;
 	}
 
+	@SuppressWarnings("CloneDoesntCallSuperClone")
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
@@ -158,21 +159,29 @@ public class LocationManager {
 			return;
 		}
 
+		LogUtils.info("saving " + dirtyChunks.size() + " chunks");
 		for (Map.Entry<String, Set<ChunkCoords>> entry : dirtyChunks.entrySet()) {
 			for (ChunkCoords cc : entry.getValue()) {
 				YamlConfiguration conf = worldMap.get(entry.getKey()).get(cc).freeze();
 				File dir = getWorldFolder(entry.getKey());
 				File f = new File(dir, "C_" + cc.getX() + "_" + cc.getZ() + ".yml");
 				try {
-					Debugger.getInstance().debug("saving " + conf.getKeys(false).size() + " objects to " + f);
-					conf.save(f);
+					if (conf.getKeys(false).size() == 0) {
+						Debugger.getInstance().debug("deleting empty chunk file " + f);
+						if (!f.delete()) {
+							LogUtils.warning("can't delete " + f);
+						}
+					} else {
+						Debugger.getInstance().debug("saving " + conf.getKeys(false).size() + " objects to " + f);
+						conf.save(f);
+					}
 				} catch (IOException e) {
 					LogUtils.severe("can't save data to " + f);
 				}
 			}
 			entry.getValue().clear();
 		}
-
+		lastSave = System.currentTimeMillis();
 		saveNeeded = false;
 	}
 
@@ -202,13 +211,13 @@ public class LocationManager {
 						BlockPosition pos = BlockPosition.fromString(k);
 						Location loc = new Location(world, pos.getX(), pos.getY(), pos.getZ());
 						String type = cs.getString("TYPE");
-						BaseSTBItem tmpl = BaseSTBItem.getItemById(type);
+						BaseSTBItem tmpl = BaseSTBItem.getItemById(type, cs);
 						if (tmpl != null) {
 							if (tmpl instanceof BaseSTBBlock) {
-								BaseSTBBlock tmplB = (BaseSTBBlock) tmpl;
-								Constructor<? extends BaseSTBBlock> ctor = tmplB.getClass().getDeclaredConstructor(ConfigurationSection.class);
-								BaseSTBBlock stb = ctor.newInstance(cs);
-								registerLocation(loc, stb);
+//								BaseSTBBlock tmplB = (BaseSTBBlock) tmpl;
+//								Constructor<? extends BaseSTBBlock> ctor = tmplB.getClass().getDeclaredConstructor(ConfigurationSection.class);
+//								BaseSTBBlock stb = ctor.newInstance(cs);
+								registerLocation(loc, (BaseSTBBlock) tmpl);
 							} else {
 								LogUtils.severe("STB item " + type + " @ " + loc + " is not a block!");
 							}
