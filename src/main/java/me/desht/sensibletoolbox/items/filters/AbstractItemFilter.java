@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.items.filter;
+package me.desht.sensibletoolbox.items.filters;
 
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.Filter;
@@ -12,10 +12,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import java.util.List;
 
 public abstract class AbstractItemFilter extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.BOOK);
+
 	private final Filter filter;
 
 	protected AbstractItemFilter() {
@@ -43,13 +46,13 @@ public abstract class AbstractItemFilter extends BaseSTBItem {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.BOOK;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Insert into an item router module", "to filter what the module will process.", "R-click: open filter GUI" };
+		return new String[] { "Insert into an item router module", "to filters what the module will process.", "R-click: open filters GUI" };
 	}
 
 	@Override

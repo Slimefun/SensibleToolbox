@@ -10,6 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 
@@ -189,6 +190,19 @@ public class STBUtil {
 		return true;
 	}
 
+	public static boolean isPotionIngredient(MaterialData type) {
+		switch (type.getItemType()) {
+			case NETHER_STALK: case REDSTONE: case GHAST_TEAR: case GLOWSTONE_DUST: case SULPHUR:
+				case SPECKLED_MELON: case MAGMA_CREAM: case BLAZE_POWDER: case SUGAR: case SPIDER_EYE:
+				case FERMENTED_SPIDER_EYE: case GOLDEN_CARROT:
+				return true;
+		}
+		if (type.getItemType() == Material.RAW_FISH && type.getData() == 3) {
+			return true; // pufferfish
+		}
+		return false;
+	}
+
 	/**
 	 * Create a skull with the given player skin
 	 *
@@ -347,68 +361,7 @@ public class STBUtil {
 		return res;
 	}
 
-	/**
-	 * Attempt to insert items from the given buffer into the given block, which should be a
-	 * vanilla inventory holder.  Items successfully inserted will be removed from the buffer stack.
-	 * Any items which could not be inserted will be returned.
-	 *
-	 * @param target the block to insert into
-	 * @param buffer the item stack to take items from
-	 * @param amount the number of items to insert
-	 * @return the number of items actually inserted
-	 */
-	public static int vanillaInsertion(Block target, ItemStack buffer, int amount) {
-		if (buffer == null || buffer.getAmount() == 0) {
-			return 0;
-		}
-		Inventory targetInv = null;
-		switch (target.getType()) {
-			case CHEST:
-				Chest c = (Chest) target.getState();
-				if (c.getInventory().getHolder() instanceof DoubleChest) {
-					DoubleChest dc = (DoubleChest) c.getInventory().getHolder();
-					targetInv = dc.getInventory();
-				} else {
-					targetInv = c.getBlockInventory();
-				}
-				break;
-			case DISPENSER:
-				Dispenser d = (Dispenser) target.getState();
-				targetInv = d.getInventory();
-				break;
-			case HOPPER:
-				Hopper h = (Hopper) target.getState();
-				targetInv = h.getInventory();
-				break;
-			case DROPPER:
-				Dropper dr = (Dropper) target.getState();
-				targetInv = dr.getInventory();
-				break;
-			// TODO other vanilla inventory types
-			default:
-				break;
-		}
-		if (targetInv != null) {
-			ItemStack stack = buffer.clone();
-			stack.setAmount(Math.min(amount, stack.getAmount()));
-			buffer.setAmount(buffer.getAmount() - stack.getAmount());
-			System.out.println("insert " + STBUtil.describeItemStack(stack) + " into " + target);
-			HashMap<Integer,ItemStack> res = targetInv.addItem(stack);
-			if (!res.isEmpty()) {
-				for (ItemStack s : res.values()) {
-					if (s.isSimilar(buffer)) {
-						buffer.setAmount((buffer.getAmount() - stack.getAmount()) + s.getAmount());
-						return stack.getAmount() - s.getAmount();
-					}
-				}
-				return stack.getAmount(); // shouldn't get here
-			} else {
-				buffer.setAmount(buffer.getAmount() - stack.getAmount());
-				return stack.getAmount();
-			}
-		}
-		return 0;
-	}
+
 
 	private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
 

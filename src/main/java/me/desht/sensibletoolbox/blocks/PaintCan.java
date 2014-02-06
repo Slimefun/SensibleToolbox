@@ -23,6 +23,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class PaintCan extends BaseSTBBlock {
@@ -75,8 +77,8 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return getPaintLevel() > 0 ? Material.WOOL : Material.STAINED_GLASS;
+	public MaterialData getMaterialData() {
+		return getPaintLevel() > 0 ? new Wool(colour) : new MaterialData(Material.STAINED_GLASS, colour.getWoolData());
 	}
 
 	@Override
@@ -102,11 +104,6 @@ public class PaintCan extends BaseSTBBlock {
 		recipe.setIngredient('S', Material.WOOD_STEP);
 		recipe.setIngredient('I', Material.IRON_INGOT);
 		return recipe;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return colour.getWoolData();
 	}
 
 	@Override
@@ -224,7 +221,8 @@ public class PaintCan extends BaseSTBBlock {
 				setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
 			}
 			Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColour());
-			updateBlock();
+			updateBlock(true);
+			updateAttachedLabelSigns();
 			inventory.setItem(bucketSlot, new ItemStack(Material.BUCKET));
 			ItemStack dyeStack = inventory.getItem(dyeSlot);
 			if (dyeStack.getAmount() > 1) {
@@ -247,32 +245,39 @@ public class PaintCan extends BaseSTBBlock {
 		}
 	}
 
-	private void maybeUpdateSign() {
-		Block b = getLocation().getBlock();
-		for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH} ) {
-			if (b.getRelative(face).getType() == Material.WALL_SIGN) {
-				Debugger.getInstance().debug(this + ": update sign " + face);
-				Sign sign = (Sign) b.getRelative(face).getState();
-				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
-				if (sign.getLine(0).equals(getItemName())) {
-					if (s.getAttachedFace() == face.getOppositeFace()) {
-						String[] text = getSignLabel();
-						for (int i = 0; i < text.length; i++) {
-							sign.setLine(i, text[i]);
-						}
-						sign.update();
-						break;
-					}
-				}
-			}
-		}
-	}
+//	protected void updateAttachedLabelSigns() {
+//		String[] text = getSignLabel();
+//		for (Sign sign : findAttachedLabelSigns()) {
+//			for (int i = 0; i < text.length; i++) {
+//				sign.setLine(i, text[i]);
+//			}
+//			sign.update();
+//		}
+//		Block b = getLocation().getBlock();
+//		for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH} ) {
+//			if (b.getRelative(face).getType() == Material.WALL_SIGN) {
+//				Debugger.getInstance().debug(this + ": update sign " + face);
+//				Sign sign = (Sign) b.getRelative(face).getState();
+//				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
+//				if (sign.getLine(0).equals(getItemName())) {
+//					if (s.getAttachedFace() == face.getOppositeFace()) {
+//						String[] text = getSignLabel();
+//						for (int i = 0; i < text.length; i++) {
+//							sign.setLine(i, text[i]);
+//						}
+//						sign.update();
+//						break;
+//					}
+//				}
+//			}
+//		}
+//	}
 
-	@Override
-	public void updateBlock() {
-		super.updateBlock();
-		maybeUpdateSign();
-	}
+//	@Override
+//	public void updateBlock() {
+//		super.updateBlock();
+//		updateAttachedLabelSigns();
+//	}
 
 	private DyeColor mixDyes(DyeColor dye1, DyeColor dye2) {
 		if (dye1.compareTo(dye2) > 0) {

@@ -5,10 +5,12 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 import java.util.Map;
 
 public class IronCombineHoe extends CombineHoe {
+	private static final MaterialData md = new MaterialData(Material.IRON_HOE);
 
 	public IronCombineHoe(ConfigurationSection conf) {
 		super(conf);
@@ -18,8 +20,8 @@ public class IronCombineHoe extends CombineHoe {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.IRON_HOE;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

@@ -1,24 +1,17 @@
 package me.desht.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.items.PaintBrush;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
-
-import java.util.Map;
+import org.bukkit.material.MaterialData;
 
 public class Elevator extends BaseSTBBlock implements Colorable {
 	private DyeColor color;
@@ -47,13 +40,8 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STAINED_CLAY;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return color.getWoolData();
+	public MaterialData getMaterialData() {
+		return new MaterialData(Material.STAINED_CLAY, color.getWoolData());
 	}
 
 	@Override

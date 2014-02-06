@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -23,12 +24,14 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class BagOfHolding extends BaseSTBBlock {
+	private static final MaterialData md = new MaterialData(Material.ENDER_PORTAL_FRAME);
+
 	public static final String BAG_SAVE_DIR = "bagofholding";
 	public static final int BAG_SIZE = 54;
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.ENDER_PORTAL_FRAME;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

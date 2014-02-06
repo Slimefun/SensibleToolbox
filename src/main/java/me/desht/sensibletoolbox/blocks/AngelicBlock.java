@@ -4,6 +4,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +19,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 public class AngelicBlock extends BaseSTBBlock {
+	private static final MaterialData md = new MaterialData(Material.OBSIDIAN);
+
 	public AngelicBlock() {
 	}
 
@@ -29,8 +33,8 @@ public class AngelicBlock extends BaseSTBBlock {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.OBSIDIAN;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -70,7 +74,7 @@ public class AngelicBlock extends BaseSTBBlock {
 				} else {
 					p.setItemInHand(new ItemStack(Material.AIR));
 				}
-				b.setType(getBaseMaterial());
+				b.setType(getMaterial());
 				placeBlock(b, STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
 			}
 		}
@@ -104,8 +108,7 @@ public class AngelicBlock extends BaseSTBBlock {
 	@Override
 	public void onServerTick() {
 		Location loc = getLocation();
-		long time = loc.getWorld().getTime();
-		if (time % 40 == 0) {
+		if (getTicksLived() % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
 				ParticleEffect.CLOUD.play(loc.add(0, 0.5, 0), 0f, 0f, 0f, 0.25f, 4);
 			} else {

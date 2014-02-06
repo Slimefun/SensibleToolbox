@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
+import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
@@ -9,10 +10,11 @@ import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.Masher;
 import me.desht.sensibletoolbox.blocks.machines.Smelter;
+import me.desht.sensibletoolbox.blocks.machines.StirlingGenerator;
 import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
-import me.desht.sensibletoolbox.items.filter.ItemFilter;
-import me.desht.sensibletoolbox.items.filter.ReverseItemFilter;
+import me.desht.sensibletoolbox.items.filters.ItemFilter;
+import me.desht.sensibletoolbox.items.filters.ReverseItemFilter;
 import me.desht.sensibletoolbox.items.itemroutermodules.*;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
@@ -25,7 +27,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -34,6 +35,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -43,8 +45,10 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	private static final Map<String, Class<? extends BaseSTBItem>> registry = new HashMap<String, Class<? extends BaseSTBItem>>();
-	private static final Map<String, String> ids = new HashMap<String, String>();
+	private static final Map<String, String> id2name = new HashMap<String, String>();
+	private static final Map<String, String> name2id = new HashMap<String, String>();
 	private static final Map<Material,Class<? extends BaseSTBItem>> customSmelts = new HashMap<Material, Class<? extends BaseSTBItem>>();
+	public static final String SUFFIX_SEPARATOR = " \uff1a ";
 	private Map<Enchantment,Integer> enchants;
 
 	public static void registerItems(SensibleToolboxPlugin plugin) {
@@ -79,13 +83,16 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new PullerModule());
 		registerItem(new DropperModule());
 		registerItem(new SenderModule());
+		registerItem(new AdvancedSenderModule());
 		registerItem(new ReceiverModule());
+		registerItem(new SorterModule());
 		registerItem(new StackModule());
 		registerItem(new SpeedModule());
 		registerItem(new TenKEnergyCell());
 		registerItem(new FiftyKEnergyCell());
 		registerItem(new SpeedUpgrade());
 		registerItem(new EjectorUpgrade());
+		registerItem(new StirlingGenerator());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -93,7 +100,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 	private static void registerItem(BaseSTBItem item) {
 		registry.put(item.getItemName(), item.getClass());
-		ids.put(item.getItemID(), item.getItemName());
+		name2id.put(item.getItemName(), item.getItemName().toLowerCase().replaceAll("[^a-z0-9]", ""));
+		id2name.put(item.getItemID(), item.getItemName());
 	}
 
 	public static void setupRecipes() {
@@ -105,22 +113,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			}
 			ItemStack stack = item.getSmeltingResult();
 			if (stack != null) {
-				FurnaceRecipe fr = new FurnaceRecipe(stack, item.getBaseMaterial());
+				FurnaceRecipe fr = new FurnaceRecipe(stack, item.getMaterial());
 				Bukkit.addRecipe(fr);
-				customSmelts.put(item.getBaseMaterial(), item.getClass());
+				customSmelts.put(item.getMaterial(), item.getClass());
 			}
 		}
-	}
-
-	/**
-	 * Given a material name, return the type of STB item that crafting ingredients of this type
-	 * must be to count as a valid crafting ingredient for this item.
-	 *
-	 * @param mat the ingredient material
-	 * @return null for no restriction, or a BaseSTBItem subclass to specify a restriction
-	 */
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return null;
 	}
 
 	public static Class<? extends BaseSTBItem> getCustomSmelt(Material mat) {
@@ -128,7 +125,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	public static Set<String> getItemIds() {
-		return ids.keySet();
+		return id2name.keySet();
 	}
 
 	public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
@@ -137,7 +134,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		}
 		String disp = ChatColor.stripColor(stack.getItemMeta().getDisplayName());
 		Configuration conf = BaseSTBItem.getItemAttributes(stack);
-		BaseSTBItem item = getItemByName((disp.split(":"))[0], conf);
+		BaseSTBItem item = getItemByName((disp.split(SUFFIX_SEPARATOR))[0], conf);
 		if (item != null) {
 			item.storeEnchants(stack);
 		}
@@ -154,11 +151,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	public static BaseSTBItem getItemById(String id) {
-		return ids.containsKey(id) ? BaseSTBItem.getItemByName(ids.get(id)) : null;
+		return getItemById(id, null);
 	}
 
 	public static BaseSTBItem getItemById(String id, ConfigurationSection conf) {
-		return ids.containsKey(id) ? BaseSTBItem.getItemByName(ids.get(id), conf) : null;
+		return id2name.containsKey(id) ? BaseSTBItem.getItemByName(id2name.get(id), conf) : null;
 	}
 
 	public static BaseSTBItem getItemByName(String disp) {
@@ -179,11 +176,18 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 				return cons.newInstance(conf);
 			}
 		} catch (Exception e) {
+			LogUtils.warning("failed to create STB item from item name: " + disp);
 			e.printStackTrace();
 			return null;
 		}
 	}
 
+	/**
+	 * Check if the given item stack is an STB item.
+	 *
+	 * @param stack the item stack to check
+	 * @return true if this item stack is an STB item
+	 */
 	public static boolean isSTBItem(ItemStack stack) {
 		if (stack == null || !stack.hasItemMeta()) {
 			return false;
@@ -216,24 +220,26 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		}
 	}
 
-
 	private void storeEnchants(ItemStack stack) {
 		enchants = stack.getEnchantments();
 	}
 
+
 	/**
-	 * Get the Bukkit Material used for this item.
+	 * Get the material and data used to represent this item.
+	 *
+	 * @return the material data
+	 */
+	public abstract MaterialData getMaterialData();
+
+	/**
+	 * Get the Bukkit Material used to represent this item.
 	 *
 	 * @return the Bukkit Material
 	 */
-	public abstract Material getBaseMaterial();
-
-	/**
-	 * Get the block data byte used for this item.
-	 *
-	 * @return the block data
-	 */
-	public Byte getBaseBlockData() { return null; }
+	public Material getMaterial() {
+		return getMaterialData().getItemType();
+	}
 
 	/**
 	 * Get the item's displayed name.
@@ -275,6 +281,17 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	public abstract Recipe getRecipe();
 
 	/**
+	 * Given a material name, return the type of STB item that crafting ingredients of this type
+	 * must be to count as a valid crafting ingredient for this item.
+	 *
+	 * @param mat the ingredient material
+	 * @return null for no restriction, or a BaseSTBItem subclass to specify a restriction
+	 */
+	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
+		return null;
+	}
+
+	/**
 	 * Check if the item should glow.  This will only work if ProtocolLib is installed.
 	 *
 	 * @return true if the item should glow
@@ -310,7 +327,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	public void onItemHeld(PlayerItemHeldEvent event) { }
 
 	/**
-	 * Get the item into which this object would be smelted into
+	 * Get the item into which this item would be smelted.
 	 *
 	 * @return the resulting itemstack, or null if this object does not smelt
 	 */
@@ -325,28 +342,16 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	public boolean isIngredientFor(ItemStack result) { return false; }
 
 	/**
-	 * Called when an attempt is made to craft this item.  Default behaviour is to allow it;
-	 * override this if the recipe involves special ingredients (e.g. other STB items) and
-	 * you need to validate metadata etc.
-	 *
-	 * @param event the PrepareItemCraftEvent
-	 * @return true if crafting should proceed, false otherwise
-	 */
-	public boolean onCraftingAttempt(PrepareItemCraftEvent event) { return true; }
-
-	/**
 	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
 	 *
 	 * @param amount number of items in the stack
 	 * @return the new ItemStack
 	 */
 	public ItemStack toItemStack(int amount) {
-		ItemStack res = new ItemStack(getBaseMaterial(), amount);
-		if (getBaseBlockData() != null) {
-			res.setDurability(getBaseBlockData());
-		}
+		ItemStack res = getMaterialData().toItemStack(amount);
+
 		ItemMeta im = res.getItemMeta();
-		String suffix = getDisplaySuffix() == null ? "" : ": " + getDisplaySuffix();
+		String suffix = getDisplaySuffix() == null ? "" : SUFFIX_SEPARATOR + getDisplaySuffix();
 		im.setDisplayName(DISPLAY_COLOR + getItemName() + suffix);
 		im.setLore(buildLore());
 		res.setItemMeta(im);
@@ -398,7 +403,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 	@Override
 	public String toString() {
-		return "STB " + getItemName();
+		return "STB Item [" + getItemName() + "]";
 	}
 
 	@Override
@@ -407,6 +412,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	public String getItemID() {
-		return getItemName().replace(" ", "").replace("'", "").toLowerCase();
+		return name2id.get(getItemName());
 	}
 }

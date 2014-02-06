@@ -5,18 +5,22 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.material.MaterialData;
 
 public class TrashCan extends BaseSTBBlock {
+	private static final MaterialData md = new MaterialData(Material.DROPPER);
+
 	public TrashCan() {
 	}
 
@@ -34,9 +38,8 @@ public class TrashCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		// note: item is multi-block structure when placed; dropper plus skeleton head
-		return Material.DROPPER;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -90,7 +93,7 @@ public class TrashCan extends BaseSTBBlock {
 	 */
 	public void emptyTrash(boolean noisy) {
 		Location l = getLocation();
-		if (l != null && l.getBlock().getType() == getBaseMaterial()) {
+		if (l != null && l.getBlock().getType() == getMaterial()) {
 			Dropper d = (Dropper) l.getBlock().getState();
 			// TODO: handle item filters
 			if (noisy) {

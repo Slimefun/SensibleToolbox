@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.blocks;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,8 +14,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 
 public class SoundMuffler extends BaseSTBBlock {
+	private static final MaterialData md = new Wool(DyeColor.WHITE);
 	public static final int DISTANCE = 8;
 	private int volume; // 0-100
 
@@ -57,8 +61,8 @@ public class SoundMuffler extends BaseSTBBlock {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.WOOL;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -100,12 +104,12 @@ public class SoundMuffler extends BaseSTBBlock {
 	@Override
 	public void onServerTick() {
 		Location loc = getLocation();
-		long time = loc.getWorld().getTime();
-		if (time % 40 == 0) {
+		if (getTicksLived() % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
 				ParticleEffect.NOTE.play(loc.add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 1.0f, 2);
 			}
 		}
+		super.onServerTick();
 	}
 
 	@Override

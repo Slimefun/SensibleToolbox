@@ -17,10 +17,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 import java.util.List;
 
 public class EnderLeash extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.LEASH);
 	private YamlConfiguration capturedConf;
 
 	public EnderLeash(ConfigurationSection conf) {
@@ -48,8 +50,8 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.LEASH;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

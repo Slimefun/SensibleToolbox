@@ -21,11 +21,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
+import org.bukkit.material.MaterialData;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class PaintBrush extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.GOLD_SPADE);
 	private int paintLevel;
 	private DyeColor colour;
 
@@ -68,8 +70,8 @@ public class PaintBrush extends BaseSTBItem {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.GOLD_SPADE;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -127,7 +129,8 @@ public class PaintBrush extends BaseSTBItem {
 				refillFromCan(can);
 				player.setItemInHand(this.toItemStack(1));
 				event.setCancelled(true);
-			} else if (STBUtil.isColorable(b.getType()) && getBlockColour(b) != getColour() && getPaintLevel() > 0) {
+			} else if ((STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.THIN_GLASS)
+					&& getBlockColour(b) != getColour() && getPaintLevel() > 0) {
 				// Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
 				if (player.isSneaking()) {
 					// paint a single block
@@ -202,7 +205,7 @@ public class PaintBrush extends BaseSTBItem {
 	}
 
 	private DyeColor getBlockColour(Block b) {
-		return DyeColor.getByWoolData(b.getData());
+		return STBUtil.isColorable(b.getType()) ? DyeColor.getByWoolData(b.getData()) : null;
 	}
 
 	private void paintBlocks(Block... blocks) {
@@ -213,7 +216,11 @@ public class PaintBrush extends BaseSTBItem {
 				((Colorable) stb).setColor(getColour());
 				stb.updateBlock();
 			} else {
-				DyeColor c = DyeColor.getByWoolData(b.getData());
+				if (b.getType() == Material.GLASS) {
+					b.setType(Material.STAINED_GLASS);
+				} else if (b.getType() == Material.THIN_GLASS) {
+					b.setType(Material.STAINED_GLASS_PANE);
+				}
 				b.setData(getColour().getWoolData());
 			}
 			setPaintLevel(getPaintLevel() - 1);

@@ -3,11 +3,14 @@ package me.desht.sensibletoolbox.items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.material.MaterialData;
 
 public class IronDust extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.SULPHUR);
+
 	@Override
-	public Material getBaseMaterial() {
-		return Material.SULPHUR;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

@@ -38,6 +38,7 @@ public class LocationManager {
 			new HashMap<String, Map<PersistableLocation, ConfigurationSection>>();
 	private boolean saveNeeded = false;
 	private long lastSave;
+	private final Map<String,Set<BaseSTBBlock>> tickers = new HashMap<String,Set<BaseSTBBlock>>();
 
 	private LocationManager() {
 		lastSave = System.currentTimeMillis();
@@ -64,16 +65,38 @@ public class LocationManager {
 		throw new CloneNotSupportedException();
 	}
 
-	public void registerLocation(Location loc, BaseSTBBlock stbBlock) {
+	public void addTicker(BaseSTBBlock stb) {
+		Location l = stb.getLocation();
+		World w = l.getWorld();
+		if (!tickers.containsKey(w.getName())) {
+			tickers.put(w.getName(), new HashSet<BaseSTBBlock>());
+		}
+		tickers.get(w.getName()).add(stb);
+	}
+
+	private void removeTicker(BaseSTBBlock stb) {
+		Location l = stb.getLocation();
+		World w = l.getWorld();
+		if (!tickers.containsKey(w.getName())) {
+			tickers.put(w.getName(), new HashSet<BaseSTBBlock>());
+		}
+		tickers.get(w.getName()).remove(stb);
+	}
+
+	public void registerLocation(Location loc, BaseSTBBlock stb) {
 		String worldName = loc.getWorld().getName();
 		Chunk chunk = loc.getChunk();
 		BlockPosition pos = new BlockPosition(loc);
-		stbBlock.setLocation(loc);
-		worldMap.get(worldName).get(chunk).put(pos, stbBlock);
+		stb.setLocation(loc);
+		worldMap.get(worldName).get(chunk).put(pos, stb);
 		markChunkDirty(worldName, pos);
+		if (stb.shouldTick()) {
+			addTicker(stb);
+		}
 	}
 
 	public void updateLocation(Location loc) {
+//		System.out.println("location " + loc + " updated");
 		String worldName = loc.getWorld().getName();
 		BlockPosition pos = new BlockPosition(loc);
 		markChunkDirty(worldName, pos);
@@ -88,6 +111,9 @@ public class LocationManager {
 			stb.setLocation(null);
 			worldMap.get(worldName).get(chunk).remove(pos);
 			markChunkDirty(worldName, pos);
+			if (stb.shouldTick()) {
+				removeTicker(stb);
+			}
 		}
 	}
 
@@ -130,13 +156,6 @@ public class LocationManager {
 		return l.toArray(new BaseSTBBlock[l.size()]);
 	}
 
-	public void tick() {
-		worldMap.tick();
-		if (System.currentTimeMillis() - lastSave > MIN_SAVE_INTERVAL) {
-			save();
-		}
-	}
-
 	/**
 	 * Get the STB block of the given type at the given location.
 	 *
@@ -151,6 +170,20 @@ public class LocationManager {
 			return type.cast(stbBlock);
 		} else {
 			return null;
+		}
+	}
+
+	public void tick() {
+		for (World w : Bukkit.getWorlds()) {
+			if (tickers.containsKey(w.getName())) {
+				for (BaseSTBBlock stb : tickers.get(w.getName())) {
+					stb.onServerTick();
+				}
+			}
+		}
+//		worldMap.tick();
+		if (System.currentTimeMillis() - lastSave > MIN_SAVE_INTERVAL) {
+			save();
 		}
 	}
 

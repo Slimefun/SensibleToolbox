@@ -8,15 +8,22 @@ import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.material.Dye;
+import org.bukkit.material.MaterialData;
 
 public class SenderModule extends DirectionalItemRouterModule {
+	private static final Dye md = makeDye(DyeColor.BLUE);
+
 	private static final int MAX_SENDER_DISTANCE = 10;
 
 	public SenderModule() {}
@@ -27,7 +34,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String getItemName() {
-		return "Item Router Sender Module";
+		return "I.R. Mod: Sender";
 	}
 
 	@Override
@@ -35,10 +42,10 @@ public class SenderModule extends DirectionalItemRouterModule {
 		return new String[] {
 				"Insert into an Item Router",
 				"Sends items elsewhere:" ,
-				" - An adjacent inventory",
-				" - Item Router with Receiver Module",
-				"   Item Router must be inline, within 10 blocks",
-				"   and Receiver Module must face Sender"
+				" - An adjacent inventory OR",
+				" - Item Router with Receiver Module:",
+				"   within 10 blocks, with line of sight",
+				"   and facing this Sender Module"
 		};
 	}
 
@@ -56,13 +63,22 @@ public class SenderModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
+	public MaterialData getMaterialData() {
+		return md;
+	}
+
+	@Override
 	public boolean execute() {
 		if (getOwner() != null && getOwner().getBufferItem() != null) {
+			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
+				return false;
+			}
 			System.out.println("sender in " + getOwner() + " has: " + STBUtil.describeItemStack(getOwner().getBufferItem()));
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
 			int nToInsert = getOwner().getStackSize();
 			if (allowsItemsThrough(target.getType())) {
+				System.out.println("find receiver module...");
 				// search for a visible Item Router with an installed Receiver Module
 				ReceiverModule receiver = findReceiver();
 				if (receiver != null) {
@@ -81,12 +97,12 @@ public class SenderModule extends DirectionalItemRouterModule {
 				if (stb instanceof STBInventoryHolder) {
 					ItemStack toInsert = getOwner().getBufferItem().clone();
 					toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
-					int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace());
+					int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), false);
 					getOwner().reduceBuffer(nInserted);
 					return nInserted > 0;
 				} else {
 					// vanilla inventory holder?
-					return vanillaInsertion(target, nToInsert);
+					return vanillaInsertion(target, nToInsert, getDirection().getOppositeFace());
 				}
 			}
 		}
@@ -123,9 +139,10 @@ public class SenderModule extends DirectionalItemRouterModule {
 		return null;
 	}
 
-	private boolean vanillaInsertion(Block target, int amount) {
+	private boolean vanillaInsertion(Block target, int amount, BlockFace side) {
 		ItemStack buffer = getOwner().getBufferItem();
-		int nInserted = STBUtil.vanillaInsertion(target, buffer, amount);
+		System.out.println("vanilla insert!");
+		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false);
 		if (nInserted == 0) {
 			// no insertion happened
 			return false;
@@ -152,5 +169,11 @@ public class SenderModule extends DirectionalItemRouterModule {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean isIngredientFor(ItemStack result) {
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
+		return item instanceof AdvancedSenderModule;
 	}
 }

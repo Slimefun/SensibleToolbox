@@ -10,18 +10,18 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BlockUpdateDetector extends BaseSTBBlock {
 	private static final Pattern intPat = Pattern.compile("(^[dq])\\s*(\\d+)");
+	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.PURPLE.getWoolData());
 	private long lastPulse;
 	private int duration;
 
@@ -61,13 +61,8 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STAINED_CLAY;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return DyeColor.PURPLE.getWoolData();
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -102,15 +97,16 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	@Override
 	public void onBlockPhysics(BlockPhysicsEvent event) {
 		final Block b = event.getBlock();
-		Debugger.getInstance().debug(this + ": BUD physics: time=" + b.getWorld().getFullTime() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
-		if (b.getWorld().getFullTime() - lastPulse > getDuration() + getQuiet()) {
+		Debugger.getInstance().debug(this + ": BUD physics: time=" + getTicksLived() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
+		if (getTicksLived() - lastPulse > getDuration() + getQuiet()) {
 			// emit a signal for one or more ticks
-			lastPulse = b.getWorld().getFullTime();
+			lastPulse = getTicksLived();
 			b.setType(Material.REDSTONE_BLOCK);
 			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
+					MaterialData m = getMaterialData();
+					b.setTypeIdAndData(m.getItemTypeId(), m.getData(), true);
 				}
 			}, duration);
 		}

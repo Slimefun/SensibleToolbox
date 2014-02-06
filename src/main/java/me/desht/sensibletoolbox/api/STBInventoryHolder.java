@@ -10,9 +10,10 @@ public interface STBInventoryHolder extends InventoryHolder {
 	 *
 	 * @param item the item to insert
 	 * @param face the side to insert into; BlockFace.SELF may be used if insertion is manual
+	 * @param sorting if true, only insert if inventory is empty or already contains the item
 	 * @return the number of items actually inserted
 	 */
-	public int insertItems(ItemStack item, BlockFace face);
+	public int insertItems(ItemStack item, BlockFace face, boolean sorting);
 
 	/**
 	 * Attempt to extract items from the inventory on the given side.  The size of the returned

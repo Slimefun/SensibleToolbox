@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.util;
 
-import me.desht.sensibletoolbox.items.filter.AbstractItemFilter;
-import me.desht.sensibletoolbox.items.filter.ItemFilter;
+import me.desht.sensibletoolbox.items.filters.AbstractItemFilter;
+import me.desht.sensibletoolbox.items.filters.ItemFilter;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -11,7 +11,7 @@ public class Filter {
 	private final boolean whiteList;
 
 	/**
-	 * Default filter which blocks nothing.
+	 * Default filters which blocks nothing.
 	 */
 	public Filter() {
 		whiteList = false;
@@ -44,7 +44,7 @@ public class Filter {
 		return stack.getDurability() > 0 ? stack.getType() + ":" + stack.getDurability() : stack.getType().toString();
 	}
 
-	public boolean matches(ItemStack stack) {
+	public boolean shouldPass(ItemStack stack) {
 		if (!whiteList && filtered.isEmpty()) {
 			return true;
 		}

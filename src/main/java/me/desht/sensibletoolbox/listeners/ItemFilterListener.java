@@ -2,8 +2,8 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.items.filter.AbstractItemFilter;
-//import me.desht.sensibletoolbox.items.filter.ItemFilter;
+import me.desht.sensibletoolbox.items.filters.AbstractItemFilter;
+//import me.desht.sensibletoolbox.items.filters.ItemFilter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
@@ -33,7 +33,7 @@ public class ItemFilterListener extends STBBaseListener {
 		if (filter != null) {
 			Inventory topInv = event.getView().getTopInventory();
 			if (event.getRawSlot() >= 0 && event.getRawSlot() < topInv.getSize()) {
-				// clicking in the filter GUI
+				// clicking in the filters GUI
 				switch (event.getClick()) {
 					case LEFT: case RIGHT:
 						guiClicked(topInv, event.getRawSlot(), event.getCursor());

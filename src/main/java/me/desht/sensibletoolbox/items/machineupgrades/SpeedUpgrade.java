@@ -3,12 +3,14 @@ package me.desht.sensibletoolbox.items.machineupgrades;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 public class SpeedUpgrade extends MachineUpgrade {
+	private static final MaterialData md = new MaterialData(Material.SUGAR);
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.SUGAR;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

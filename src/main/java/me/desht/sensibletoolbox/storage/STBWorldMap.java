@@ -24,14 +24,14 @@ public class STBWorldMap {
 		return map.containsKey(worldName);
 	}
 
-	public void tick() {
-		for (String worldName : map.keySet()) {
-			World w = Bukkit.getWorld(worldName);
-			if (w != null) {
-				map.get(worldName).tick(w);
-			}
-		}
-	}
+//	public void tick() {
+//		for (String worldName : map.keySet()) {
+//			World w = Bukkit.getWorld(worldName);
+//			if (w != null) {
+//				map.get(worldName).tick(w);
+//			}
+//		}
+//	}
 
 	public void remove(String name) {
 		map.remove(name);

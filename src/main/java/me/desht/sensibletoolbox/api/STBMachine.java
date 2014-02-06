@@ -17,16 +17,21 @@ public interface STBMachine extends Chargeable, STBInventoryHolder {
 	 * @return true if the machine is jammed
 	 */
 	public boolean isJammed();
-
-	/**
-	 * Get this machine's current redstone behaviour; how it acts in the presences or absence of
-	 * a redstone signal.
-	 *
-	 * @return the machine's redstone behaviour
-	 */
-	public RedstoneBehaviour getRedstoneBehaviour();
-
-	public AccessControl getAccessControl();
+//
+//	/**
+//	 * Get this machine's current redstone behaviour; how it acts in the presences or absence of
+//	 * a redstone signal.
+//	 *
+//	 * @return the machine's redstone behaviour
+//	 */
+//	public RedstoneBehaviour getRedstoneBehaviour();
+//
+//	/**
+//	 * Get this machine's access control; who is allowed to open the GUI.
+//	 *
+//	 * @return the machine's access control
+//	 */
+//	public AccessControl getAccessControl();
 
 	/**
 	 * Check if the given item would be accepted as input to this machine.  By default, every item type
@@ -61,69 +66,9 @@ public interface STBMachine extends Chargeable, STBInventoryHolder {
 	 */
 	public boolean isUpgradeSlot(int slot);
 
-//	/**
-//	 * Check what's in the machine's output slot(s), without actually taking anything.
-//	 *
-//	 * @return an array of ItemStack objects, one stack per output slot
-//	 */
-//	ItemStack[] peekOutput();
-
-//	/**
-//	 * Attempt to pull one or more items from the given output slot of the machine.  The actual ItemStack
-//	 * returned may be of a smaller amount than requested, depending on what's in the slot.
-//	 *
-//	 * @param slot the output slot number
-//	 * @param nItems the number of items to try and take
-//	 * @return the ItemStack that was pulled
-//	 */
-//	ItemStack pullFromOutput(int slot, int nItems);
-
-	/**
-	 * Represents how the machine reacts to the presence or absence of a redstone signal.
-	 */
-	public enum RedstoneBehaviour {
-		IGNORE(Material.SULPHUR, "Ignore Redstone"),
-		HIGH(Material.REDSTONE, "Require Signal"),
-		LOW(Material.GLOWSTONE_DUST, "Require No Signal");
-		private final Material material;
-		private final String label;
-
-		RedstoneBehaviour(Material mat, String label) {
-			this.material = mat;
-			this.label = label;
-		}
-
-		public ItemStack getTexture() {
-			ItemStack res = new ItemStack(material);
-			ItemMeta meta = res.getItemMeta();
-			meta.setDisplayName(ChatColor.WHITE + label);
-			res.setItemMeta(meta);
-			return res;
-		}
-	}
-
-	/**
-	 * Represents the user-based access control in force for this machine.
-	 */
-	public enum AccessControl {
-		PUBLIC(DyeColor.GREEN, "Public Access"),
-		PRIVATE(DyeColor.RED, "Owner Only Access");
-		private final String label;
-		private final DyeColor color;
-
-		AccessControl(DyeColor color, String label) {
-			this.color = color;
-			this.label = label;
-		}
-
-		public ItemStack getTexture() {
-			ItemStack res = new Wool(color).toItemStack(1);
-			ItemMeta meta = res.getItemMeta();
-			meta.setDisplayName(ChatColor.WHITE + label);
-			res.setItemMeta(meta);
-			return res;
-		}
-	}
+	public ChargeDirection getChargeDirection();
+	public void setChargeDirection(ChargeDirection chargeDirection);
+	public int getChargeMeterSlot();
 
 	/**
 	 * Represents the direction of charging selected for this machine.

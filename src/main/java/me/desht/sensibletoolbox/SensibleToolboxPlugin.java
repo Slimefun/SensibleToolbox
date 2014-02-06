@@ -138,7 +138,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
 		pm.registerEvents(new AnvilListener(this), this);
-		pm.registerEvents(new MachineListener(this), this);
+//		pm.registerEvents(new MachineListener(this), this);
 		pm.registerEvents(new ItemFilterListener(this), this);
 		pm.registerEvents(new ItemRouterListener(this), this);
 		pm.registerEvents(new ItemRouterModuleListener(this), this);

@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
+import org.bukkit.material.MaterialData;
 
 import java.util.Random;
 
@@ -54,9 +55,14 @@ public class WateringCan extends BaseSTBItem {
 		return res;
 	}
 
+//	@Override
+//	public Material getBaseMaterial() {
+//		return Material.POTION;
+//	}
+
 	@Override
-	public Material getBaseMaterial() {
-		return Material.POTION;
+	public MaterialData getMaterialData() {
+		return new MaterialData(Material.POTION);
 	}
 
 	@Override

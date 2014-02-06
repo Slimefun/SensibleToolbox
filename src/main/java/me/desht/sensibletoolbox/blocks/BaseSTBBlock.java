@@ -4,6 +4,10 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.AccessControl;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.blocks.machines.gui.GUIHolder;
+import me.desht.sensibletoolbox.blocks.machines.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -16,24 +20,88 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public abstract class BaseSTBBlock extends BaseSTBItem {
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.InventoryGUIListener {
 	public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
 	private PersistableLocation persistableLocation;
 	private BlockFace facing;
+	private long ticksLived;
+	private InventoryGUI inventoryGUI = null;
+	private final GUIHolder guiHolder = new GUIHolder(this);
+	private RedstoneBehaviour redstoneBehaviour;
+
+	private AccessControl accessControl;
 
 	protected BaseSTBBlock() {
+		setFacing(BlockFace.SELF);
+		redstoneBehaviour = RedstoneBehaviour.IGNORE;
+		accessControl = AccessControl.PUBLIC;
+		ticksLived = 0;
 	}
 
 	public BaseSTBBlock(ConfigurationSection conf) {
 		setFacing(BlockFace.valueOf(conf.getString("facing", "SELF")));
+		redstoneBehaviour = RedstoneBehaviour.valueOf(conf.getString("redstoneBehaviour", "IGNORE"));
+		accessControl = AccessControl.valueOf(conf.getString("accessControl", "PUBLIC"));
+		ticksLived = 0;
+	}
+
+	@Override
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("facing", getFacing().toString());
+		conf.set("redstoneBehaviour", getRedstoneBehaviour().toString());
+		conf.set("accessControl", getAccessControl().toString());
+		return conf;
+	}
+
+	public RedstoneBehaviour getRedstoneBehaviour() {
+		return redstoneBehaviour;
+	}
+
+	public void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
+		this.redstoneBehaviour = redstoneBehaviour;
+		System.out.println(this + " - redstone behaviour = " + redstoneBehaviour);
+		updateBlock(false);
+	}
+
+	public AccessControl getAccessControl() {
+		return accessControl;
+	}
+
+	public void setAccessControl(AccessControl accessControl) {
+		this.accessControl = accessControl;
+		System.out.println(this + " - access control = " + accessControl);
+		updateBlock(false);
+	}
+
+	public GUIHolder getGuiHolder() {
+		return guiHolder;
+	}
+
+	public InventoryGUI getGUI() {
+		return inventoryGUI;
+	}
+
+	protected void setGUI(InventoryGUI inventoryGUI) {
+		this.inventoryGUI = inventoryGUI;
 	}
 
 	public BlockFace getFacing() {
@@ -42,6 +110,25 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
 	public void setFacing(BlockFace facing) {
 		this.facing = facing;
+	}
+
+	protected long getTicksLived() {
+		return ticksLived;
+	}
+
+	/**
+	 * Check if this block is active based on its redstone behaviour settings and the presence
+	 * or absence of a redstone signal.
+	 *
+	 * @return true if the block is active, false otherwise
+	 */
+	protected boolean isRedstoneActive() {
+		switch (getRedstoneBehaviour()) {
+			case IGNORE: return true;
+			case HIGH: return getLocation().getBlock().isBlockIndirectlyPowered();
+			case LOW: return !getLocation().getBlock().isBlockIndirectlyPowered();
+			default: return false;
+		}
 	}
 
 	/**
@@ -83,6 +170,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 */
 	public boolean onSignChange(SignChangeEvent event) { return false; }
 
+
+
 	/**
 	 * Called when this STB block has been hit by an explosion.  The default behaviour is to return
 	 * true; STB blocks will break and drop their item form if hit by an explosion.
@@ -105,9 +194,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
 	/**
 	 * Called every tick for each STB block that is placed in the world, for any STB block where
-	 * shouldTick() returns true.
+	 * shouldTick() returns true.  If you override this, you MUST call the superclass method in your
+	 * overridden method!
 	 */
-	public void onServerTick() { }
+	public void onServerTick() {
+		ticksLived++;
+	}
 
 	/**
 	 * Called when the chunk that an STB block is in gets loaded.
@@ -248,7 +340,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		if (getLocation() != null) {
 			if (redraw) {
 				Block b = getLocation().getBlock();
-				b.setTypeIdAndData(getBaseMaterial().getId(), getBaseBlockData(), true);
+				// maybe one day Bukkit will have a block set method which takes a MaterialData
+				b.setTypeIdAndData(getMaterial().getId(), getMaterialData().getData(), true);
 			}
 			LocationManager.getManager().updateLocation(getLocation());
 		}
@@ -304,6 +397,42 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	}
 
 	/**
+	 * Get a list of any attached label signs on this block
+	 *
+	 * @return a list of Sign objects
+	 */
+	private List<Sign> findAttachedLabelSigns() {
+		List<Sign> res = new ArrayList<Sign>();
+		if (getLocation() == null) {
+			return res;
+		}
+		Block b = getLocation().getBlock();
+		for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH} ) {
+			if (b.getRelative(face).getType() == Material.WALL_SIGN) {
+				Sign sign = (Sign) b.getRelative(face).getState();
+				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
+				if (s.getAttachedFace() == face.getOppositeFace()) {
+					String l = getItemName().substring(0, Math.min(15, getItemName().length()));
+					if (l.equals(sign.getLine(0))) {
+						res.add(sign);
+					}
+				}
+			}
+		}
+		return res;
+	}
+
+	protected void updateAttachedLabelSigns() {
+		String[] text = getSignLabel();
+		for (Sign sign : findAttachedLabelSigns()) {
+			for (int i = 0; i < text.length; i++) {
+				sign.setLine(i, text[i]);
+			}
+			sign.update();
+		}
+	}
+
+	/**
 	 * Temporarily override the item display name, just before the item is placed.  The item
 	 * display name is used as the inventory title for blocks such as the dropper.
 	 *
@@ -321,7 +450,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 				@Override
 				public void run() {
 					ItemStack inHand = player.getItemInHand();
-					if (inHand.getType() == getBaseMaterial()) {
+					if (inHand.getType() == getMaterial()) {
 						ItemMeta meta = inHand.getItemMeta();
 						if (meta.getDisplayName().equals(tempTitle)) {
 							player.setItemInHand(toItemStack(inHand.getAmount()));
@@ -330,5 +459,35 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 				}
 			});
 		}
+	}
+
+
+	@Override
+	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return false;
+	}
+
+	@Override
+	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return true;
+	}
+
+	@Override
+	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+		return 0;
+	}
+
+	@Override
+	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+		return true;
+	}
+
+	@Override
+	public boolean onClickOutside() {
+		return false;
+	}
+
+	public void onGUIClosed(InventoryCloseEvent event) {
+
 	}
 }

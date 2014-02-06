@@ -31,6 +31,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
+	private static final MaterialData md = new MaterialData(Material.GOLD_AXE);
 	private static final int MAX_REPLACED = 21;
 	public static final int MAX_BUILD_BLOCKS = 9;
 	public static final int CHARGE_PER_OPERATION = 40;
@@ -84,11 +85,6 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.GOLD_AXE;
-	}
-
-	@Override
 	public String getItemName() {
 		return "Builder's Multitool";
 	}
@@ -136,6 +132,11 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	@Override
 	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
 		return mat == Material.LEATHER_HELMET ? TenKEnergyCell.class : null;
+	}
+
+	@Override
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -232,27 +233,10 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 		} else {
 			Set<Block> res = new HashSet<Block>(max * 4 / 3, 0.75f);
 			recursiveExchangeScan(player, b, b.getType(), b.getData(), res, max, BlockFace.SELF);
-//			floodFillScan(player, b, new MaterialData(b.getType(), b.getData()), res, max);
 			return res.toArray(new Block[res.size()]);
 		}
 	}
 
-//	private void floodFillScan(Player player, Block b, MaterialData targetMat, Set<Block> blocks, int max) {
-//		if (b.getType() != targetMat.getItemType() && b.getData() != targetMat.getData() || blocks.size() > max
-//				|| blocks.contains(b) || !STBUtil.isExposed(b) || !canReplace(player, b)) {
-//			return;
-//		}
-//		blocks.add(b);
-//		for (int x = -1; x <= 1; x++) {
-//			for (int y = -1; y <= 1; y++) {
-//				for (int z = -1; z <= 1; z++) {
-//					if (x != 0 || y != 0 || z != 0) {
-//						floodFillScan(player, b.getRelative(x, y, z), targetMat, blocks, max);
-//					}
-//				}
-//			}
-//		}
-//	}
 
 	private void recursiveExchangeScan(Player player, Block b, Material mat, byte data, Set<Block> blocks, int max, BlockFace fromDirection) {
 		if (b.getType() != mat || b.getData() != data || blocks.size() > max || blocks.contains(b)
@@ -420,36 +404,6 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 		}
 		throw new IllegalArgumentException("invalid face: " + face);
 	}
-
-//	private List<Block> findSquare(Player player, Block centre, BlockFace face, int radius, int currentAmount, int max) {
-//		Block b = centre.getRelative(face);
-//		BlockFace oppositeFace = face.getOppositeFace();
-//		List<Block> res = new ArrayList<Block>();
-//		LOOP: for (int i = -radius; i <= radius; i++) {
-//			for (int j = -radius; j <= radius; j++) {
-//				if (i > -radius && i < radius && j == -radius + 1) {
-//					j = radius;
-//				}
-//				Block toCheck;
-//				switch (face) {
-//					case NORTH: case SOUTH: toCheck = b.getRelative(i, j, 0); break;
-//					case UP: case DOWN: toCheck = b.getRelative(i, 0, j); break;
-//					case EAST: case WEST: toCheck = b.getRelative(0, i, j); break;
-//					default: throw new IllegalArgumentException("invalid face " + face);
-//				}
-//				if (toCheck.isEmpty()) {
-//					Block rel = toCheck.getRelative(oppositeFace);
-//					if (rel.getType() == centre.getType() && rel.getData() == centre.getData() && canReplace(player, toCheck)) {
-//						res.add(toCheck);
-//					}
-//				}
-//				if (currentAmount + res.size() >= max) {
-//					break LOOP;
-//				}
-//			}
-//		}
-//		return res;
-//	}
 
 	private enum Mode {
 		BUILD, EXCHANGE

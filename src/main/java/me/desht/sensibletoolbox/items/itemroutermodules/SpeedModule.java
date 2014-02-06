@@ -5,8 +5,11 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.material.MaterialData;
 
 public class SpeedModule extends ItemRouterModule {
+	private static final MaterialData md = new MaterialData(Material.BLAZE_POWDER);
+
 	public SpeedModule() {}
 
 	public SpeedModule(ConfigurationSection conf) {
@@ -15,7 +18,7 @@ public class SpeedModule extends ItemRouterModule {
 
 	@Override
 	public String getItemName() {
-		return "Item Router Speed Module";
+		return "I.R. Mod: Speed Upgrade";
 	}
 
 	@Override
@@ -41,6 +44,11 @@ public class SpeedModule extends ItemRouterModule {
 	@Override
 	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
 		return mat == Material.PAPER ? BlankModule.class : null;
+	}
+
+	@Override
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

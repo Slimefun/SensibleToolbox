@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.items.filter;
+package me.desht.sensibletoolbox.items.filters;
 
 import me.desht.sensibletoolbox.util.Filter;
 import org.bukkit.Material;
@@ -6,21 +6,21 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-public class ItemFilter extends AbstractItemFilter {
-	public ItemFilter() {
+public class ReverseItemFilter extends AbstractItemFilter {
+	public ReverseItemFilter() {
 	}
 
-	public ItemFilter(ConfigurationSection conf) {
-		super(conf, true);
+	public ReverseItemFilter(ConfigurationSection conf) {
+		super(conf, false);
 	}
 
-	public ItemFilter(Filter filter) {
+	public ReverseItemFilter(Filter filter) {
 		super(filter);
 	}
 
 	@Override
 	public String getItemName() {
-		return "Item Passer";
+		return "Item Blocker";
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class ItemFilter extends AbstractItemFilter {
 		recipe.shape("WSW", "SRS", "WSW");
 		recipe.setIngredient('W', Material.STICK);
 		recipe.setIngredient('S', Material.STRING);
-		recipe.setIngredient('R', Material.REDSTONE);
+		recipe.setIngredient('R', Material.REDSTONE_TORCH_ON);
 		return recipe;
 	}
 }

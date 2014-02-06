@@ -4,18 +4,19 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
+import me.desht.sensibletoolbox.util.CustomRecipeCollection;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
+import org.bukkit.material.MaterialData;
 
-public class Masher extends SimpleProcessingMachine {
+public class Masher extends AbstractIOMachine {
+	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.GREEN.getWoolData());
 	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
-
 	static {
 		recipes.addCustomRecipe(new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120);
 		recipes.addCustomRecipe(new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80);
@@ -39,13 +40,8 @@ public class Masher extends SimpleProcessingMachine {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STAINED_CLAY;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return DyeColor.GREEN.getWoolData();
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -101,7 +97,7 @@ public class Masher extends SimpleProcessingMachine {
 	}
 
 	@Override
-	protected int getInventorySize() {
+	public int getInventoryGUISize() {
 		return 45;
 	}
 
@@ -127,23 +123,23 @@ public class Masher extends SimpleProcessingMachine {
 	}
 
 	@Override
-	protected int getProgressItemSlot() {
+	public int getProgressItemSlot() {
 		return 12;
 	}
 
 	@Override
-	protected int getProgressCounterSlot() {
+	public int getProgressCounterSlot() {
 		return 3;
 	}
 
 	@Override
-	protected Material getProgressIcon() {
+	public Material getProgressIcon() {
 		return Material.GOLD_PICKAXE;
 	}
 
 	@Override
 	protected void playActiveParticleEffect() {
-		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getLocation().getWorld().getFullTime() % 20 == 0) {
+		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
 			ParticleEffect.LARGE_SMOKE.play(getLocation().add(0.5, 1.0, 0.5), 0.2f, 1.0f, 0.2f, 0.001f, 5);
 		}
 	}

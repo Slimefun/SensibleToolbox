@@ -8,10 +8,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
+import org.bukkit.material.MaterialData;
 
 public class BlankModule extends ItemRouterModule {
-	public BlankModule() {
+	private static final MaterialData md = new MaterialData(Material.PAPER);
 
+	public BlankModule() {
 	}
 
 	public BlankModule(ConfigurationSection conf) {
@@ -19,8 +21,8 @@ public class BlankModule extends ItemRouterModule {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.PAPER;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

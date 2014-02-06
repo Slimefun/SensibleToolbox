@@ -22,12 +22,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
+	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.BLUE.getWoolData());
 	public static final String STB_ITEM_ROUTER = "STB_Item_Router";
 	private final List<ItemRouterModule> modules = new ArrayList<ItemRouterModule>();
 	private ItemStack bufferItem;
@@ -85,13 +87,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STAINED_CLAY;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return DyeColor.BLUE.getWoolData();
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -187,7 +184,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	@Override
 	public void onServerTick() {
 		boolean update = false;
-		if (getLocation().getWorld().getFullTime() % getTickRate() == 0) {
+		if (getTicksLived() % getTickRate() == 0) {
 			for (ItemRouterModule module : modules) {
 				if (module.execute()) {
 					update = true;
@@ -198,6 +195,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			updateBlock(false);
 			playParticles();
 		}
+		super.onServerTick();
 	}
 
 	private void playParticles() {
@@ -262,7 +260,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public int insertItems(ItemStack item, BlockFace face) {
+	public int insertItems(ItemStack item, BlockFace face, boolean sorting) {
+		// item routers don't care about sorters - they will take items from them happily
 		if (bufferItem == null) {
 			bufferItem = item.clone();
 			return item.getAmount();

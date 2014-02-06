@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -51,13 +52,8 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STAINED_GLASS;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return color.getWoolData();
+	public MaterialData getMaterialData() {
+		return new MaterialData(Material.STAINED_GLASS, color.getWoolData());
 	}
 
 	@Override

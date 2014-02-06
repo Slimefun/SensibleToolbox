@@ -8,8 +8,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 public class EjectorUpgrade extends MachineUpgrade {
+	private static final MaterialData md = new MaterialData(Material.QUARTZ);
+
 	private BlockFace direction;
 
 	public EjectorUpgrade() {
@@ -36,13 +39,13 @@ public class EjectorUpgrade extends MachineUpgrade {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.QUARTZ;
+	public boolean hasGlow() {
+		return true;
 	}
 
 	@Override
-	public boolean hasGlow() {
-		return true;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

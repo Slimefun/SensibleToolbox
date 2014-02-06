@@ -4,11 +4,14 @@ import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 public class PaintRoller extends PaintBrush {
+	private static final MaterialData md = new MaterialData(Material.IRON_SPADE);
+
 	@Override
-	public Material getBaseMaterial() {
-		return Material.IRON_SPADE;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

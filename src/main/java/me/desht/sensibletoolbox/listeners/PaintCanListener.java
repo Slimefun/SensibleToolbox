@@ -27,8 +27,8 @@ public class PaintCanListener extends STBBaseListener {
 					if (can.tryMix(event.getInventory())) {
 						player.getWorld().playSound(player.getLocation(), Sound.SPLASH, 1.0f, 1.0f);
 						player.removeMetadata(PaintCan.STB_PAINT_CAN, plugin);
-						can.getLocation().getBlock().setType(can.getBaseMaterial());
-						can.getLocation().getBlock().setData(can.getBaseBlockData());
+						can.getLocation().getBlock().setType(can.getMaterial());
+						can.getLocation().getBlock().setData(can.getMaterialData().getData());
 					}
 					// return any items left in the inventory to the player
 					for (ItemStack item : event.getInventory()) {

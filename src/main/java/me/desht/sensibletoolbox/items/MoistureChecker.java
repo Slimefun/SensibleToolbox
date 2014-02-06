@@ -15,14 +15,17 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoistureChecker extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.GHAST_TEAR);
+
 	@Override
-	public Material getBaseMaterial() {
-		return Material.GHAST_TEAR;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

@@ -13,8 +13,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 public class TapeMeasure extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.STRING);
 	private String world;
 	private int x, y, z;
 
@@ -40,8 +42,8 @@ public class TapeMeasure extends BaseSTBItem {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STRING;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

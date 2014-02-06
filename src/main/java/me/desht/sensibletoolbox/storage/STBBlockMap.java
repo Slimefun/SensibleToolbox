@@ -40,11 +40,11 @@ public class STBBlockMap {
 		return conf;
 	}
 
-	public void tick() {
-		for (BaseSTBBlock stb : map.values()) {
-			stb.onServerTick();
-		}
-	}
+//	public void tick() {
+//		for (BaseSTBBlock stb : map.values()) {
+//			stb.onServerTick();
+//		}
+//	}
 
 	public List<? extends BaseSTBBlock> list() {
 		return new ArrayList<BaseSTBBlock>(map.values());

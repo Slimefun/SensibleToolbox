@@ -4,6 +4,7 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
+import me.desht.sensibletoolbox.util.CustomRecipeCollection;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -12,10 +13,12 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 import java.util.Iterator;
 
-public class Smelter extends SimpleProcessingMachine {
+public class Smelter extends AbstractIOMachine {
+	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.CYAN.getWoolData());
 	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
 
 	static {
@@ -49,28 +52,23 @@ public class Smelter extends SimpleProcessingMachine {
 	}
 
 	@Override
-	protected int getProgressItemSlot() {
+	public int getProgressItemSlot() {
 		return 12;
 	}
 
 	@Override
-	protected int getProgressCounterSlot() {
+	public int getProgressCounterSlot() {
 		return 3;
 	}
 
 	@Override
-	protected Material getProgressIcon() {
+	public Material getProgressIcon() {
 		return Material.FLINT_AND_STEEL;
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.STAINED_CLAY;
-	}
-
-	@Override
-	public Byte getBaseBlockData() {
-		return DyeColor.CYAN.getWoolData();
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override
@@ -97,7 +95,7 @@ public class Smelter extends SimpleProcessingMachine {
 
 	@Override
 	public boolean acceptsItemType(ItemStack item) {
-		System.out.println("does " + this + " accept " + item + " ? " + recipes.hasRecipe(item));
+//		System.out.println("does " + this + " accept " + item + " ? " + recipes.hasRecipe(item));
 		return recipes.hasRecipe(item);
 	}
 
@@ -147,13 +145,13 @@ public class Smelter extends SimpleProcessingMachine {
 	}
 
 	@Override
-	protected int getInventorySize() {
+	public int getInventoryGUISize() {
 		return 45;
 	}
 
 	@Override
 	protected void playActiveParticleEffect() {
-		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getLocation().getWorld().getFullTime() % 20 == 0) {
+		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
 				ParticleEffect.FLAME.play(getLocation().add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 0.001f, 7);
 		}
 	}

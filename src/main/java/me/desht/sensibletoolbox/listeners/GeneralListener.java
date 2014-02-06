@@ -1,6 +1,9 @@
 package me.desht.sensibletoolbox.listeners;
 
+import me.desht.sensibletoolbox.api.STBMachine;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
+import me.desht.sensibletoolbox.blocks.machines.gui.GUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
@@ -206,33 +209,50 @@ public class GeneralListener extends STBBaseListener {
 	}
 
 	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
-//		System.out.println("inv click, slot=" + event.getSlot() + " raw=" + event.getRawSlot() + " type=" + event.getSlotType());
-//		System.out.println("  inv type=" + event.getInventory().getType() + " action=" + event.getAction());
+	public void onEquipEnergyCell(InventoryClickEvent event) {
 		if (event.getInventory().getType() == InventoryType.CRAFTING) {
 			if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {
 				if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-					BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem());
-					if (item != null && item instanceof EnergyCell) {
-						// no shift-clicking a energy cell into the helmet slot
-						event.setCancelled(true);
+					EnergyCell item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem(), EnergyCell.class);
+					if (item != null) {
+						event.setCancelled(true); // no shift-clicking a energy cell into the helmet slot
 					}
 				}
 			} else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
-				BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor());
-				if (item != null && item instanceof EnergyCell) {
-					// no placing an energy cell into the helmet slot
-					event.setCancelled(true);
+				EnergyCell item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem(), EnergyCell.class);
+				if (item != null) {
+					event.setCancelled(true); // no placing an energy cell into the helmet slot
 				}
 			}
 		}
 	}
 
 	@EventHandler
-	public void onBlockDispense(BlockDispenseEvent event) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
-		if (item != null && item instanceof EnergyCell) {
-			event.setCancelled(true);
+	public void onEquipEnergyCell(BlockDispenseEvent event) {
+		EnergyCell item = BaseSTBItem.getItemFromItemStack(event.getItem(), EnergyCell.class);
+		if (item != null) {
+			event.setCancelled(true); // no dispensing energy cells (as armour item)
+		}
+	}
+
+	@EventHandler
+	public void onGUIInventoryClick(InventoryClickEvent event) {
+		if (event.getInventory().getHolder() instanceof GUIHolder) {
+			((GUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
+		}
+	}
+
+	@EventHandler
+	public void onGUIInventoryDrag(InventoryDragEvent event) {
+		if (event.getInventory().getHolder() instanceof GUIHolder) {
+			((GUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
+		}
+	}
+
+	@EventHandler
+	public void onGUIInventoryClose(InventoryCloseEvent event) {
+		if (event.getInventory().getHolder() instanceof GUIHolder) {
+			((GUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
 		}
 	}
 }

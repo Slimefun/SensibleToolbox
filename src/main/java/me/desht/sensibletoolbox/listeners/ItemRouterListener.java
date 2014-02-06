@@ -33,19 +33,7 @@ public class ItemRouterListener extends STBBaseListener {
 			return;
 		}
 
-		// only allow modules to be inserted
-		Inventory topInv = event.getView().getTopInventory();
-		if (event.getRawSlot() >= 0 && event.getRawSlot() < topInv.getSize()) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor());
-			if (item != null && !(item instanceof ItemRouterModule)) {
-				event.setCancelled(true);
-			}
-		} else if (event.getRawSlot() >= topInv.getSize() && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem());
-			if (item == null || !(item instanceof ItemRouterModule)) {
-				event.setCancelled(true);
-			}
-		}
+		filterItemsAllowed(event, ItemRouterModule.class);
 	}
 
 	@EventHandler
@@ -56,23 +44,7 @@ public class ItemRouterListener extends STBBaseListener {
 		if (!(event.getInventory().getTitle().equals(ItemRouter.getInventoryTitle()))) {
 			return;
 		}
-		Set<Integer> slots = event.getRawSlots();
-		Inventory topInv = event.getView().getTopInventory();
-		for (int slot : slots) {
-			if (slot < topInv.getSize()) {
-				if (slots.size() > 1) {
-					event.setCancelled(true);
-					break;
-				} else {
-					BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getOldCursor());
-					if (item == null || !(item instanceof ItemRouterModule)) {
-						event.setCancelled(true);
-						break;
-					}
-				}
-			}
-
-		}
+		filterItemsAllowed(event, ItemRouterModule.class);
 	}
 
 	@EventHandler

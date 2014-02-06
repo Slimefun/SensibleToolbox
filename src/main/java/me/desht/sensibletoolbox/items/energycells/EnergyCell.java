@@ -4,6 +4,7 @@ import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,11 +14,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.material.MaterialData;
 
 public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
+	private static final MaterialData md = new MaterialData(Material.LEATHER_HELMET);
+
 	private double charge;
 
 	protected EnergyCell() {
@@ -34,8 +35,8 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 	}
 
 	@Override
-	public Material getBaseMaterial() {
-		return Material.LEATHER_HELMET;
+	public MaterialData getMaterialData() {
+		return md;
 	}
 
 	@Override

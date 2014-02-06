@@ -1,8 +1,8 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
-import me.desht.sensibletoolbox.items.filter.AbstractItemFilter;
-import me.desht.sensibletoolbox.items.filter.ItemFilter;
-import me.desht.sensibletoolbox.items.filter.ReverseItemFilter;
+import me.desht.sensibletoolbox.items.filters.AbstractItemFilter;
+import me.desht.sensibletoolbox.items.filters.ItemFilter;
+import me.desht.sensibletoolbox.items.filters.ReverseItemFilter;
 import me.desht.sensibletoolbox.util.Filter;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
@@ -31,10 +31,6 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule {
 		} else {
 			filter = null;
 		}
-	}
-
-	public static String getInventoryTitle() {
-		return ChatColor.GOLD + "Item Router Module Setup";
 	}
 
 	public YamlConfiguration freeze() {
@@ -83,15 +79,17 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule {
 			event.setCancelled(true);
 		} else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
 				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			// open module inventory to insert/remove item filter
-			Inventory inv = Bukkit.createInventory(event.getPlayer(), 9, getInventoryTitle());
-			populateGUI(inv);
-			event.getPlayer().openInventory(inv);
-			event.setCancelled(true);
+			// open module inventory to insert/remove item filters
+			if (event.getClickedBlock() == null || !STBUtil.isInteractive(event.getClickedBlock().getType())) {
+				Inventory inv = Bukkit.createInventory(event.getPlayer(), 9, getInventoryTitle());
+				populateGUI(inv);
+				event.getPlayer().openInventory(inv);
+				event.setCancelled(true);
+			}
 		}
 	}
 
-	private void populateGUI(Inventory inv) {
+	protected void populateGUI(Inventory inv) {
 		if (filter != null) {
 			AbstractItemFilter f = filter.isWhiteList() ? new ItemFilter(filter) : new ReverseItemFilter(filter);
 			inv.setItem(0, f.toItemStack(1));

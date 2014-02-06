@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.sensibletoolbox.items.BaseSTBItem;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,9 +11,12 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 public class DropperModule extends DirectionalItemRouterModule {
+	private static final MaterialData md = makeDye(DyeColor.GRAY);
+
 	public DropperModule() {}
 
 	public DropperModule(ConfigurationSection conf) {
@@ -21,7 +25,7 @@ public class DropperModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String getItemName() {
-		return "Item Router Dropper Module";
+		return "I.R. Mod: Dropper";
 	}
 
 	@Override
@@ -43,8 +47,16 @@ public class DropperModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
+	public MaterialData getMaterialData() {
+		return md;
+	}
+
+	@Override
 	public boolean execute() {
 		if (getOwner() != null && getOwner().getBufferItem() != null) {
+			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
+				return false;
+			}
 			System.out.println("prepare to drop " + getOwner().getBufferItem());
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
