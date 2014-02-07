@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -30,7 +31,7 @@ public class DropperModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Insert into an Item Router", "Drops items onto the ground", "in the configured direction" };
+		return makeDirectionalLore("Insert into an Item Router", "Drops items onto the ground", "in the configured direction");
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class DropperModule extends DirectionalItemRouterModule {
 			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
 				return false;
 			}
-			System.out.println("prepare to drop " + getOwner().getBufferItem());
+			Debugger.getInstance().debug(2, "prepare to drop " + getOwner().getBufferItem() + " from " + getOwner());
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
 			int toDrop = getOwner().getStackSize();

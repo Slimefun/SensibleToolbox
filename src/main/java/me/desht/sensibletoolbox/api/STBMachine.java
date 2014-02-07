@@ -87,7 +87,7 @@ public interface STBMachine extends Chargeable, STBInventoryHolder {
 		public ItemStack getTexture() {
 			ItemStack res = new ItemStack(material);
 			ItemMeta meta = res.getItemMeta();
-			meta.setDisplayName(ChatColor.WHITE + label);
+			meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label);
 			res.setItemMeta(meta);
 			return res;
 		}

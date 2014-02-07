@@ -3,16 +3,15 @@ package me.desht.sensibletoolbox.blocks;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.DyeColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -21,6 +20,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
 
 public class AngelicBlock extends BaseSTBBlock {
 	private static final MaterialData md = new MaterialData(Material.OBSIDIAN);
@@ -44,7 +45,10 @@ public class AngelicBlock extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "R-click: place block in the air", "L-click block: insta-break it" };
+		return new String[] {
+				"R-click: " + ChatColor.RESET + " place block in the air",
+				"L-click block: " + ChatColor.RESET + " insta-break"
+		};
 	}
 
 	@Override
@@ -90,14 +94,15 @@ public class AngelicBlock extends BaseSTBBlock {
 	public void onBlockDamage(BlockDamageEvent event) {
 		// the angelic block has just been hit by a player - insta-break it
 		Player p = event.getPlayer();
-		if (p.hasPermission("stb.break_angelic_block")) {
-			Block b = event.getBlock();
-			b.setType(Material.AIR);
-			p.getInventory().addItem(this.toItemStack(1));
-			b.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-			breakBlock(b);
-			event.setCancelled(true);
+		Block b = event.getBlock();
+		b.setType(Material.AIR);
+		HashMap<Integer,ItemStack> excess = p.getInventory().addItem(this.toItemStack(1));
+		for (ItemStack stack : excess.values()) {
+			p.getWorld().dropItemNaturally(p.getLocation(), stack);
 		}
+		b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+		LocationManager.getManager().unregisterLocation(getLocation());
+		event.setCancelled(true);
 	}
 
 	@Override
@@ -110,10 +115,11 @@ public class AngelicBlock extends BaseSTBBlock {
 		Location loc = getLocation();
 		if (getTicksLived() % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-				ParticleEffect.CLOUD.play(loc.add(0, 0.5, 0), 0f, 0f, 0f, 0.25f, 4);
+				ParticleEffect.CLOUD.play(loc.add(0.5, 0.5, 0.5), 0f, 0f, 0f, 0.05f, 10);
 			} else {
-				loc.getWorld().playEffect(loc.add(0, 0.5, 0), Effect.SMOKE, BlockFace.UP);
+				loc.getWorld().playEffect(loc.add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
 			}
 		}
+		super.onServerTick();
 	}
 }

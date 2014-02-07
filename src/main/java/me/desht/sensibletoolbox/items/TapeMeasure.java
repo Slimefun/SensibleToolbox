@@ -81,18 +81,16 @@ public class TapeMeasure extends BaseSTBItem {
 				setAnchor(event.getClickedBlock());
 				event.getPlayer().setItemInHand(toItemStack(1));
 				MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point set.");
-				event.setCancelled(true);
 			} else {
 				makeMeasurement(event.getPlayer(), event.getClickedBlock());
-				event.getPlayer().updateInventory();
-				event.setCancelled(true);
 			}
+			event.getPlayer().updateInventory();
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			setAnchor(null);
 			event.getPlayer().setItemInHand(toItemStack(1));
 			MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point cleared.");
-			event.setCancelled(true);
 		}
+		event.setCancelled(true);
 	}
 
 	private void makeMeasurement(Player p, Block b) {

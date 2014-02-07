@@ -71,6 +71,7 @@ public class LocationManager {
 		if (!tickers.containsKey(w.getName())) {
 			tickers.put(w.getName(), new HashSet<BaseSTBBlock>());
 		}
+		Debugger.getInstance().debug(2, "add ticking block " + stb + " in world: " + w.getName());
 		tickers.get(w.getName()).add(stb);
 	}
 
@@ -80,18 +81,25 @@ public class LocationManager {
 		if (!tickers.containsKey(w.getName())) {
 			tickers.put(w.getName(), new HashSet<BaseSTBBlock>());
 		}
+		Debugger.getInstance().debug(2, "remove ticking block " + stb + " in world: " + w.getName());
 		tickers.get(w.getName()).remove(stb);
 	}
 
 	public void registerLocation(Location loc, BaseSTBBlock stb) {
-		String worldName = loc.getWorld().getName();
-		Chunk chunk = loc.getChunk();
-		BlockPosition pos = new BlockPosition(loc);
-		stb.setLocation(loc);
-		worldMap.get(worldName).get(chunk).put(pos, stb);
-		markChunkDirty(worldName, pos);
-		if (stb.shouldTick()) {
-			addTicker(stb);
+		BaseSTBBlock stb2 = get(loc);
+		if (stb2 == null) {
+			String worldName = loc.getWorld().getName();
+			Chunk chunk = loc.getChunk();
+			BlockPosition pos = new BlockPosition(loc);
+			stb.setLocation(loc);
+			worldMap.get(worldName).get(chunk).put(pos, stb);
+			markChunkDirty(worldName, pos);
+			if (stb.shouldTick()) {
+				addTicker(stb);
+			}
+			Debugger.getInstance().debug("Registered " + stb + " @ " + loc);
+		} else {
+			LogUtils.warning("Attempt to register duplicate STB block " + stb + " @ " + loc + " - existing block " + stb2);
 		}
 	}
 
@@ -105,15 +113,18 @@ public class LocationManager {
 	public void unregisterLocation(Location loc) {
 		BaseSTBBlock stb = get(loc);
 		if (stb != null) {
-			String worldName = loc.getWorld().getName();
-			Chunk chunk = loc.getChunk();
-			BlockPosition pos = new BlockPosition(loc);
-			stb.setLocation(null);
-			worldMap.get(worldName).get(chunk).remove(pos);
-			markChunkDirty(worldName, pos);
 			if (stb.shouldTick()) {
 				removeTicker(stb);
 			}
+			stb.setLocation(null);
+			String worldName = loc.getWorld().getName();
+			BlockPosition pos = new BlockPosition(loc);
+			Chunk chunk = loc.getChunk();
+			worldMap.get(worldName).get(chunk).remove(pos);
+			markChunkDirty(worldName, pos);
+			Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
+		} else {
+			LogUtils.warning("Attempt to unregister non-existent STB block @ " + loc);
 		}
 	}
 
@@ -181,7 +192,6 @@ public class LocationManager {
 				}
 			}
 		}
-//		worldMap.tick();
 		if (System.currentTimeMillis() - lastSave > MIN_SAVE_INTERVAL) {
 			save();
 		}
@@ -192,7 +202,7 @@ public class LocationManager {
 			return;
 		}
 
-		LogUtils.info("saving " + dirtyChunks.size() + " chunks");
+		Debugger.getInstance().debug("saving " + dirtyChunks.size() + " chunks");
 		for (Map.Entry<String, Set<ChunkCoords>> entry : dirtyChunks.entrySet()) {
 			for (ChunkCoords cc : entry.getValue()) {
 				YamlConfiguration conf = worldMap.get(entry.getKey()).get(cc).freeze();
@@ -205,7 +215,7 @@ public class LocationManager {
 							LogUtils.warning("can't delete " + f);
 						}
 					} else {
-						Debugger.getInstance().debug("saving " + conf.getKeys(false).size() + " objects to " + f);
+						Debugger.getInstance().debug(2, "saving " + conf.getKeys(false).size() + " objects to " + f);
 						conf.save(f);
 					}
 				} catch (IOException e) {
@@ -247,15 +257,12 @@ public class LocationManager {
 						BaseSTBItem tmpl = BaseSTBItem.getItemById(type, cs);
 						if (tmpl != null) {
 							if (tmpl instanceof BaseSTBBlock) {
-//								BaseSTBBlock tmplB = (BaseSTBBlock) tmpl;
-//								Constructor<? extends BaseSTBBlock> ctor = tmplB.getClass().getDeclaredConstructor(ConfigurationSection.class);
-//								BaseSTBBlock stb = ctor.newInstance(cs);
 								registerLocation(loc, (BaseSTBBlock) tmpl);
 							} else {
 								LogUtils.severe("STB item " + type + " @ " + loc + " is not a block!");
 							}
 						} else {
-							// defer it - could be registered by another plugin later
+							// defer it - should hopefully be registered by another plugin later
 							deferBlockLoad(world, pos, cs);
 						}
 					}
@@ -278,6 +285,20 @@ public class LocationManager {
 		PersistableLocation pl = new PersistableLocation(world, pos.getX(), pos.getY(), pos.getZ());
 		Debugger.getInstance().debug(2, "block loading for " + type + " @ " + pl + " deferred - no registration for it yet");
 		deferredBlocks.get(type).put(pl, cs);
+	}
+
+	public void loadDeferredBlock(String type) {
+		Map<PersistableLocation, ConfigurationSection> map = deferredBlocks.get(type);
+		if (map != null) {
+			Debugger.getInstance().debug("loading " + map.size() + " deferred blocks of type: " + type);
+			for (Map.Entry<PersistableLocation, ConfigurationSection> entry : map.entrySet()) {
+				if (entry.getKey().isWorldAvailable()) {
+					BaseSTBItem stb = BaseSTBItem.getItemById(type, entry.getValue());
+					registerLocation(entry.getKey().getLocation(), (BaseSTBBlock) stb);
+				}
+			}
+			deferredBlocks.remove(type);
+		}
 	}
 
 	/**

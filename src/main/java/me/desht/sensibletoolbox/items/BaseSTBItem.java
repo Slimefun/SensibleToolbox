@@ -18,6 +18,8 @@ import me.desht.sensibletoolbox.items.filters.ReverseItemFilter;
 import me.desht.sensibletoolbox.items.itemroutermodules.*;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
+import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -102,6 +104,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registry.put(item.getItemName(), item.getClass());
 		name2id.put(item.getItemName(), item.getItemName().toLowerCase().replaceAll("[^a-z0-9]", ""));
 		id2name.put(item.getItemID(), item.getItemName());
+		if (item instanceof BaseSTBBlock) {
+			LocationManager.getManager().loadDeferredBlock(item.getItemID());
+		}
 	}
 
 	public static void setupRecipes() {
@@ -189,16 +194,27 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @return true if this item stack is an STB item
 	 */
 	public static boolean isSTBItem(ItemStack stack) {
+		return isSTBItem(stack, null);
+	}
+
+	public static boolean isSTBItem(ItemStack stack, Class<? extends BaseSTBItem> c) {
 		if (stack == null || !stack.hasItemMeta()) {
 			return false;
 		}
 		ItemMeta im = stack.getItemMeta();
 		if (im.hasLore()) {
 			List<String> lore = im.getLore();
-			return !lore.isEmpty() && lore.get(0).equals(STB_LORE_LINE);
-		} else {
-			return false;
+			if (!lore.isEmpty() && lore.get(0).equals(STB_LORE_LINE)) {
+				if (c != null) {
+					String disp = ChatColor.stripColor(im.getDisplayName());
+					Class<? extends BaseSTBItem> c2 = registry.get(disp.split(SUFFIX_SEPARATOR)[0]);
+					return c2 != null && c.isAssignableFrom(c2);
+				} else {
+					return true;
+				}
+			}
 		}
+		return false;
 	}
 
 	protected static Configuration getItemAttributes(ItemStack stack) {
@@ -208,8 +224,10 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			String s = storage.getData("");
 			if (s != null) {
 				conf.loadFromString(s);
-				Debugger.getInstance().debug("get item attributes for " + stack + ":");
-				for (String k : conf.getKeys(false)) { Debugger.getInstance().debug("- " + k + "=" + conf.get(k)); }
+				if (Debugger.getInstance().getLevel() > 2) {
+					Debugger.getInstance().debug(3, "get item attributes for " + STBUtil.describeItemStack(stack) + ":");
+					for (String k : conf.getKeys(false)) { Debugger.getInstance().debug(3, "- " + k + " = " + conf.get(k)); }
+				}
 				return conf;
 			} else {
 				return null;
@@ -377,7 +395,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
 			String data = conf.saveToString();
 			storage.setData(data);
-			Debugger.getInstance().debug("serialize to itemstack:\n" + data);
+			Debugger.getInstance().debug(3, "serialize " + this + " to itemstack:\n" + data);
 			return storage.getTarget();
 		} else {
 			return res;

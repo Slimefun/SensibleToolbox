@@ -8,6 +8,7 @@ import me.desht.sensibletoolbox.util.CustomRecipeCollection;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -95,7 +96,6 @@ public class Smelter extends AbstractIOMachine {
 
 	@Override
 	public boolean acceptsItemType(ItemStack item) {
-//		System.out.println("does " + this + " accept " + item + " ? " + recipes.hasRecipe(item));
 		return recipes.hasRecipe(item);
 	}
 
@@ -147,6 +147,12 @@ public class Smelter extends AbstractIOMachine {
 	@Override
 	public int getInventoryGUISize() {
 		return 45;
+	}
+
+
+	@Override
+	protected void playStartupSound() {
+		getLocation().getWorld().playSound(getLocation(), Sound.FIRE, 1.0f, 1.0f);
 	}
 
 	@Override

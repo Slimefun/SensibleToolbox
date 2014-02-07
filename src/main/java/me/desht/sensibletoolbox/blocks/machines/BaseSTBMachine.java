@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
@@ -22,6 +24,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine {
 	private static final long CHARGE_INTERVAL = 10;
 	private double charge;
@@ -33,6 +38,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	private BlockFace autoEjectDirection;
 	private boolean needToProcessUpgrades;
 	private int chargeMeterId;
+	private String frozenInput, frozenOutput; //, frozenUpgrades;
+	private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
 
 	protected BaseSTBMachine() {
 		super();
@@ -41,7 +48,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		jammed = false;
 		autoEjectDirection = null;
 		needToProcessUpgrades = false;
-		createGUI();
 	}
 
 	public BaseSTBMachine(ConfigurationSection conf) {
@@ -54,12 +60,48 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			cell.setCharge(conf.getDouble("energyCellCharge", 0.0));
 			installEnergyCell(cell);
 		}
-		createGUI();
+		if (conf.contains("upgrades")) {
+			for (String l : conf.getStringList("upgrades")) {
+				String[] f = l.split("::", 2);
+				try {
+					YamlConfiguration upgConf = new YamlConfiguration();
+					if (f.length > 1) {
+						upgConf.loadFromString(f[1]);
+					}
+					MachineUpgrade upgrade = (MachineUpgrade) BaseSTBItem.getItemById(f[0], upgConf);
+					upgrades.add(upgrade);
+				} catch (Exception e) {
+					LogUtils.warning("can't restore saved module " + f[0] + " for " + this + ": " + e.getMessage());
+				}
+			}
+		}
 		needToProcessUpgrades = true;
-		processUpgrades();
-		getGUI().thawSlots(conf.getString("inputSlots", ""), getInputSlots());
-		getGUI().thawSlots(conf.getString("outputSlots", ""), getOutputSlots());
-		getGUI().thawSlots(conf.getString("upgradeSlots", ""), getUpgradeSlots());
+		frozenInput = conf.getString("inputSlots");
+		frozenOutput = conf.getString("outputSlots");
+	}
+
+	@Override
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("charge", charge);
+		conf.set("accessControl", getAccessControl().toString());
+		conf.set("redstoneBehaviour", getRedstoneBehaviour().toString());
+		conf.set("chargeDirection", getChargeDirection().toString());
+		List<String> upg = new ArrayList<String>();
+		for (MachineUpgrade upgrade : upgrades) {
+			upg.add(upgrade.getItemID() + "::" + upgrade.freeze().saveToString());
+		}
+		conf.set("upgrades", upg);
+
+		if (getGUI() != null) {
+			conf.set("inputSlots", getGUI().freezeSlots(getInputSlots()));
+			conf.set("outputSlots", getGUI().freezeSlots(getOutputSlots()));
+		}
+		if (installedCell != null) {
+			conf.set("energyCell", installedCell.getItemID());
+			conf.set("energyCellCharge", installedCell.getCharge());
+		}
+		return conf;
 	}
 
 	public abstract int[] getInputSlots();
@@ -112,23 +154,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public YamlConfiguration freeze() {
-		YamlConfiguration conf = super.freeze();
-		conf.set("charge", charge);
-		conf.set("accessControl", getAccessControl().toString());
-		conf.set("redstoneBehaviour", getRedstoneBehaviour().toString());
-		conf.set("chargeDirection", getChargeDirection().toString());
-		conf.set("inputSlots", getGUI().freezeSlots(getInputSlots()));
-		conf.set("outputSlots", getGUI().freezeSlots(getOutputSlots()));
-		conf.set("upgradeSlots", getGUI().freezeSlots(getUpgradeSlots()));
-		if (installedCell != null) {
-			conf.set("energyCell", installedCell.getItemID());
-			conf.set("energyCellCharge", installedCell.getCharge());
-		}
-		return conf;
-	}
-
-	@Override
 	public double getCharge() {
 		return charge;
 	}
@@ -138,9 +163,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		if (charge <= 0 && this.charge > 0 && getLocation() != null) {
 			playOutOfChargeSound();
 		}
-		this.charge = charge;
+		this.charge = Math.max(0, charge);
 		getGUI().getMonitor(chargeMeterId).repaintNeeded();
 		updateBlock();
+	}
+
+	protected void playStartupSound() {
+		// override in subclasses
 	}
 
 	protected void playOutOfChargeSound() {
@@ -154,6 +183,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	private void createGUI() {
 		InventoryGUI gui = new InventoryGUI(this, getInventoryGUISize(), ChatColor.DARK_BLUE + getItemName());
+
 		gui.paintSlotSurround(getInputSlots(), InventoryGUI.INPUT_TEXTURE);
 		gui.paintSlotSurround(getOutputSlots(), InventoryGUI.OUTPUT_TEXTURE);
 		for (int slot : getInputSlots()) {
@@ -162,12 +192,21 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		for (int slot : getOutputSlots()) {
 			gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
 		}
-		for (int slot : getUpgradeSlots()) {
+
+		int[] upgradeSlots = getUpgradeSlots();
+		for (int slot : upgradeSlots) {
 			gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
 		}
-		gui.addGadget(new ButtonGadget(gui, "Machine Upgrades"), getUpgradeLabelSlot());
+		if (getUpgradeLabelSlot() >= 0) {
+			gui.addLabel("Upgrades", getUpgradeLabelSlot());
+		}
+		for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
+			gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
+		}
+
 		gui.addGadget(new RedstoneBehaviourGadget(gui), getRedstoneBehaviourSlot());
 		gui.addGadget(new AccessControlGadget(gui), getAccessControlSlot());
+
 		if (gui.containsSlot(getEnergyCellSlot())) {
 			gui.setSlotType(getEnergyCellSlot(), InventoryGUI.SlotType.ITEM);
 		}
@@ -218,12 +257,19 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		if (loc == null) {
 			getGUI().ejectItems(getInputSlots());
 			getGUI().ejectItems(getOutputSlots());
+			getGUI().ejectItems(getUpgradeSlots());
 			if (installedCell != null) {
 				getGUI().ejectItems(getEnergyCellSlot());
 				installedCell = null;
 			}
+			upgrades.clear();
 		}
 		super.setLocation(loc);
+		if (loc != null) {
+			createGUI();
+			getGUI().thawSlots(frozenInput, getInputSlots());
+			getGUI().thawSlots(frozenOutput, getOutputSlots());
+		}
 	}
 
 	/**
@@ -308,7 +354,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 					updateBlock(false);
 				}
 			}
-			System.out.println("inserted " + nInserted + " out of " + STBUtil.describeItemStack(toInsert) + " into " + this);
+			if (Debugger.getInstance().getLevel() > 1) {
+				Debugger.getInstance().debug(2, "inserted " + nInserted + " out of " +
+						STBUtil.describeItemStack(toInsert) + " into " + this);
+			}
 		}
 		return nInserted;
 	}
@@ -336,7 +385,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 						getInventory().setItem(slot, stack.getAmount() > 0 ? stack : null);
 						setJammed(false);
 						updateBlock(false);
-						System.out.println("extracted " + STBUtil.describeItemStack(result) + " from " + this);
+						if (Debugger.getInstance().getLevel() > 1) {
+							Debugger.getInstance().debug(2, "extracted " + STBUtil.describeItemStack(result) + " from " + this);
+						}
 						return result;
 					}
 				}
@@ -347,23 +398,19 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	@Override
 	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-		System.out.println("slot " + slot + " clicked in " + this);
 		if (isInputSlot(slot)) {
 			if (onCursor.getType() != Material.AIR && !acceptsItemType(onCursor)) {
-				System.out.println("cancel place into input slot " + slot);
 				return false;
 			}
 		} else if (isOutputSlot(slot)) {
 			if (onCursor.getType() != Material.AIR) {
-				System.out.println("cancel place into output slot " + slot);
 				return false;
 			} else {
 				setJammed(false);
 			}
 		} else if (isUpgradeSlot(slot)) {
 			if (onCursor.getType() != Material.AIR) {
-				MachineUpgrade mu = BaseSTBItem.getItemFromItemStack(onCursor, MachineUpgrade.class);
-				if (mu == null) {
+				if (!BaseSTBItem.isSTBItem(onCursor, MachineUpgrade.class)) {
 					return false;
 				}
 			}
@@ -372,7 +419,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			if (onCursor.getType() != Material.AIR) {
 				EnergyCell cell = BaseSTBItem.getItemFromItemStack(onCursor, EnergyCell.class);
 				if (cell != null) {
-					System.out.println("put cell in machine");
 					installEnergyCell(cell);
 				} else {
 					return false;
@@ -399,17 +445,17 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 				toInsert.setAmount(toInsert.getAmount() - nToInsert);
 				return nToInsert;
 			}
-		} else if (getEnergyCellSlot() >= 0 && installedCell == null) {
+		}
+		if (getEnergyCellSlot() >= 0 && installedCell == null) {
 			EnergyCell cell = BaseSTBItem.getItemFromItemStack(toInsert, EnergyCell.class);
 			if (cell != null) {
-				System.out.println("shift click energy cell into machine");
 				installEnergyCell(cell);
 				getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack(1));
 				return 1;
 			}
-		} else if (getUpgradeSlots().length > 0) {
-			MachineUpgrade mu = BaseSTBItem.getItemFromItemStack(toInsert, MachineUpgrade.class);
-			if (mu != null) {
+		}
+		if (getUpgradeSlots().length > 0) {
+			if (BaseSTBItem.isSTBItem(toInsert, MachineUpgrade.class)) {
 				int upgradeSlot = findAvailableUpgradeSlot(toInsert);
 				if (upgradeSlot >= 0) {
 					getInventory().setItem(upgradeSlot, toInsert);
@@ -428,6 +474,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		// allow extraction to continue in all cases
 		if (slot == getEnergyCellSlot() && toExtract != null) {
 			installEnergyCell(null);
+		} else if (isUpgradeSlot(slot)) {
+			needToProcessUpgrades = true;
 		}
 		return true;
 	}
@@ -436,7 +484,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	public boolean onClickOutside() {
 		return false;
 	}
-
 
 	private int findAvailableUpgradeSlot(ItemStack upgrade) {
 		for (int slot : getUpgradeSlots()) {
@@ -448,36 +495,46 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		return -1;
 	}
 
-	private void processUpgrades() {
-		int nSpeed = 0;
-		BlockFace ejectDirection = null;
+	private void scanUpgradeSlots() {
+		upgrades.clear();
 		for (int slot : getUpgradeSlots()) {
 			ItemStack stack = getInventory().getItem(slot);
 			if (stack != null) {
-				MachineUpgrade mu = BaseSTBItem.getItemFromItemStack(stack, MachineUpgrade.class);
-				if (mu == null) {
+				MachineUpgrade upgrade = BaseSTBItem.getItemFromItemStack(stack, MachineUpgrade.class);
+				if (upgrade == null) {
 					getInventory().setItem(slot, null);
 					if (getLocation() != null) {
 						getLocation().getWorld().dropItemNaturally(getLocation(), stack);
 					}
 				} else {
-					if (mu instanceof SpeedUpgrade) {
-						nSpeed += stack.getAmount();
-					} else if (mu instanceof EjectorUpgrade) {
-						ejectDirection = ((EjectorUpgrade) mu).getDirection();
-					}
+					upgrade.setAmount(stack.getAmount());
+					upgrades.add(upgrade);
+					updateBlock(false);
 				}
+			}
+		}
+	}
+
+	private void processUpgrades() {
+		int nSpeed = 0;
+		BlockFace ejectDirection = null;
+		for (MachineUpgrade upgrade : upgrades) {
+			if (upgrade instanceof SpeedUpgrade) {
+				nSpeed += upgrade.getAmount();
+			} else if (upgrade instanceof EjectorUpgrade) {
+				ejectDirection = ((EjectorUpgrade) upgrade).getDirection();
 			}
 		}
 		setSpeedMultiplier(Math.pow(1.4, nSpeed));
 		setPowerMultiplier(Math.pow(1.6, nSpeed));
 		setAutoEjectDirection(ejectDirection);
-		System.out.println("upgrades for " + this + " speed=" + getSpeedMultiplier() + " power=" + getPowerMultiplier() + " eject=" + getAutoEjectDirection());
+		Debugger.getInstance().debug("upgrades for " + this + " speed=" + getSpeedMultiplier() +
+				" power=" + getPowerMultiplier() + " eject=" + getAutoEjectDirection());
 	}
 
 	public void installEnergyCell(EnergyCell cell) {
 		installedCell = cell;
-		System.out.println("installed energy cell: " + cell);
+		Debugger.getInstance().debug("installed energy cell " + cell + " in " + this);
 		updateBlock();
 	}
 
@@ -508,6 +565,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			}
 		}
 		if (needToProcessUpgrades) {
+			if (getGUI() != null) {
+				scanUpgradeSlots();
+			}
 			processUpgrades();
 			needToProcessUpgrades = false;
 		}

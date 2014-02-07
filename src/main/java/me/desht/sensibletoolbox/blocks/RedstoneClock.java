@@ -112,7 +112,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Emits a redstone signal" };
+		return new String[] { "Emits a redstone signal", "R-click: " + ChatColor.RESET + " configure clock" };
 	}
 
 	@Override

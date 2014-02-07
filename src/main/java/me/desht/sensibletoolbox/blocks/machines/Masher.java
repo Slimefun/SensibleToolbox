@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.items.IronDust;
 import me.desht.sensibletoolbox.util.CustomRecipeCollection;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -51,7 +52,7 @@ public class Masher extends AbstractIOMachine {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Grinds ores and other resources ", " into dusts" };
+		return new String[] { "Grinds ores and other ", "resources into dusts" };
 	}
 
 	@Override
@@ -113,7 +114,6 @@ public class Masher extends AbstractIOMachine {
 
 	@Override
 	public boolean acceptsItemType(ItemStack item) {
-		System.out.println("does " + this + " accept " + item + " ? " + recipes.hasRecipe(item));
 		return recipes.hasRecipe(item);
 	}
 
@@ -135,6 +135,11 @@ public class Masher extends AbstractIOMachine {
 	@Override
 	public Material getProgressIcon() {
 		return Material.GOLD_PICKAXE;
+	}
+
+	@Override
+	protected void playStartupSound() {
+		getLocation().getWorld().playSound(getLocation(), Sound.HORSE_SKELETON_IDLE, 1.0f, 0.5f);
 	}
 
 	@Override

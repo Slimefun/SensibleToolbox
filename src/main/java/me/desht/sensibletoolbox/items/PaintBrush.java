@@ -214,7 +214,6 @@ public class PaintBrush extends BaseSTBItem {
 			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
 			if (stb != null && stb instanceof Colorable) {
 				((Colorable) stb).setColor(getColour());
-				stb.updateBlock();
 			} else {
 				if (b.getType() == Material.GLASS) {
 					b.setType(Material.STAINED_GLASS);

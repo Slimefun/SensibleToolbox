@@ -14,6 +14,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
+import java.util.Arrays;
+
 public abstract class DirectionalItemRouterModule extends ItemRouterModule {
 	private Filter filter;
 	private BlockFace direction;
@@ -74,7 +76,6 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			// set module direction based on clicked block face
 			setDirection(event.getBlockFace().getOppositeFace());
-			System.out.println("player is holding " + event.getPlayer().getItemInHand());
 			event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
 			event.setCancelled(true);
 		} else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
@@ -94,6 +95,12 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule {
 			AbstractItemFilter f = filter.isWhiteList() ? new ItemFilter(filter) : new ReverseItemFilter(filter);
 			inv.setItem(0, f.toItemStack(1));
 		}
+	}
+
+	protected String[] makeDirectionalLore(String... lore) {
+		String[] newLore = Arrays.copyOf(lore, lore.length + 1);
+		newLore[lore.length] = "L-click Block: " + ChatColor.RESET + " Set direction";
+		return newLore;
 	}
 
 	public void installFilter(AbstractItemFilter itemFilter) {

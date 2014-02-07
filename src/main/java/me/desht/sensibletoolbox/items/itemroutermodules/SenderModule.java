@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
@@ -39,14 +40,14 @@ public class SenderModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return new String[] {
+		return makeDirectionalLore(
 				"Insert into an Item Router",
 				"Sends items elsewhere:" ,
 				" - An adjacent inventory OR",
 				" - Item Router with Receiver Module:",
 				"   within 10 blocks, with line of sight",
 				"   and facing this Sender Module"
-		};
+		);
 	}
 
 	@Override
@@ -73,15 +74,15 @@ public class SenderModule extends DirectionalItemRouterModule {
 			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
 				return false;
 			}
-			System.out.println("sender in " + getOwner() + " has: " + STBUtil.describeItemStack(getOwner().getBufferItem()));
+			Debugger.getInstance().debug(2, "sender in " + getOwner() + " has: " + getOwner().getBufferItem());
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
 			int nToInsert = getOwner().getStackSize();
 			if (allowsItemsThrough(target.getType())) {
-				System.out.println("find receiver module...");
 				// search for a visible Item Router with an installed Receiver Module
 				ReceiverModule receiver = findReceiver();
 				if (receiver != null) {
+					Debugger.getInstance().debug(2, "sender found receiver module in " + receiver.getOwner());
 					ItemStack toSend = getOwner().getBufferItem().clone();
 					toSend.setAmount(Math.min(nToInsert, toSend.getAmount()));
 					int received = receiver.receiveItem(toSend);
@@ -141,7 +142,6 @@ public class SenderModule extends DirectionalItemRouterModule {
 
 	private boolean vanillaInsertion(Block target, int amount, BlockFace side) {
 		ItemStack buffer = getOwner().getBufferItem();
-		System.out.println("vanilla insert!");
 		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false);
 		if (nInserted == 0) {
 			// no insertion happened

@@ -25,9 +25,9 @@ public class SpeedModule extends ItemRouterModule {
 	public String[] getLore() {
 		return new String[] {
 				"Insert into an Item Router",
-				"Each Speed Module will increase",
-				"operating speed by 1 per ticks from",
-				"the base rate of 1 per 20 ticks.",
+				"Increases router speed:",
+				"0 modules = 1 op / 20 ticks",
+				"1 = 1/15, 2 = 1/10, 3 = 1/5",
 				"Max: 3 Speed Modules"
 		};
 	}

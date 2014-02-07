@@ -2,6 +2,9 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.blocks.machines.gui.InventoryGUI;
+import me.desht.sensibletoolbox.blocks.machines.gui.NumericGadget;
+import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -24,11 +27,25 @@ public class SoundMuffler extends BaseSTBBlock {
 
 	public SoundMuffler() {
 		volume = 10;
+		createGUI();
 	}
 
 	public SoundMuffler(ConfigurationSection conf) {
 		super(conf);
 		volume = conf.getInt("volume");
+		createGUI();
+	}
+
+	private void createGUI() {
+		InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
+		gui.addGadget(new NumericGadget(gui, "Volume", new IntRange(0, 100), getVolume(), 10, 1,new NumericGadget.UpdateListener() {
+			@Override
+			public boolean run(int value) {
+				setVolume(value);
+				return true;
+			}
+		}), 0);
+		setGUI(gui);
 	}
 
 	public YamlConfiguration freeze() {
@@ -58,6 +75,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
 	public void setVolume(int volume) {
 		this.volume = volume;
+		updateBlock(false);
 	}
 
 	@Override
@@ -72,7 +90,11 @@ public class SoundMuffler extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Reduces the volume of all", "sounds within a " + DISTANCE + "-block radius" };
+		return new String[] {
+				"Reduces the volume of all sounds",
+				"within a " + DISTANCE + "-block radius",
+				"R-click: " + ChatColor.RESET + " open configuration"
+		};
 	}
 
 	@Override
@@ -97,6 +119,13 @@ public class SoundMuffler extends BaseSTBBlock {
 	}
 
 	@Override
+	public void onInteractBlock(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
+			getGUI().show(event.getPlayer());
+		}
+	}
+
+	@Override
 	public boolean shouldTick() {
 		return true;
 	}
@@ -106,7 +135,7 @@ public class SoundMuffler extends BaseSTBBlock {
 		Location loc = getLocation();
 		if (getTicksLived() % 40 == 0) {
 			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-				ParticleEffect.NOTE.play(loc.add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 1.0f, 2);
+				ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
 			}
 		}
 		super.onServerTick();

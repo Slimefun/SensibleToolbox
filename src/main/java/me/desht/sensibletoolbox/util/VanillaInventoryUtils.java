@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.util;
 
+import me.desht.dhutils.Debugger;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Material;
 import org.bukkit.block.*;
@@ -51,7 +52,7 @@ public class VanillaInventoryUtils {
 			}
 			ItemStack stack = source.clone();
 			stack.setAmount(Math.min(amount, stack.getAmount()));
-			System.out.println("insert " + STBUtil.describeItemStack(stack) + " into " + target);
+			Debugger.getInstance().debug(2, "inserting " + stack + " into " + target);
 			HashMap<Integer,ItemStack> excess;
 			switch (targetInv.getType()) {
 				case FURNACE:
@@ -108,7 +109,7 @@ public class VanillaInventoryUtils {
 			ItemStack stack = targetInv.getItem(slot);
 			if (stack != null) {
 				if ((filter == null || filter.shouldPass(stack)) && (buffer == null || stack.isSimilar(buffer))) {
-					System.out.println("pulling " + STBUtil.describeItemStack(stack) + " from " + target);
+					Debugger.getInstance().debug(2, "pulling " + stack + " from " + target);
 					int toTake = Math.min(amount, stack.getAmount());
 					if (buffer != null) {
 						toTake = Math.min(toTake, buffer.getType().getMaxStackSize() - buffer.getAmount());

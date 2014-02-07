@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
@@ -28,7 +29,7 @@ public class ReceiverModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Insert into an Item Router", "Receives items from a", "facing Sender module"};
+		return makeDirectionalLore("Insert into an Item Router", "Receives items from a", "facing Sender module OR", "linked Adv. Sender module");
 	}
 
 	@Override
@@ -57,8 +58,8 @@ public class ReceiverModule extends DirectionalItemRouterModule {
 	public int receiveItem(ItemStack item) {
 		int received = getOwner().insertItems(item, BlockFace.SELF, false);
 		if (received > 0) {
-			System.out.println("receiver in " + getOwner() + " received " + received + " of " + STBUtil.describeItemStack(item)
-					+ ", now has " + STBUtil.describeItemStack(getOwner().getBufferItem()));
+			Debugger.getInstance().debug(2, "receiver in " + getOwner() + " received " + received + " of " + item +
+					", now has " + getOwner().getBufferItem());
 		}
 		return received;
 	}

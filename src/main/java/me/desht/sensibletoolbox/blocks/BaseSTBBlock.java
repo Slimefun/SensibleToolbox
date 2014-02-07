@@ -6,7 +6,7 @@ import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.AccessControl;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
-import me.desht.sensibletoolbox.blocks.machines.gui.GUIHolder;
+import me.desht.sensibletoolbox.blocks.machines.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.blocks.machines.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.BlockPosition;
@@ -25,12 +25,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -44,7 +40,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.I
 	private BlockFace facing;
 	private long ticksLived;
 	private InventoryGUI inventoryGUI = null;
-	private final GUIHolder guiHolder = new GUIHolder(this);
+	private final STBGUIHolder guiHolder = new STBGUIHolder(this);
 	private RedstoneBehaviour redstoneBehaviour;
 
 	private AccessControl accessControl;
@@ -78,7 +74,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.I
 
 	public void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
 		this.redstoneBehaviour = redstoneBehaviour;
-		System.out.println(this + " - redstone behaviour = " + redstoneBehaviour);
 		updateBlock(false);
 	}
 
@@ -88,11 +83,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.I
 
 	public void setAccessControl(AccessControl accessControl) {
 		this.accessControl = accessControl;
-		System.out.println(this + " - access control = " + accessControl);
 		updateBlock(false);
 	}
 
-	public GUIHolder getGuiHolder() {
+	public STBGUIHolder getGuiHolder() {
 		return guiHolder;
 	}
 
@@ -288,14 +282,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.I
 	}
 
 	/**
-	 * Called when an STB block is broken.  Subclasses may override this method, but should take care
-	 * to call the superclass method.
+	 * Called when an STB block is actually broken (the event handler runs with MONITOR
+	 * priority).
+	 *
+	 * Subclasses may override this method, but should take care to call the superclass method.
 	 *
 	 * @param event the block break event
 	 */
 	public void onBlockBreak(BlockBreakEvent event) {
 		breakBlock(event.getBlock());
-		event.setCancelled(true);
 	}
 
 	protected void placeBlock(Block b, BlockFace facing) {

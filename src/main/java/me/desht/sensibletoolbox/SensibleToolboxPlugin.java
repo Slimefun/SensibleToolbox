@@ -22,6 +22,7 @@ import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.blocks.machines.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.items.BagOfHolding;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -118,6 +119,22 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		}, 1L, 1L);
 	}
 
+	public void onDisable() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (p.getOpenInventory().getTopInventory().getHolder() instanceof STBGUIHolder) {
+				p.closeInventory();
+			}
+		}
+		if (soundMufflerListener != null) {
+			soundMufflerListener.clear();
+		}
+		LocationManager.getManager().save();
+
+		Bukkit.getScheduler().cancelTasks(this);
+
+		instance = null;
+	}
+
 	private void setupNMS() {
 		try {
 			NMSHelper.init(this);
@@ -150,22 +167,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(floodlightListener, this);
 	}
 
-	public void onDisable() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (p.getOpenInventory().getTopInventory().getHolder() instanceof BaseSTBBlock) {
-				p.closeInventory();
-			}
-		}
-		if (soundMufflerListener != null) {
-			soundMufflerListener.clear();
-		}
-		LocationManager.getManager().save();
-
-		Bukkit.getScheduler().cancelTasks(this);
-
-		instance = null;
-	}
-
 	private void setupProtocolLib() {
 		Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
 		if (pLib != null && pLib instanceof ProtocolLibrary && pLib.isEnabled()) {
@@ -188,6 +189,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		cmds.registerCommand(new SetcfgCommand());
 		cmds.registerCommand(new DebugCommand());
 		cmds.registerCommand(new ParticleCommand());
+		cmds.registerCommand(new SoundCommand());
 	}
 
 	@Override

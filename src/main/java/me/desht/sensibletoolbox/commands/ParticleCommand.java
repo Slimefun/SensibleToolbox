@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.commands;
 
-import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.dhutils.commands.AbstractCommand;
 import org.bukkit.Location;
@@ -23,17 +23,20 @@ public class ParticleCommand extends AbstractCommand {
 		Player player = (Player) sender;
 
 		String effect = args[0];
-		ParticleEffect p = ParticleEffect.valueOf(effect.toUpperCase());
+		try {
+			ParticleEffect p = ParticleEffect.valueOf(effect.toUpperCase());
 
-		List<Block> b = player.getLastTwoTargetBlocks(null, 50);
-		Location loc = b.get(0).getLocation().add(0.5, 0.5, 0.5);
-		float sx = Float.parseFloat(args[1]);
-		float sy = Float.parseFloat(args[2]);
-		float sz = Float.parseFloat(args[3]);
-		float speed = Float.parseFloat(args[4]);
-		int amount = Integer.parseInt(args[5]);
-		System.out.println("play particle " + p + " @ " + MiscUtil.formatLocation(loc));
-		p.play(player, loc, sx, sy, sz, speed, amount);
+			List<Block> b = player.getLastTwoTargetBlocks(null, 50);
+			Location loc = b.get(0).getLocation().add(0.5, 0.5, 0.5);
+			float sx = Float.parseFloat(args[1]);
+			float sy = Float.parseFloat(args[2]);
+			float sz = Float.parseFloat(args[3]);
+			float speed = Float.parseFloat(args[4]);
+			int amount = Integer.parseInt(args[5]);
+			p.play(player, loc, sx, sy, sz, speed, amount);
+		} catch (IllegalArgumentException e) {
+			throw new DHUtilsException(e.getMessage());
+		}
 		return true;
 	}
 

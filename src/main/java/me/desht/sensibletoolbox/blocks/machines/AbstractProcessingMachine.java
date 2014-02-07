@@ -14,21 +14,23 @@ import org.bukkit.inventory.ItemStack;
 public abstract class AbstractProcessingMachine extends BaseSTBMachine implements ProcessingMachine {
 	private static final long PROGRESS_INTERVAL = 10;
 	private double progress; // ticks remaining till this work cycle is done
-	private final int progressCounterId;
+	private int progressCounterId;
 	private ItemStack processing;
+	private String frozenProcessing;
 
 	protected AbstractProcessingMachine() {
 		super();
-		progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
+//		progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
 	}
 
 	public AbstractProcessingMachine(ConfigurationSection conf) {
 		super(conf);
-		progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
-		setProgress(conf.getInt("progress"));
-		if (getProgress() > 0) {
-			getGUI().thawSlots(conf.getString("processing", ""), getProgressItemSlot());
-		}
+//		progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
+		progress = conf.getDouble("progress");
+		frozenProcessing = conf.getString("processing", "");
+//		if (getProgress() > 0) {
+//			getGUI().thawSlots(conf.getString("processing", ""), getProgressItemSlot());
+//		}
 	}
 
 	@Override
@@ -78,6 +80,10 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 			setProcessing(null);
 		}
 		super.setLocation(loc);
+		if (loc != null) {
+			getGUI().thawSlots(frozenProcessing, getProgressItemSlot());
+			progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
+		}
 	}
 
 	@Override

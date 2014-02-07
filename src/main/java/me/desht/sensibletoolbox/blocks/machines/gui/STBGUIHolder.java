@@ -4,10 +4,10 @@ import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-public class GUIHolder implements InventoryHolder {
+public class STBGUIHolder implements InventoryHolder {
 	private final BaseSTBBlock owner;
 
-	public GUIHolder(BaseSTBBlock owner) {
+	public STBGUIHolder(BaseSTBBlock owner) {
 		this.owner = owner;
 	}
 

@@ -25,9 +25,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 	public static final int INTERDICTION_RANGE = 16;
 	// lighting radius (over and above the default 8)
 	private static final int LIGHTING_RADIUS = 6;
-	public static final String STB_FLOODLIGHT_FLAME = "STB_Floodlight_Flame";
 	private DyeColor color;
-	//	private Item flame;
 
 	public Floodlight() {
 		color = DyeColor.WHITE;
@@ -49,6 +47,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 
 	public void setColor(DyeColor color) {
 		this.color = color;
+		updateBlock(true);
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 		return new String[] {
 				"Lights up a larger area than torches",
 				"Also Prevents monsters spawning",
-				" in a 16-block radius"
+				" in a " + INTERDICTION_RANGE + "-block radius"
 		};
 	}
 
@@ -86,29 +85,13 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 		if (loc == null) {
 			SensibleToolboxPlugin.getInstance().getFloodlightListener().unregisterFloodlight(this);
 			removeLighting(getLocation());
-//			if (flame != null) {
-//				flame.remove();
-//				flame = null;
-//			}
 		}
 		super.setLocation(loc);
 		if (loc != null) {
 			SensibleToolboxPlugin.getInstance().getFloodlightListener().registerFloodlight(this);
 			addLighting(getLocation());
-//			if (flame != null) {
-//				flame.remove();
-//			}
-//			addFlame();
 		}
 	}
-
-//	public void addFlame() {
-//		Location spawnLoc = getLocation().clone();
-//		spawnLoc.add(0.5, 0.2, 0.5);
-//		flame = spawnLoc.getWorld().dropItem(spawnLoc, new ItemStack(Material.FIRE));
-//		flame.setPickupDelay(Integer.MAX_VALUE);
-//		flame.setMetadata(STB_FLOODLIGHT_FLAME, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
-//	}
 
 	private void removeLighting(Location loc) {
 		if (SensibleToolboxPlugin.getInstance().isNMSenabled()) {

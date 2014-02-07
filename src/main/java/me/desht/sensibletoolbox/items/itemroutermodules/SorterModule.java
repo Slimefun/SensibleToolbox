@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -38,12 +39,12 @@ public class SorterModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return new String[] {
+		return makeDirectionalLore(
 				"Insert into an Item Router",
 				"Places items into inventory IF",
 				"- inventory is empty OR",
 				"- inventory already contains that item"
-		};
+		);
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class SorterModule extends DirectionalItemRouterModule {
 			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
 				return false;
 			}
-			System.out.println("sorter in " + getOwner() + " has: " + STBUtil.describeItemStack(getOwner().getBufferItem()));
+			Debugger.getInstance().debug(2, "sorter in " + getOwner() + " has: " + getOwner().getBufferItem());
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
 			int nToInsert = getOwner().getStackSize();

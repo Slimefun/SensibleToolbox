@@ -38,7 +38,7 @@ public class PullerModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Insert into an Item Router", "Pulls items from an adjacent inventory" };
+		return makeDirectionalLore("Insert into an Item Router", "Pulls items from an adjacent inventory");
 	}
 
 	@Override

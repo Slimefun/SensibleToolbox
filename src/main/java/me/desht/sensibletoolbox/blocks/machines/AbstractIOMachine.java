@@ -28,8 +28,13 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	protected abstract CustomRecipeCollection.CustomRecipe getCustomRecipeFor(ItemStack stack);
 
 	@Override
+	protected void playStartupSound() {
+		getLocation().getWorld().playSound(getLocation(), Sound.HORSE_SKELETON_IDLE, 1.0f, 0.5f);
+	}
+
+	@Override
 	protected void playOutOfChargeSound() {
-		getLocation().getWorld().playSound(getLocation(), Sound.BLAZE_DEATH, 1.0f, 0.25f);
+		getLocation().getWorld().playSound(getLocation(), Sound.ENDERDRAGON_HIT, 1.0f, 0.5f);
 	}
 
 	@Override
@@ -40,6 +45,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 				for (int slot : getInputSlots()) {
 					if (getInventory().getItem(slot) != null) {
 						pullItemIntoProcessing(slot);
+						playStartupSound();
 						break;
 					}
 				}

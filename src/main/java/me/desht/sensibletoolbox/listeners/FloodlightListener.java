@@ -35,18 +35,6 @@ public class FloodlightListener extends STBBaseListener {
 		}
 	}
 
-//	@EventHandler
-//	public void onItemDespawn(ItemDespawnEvent event) {
-//		Item item = event.getEntity();
-//		for (MetadataValue mv : item.getMetadata(Floodlight.STB_FLOODLIGHT_FLAME)) {
-//			if (mv.getOwningPlugin() == plugin) {
-//				Floodlight light = (Floodlight) mv.value();
-//				light.addFlame();
-//				break;
-//			}
-//		}
-//	}
-
 	public void registerFloodlight(Floodlight light) {
 		Debugger.getInstance().debug("register light @ " + light.getLocation());
 		lights.add(light);

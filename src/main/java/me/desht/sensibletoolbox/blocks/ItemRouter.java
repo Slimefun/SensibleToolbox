@@ -98,7 +98,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Routes items.  Insert one or", "more Routing Modules.", "R-click: open module GUI"};
+		return new String[] {
+				"Routes items.  Insert one or",
+				"more Routing Modules.",
+				"R-click:" + ChatColor.RESET + " open module GUI"
+		};
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines.gui;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
@@ -26,13 +27,9 @@ public class InventoryGUI {
 	public static final ItemStack INPUT_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
 	public static final ItemStack OUTPUT_TEXTURE = new ItemStack(Material.STATIONARY_LAVA);
 	public static final ItemStack BG_TEXTURE = new ItemStack(Material.STATIONARY_WATER);
-	public static final ItemStack ENERGY_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
-	public static final ItemStack UPGRADE_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
 	static {
-		setDisplayName(INPUT_TEXTURE, ChatColor.YELLOW + "Input");
-		setDisplayName(OUTPUT_TEXTURE, ChatColor.YELLOW + "Output");
-		setDisplayName(ENERGY_TEXTURE, ChatColor.YELLOW + "Energy Cell");
-		setDisplayName(UPGRADE_TEXTURE, ChatColor.YELLOW + "Upgrades");
+		setDisplayName(INPUT_TEXTURE, ChatColor.AQUA + "Input");
+		setDisplayName(OUTPUT_TEXTURE, ChatColor.AQUA + "Output");
 		setDisplayName(BG_TEXTURE, " ");
 	}
 	private final Inventory inventory;
@@ -68,6 +65,15 @@ public class InventoryGUI {
 		}
 	}
 
+	public void addLabel(String label, int slot) {
+		ItemStack stack = new ItemStack(Material.ENDER_PORTAL);
+		ItemMeta meta = stack.getItemMeta();
+		meta.setDisplayName(ChatColor.AQUA + label);
+		stack.setItemMeta(meta);
+		setSlotType(slot, SlotType.BACKGROUND);
+		inventory.setItem(slot, stack);
+	}
+
 	public int addMonitor(MonitorGadget gadget) {
 		Validate.isTrue(gadget.getSlots().length > 0, "Gadget has no slots!");
 		monitors.add(gadget);
@@ -97,11 +103,12 @@ public class InventoryGUI {
 		// TODO ownership/permission validation
 		if (inventory.getViewers().isEmpty()) {
 			// no one's already looking at this inventory/gui, so ensure it's up to date
-			System.out.println("refresh inventory/gui for " + this);
+			Debugger.getInstance().debug("refreshing GUI inventory of " + getOwner());
 			for (MonitorGadget monitor : monitors) {
 				monitor.doRepaint();
 			}
 		}
+		Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwner());
 		player.openInventory(inventory);
 	}
 
@@ -121,6 +128,7 @@ public class InventoryGUI {
 					break;
 				case ITEM:
 					shouldCancel = !processGUIInventoryAction(event);
+					Debugger.getInstance().debug("handled click for " + event.getWhoClicked().getName() + " in item slot " + event.getRawSlot() + " of " + getOwner() + ": cancelled = " + shouldCancel);
 					break;
 				default:
 					break;
@@ -183,7 +191,7 @@ public class InventoryGUI {
 
 	public void receiveEvent(InventoryCloseEvent event) {
 		owner.onGUIClosed(event);
-		System.out.println("passed inventory close event to " + owner);
+		Debugger.getInstance().debug(event.getPlayer().getName() + " closed GUI for " + getOwner());
 	}
 
 	public SlotType getSlotType(int slot) {

@@ -437,7 +437,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 		@Override
 		public void run() {
 			Block b = blocks[n];
-			player.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getTypeId());
+			player.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
 			b.setTypeIdAndData(mat.getId(), (byte) mat.getData(), true);
 			n++;
 			if (n >= blocks.length) {
