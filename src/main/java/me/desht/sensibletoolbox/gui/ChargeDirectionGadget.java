@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.api.STBMachine;
 import org.apache.commons.lang.Validate;
@@ -11,8 +11,8 @@ public class ChargeDirectionGadget extends ClickableGadget {
 
 	public ChargeDirectionGadget(InventoryGUI gui) {
 		super(gui);
-		Validate.isTrue(gui.getOwner() instanceof STBMachine, "Charge Direction gadget can only be added to machines!");
-		machine = (STBMachine) gui.getOwner();
+		Validate.isTrue(gui.getOwningItem() instanceof STBMachine, "Charge Direction gadget can only be added to machines!");
+		machine = (STBMachine) gui.getOwningItem();
 		chargeDirection = machine.getChargeDirection();
 	}
 

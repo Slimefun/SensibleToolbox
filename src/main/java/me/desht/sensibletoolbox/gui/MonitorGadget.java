@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.api.STBMachine;
 import org.apache.commons.lang.Validate;
@@ -11,9 +11,9 @@ public abstract class MonitorGadget {
 	public abstract int[] getSlots();
 
 	protected MonitorGadget(InventoryGUI gui) {
-		Validate.isTrue(gui.getOwner() instanceof STBMachine,
-				"Attempt to add charge meter to non-machine block " + gui.getOwner());
-		owner = (STBMachine) gui.getOwner();
+		Validate.isTrue(gui.getOwningItem() instanceof STBMachine,
+				"Attempt to add charge meter to non-machine block " + gui.getOwningItem());
+		owner = (STBMachine) gui.getOwningItem();
 	}
 
 	public STBMachine getOwner() {

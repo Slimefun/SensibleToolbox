@@ -1,9 +1,6 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
-import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.api.STBMachine;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;

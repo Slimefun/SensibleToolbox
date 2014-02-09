@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -9,7 +9,7 @@ public class RedstoneBehaviourGadget extends ClickableGadget {
 
 	public RedstoneBehaviourGadget(InventoryGUI owner) {
 		super(owner);
-		behaviour = getGUI().getOwner().getRedstoneBehaviour();
+		behaviour = getGUI().getOwningBlock().getRedstoneBehaviour();
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class RedstoneBehaviourGadget extends ClickableGadget {
 		int n = (behaviour.ordinal() + 1) % RedstoneBehaviour.values().length;
 		behaviour = RedstoneBehaviour.values()[n];
 		event.setCurrentItem(behaviour.getTexture());
-		getGUI().getOwner().setRedstoneBehaviour(behaviour);
+		getGUI().getOwningBlock().setRedstoneBehaviour(behaviour);
 	}
 
 	@Override

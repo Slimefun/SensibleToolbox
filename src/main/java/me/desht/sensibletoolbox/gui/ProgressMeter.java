@@ -1,7 +1,6 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.api.ProcessingMachine;
-import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import org.bukkit.inventory.Inventory;

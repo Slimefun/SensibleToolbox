@@ -11,6 +11,7 @@ import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.Masher;
 import me.desht.sensibletoolbox.blocks.machines.Smelter;
 import me.desht.sensibletoolbox.blocks.machines.StirlingGenerator;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.items.filters.ItemFilter;
@@ -29,6 +30,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -42,7 +45,7 @@ import org.bukkit.material.MaterialData;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBItem> {
+public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBItem>, InventoryGUI.InventoryGUIListener {
 	protected static final ChatColor LORE_COLOR = ChatColor.GRAY;
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
@@ -95,6 +98,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new SpeedUpgrade());
 		registerItem(new EjectorUpgrade());
 		registerItem(new StirlingGenerator());
+		registerItem(new RecipeBook());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -431,5 +435,35 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 	public String getItemID() {
 		return name2id.get(getItemName());
+	}
+
+
+	@Override
+	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return false;
+	}
+
+	@Override
+	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return true;
+	}
+
+	@Override
+	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+		return 0;
+	}
+
+	@Override
+	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+		return true;
+	}
+
+	@Override
+	public boolean onClickOutside() {
+		return false;
+	}
+
+	public void onGUIClosed(InventoryCloseEvent event) {
+
 	}
 }

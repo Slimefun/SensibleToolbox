@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
@@ -8,8 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
 
 public class NumericGadget extends ClickableGadget {
 	private final String title;

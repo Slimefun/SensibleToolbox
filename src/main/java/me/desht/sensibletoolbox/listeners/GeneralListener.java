@@ -2,7 +2,8 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.blocks.machines.gui.STBGUIHolder;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
@@ -11,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
@@ -86,10 +88,10 @@ public class GeneralListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		BaseSTBBlock stb =  BaseSTBItem.getItemFromItemStack(event.getItemInHand(), BaseSTBBlock.class);
-		if (stb != null) {
-			stb.onBlockPlace(event);
-		} else {
+		BaseSTBItem item =  BaseSTBItem.getItemFromItemStack(event.getItemInHand());
+		if (item instanceof BaseSTBBlock) {
+			((BaseSTBBlock) item).onBlockPlace(event);
+		} else if (item != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -239,6 +241,11 @@ public class GeneralListener extends STBBaseListener {
 	public void onGUIInventoryClick(InventoryClickEvent event) {
 		if (event.getInventory().getHolder() instanceof STBGUIHolder) {
 			((STBGUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
+		} else if (event.getInventory().getHolder() instanceof Player) {
+			InventoryGUI gui = InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
+			if (gui != null) {
+				gui.receiveEvent(event);
+			}
 		}
 	}
 
@@ -246,6 +253,11 @@ public class GeneralListener extends STBBaseListener {
 	public void onGUIInventoryDrag(InventoryDragEvent event) {
 		if (event.getInventory().getHolder() instanceof STBGUIHolder) {
 			((STBGUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
+		} else if (event.getInventory().getHolder() instanceof Player) {
+			InventoryGUI gui = InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
+			if (gui != null) {
+				gui.receiveEvent(event);
+			}
 		}
 	}
 
@@ -253,6 +265,11 @@ public class GeneralListener extends STBBaseListener {
 	public void onGUIInventoryClose(InventoryCloseEvent event) {
 		if (event.getInventory().getHolder() instanceof STBGUIHolder) {
 			((STBGUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
+		} else if (event.getInventory().getHolder() instanceof Player) {
+			InventoryGUI gui = InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
+			if (gui != null) {
+				gui.receiveEvent(event);
+			}
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.api.ProcessingMachine;
-import me.desht.sensibletoolbox.blocks.machines.gui.ProgressMeter;
+import me.desht.sensibletoolbox.gui.ProgressMeter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

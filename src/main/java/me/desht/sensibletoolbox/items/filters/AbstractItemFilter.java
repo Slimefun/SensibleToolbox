@@ -17,7 +17,7 @@ import org.bukkit.material.MaterialData;
 import java.util.List;
 
 public abstract class AbstractItemFilter extends BaseSTBItem {
-	private static final MaterialData md = new MaterialData(Material.BOOK);
+	private static final MaterialData md = new MaterialData(Material.WEB);
 
 	private final Filter filter;
 

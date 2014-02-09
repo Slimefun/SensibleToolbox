@@ -5,7 +5,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.blocks.machines.gui.*;
+import me.desht.sensibletoolbox.gui.*;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
@@ -198,7 +198,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
 		}
 		if (getUpgradeLabelSlot() >= 0) {
-			gui.addLabel("Upgrades", getUpgradeLabelSlot());
+			gui.addLabel("Upgrades", getUpgradeLabelSlot(), null);
 		}
 		for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
 			gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));

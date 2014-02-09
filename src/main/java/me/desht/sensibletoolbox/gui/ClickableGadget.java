@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryClickEvent;

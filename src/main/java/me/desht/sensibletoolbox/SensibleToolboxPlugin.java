@@ -21,21 +21,19 @@ import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.blocks.machines.gui.STBGUIHolder;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.items.BagOfHolding;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.FloodlightListener;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -111,6 +109,12 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		BaseSTBItem.setupRecipes();
 		BagOfHolding.createSaveDirectory(this);
 
+		Bukkit.getScheduler().runTask(this, new Runnable() {
+			@Override
+			public void run() {
+				RecipeBook.buildRecipes();
+			}
+		});
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
 			@Override
 			public void run() {
@@ -122,6 +126,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.getOpenInventory().getTopInventory().getHolder() instanceof STBGUIHolder) {
+				p.closeInventory();
+			} else if (InventoryGUI.getOpenGUI(p) != null) {
 				p.closeInventory();
 			}
 		}
@@ -155,7 +161,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
 		pm.registerEvents(new AnvilListener(this), this);
-//		pm.registerEvents(new MachineListener(this), this);
 		pm.registerEvents(new ItemFilterListener(this), this);
 		pm.registerEvents(new ItemRouterListener(this), this);
 		pm.registerEvents(new ItemRouterModuleListener(this), this);

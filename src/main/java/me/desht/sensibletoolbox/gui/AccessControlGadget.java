@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks.machines.gui;
+package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.api.AccessControl;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -9,7 +9,7 @@ public class AccessControlGadget extends ClickableGadget {
 
 	public AccessControlGadget(InventoryGUI owner) {
 		super(owner);
-		accessControl = owner.getOwner().getAccessControl();
+		accessControl = owner.getOwningBlock().getAccessControl();
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class AccessControlGadget extends ClickableGadget {
 		int n = (accessControl.ordinal() + 1) % AccessControl.values().length;
 		accessControl = AccessControl.values()[n];
 		event.setCurrentItem(accessControl.getTexture());
-		getGUI().getOwner().setAccessControl(accessControl);
+		getGUI().getOwningBlock().setAccessControl(accessControl);
 	}
 
 	@Override

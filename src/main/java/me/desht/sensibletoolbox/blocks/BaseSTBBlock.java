@@ -6,8 +6,8 @@ import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.AccessControl;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
-import me.desht.sensibletoolbox.blocks.machines.gui.STBGUIHolder;
-import me.desht.sensibletoolbox.blocks.machines.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.STBGUIHolder;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -24,8 +24,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -34,7 +32,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.InventoryGUIListener {
+public abstract class BaseSTBBlock extends BaseSTBItem {
 	public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
 	private PersistableLocation persistableLocation;
 	private BlockFace facing;
@@ -457,32 +455,4 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements InventoryGUI.I
 	}
 
 
-	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-		return false;
-	}
-
-	@Override
-	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-		return true;
-	}
-
-	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
-		return 0;
-	}
-
-	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
-		return true;
-	}
-
-	@Override
-	public boolean onClickOutside() {
-		return false;
-	}
-
-	public void onGUIClosed(InventoryCloseEvent event) {
-
-	}
 }
