@@ -2,23 +2,14 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
-
-import java.lang.reflect.Constructor;
 
 public abstract class ItemRouterModule extends BaseSTBItem {
-	public static String getInventoryTitle() {
-		return ChatColor.GOLD + "Item Router Module Setup";
-	}
+	private ItemRouter owner;
+	private int amount;
 
 	protected static Dye makeDye(DyeColor color) {
 		Dye dye = new Dye();
@@ -26,12 +17,27 @@ public abstract class ItemRouterModule extends BaseSTBItem {
 		return dye;
 	}
 
-	private ItemRouter owner;
-
 	protected ItemRouterModule() {
+		amount = 1;
 	}
 
 	public ItemRouterModule(ConfigurationSection conf) {
+		amount = conf.getInt("amount", 1);
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	@Override
+	public YamlConfiguration freeze() {
+		YamlConfiguration conf = super.freeze();
+		conf.set("amount", amount);
+		return conf;
 	}
 
 	@Override
@@ -47,6 +53,5 @@ public abstract class ItemRouterModule extends BaseSTBItem {
 		this.owner = owner;
 	}
 
-	public abstract boolean execute();
 
 }

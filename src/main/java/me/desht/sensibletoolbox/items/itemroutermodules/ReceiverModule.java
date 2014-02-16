@@ -13,7 +13,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
-public class ReceiverModule extends DirectionalItemRouterModule {
+public class ReceiverModule extends ItemRouterModule {
 	private static final Dye md = makeDye(DyeColor.ORANGE);
 
 	public ReceiverModule() {}
@@ -29,7 +29,12 @@ public class ReceiverModule extends DirectionalItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return makeDirectionalLore("Insert into an Item Router", "Receives items from a", "facing Sender module OR", "linked Adv. Sender module");
+		return new String[] {
+				"Insert into an Item Router",
+				"Passive module; receives items",
+				"from a facing Sender module OR",
+				"linked Adv. Sender module"
+		};
 	}
 
 	@Override
@@ -48,11 +53,6 @@ public class ReceiverModule extends DirectionalItemRouterModule {
 	@Override
 	public MaterialData getMaterialData() {
 		return md;
-	}
-
-	@Override
-	public boolean execute() {
-		return false;
 	}
 
 	public int receiveItem(ItemStack item) {

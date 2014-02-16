@@ -38,6 +38,8 @@ public class LocationManager {
 	private boolean saveNeeded = false;
 	private long lastSave;
 	private final Map<String,Set<BaseSTBBlock>> tickers = new HashMap<String,Set<BaseSTBBlock>>();
+	private long totalTicks;
+	private long totalTime;
 
 	private LocationManager() {
 		lastSave = System.currentTimeMillis();
@@ -184,6 +186,7 @@ public class LocationManager {
 	}
 
 	public void tick() {
+		long now = System.nanoTime();
 		for (World w : Bukkit.getWorlds()) {
 			if (tickers.containsKey(w.getName())) {
 				for (BaseSTBBlock stb : tickers.get(w.getName())) {
@@ -191,6 +194,9 @@ public class LocationManager {
 				}
 			}
 		}
+		totalTicks++;
+		totalTime += System.nanoTime() - now;
+//		System.out.println("tickers took " + (System.nanoTime() - now) + " ns");
 		if (System.currentTimeMillis() - lastSave > MIN_SAVE_INTERVAL) {
 			save();
 		}
@@ -208,15 +214,8 @@ public class LocationManager {
 				File dir = getWorldFolder(entry.getKey());
 				File f = new File(dir, "C_" + cc.getX() + "_" + cc.getZ() + ".yml");
 				try {
-					if (conf.getKeys(false).size() == 0) {
-						Debugger.getInstance().debug("deleting empty chunk file " + f);
-						if (!f.delete()) {
-							LogUtils.warning("can't delete " + f);
-						}
-					} else {
-						Debugger.getInstance().debug(2, "saving " + conf.getKeys(false).size() + " objects to " + f);
-						conf.save(f);
-					}
+					Debugger.getInstance().debug(2, "saving " + conf.getKeys(false).size() + " objects to " + f);
+					conf.save(f);
 				} catch (IOException e) {
 					LogUtils.severe("can't save data to " + f);
 				}
@@ -266,6 +265,12 @@ public class LocationManager {
 						}
 					}
 					Debugger.getInstance().debug("loaded " + conf.getKeys(false).size() + " objects from " + saveFile);
+					if (conf.getKeys(false).size() == 0) {
+						Debugger.getInstance().debug("deleting empty chunk file " + saveFile);
+						if (!saveFile.delete()) {
+							LogUtils.warning("can't delete empty chunk file " + saveFile);
+						}
+					}
 				} catch (Exception e) {
 					LogUtils.severe("can't load " + saveFile + ": " + e.getMessage());
 					e.printStackTrace();
@@ -345,5 +350,9 @@ public class LocationManager {
 		return sorted ?
 				MiscUtil.asSortedList(stb).toArray(new BaseSTBBlock[stb.size()]) :
 				stb.toArray(new BaseSTBBlock[stb.size()]);
+	}
+
+	public long getAverageTimePerTick() {
+		return totalTime / totalTicks;
 	}
 }

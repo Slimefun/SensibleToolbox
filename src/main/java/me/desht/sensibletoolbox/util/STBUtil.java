@@ -345,8 +345,7 @@ public class STBUtil {
 		return ChatColor.WHITE + "\u2301 " + cc + Math.round(ch.getCharge()) + "/" + ch.getMaxCharge() + " SCU";
 	}
 
-	public static int roundUp(int n, int nearestMultiple)
-	{
+	public static int roundUp(int n, int nearestMultiple) {
 		return n + nearestMultiple - 1 - (n - 1) % nearestMultiple;
 	}
 
@@ -362,19 +361,15 @@ public class STBUtil {
 	}
 
 
-
-	private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
-
-	public static String[] formatFilterLore(Filter filter) {
-		String[] lore = new String[(filter.size() + 1) / 2 + 1];
-		String what = filter.isWhiteList() ? "white-listed" : "black-listed";
-		lore[0] = ChatColor.WHITE.toString() + filter.size() + " items " + what;
-		int i = 2;
-		for (String item : filter.listFiltered()) {
-			int n = i / 2;
-			lore[n] = lore[n] == null ? LIST_ITEM + item : lore[n] + " " + LIST_ITEM + item;
-			i++;
-		}
-		return lore;
+	/**
+	 * Convenience method to get a coloured material: stained clay/glass/glass panes/wool.
+	 * Also gets all the deprecated method calls into one place.
+	 *
+	 * @param mat the material
+	 * @param colour the colour
+	 * @return the material data object
+	 */
+	public static MaterialData makeColouredMaterial(Material mat, DyeColor colour) {
+		return new MaterialData(mat, colour.getWoolData());
 	}
 }

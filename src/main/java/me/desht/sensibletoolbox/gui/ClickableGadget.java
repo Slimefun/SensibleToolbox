@@ -22,11 +22,4 @@ public abstract class ClickableGadget {
 
 	public abstract ItemStack getTexture();
 
-	public List<String> makeLore(String... lore) {
-		List<String> res = new ArrayList<String>();
-		for (String s : lore) {
-			res.add(ChatColor.GRAY + s);
-		}
-		return res;
-	}
 }

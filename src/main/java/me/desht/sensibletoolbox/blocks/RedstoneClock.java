@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.blocks;
 
-import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.gui.AccessControlGadget;
@@ -8,6 +7,7 @@ import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.NumericGadget;
 import me.desht.sensibletoolbox.gui.RedstoneBehaviourGadget;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -15,18 +15,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class RedstoneClock extends BaseSTBBlock {
-	private static final Pattern intPat = Pattern.compile("(^[df])\\s*(\\d+)");
-	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.RED.getWoolData());
+	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
 	private int frequency;
 	private int onDuration;
 
@@ -43,7 +38,8 @@ public class RedstoneClock extends BaseSTBBlock {
 		createGUI();
 	}
 
-	private void createGUI() {
+	@Override
+	protected InventoryGUI createGUI() {
 		InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
 		gui.addGadget(new NumericGadget(gui, "Pulse Frequency", new IntRange(1, Integer.MAX_VALUE), getFrequency(), 10, 1,new NumericGadget.UpdateListener() {
 			@Override
@@ -69,7 +65,7 @@ public class RedstoneClock extends BaseSTBBlock {
 		}), 1);
 		gui.addGadget(new RedstoneBehaviourGadget(gui), 8);
 		gui.addGadget(new AccessControlGadget(gui), 7);
-		setGUI(gui);
+		return gui;
 	}
 
 	public int getFrequency() {
@@ -162,50 +158,17 @@ public class RedstoneClock extends BaseSTBBlock {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
 			getGUI().show(event.getPlayer());
 		}
+		super.onInteractBlock(event);
 	}
 
 	@Override
-	public String[] getSignLabel() {
-		return new String[] {
-				getItemName(),
-				ChatColor.DARK_RED + "Freq " + ChatColor.RESET + getFrequency(),
-				ChatColor.DARK_RED + "Duration " + ChatColor.RESET + getOnDuration(),
-				""
-		};
-	}
-
-	@Override
-	public boolean onSignChange(SignChangeEvent event) {
-		boolean updated = false, show = false;
-
-		for (String line : event.getLines()) {
-			if (line.equals("[show]")) {
-				show = true;
-			} else {
-				Matcher m = intPat.matcher(line.toLowerCase());
-				if (m.find()) {
-					if (m.group(1).equals("f")) {
-						setFrequency(Integer.parseInt(m.group(2)));
-					} else if (m.group(1).equals("d")) {
-						setOnDuration(Integer.parseInt(m.group(2)));
-					}
-					updated = true;
-				}
-			}
+	public void setLocation(Location loc) {
+		if (loc == null) {
+			setGUI(null);
 		}
-		if (show) {
-			String l[] = getSignLabel();
-			for (int i = 0; i < 4; i++) {
-				event.setLine(i, l[i]);
-			}
-		} else if (updated) {
-			MiscUtil.statusMessage(event.getPlayer(), String.format("%s updated: frequency=&6%d&-, duration=&6%d",
-					getItemName(), getFrequency(), getOnDuration()));
-//			updateBlock();
-		} else {
-			MiscUtil.errorMessage(event.getPlayer(), "No valid data found: clock not updated");
+		super.setLocation(loc);
+		if (loc != null) {
+			setGUI(createGUI());
 		}
-		return !show && updated;
 	}
-
 }

@@ -1,16 +1,21 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import com.google.common.base.Joiner;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
+import me.desht.sensibletoolbox.attributes.Attributes;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.energynet.EnergyNet;
+import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.*;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.MachineUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,11 +29,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine {
-	private static final long CHARGE_INTERVAL = 10;
 	private double charge;
 	private ChargeDirection chargeDirection;
 	private boolean jammed;  // true if no space in output slots for processing result
@@ -40,6 +43,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	private int chargeMeterId;
 	private String frozenInput, frozenOutput; //, frozenUpgrades;
 	private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
+	private final Map<BlockFace,EnergyNet> energyNets = new HashMap<BlockFace,EnergyNet>();
+
 
 	protected BaseSTBMachine() {
 		super();
@@ -62,13 +67,15 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		}
 		if (conf.contains("upgrades")) {
 			for (String l : conf.getStringList("upgrades")) {
-				String[] f = l.split("::", 2);
+				String[] f = l.split("::", 3);
 				try {
 					YamlConfiguration upgConf = new YamlConfiguration();
-					if (f.length > 1) {
-						upgConf.loadFromString(f[1]);
+					int amount = Integer.parseInt(f[1]);
+					if (f.length > 2) {
+						upgConf.loadFromString(f[2]);
 					}
 					MachineUpgrade upgrade = (MachineUpgrade) BaseSTBItem.getItemById(f[0], upgConf);
+					upgrade.setAmount(amount);
 					upgrades.add(upgrade);
 				} catch (Exception e) {
 					LogUtils.warning("can't restore saved module " + f[0] + " for " + this + ": " + e.getMessage());
@@ -89,7 +96,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		conf.set("chargeDirection", getChargeDirection().toString());
 		List<String> upg = new ArrayList<String>();
 		for (MachineUpgrade upgrade : upgrades) {
-			upg.add(upgrade.getItemID() + "::" + upgrade.freeze().saveToString());
+			upg.add(upgrade.getItemID() + "::" + upgrade.getAmount() + "::" + upgrade.freeze().saveToString());
 		}
 		conf.set("upgrades", upg);
 
@@ -109,6 +116,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	public abstract int[] getUpgradeSlots();
 	public abstract int getUpgradeLabelSlot();
 	protected abstract void playActiveParticleEffect();
+
+	public void addCustomRecipes(CustomRecipeManager crm) {
+		// override in subclasses
+	}
 
 	@Override
 	public boolean isJammed() {
@@ -164,8 +175,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			playOutOfChargeSound();
 		}
 		this.charge = Math.max(0, charge);
-		getGUI().getMonitor(chargeMeterId).repaintNeeded();
-		updateBlock();
+		if (getGUI() != null) {
+			getGUI().getMonitor(chargeMeterId).repaintNeeded();
+		}
+		updateBlock(false);
 	}
 
 	protected void playStartupSound() {
@@ -181,7 +194,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		return getGUI().getInventory();
 	}
 
-	private void createGUI() {
+	@Override
+	protected InventoryGUI createGUI() {
 		InventoryGUI gui = new InventoryGUI(this, getInventoryGUISize(), ChatColor.DARK_BLUE + getItemName());
 
 		gui.paintSlotSurround(getInputSlots(), InventoryGUI.INPUT_TEXTURE);
@@ -201,6 +215,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			gui.addLabel("Upgrades", getUpgradeLabelSlot(), null);
 		}
 		for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
+//			int amount = upgrades.get(i).getAmount();
+//			upgrades.get(i).setAmount(0);
+			System.out.println(this + " add upgrade " + upgrades.get(i) + " amount = " + upgrades.get(i).getAmount());
 			gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
 		}
 
@@ -215,8 +232,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		if (installedCell != null) {
 			gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(1), true);
 		}
-
-		setGUI(gui);
+		return gui;
 	}
 
 	public int getRedstoneBehaviourSlot() {
@@ -263,12 +279,15 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 				installedCell = null;
 			}
 			upgrades.clear();
+			setGUI(null);
+			EnergyNetManager.onMachineRemoved(this);
 		}
 		super.setLocation(loc);
 		if (loc != null) {
 			createGUI();
 			getGUI().thawSlots(frozenInput, getInputSlots());
 			getGUI().thawSlots(frozenOutput, getOutputSlots());
+			EnergyNetManager.onMachinePlaced(this);
 		}
 	}
 
@@ -458,6 +477,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			if (BaseSTBItem.isSTBItem(toInsert, MachineUpgrade.class)) {
 				int upgradeSlot = findAvailableUpgradeSlot(toInsert);
 				if (upgradeSlot >= 0) {
+					if (getInventory().getItem(upgradeSlot) != null) {
+						toInsert.setAmount(toInsert.getAmount() + getInventory().getItem(upgradeSlot).getAmount());
+					}
 					getInventory().setItem(upgradeSlot, toInsert);
 					needToProcessUpgrades = true;
 					return toInsert.getAmount();
@@ -488,11 +510,21 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	private int findAvailableUpgradeSlot(ItemStack upgrade) {
 		for (int slot : getUpgradeSlots()) {
 			ItemStack inSlot = getInventory().getItem(slot);
+			dumpAttributes(upgrade);
+			if (inSlot != null) dumpAttributes(inSlot);
 			if (inSlot == null || inSlot.isSimilar(upgrade) && inSlot.getAmount() + upgrade.getAmount() <= upgrade.getType().getMaxStackSize()) {
 				return slot;
 			}
 		}
 		return -1;
+	}
+
+	private void dumpAttributes(ItemStack item) {
+		Attributes attrs = new Attributes(item);
+		System.out.println("dump attrs: " +item);
+		for (Attributes.Attribute a : attrs.values()) {
+			System.out.println("> " + Joiner.on("|").join(a.getUUID(), a.getName(), a.getAttributeType(), a.getOperation(), a.getAmount()));
+		}
 	}
 
 	private void scanUpgradeSlots() {
@@ -545,7 +577,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	@Override
 	public void onServerTick() {
-		if (getTicksLived() % CHARGE_INTERVAL == 0) {
+		if (getTicksLived() % EnergyNetManager.ENERGY_TICK_RATE == 0) {
 			double transferred = 0.0;
 			if (installedCell != null) {
 				switch (chargeDirection) {
@@ -578,8 +610,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		if (to.getCharge() >= to.getMaxCharge() || from.getCharge() == 0) {
 			return 0;
 		}
-		double toTransfer = Math.min(from.getChargeRate() * CHARGE_INTERVAL, to.getMaxCharge() - to.getCharge());
-		toTransfer = Math.min(to.getChargeRate() * CHARGE_INTERVAL, toTransfer);
+		double toTransfer = Math.min(from.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE, to.getMaxCharge() - to.getCharge());
+		toTransfer = Math.min(to.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE, toTransfer);
 		toTransfer = Math.min(from.getCharge(), toTransfer);
 		to.setCharge(to.getCharge() + toTransfer);
 		from.setCharge(from.getCharge() - toTransfer);
@@ -587,5 +619,62 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		return toTransfer;
 	}
 
+	/**
+	 * Attach this machine to the given energy net, on the given face.
+	 *
+	 * @param net the energy net to attach to
+	 * @param face the face of the machine block to attach to
+	 */
+	public void attachToEnergyNet(EnergyNet net, BlockFace face) {
+		Debugger.getInstance().debug(this + ": attach to enet " + net.getNetID());
+		energyNets.put(face, net);
+	}
 
+	/**
+	 * Detach this machine from the given energy net.
+	 *
+	 * @param net the net to detach from
+	 */
+	public void detachFromEnergyNet(EnergyNet net) {
+		Iterator<Map.Entry<BlockFace, EnergyNet>> iter = energyNets.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<BlockFace,EnergyNet> entry = iter.next();
+			if (entry.getValue().getNetID() == net.getNetID()) {
+				iter.remove();
+				Debugger.getInstance().debug(this + ": detached from enet #" + net.getNetID());
+			}
+		}
+	}
+
+	/**
+	 * Get an array of all energy nets to which this machine is attached.  Note that a machine
+	 * can be attached to the same energy net on more than one face.
+	 *
+	 * @return the attached energy nets.
+	 */
+	public EnergyNet[] getAttachedEnergyNets() {
+		Set<EnergyNet> nets = new HashSet<EnergyNet>();
+		nets.addAll(energyNets.values());
+		return nets.toArray(new EnergyNet[nets.size()]);
+	}
+
+	/**
+	 * Get the faces on which the given energy net is connected.
+	 *
+	 * @param net the net to look for
+	 * @return a list of blockfaces where this net is connected
+	 */
+	public List<BlockFace> getFacesForNet(EnergyNet net) {
+		List<BlockFace> res = new ArrayList<BlockFace>();
+		for (Map.Entry<BlockFace,EnergyNet> entry : energyNets.entrySet()) {
+			if (entry.getValue().getNetID() == net.getNetID()) {
+				res.add(entry.getKey());
+			}
+		}
+		return res;
+	}
+
+	public abstract boolean acceptsEnergy(BlockFace face);
+
+	public abstract boolean suppliesEnergy(BlockFace face);
 }

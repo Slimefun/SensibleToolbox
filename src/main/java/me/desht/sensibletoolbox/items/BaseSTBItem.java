@@ -8,17 +8,14 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
-import me.desht.sensibletoolbox.blocks.machines.Masher;
-import me.desht.sensibletoolbox.blocks.machines.Smelter;
-import me.desht.sensibletoolbox.blocks.machines.StirlingGenerator;
+import me.desht.sensibletoolbox.blocks.machines.*;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
-import me.desht.sensibletoolbox.items.filters.ItemFilter;
-import me.desht.sensibletoolbox.items.filters.ReverseItemFilter;
 import me.desht.sensibletoolbox.items.itemroutermodules.*;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
@@ -81,8 +78,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new Masher());
 		registerItem(new IronDust());
 		registerItem(new GoldDust());
-		registerItem(new ItemFilter());
-		registerItem(new ReverseItemFilter());
 		registerItem(new ItemRouter());
 		registerItem(new BlankModule());
 		registerItem(new PullerModule());
@@ -91,14 +86,17 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new AdvancedSenderModule());
 		registerItem(new ReceiverModule());
 		registerItem(new SorterModule());
+		registerItem(new VacuumModule());
 		registerItem(new StackModule());
 		registerItem(new SpeedModule());
 		registerItem(new TenKEnergyCell());
 		registerItem(new FiftyKEnergyCell());
+		registerItem(new FiftyKBatteryBox());
 		registerItem(new SpeedUpgrade());
 		registerItem(new EjectorUpgrade());
 		registerItem(new StirlingGenerator());
 		registerItem(new RecipeBook());
+		registerItem(new Multimeter());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -125,6 +123,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 				FurnaceRecipe fr = new FurnaceRecipe(stack, item.getMaterial());
 				Bukkit.addRecipe(fr);
 				customSmelts.put(item.getMaterial(), item.getClass());
+			}
+			if (item instanceof BaseSTBMachine) {
+				((BaseSTBMachine)item).addCustomRecipes(CustomRecipeManager.getManager());
 			}
 		}
 	}
@@ -362,6 +363,15 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @return true if this item may be used, false otherwise
 	 */
 	public boolean isIngredientFor(ItemStack result) { return false; }
+
+	/**
+	 * Check if this item can be enchanted normally in an enchanting table.
+	 *
+	 * @return true if the item can be enchanted
+	 */
+	public boolean isEnchantable() {
+		return true;
+	}
 
 	/**
 	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.

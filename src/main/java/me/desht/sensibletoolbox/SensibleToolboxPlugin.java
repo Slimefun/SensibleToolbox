@@ -3,12 +3,12 @@ package me.desht.sensibletoolbox;
 /*
     This file is part of SensibleToolbox
 
-    Foobar is free software: you can redistribute it and/or modify
+    SensibleToolbox is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Foobar is distributed in the hope that it will be useful,
+    SensibleToolbox is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -21,8 +21,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
+import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.items.BagOfHolding;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -80,6 +80,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
 		Debugger.getInstance().setPrefix("[STB] ");
+		Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
+		if (getConfig().getInt("debug_level") > 0) {
+			Debugger.getInstance().setTarget(getServer().getConsoleSender());
+		}
+
 		setupNMS();
 		if (!isNMSenabled) {
 			LogUtils.warning("Unable to initialize NMS abstraction API - looks like this version of CraftBukkit isn't supported.");
@@ -121,13 +126,22 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 				LocationManager.getManager().tick();
 			}
 		}, 1L, 1L);
+		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+			@Override
+			public void run() {
+				EnergyNetManager.tick();
+			}
+		}, 1L, EnergyNetManager.ENERGY_TICK_RATE);
 	}
 
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (p.getOpenInventory().getTopInventory().getHolder() instanceof STBGUIHolder) {
-				p.closeInventory();
-			} else if (InventoryGUI.getOpenGUI(p) != null) {
+			// Any open inventory GUI's must be closed -
+			// if they stay open after server reload, event dispatch will probably not work,
+			// allowing fake items to be removed from them - not a good thing
+			InventoryGUI gui = InventoryGUI.getOpenGUI(p);
+			if (gui != null) {
+				gui.hide(p);
 				p.closeInventory();
 			}
 		}
@@ -161,9 +175,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
 		pm.registerEvents(new AnvilListener(this), this);
-		pm.registerEvents(new ItemFilterListener(this), this);
-		pm.registerEvents(new ItemRouterListener(this), this);
-		pm.registerEvents(new ItemRouterModuleListener(this), this);
 		if (isProtocolLibEnabled()) {
 			soundMufflerListener = new SoundMufflerListener(this);
 			soundMufflerListener.start();
@@ -195,6 +206,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		cmds.registerCommand(new DebugCommand());
 		cmds.registerCommand(new ParticleCommand());
 		cmds.registerCommand(new SoundCommand());
+		cmds.registerCommand(new SearchCommand());
 	}
 
 	@Override
@@ -214,12 +226,20 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	@Override
 	public void onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
-		//To change body of implemented methods use File | Settings | File Templates.
+		// nothing yet...
 	}
 
 	@Override
 	public void onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
-		//To change body of implemented methods use File | Settings | File Templates.
+		if (key.equals("debug_level")) {
+			Debugger dbg = Debugger.getInstance();
+			dbg.setLevel((Integer) newVal);
+			if (dbg.getLevel() > 0) {
+				dbg.setTarget(getServer().getConsoleSender());
+			} else {
+				dbg.setTarget(null);
+			}
+		}
 	}
 
 	public ConfigurationManager getConfigManager() {

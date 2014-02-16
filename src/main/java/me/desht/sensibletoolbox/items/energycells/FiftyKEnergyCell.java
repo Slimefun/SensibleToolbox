@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.energycells;
 
+import me.desht.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -44,6 +45,13 @@ public class FiftyKEnergyCell extends EnergyCell {
 		recipe.setIngredient('C', stack.getData()); // in fact, a 10k energy cell
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;
+	}
+
+	@Override
+	public boolean isIngredientFor(ItemStack result) {
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
+		System.out.println("50k energy cell ingredient for " + item + " ?");
+		return item != null && item instanceof FiftyKBatteryBox;
 	}
 
 	@Override

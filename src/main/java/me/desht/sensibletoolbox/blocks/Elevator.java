@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -42,7 +43,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
 	@Override
 	public MaterialData getMaterialData() {
-		return new MaterialData(Material.STAINED_CLAY, color.getWoolData());
+		return STBUtil.makeColouredMaterial(Material.STAINED_CLAY, color);
 	}
 
 	@Override

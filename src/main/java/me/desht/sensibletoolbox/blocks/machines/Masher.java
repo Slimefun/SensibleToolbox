@@ -4,7 +4,11 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
-import me.desht.sensibletoolbox.util.CustomRecipeCollection;
+import me.desht.sensibletoolbox.recipes.CustomRecipe;
+import me.desht.sensibletoolbox.recipes.CustomRecipeCollection;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.recipes.ProcessingResult;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -16,28 +20,30 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class Masher extends AbstractIOMachine {
-	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.GREEN.getWoolData());
-	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
-	static {
-		recipes.addCustomRecipe(new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120);
-		recipes.addCustomRecipe(new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80);
-		Dye white = new Dye();
-		white.setColor(DyeColor.WHITE);
-		recipes.addCustomRecipe(new ItemStack(Material.BONE), white.toItemStack(5), 40);
-		recipes.addCustomRecipe(new ItemStack(Material.BLAZE_ROD), new ItemStack(Material.BLAZE_POWDER, 4), 80);
-		recipes.addCustomRecipe(new ItemStack(Material.COAL_ORE), new ItemStack(Material.COAL, 2), 100);
-		recipes.addCustomRecipe(new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100);
-		recipes.addCustomRecipe(new ItemStack(Material.DIAMOND_ORE), new ItemStack(Material.DIAMOND, 2), 160);
-		recipes.addCustomRecipe(new ItemStack(Material.IRON_ORE), new IronDust().toItemStack(2), 120);
-		recipes.addCustomRecipe(new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80);
-		recipes.addCustomRecipe(new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60);
-	}
+	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.GREEN);
 
 	public Masher() {
 	}
 
 	public Masher(ConfigurationSection conf) {
 		super(conf);
+	}
+
+	@Override
+	public void addCustomRecipes(CustomRecipeManager crm) {
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
+		Dye white = new Dye();
+		white.setColor(DyeColor.WHITE);
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BONE), white.toItemStack(5), 40));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BLAZE_ROD), new ItemStack(Material.BLAZE_POWDER, 4), 80));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COAL_ORE), new ItemStack(Material.COAL, 2), 100));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.DIAMOND_ORE), new ItemStack(Material.DIAMOND, 2), 160));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.IRON_ORE), new IronDust().toItemStack(2), 120));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
 	}
 
 	@Override
@@ -112,15 +118,15 @@ public class Masher extends AbstractIOMachine {
 		return 20;
 	}
 
-	@Override
-	public boolean acceptsItemType(ItemStack item) {
-		return recipes.hasRecipe(item);
-	}
-
-	@Override
-	protected CustomRecipeCollection.CustomRecipe getCustomRecipeFor(ItemStack stack) {
-		return recipes.get(stack);
-	}
+//	@Override
+//	public boolean acceptsItemType(ItemStack item) {
+//		return CustomRecipeManager.getManager().hasRecipe(this, item);
+//	}
+//
+//	@Override
+//	protected ProcessingResult getCustomRecipeFor(ItemStack stack) {
+//		return CustomRecipeManager.getManager().getRecipe(this, stack);
+//	}
 
 	@Override
 	public int getProgressItemSlot() {

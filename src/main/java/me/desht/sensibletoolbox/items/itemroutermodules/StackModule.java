@@ -23,14 +23,20 @@ public class StackModule extends ItemRouterModule {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Insert into an Item Router", "Item Router will move stacks", "instead of single items" };
+		return new String[] {
+				"Insert into an Item Router",
+				"Passive module; each stack module will",
+				"double the number of items moved per",
+				"operation, up to the item's max stack",
+				"size.  Any modules over 6 are ignored.",
+		};
 	}
 
 	@Override
 	public Recipe getRecipe() {
 		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
 		recipe.addIngredient(Material.PAPER);
-		recipe.addIngredient(Material.DIAMOND);
+		recipe.addIngredient(Material.BRICK);
 		return recipe;
 	}
 
@@ -42,10 +48,5 @@ public class StackModule extends ItemRouterModule {
 	@Override
 	public MaterialData getMaterialData() {
 		return md;
-	}
-
-	@Override
-	public boolean execute() {
-		return false; // passive module
 	}
 }

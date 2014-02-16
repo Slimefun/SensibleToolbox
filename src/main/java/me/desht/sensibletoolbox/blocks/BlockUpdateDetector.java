@@ -1,27 +1,27 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import me.desht.sensibletoolbox.gui.AccessControlGadget;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.NumericGadget;
+import me.desht.sensibletoolbox.gui.RedstoneBehaviourGadget;
+import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.math.IntRange;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class BlockUpdateDetector extends BaseSTBBlock {
-	private static final Pattern intPat = Pattern.compile("(^[dq])\\s*(\\d+)");
-	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.PURPLE.getWoolData());
+	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.PURPLE);
 	private long lastPulse;
 	private int duration;
 
@@ -30,17 +30,21 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	public BlockUpdateDetector() {
 		quiet = 1;
 		duration = 2;
+		createGUI();
 	}
 
 	public BlockUpdateDetector(ConfigurationSection conf) {
 		super(conf);
 		setDuration(conf.getInt("duration"));
+		setQuiet(conf.getInt("quiet"));
+		createGUI();
 	}
 
 	@Override
 	public YamlConfiguration freeze() {
 		YamlConfiguration conf = super.freeze();
-		conf.set("duration", duration);
+		conf.set("duration", getDuration());
+		conf.set("quiet", getQuiet());
 		return conf;
 	}
 
@@ -50,6 +54,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
+		updateBlock();
 	}
 
 	public int getQuiet() {
@@ -58,6 +63,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	public void setQuiet(int quiet) {
 		this.quiet = quiet;
+		updateBlock();
 	}
 
 	@Override
@@ -72,7 +78,11 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Emits a redstone pulse when", " an adjacent block updates"};
+		return new String[] {
+				"Emits a redstone pulse when",
+				" an adjacent block updates",
+				"R-click block: " + ChatColor.RESET + "configure BUD"
+		};
 	}
 
 	@Override
@@ -97,61 +107,60 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	@Override
 	public void onBlockPhysics(BlockPhysicsEvent event) {
 		final Block b = event.getBlock();
-		Debugger.getInstance().debug(this + ": BUD physics: time=" + getTicksLived() + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
-		if (getTicksLived() - lastPulse > getDuration() + getQuiet()) {
+		long timeNow = getLocation().getWorld().getFullTime();
+		Debugger.getInstance().debug(this + ": BUD physics: time=" + timeNow + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
+		if (timeNow - lastPulse > getDuration() + getQuiet() && isRedstoneActive()) {
 			// emit a signal for one or more ticks
-			lastPulse = getTicksLived();
+			lastPulse = timeNow;
+			final BlockState state = b.getState();
 			b.setType(Material.REDSTONE_BLOCK);
 			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					MaterialData m = getMaterialData();
-					b.setTypeIdAndData(m.getItemTypeId(), m.getData(), true);
+					state.update(true, false);
 				}
 			}, duration);
 		}
 	}
 
 	@Override
-	public boolean onSignChange(SignChangeEvent event) {
-		boolean updated = false, show = false;
-
-		for (String line : event.getLines()) {
-			if (line.equals("[show]")) {
-				show = true;
-			} else {
-				Matcher m = intPat.matcher(line.toLowerCase());
-				if (m.find()) {
-					if (m.group(1).equals("d")) {
-						setDuration(Integer.parseInt(m.group(2)));
-					} else if (m.group(1).equals("q")) {
-						setQuiet(Integer.parseInt(m.group(2)));
-					}
-					updated = true;
-				}
-			}
+	public void onInteractBlock(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
+			getGUI().show(event.getPlayer());
 		}
-		if (show) {
-			String l[] = getSignLabel();
-			for (int i = 0; i < 4; i++) {
-				event.setLine(i, l[i]);
-			}
-		} else if (updated) {
-			MiscUtil.statusMessage(event.getPlayer(), getItemName() + " updated: duration=&6" + getDuration());
-			updateBlock(false);
-		} else {
-			MiscUtil.errorMessage(event.getPlayer(), "No valid data found: clock not updated");
-		}
-		return !show && updated;
+		super.onInteractBlock(event);
 	}
 
 	@Override
-	protected String[] getSignLabel() {
-		return new String[] {
-				getItemName(),
-				ChatColor.DARK_RED + "Duration " + ChatColor.RESET + getDuration(),
-				ChatColor.DARK_RED + "Quiet " + ChatColor.RESET + getQuiet(),
-				"",
-		};
+	protected InventoryGUI createGUI() {
+		InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
+		gui.addGadget(new NumericGadget(gui, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.UpdateListener() {
+			@Override
+			public boolean run(int value) {
+					setDuration(value);
+					return true;
+			}
+		}), 1);
+		gui.addGadget(new NumericGadget(gui, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.UpdateListener() {
+			@Override
+			public boolean run(int value) {
+				setQuiet(value);
+				return true;
+			}
+		}), 0);
+		gui.addGadget(new RedstoneBehaviourGadget(gui), 8);
+		gui.addGadget(new AccessControlGadget(gui), 7);
+		return gui;
+	}
+
+	@Override
+	public void setLocation(Location loc) {
+		if (loc == null) {
+			setGUI(null);
+		}
+		super.setLocation(loc);
+		if (loc != null) {
+			setGUI(createGUI());
+		}
 	}
 }

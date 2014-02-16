@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
@@ -45,9 +46,15 @@ public class InventoryGUI {
 	private final IntRange slotRange;
 	private final List<MonitorGadget> monitors = new ArrayList<MonitorGadget>();
 
-	public InventoryGUI(BaseSTBBlock listener, int size, String title) {
+	public InventoryGUI(InventoryGUIListener listener, int size, String title) {
+		this(null, listener, size, title);
+	}
+
+	public InventoryGUI(Player player, InventoryGUIListener listener, int size, String title) {
 		this.listener = listener;
-		this.inventory = Bukkit.createInventory(listener.getGuiHolder(), size, title);
+		this.inventory = player == null ?
+				Bukkit.createInventory(((BaseSTBBlock) listener).getGuiHolder(), size, title) :
+				Bukkit.createInventory(player, size, title);
 		this.gadgets = new ClickableGadget[size];
 		this.slotRange = new IntRange(0, size - 1);
 		this.slotTypes = new SlotType[size];
@@ -57,16 +64,12 @@ public class InventoryGUI {
 		}
 	}
 
-	public InventoryGUI(Player player, InventoryGUIListener listener, int size, String title) {
-		this.listener = listener;
-		this.inventory = Bukkit.createInventory(player, size, title);
-		this.gadgets = new ClickableGadget[size];
-		this.slotRange = new IntRange(0, size - 1);
-		this.slotTypes = new SlotType[size];
-
-		for (int slot = 0; slot < size; slot++) {
-			setSlotType(slot, SlotType.BACKGROUND);
+	public static List<String> makeLore(String... lore) {
+		List<String> res = new ArrayList<String>();
+		for (String s : lore) {
+			res.add(ChatColor.GRAY + s);
 		}
+		return res;
 	}
 
 	public static InventoryGUI getOpenGUI(Player player) {
@@ -86,6 +89,17 @@ public class InventoryGUI {
 		}
 	}
 
+	public static ItemStack makeTexture(MaterialData material, String title, String... lore ) {
+		ItemStack res = material.toItemStack();
+		ItemMeta meta = res.getItemMeta();
+		meta.setDisplayName(title);
+		if (lore.length > 0) {
+			meta.setLore(makeLore(lore));
+		}
+		res.setItemMeta(meta);
+		return res;
+	}
+
 	private static void setDisplayName(ItemStack stack, String disp) {
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName(disp);
@@ -100,10 +114,13 @@ public class InventoryGUI {
 		}
 	}
 
-	public void addLabel(String label, int slot, ItemStack texture) {
+	public void addLabel(String label, int slot, ItemStack texture, String... lore) {
 		ItemStack stack = texture == null  ? new ItemStack(Material.ENDER_PORTAL) : texture;
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName(ChatColor.AQUA + label);
+		if (lore.length > 0) {
+			meta.setLore(makeLore(lore));
+		}
 		stack.setItemMeta(meta);
 		setSlotType(slot, SlotType.BACKGROUND);
 		inventory.setItem(slot, stack);
@@ -136,14 +153,6 @@ public class InventoryGUI {
 		throw new IllegalStateException("attempt to get STB item for non-item listener");
 	}
 
-//	public BaseSTBItem getOwner() {
-//		if (listener instanceof BaseSTBBlock) {
-//			return (BaseSTBBlock) listener;
-//		} else if (listener instanceof BaseSTBItem) {
-//			return (BaseSTBItem) listener;
-//		}
-//	}
-
 	public Inventory getInventory() {
 		return inventory;
 	}
@@ -162,10 +171,14 @@ public class InventoryGUI {
 			}
 		}
 		Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwningItem());
-		if (inventory.getHolder() instanceof Player && listener instanceof BaseSTBItem) {
-			setOpenGUI(player, this);
-		}
+		setOpenGUI(player, this);
 		player.openInventory(inventory);
+	}
+
+	public void hide(Player player) {
+		Debugger.getInstance().debug(player.getName() + ": hide GUI");
+		setOpenGUI(player, null);
+		player.closeInventory();
 	}
 
 	public List<HumanEntity> getViewers() {
@@ -173,7 +186,6 @@ public class InventoryGUI {
 	}
 
 	public void receiveEvent(InventoryClickEvent event) {
-		System.out.println("receive click event: slot=" + event.getRawSlot());
 		boolean shouldCancel = true;
 		if (containsSlot(event.getRawSlot())) {
 			// clicking inside the GUI
@@ -247,6 +259,7 @@ public class InventoryGUI {
 	}
 
 	public void receiveEvent(InventoryCloseEvent event) {
+		Debugger.getInstance().debug("received GUI close event for " + event.getPlayer().getName());
 		listener.onGUIClosed(event);
 		if (event.getPlayer() instanceof Player) {
 			setOpenGUI((Player) event.getPlayer(), null);
@@ -301,7 +314,7 @@ public class InventoryGUI {
 	}
 
 	public void thawSlots(String frozen, int... slots) {
-		if (!frozen.isEmpty() && slots.length > 0) {
+		if (frozen != null && !frozen.isEmpty() && slots.length > 0) {
 			try {
 				Inventory tmpInv = BukkitSerialization.fromBase64(frozen);
 				for (int i = 0; i < slots.length; i++) {

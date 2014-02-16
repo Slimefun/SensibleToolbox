@@ -2,6 +2,7 @@ log_level: fine
 coloured_console: true
 rename_level_cost: 5
 particle_effects: 2
+debug_level: 0
 enable:
   angelicblock: true
   blockupdatedetector: true

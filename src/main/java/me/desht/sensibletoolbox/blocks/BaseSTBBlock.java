@@ -13,6 +13,7 @@ import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.ChatPaginator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -243,6 +245,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 				Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + b1);
 				b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), pos0));
 			}
+			setGUI(createGUI());
 		} else {
 			if (persistableLocation != null) {
 				for (RelativePosition pos : getBlockStructure()) {
@@ -251,6 +254,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 				}
 			}
 			persistableLocation = null;
+			setGUI(null);
 		}
 	}
 
@@ -355,7 +359,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
 		BlockPlaceEvent placeEvent = new BlockPlaceEvent(signBlock, signBlock.getState(), event.getClickedBlock(), event.getItem(), event.getPlayer(), true);
 		Bukkit.getPluginManager().callEvent(placeEvent);
-		if (event.isCancelled()) {
+		if (placeEvent.isCancelled()) {
+			System.out.println("event cancelled!");
 			return;
 		}
 
@@ -380,7 +385,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	}
 
 	protected String[] getSignLabel() {
-		return new String[] { getItemName(), "", "", "" };
+		String[] lines = WordUtils.wrap(getItemName(), 15).split("\\n");
+		String[] res = new String[4];
+		for (int i = 0; i < 4; i++) {
+			res[i] = i < lines.length ? lines[i] : "";
+		}
+		return res;
 	}
 
 	@Override
@@ -454,5 +464,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		}
 	}
 
-
+	/**
+	 * Builds the inventory-based GUI for this block.  Override in subclasses.
+	 *
+	 * @return the GUI object (may be null if this block doesn't have a GUI)
+	 */
+	protected InventoryGUI createGUI() {
+		return null;
+	}
 }

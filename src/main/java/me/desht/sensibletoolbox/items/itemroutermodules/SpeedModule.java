@@ -25,10 +25,10 @@ public class SpeedModule extends ItemRouterModule {
 	public String[] getLore() {
 		return new String[] {
 				"Insert into an Item Router",
-				"Increases router speed:",
-				"0 modules = 1 op / 20 ticks",
+				"Passive module; increases router speed:",
+				"0 modules = 1 operation / 20 ticks",
 				"1 = 1/15, 2 = 1/10, 3 = 1/5",
-				"Max: 3 Speed Modules"
+				"Any modules over 3 are ignored."
 		};
 	}
 
@@ -49,10 +49,5 @@ public class SpeedModule extends ItemRouterModule {
 	@Override
 	public MaterialData getMaterialData() {
 		return md;
-	}
-
-	@Override
-	public boolean execute() {
-		return false;  // passive module
 	}
 }

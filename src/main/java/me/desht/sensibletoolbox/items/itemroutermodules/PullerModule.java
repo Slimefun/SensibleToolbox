@@ -1,25 +1,19 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.api.STBMachine;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.Filter;
-import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
-
-import java.util.Arrays;
 
 public class PullerModule extends DirectionalItemRouterModule {
 	private static final Dye md = makeDye(DyeColor.LIME);

@@ -1,10 +1,11 @@
 package me.desht.sensibletoolbox.items;
 
-import com.google.common.base.Joiner;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.gui.ButtonGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.recipes.CustomRecipe;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,41 +25,52 @@ import java.util.*;
 public class RecipeBook extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.BOOK);
 	private static final int ITEMS_PER_PAGE = 45;
-	private static final int[] RECIPE_SLOTS = new int[] { 10, 11, 12, 19, 20, 21, 28, 29, 30};
-	private static final List<ItemStack> itemList = new ArrayList<ItemStack>();
+	private static final List<ItemStack> fullItemList = new ArrayList<ItemStack>();
 	private static final Map<ItemStack,Integer> itemListPos = new HashMap<ItemStack, Integer>();
-	public static final int TYPE_SLOT = 23;
-	public static final int RESULT_SLOT = 25;
 	private static final ItemStack SHAPED_ICON = new ItemStack(Material.WORKBENCH);
 	private static final ItemStack SHAPELESS_ICON = new ItemStack(Material.WORKBENCH);
 	private static final ItemStack FURNACE_ICON = new ItemStack(Material.BURNING_FURNACE);
 	private static final ItemStack GO_BACK_TEXTURE = new ItemStack(Material.IRON_DOOR);
+	private static final ItemStack GO_BACK_TEXTURE_2 = new ItemStack(Material.WOOD_DOOR);
+	private static final ItemStack WEB_TEXTURE = new ItemStack(Material.WEB);
+	private static final int[] RECIPE_SLOTS = new int[] { 10, 11, 12, 19, 20, 21, 28, 29, 30};
+	public static final int TYPE_SLOT = 23;
+	public static final int RESULT_SLOT = 25;
+	public static final int PAGE_LABEL_SLOT = 45;
+	public static final int FILTER_BUTTON_SLOT = 46;
 	private int page;
 	private int viewingItem;
 	private int recipeNumber;
-	InventoryGUI gui;
+	private String filter;
+	private List<ItemStack> filteredItems;
+	private InventoryGUI gui;
+	private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
 
 	static {
 		setLabel(SHAPED_ICON, "Shaped Recipe");
 		setLabel(SHAPELESS_ICON, "Shapeless Recipe");
 		setLabel(FURNACE_ICON, "Smelting Recipe");
 	}
+
 	private static void setLabel(ItemStack stack, String label) {
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName(ChatColor.YELLOW + label);
 		stack.setItemMeta(meta);
 	}
-
 	public RecipeBook() {
 		page = 0;
 		viewingItem = -1;
 		recipeNumber = 0;
+		filter = "";
+		filteredItems = fullItemList;
 	}
 
 	public RecipeBook(ConfigurationSection conf) {
 		page = conf.getInt("page");
 		viewingItem = conf.getInt("viewingItem");
 		recipeNumber = conf.getInt("recipeNumber");
+		filter = conf.getString("filter", "");
+		buildFilteredList();
 	}
 
 	@Override
@@ -67,6 +79,7 @@ public class RecipeBook extends BaseSTBItem {
 		conf.set("page", page);
 		conf.set("viewingItem", viewingItem);
 		conf.set("recipeNumber", recipeNumber);
+		conf.set("filter", filter);
 		return conf;
 	}
 
@@ -79,11 +92,38 @@ public class RecipeBook extends BaseSTBItem {
 			stack.setAmount(1);
 			itemSet.add(stack);
 		}
-		itemList.addAll(itemSet);
-		Collections.sort(itemList, new StackComparator());
-		for (int i = 0; i < itemList.size(); i++) {
-			itemListPos.put(itemList.get(i), i);
+		CustomRecipeManager crm = CustomRecipeManager.getManager();
+		for (ItemStack stack : crm.getAllResults()) {
+			itemSet.add(stack);
 		}
+		fullItemList.addAll(itemSet);
+		Collections.sort(fullItemList, new StackComparator());
+		for (int i = 0; i < fullItemList.size(); i++) {
+			itemListPos.put(fullItemList.get(i), i);
+		}
+	}
+
+	public void buildFilteredList() {
+		if (filter != null && !filter.isEmpty()) {
+			String f = filter.toLowerCase();
+			filteredItems = new ArrayList<ItemStack>();
+			for (ItemStack stack : fullItemList) {
+				if (ItemNames.lookup(stack).toLowerCase().contains(f)) {
+					filteredItems.add(stack);
+				}
+			}
+			System.out.println("built filtered list: " + filteredItems.size() + " items");
+		} else {
+			filteredItems = fullItemList;
+		}
+	}
+
+	public String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(String filter) {
+		this.filter = filter;
 	}
 
 	@Override
@@ -112,32 +152,42 @@ public class RecipeBook extends BaseSTBItem {
 	@Override
 	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			gui = new InventoryGUI(event.getPlayer(), this, 54, "Recipe Book");
-			if (viewingItem < 0) {
-				drawItemsPage();
-			} else {
-				drawRecipePage();
-			}
-			gui.show(event.getPlayer());
+			openBook(event.getPlayer());
 			event.setCancelled(true);
 		}
+	}
+
+	public void openBook(Player player) {
+		gui = new InventoryGUI(player, this, 54, "Recipe Book");
+		buildFilteredList();
+		if (viewingItem < 0) {
+			drawItemsPage();
+		} else {
+			drawRecipePage();
+		}
+		gui.show(player);
 	}
 
 	@Override
 	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		if (viewingItem == -1) {
 			// switch to viewing the item's recipe
-			viewingItem = page * ITEMS_PER_PAGE + slot;
+			if (itemListPos.containsKey(inSlot)) {
+				viewingItem = itemListPos.get(inSlot);
+			} else {
+				LogUtils.warning("could not find item " + inSlot + " in the recipe list!");
+			}
 			recipeNumber = 0;
-			System.out.println("viewingItem now = " + viewingItem + " - " + itemList.get(viewingItem));
+			System.out.println("viewingItem now = " + viewingItem + " - " + fullItemList.get(viewingItem));
 			drawRecipePage();
 		} else {
 			// in the recipe view - clicking an ingredient?
 			if (gui.getSlotType(slot) == InventoryGUI.SlotType.ITEM && slot != RESULT_SLOT) {
-				System.out.println("inslot = " + inSlot.getTypeId() + " " + inSlot.getAmount() + " " + inSlot.getDurability() + " " + inSlot.getItemMeta());
 				if (itemListPos.containsKey(inSlot)) {
-					System.out.println("switch view!");
+					trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
+					System.out.println("add " + viewingItem + "," + recipeNumber + " to trail - " + trail.size());
 					viewingItem = itemListPos.get(inSlot);
+					recipeNumber = 0;
 					drawRecipePage();
 				}
 			}
@@ -172,8 +222,15 @@ public class RecipeBook extends BaseSTBItem {
 
 	private void showFurnaceRecipe(FurnaceRecipe recipe) {
 		ItemStack ingredient = getSmeltingIngredient(recipe.getInput());
-		gui.getInventory().setItem(RECIPE_SLOTS[4], ingredient);
+		gui.getInventory().setItem(RECIPE_SLOTS[4], ingredient); // 4 is the middle of the 9 item slots
 		gui.getInventory().setItem(TYPE_SLOT, FURNACE_ICON);
+	}
+
+	private void showCustomRecipe(CustomRecipe recipe) {
+		gui.getInventory().setItem(RESULT_SLOT, recipe.getResult());
+		BaseSTBItem item = BaseSTBItem.getItemById(recipe.getItemId());
+		gui.getInventory().setItem(TYPE_SLOT, item.toItemStack(1));
+		gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
 	}
 
 	private ItemStack getIngredient(BaseSTBItem item, ItemStack stack) {
@@ -203,7 +260,6 @@ public class RecipeBook extends BaseSTBItem {
 	private ItemStack getSmeltingIngredient(ItemStack stack) {
 		Class<? extends BaseSTBItem> c = BaseSTBItem.getCustomSmelt(stack.getType());
 		if (c != null) {
-			System.out.println("custom smelt for " + stack + " - " + c);
 			try {
 				BaseSTBItem item2 = c.getDeclaredConstructor().newInstance();
 				return item2.toItemStack(1);
@@ -235,16 +291,21 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	private void drawRecipePage() {
-		final ItemStack result = itemList.get(viewingItem);
+		final ItemStack result = fullItemList.get(viewingItem);
 		final List<Recipe> recipes = new ArrayList<Recipe>();
 
-		System.out.println("find recipes for " + result);
+		// the isSimilar() checks are necessary to ensure we don't pick up recipes for items
+		// of the same material but with different item meta information...
 		for (Recipe recipe : Bukkit.getRecipesFor(result)) {
 			if (recipe.getResult().isSimilar(result)) {
 				recipes.add(recipe);
 			}
 		}
-		System.out.println("recipes: " + Joiner.on("\n").join(recipes));
+		for (CustomRecipe customRecipe : CustomRecipeManager.getManager().getRecipesFor(result)) {
+			if (customRecipe.getResult().isSimilar(result)) {
+				recipes.add(customRecipe);
+			}
+		}
 
 		for (int slot = 0; slot < 54; slot++) {
 			gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
@@ -254,12 +315,12 @@ public class RecipeBook extends BaseSTBItem {
 		}
 		gui.setSlotType(RESULT_SLOT, InventoryGUI.SlotType.ITEM);
 
-		if (recipes.isEmpty()) {
+		final int nRecipes = recipes.size();
+		if (nRecipes == 0) {
 			return;
 		}
-
-		if (recipeNumber >= recipes.size()) {
-			recipeNumber = recipes.size() - 1;
+		if (recipeNumber >= nRecipes) {
+			recipeNumber = nRecipes - 1;
 		} else if (recipeNumber < 0) {
 			recipeNumber = 0;
 		}
@@ -272,20 +333,24 @@ public class RecipeBook extends BaseSTBItem {
 			showShapedRecipe((ShapedRecipe) recipe);
 		} else if (recipe instanceof ShapelessRecipe) {
 			showShapelessRecipe((ShapelessRecipe) recipe);
+		} else if (recipe instanceof CustomRecipe) {
+			showCustomRecipe((CustomRecipe) recipe);
 		}
 
-		if (recipes.size() > 1) {
+		if (nRecipes > 1) {
 			gui.addGadget(new ButtonGadget(gui, "< Prev Recipe", new String[0], null, new Runnable() {
 				@Override
 				public void run() {
-					recipeNumber = (recipeNumber - 1) % recipes.size();
+					recipeNumber--;
+					if (recipeNumber < 0) recipeNumber = nRecipes - 1;
 					drawRecipePage();
 				}
 			}), 18);
 			gui.addGadget(new ButtonGadget(gui, "Next Recipe >", new String[0], null, new Runnable() {
 				@Override
 				public void run() {
-					recipeNumber = (recipeNumber + 1) % recipes.size();
+					recipeNumber++;
+					if (recipeNumber >= nRecipes) recipeNumber = 0;
 					drawRecipePage();
 				}
 			}), 26);
@@ -293,26 +358,38 @@ public class RecipeBook extends BaseSTBItem {
 		gui.addGadget(new ButtonGadget(gui, "< Back to Item List", new String[0], GO_BACK_TEXTURE, new Runnable() {
 			@Override
 			public void run() {
+				trail.clear();
 				viewingItem = -1;
 				drawItemsPage();
 			}
 		}), 53);
-
+		if (!trail.isEmpty()) {
+			gui.addGadget(new ButtonGadget(gui, "< Back to Last Recipe", new String[0], GO_BACK_TEXTURE_2, new Runnable() {
+				@Override
+				public void run() {
+					ItemAndRecipeNumber ir = trail.pop();
+					viewingItem = ir.item;
+					recipeNumber = ir.recipe;
+					drawRecipePage();
+				}
+			}), 52);
+		}
 		ItemStack pageStack = new ItemStack(Material.PAPER, recipeNumber + 1);
-		gui.addLabel("Recipe " + (recipeNumber + 1) + "/" + recipes.size(), 45, pageStack);
+		gui.addLabel("Recipe " + (recipeNumber + 1) + "/" + nRecipes, 45, pageStack);
 	}
 
 	private void drawItemsPage() {
+		final int totalPages = (filteredItems.size() / ITEMS_PER_PAGE) + 1;
+		page = Math.min(page, totalPages - 1);
 		int start = page * ITEMS_PER_PAGE;
 		for (int i = start, slot = 0; i < start + ITEMS_PER_PAGE; i++, slot++) {
-			if (i < itemList.size()) {
+			if (i < filteredItems.size()) {
 				gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
-				gui.getInventory().setItem(slot, itemList.get(i));
+				gui.getInventory().setItem(slot, filteredItems.get(i));
 			} else {
 				gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
 			}
 		}
-		final int totalPages = (itemList.size() / ITEMS_PER_PAGE) + 1;
 		gui.addGadget(new ButtonGadget(gui, "< Prev Page", new String[0], null, new Runnable() {
 			@Override
 			public void run() {
@@ -329,14 +406,36 @@ public class RecipeBook extends BaseSTBItem {
 				drawItemsPage();
 			}
 		}), 53);
+		if (filter != null && !filter.isEmpty()) {
+			gui.addGadget(new ButtonGadget(gui, "Filter:" + ChatColor.YELLOW + " " + filter,
+					new String[] { "Click to clear filter "}, WEB_TEXTURE, new Runnable() {
+				@Override
+				public void run() {
+					filter = "";
+					filteredItems = fullItemList;
+					drawItemsPage();
+				}
+			}), FILTER_BUTTON_SLOT);
+		} else {
+			gui.setSlotType(FILTER_BUTTON_SLOT, InventoryGUI.SlotType.BACKGROUND);
+		}
 		ItemStack pageStack = new ItemStack(Material.PAPER, page + 1);
-		gui.addLabel("Page " + (page + 1) + "/" + totalPages, 45, pageStack);
+		gui.addLabel("Page " + (page + 1) + "/" + totalPages, PAGE_LABEL_SLOT, pageStack);
 	}
 
 	private static class StackComparator implements Comparator<ItemStack> {
 		@Override
 		public int compare(ItemStack o1, ItemStack o2) {
 			return ChatColor.stripColor(ItemNames.lookup(o1)).compareTo(ChatColor.stripColor(ItemNames.lookup(o2)));
+		}
+	}
+
+	private class ItemAndRecipeNumber {
+		private final int item;
+		private final int recipe;
+		private ItemAndRecipeNumber(int item, int recipe) {
+			this.item = item;
+			this.recipe = recipe;
 		}
 	}
 }

@@ -20,17 +20,12 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 
 	protected AbstractProcessingMachine() {
 		super();
-//		progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
 	}
 
 	public AbstractProcessingMachine(ConfigurationSection conf) {
 		super(conf);
-//		progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
 		progress = conf.getDouble("progress");
 		frozenProcessing = conf.getString("processing", "");
-//		if (getProgress() > 0) {
-//			getGUI().thawSlots(conf.getString("processing", ""), getProgressItemSlot());
-//		}
 	}
 
 	@Override

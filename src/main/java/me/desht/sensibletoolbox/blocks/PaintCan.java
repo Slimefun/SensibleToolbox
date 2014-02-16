@@ -78,7 +78,7 @@ public class PaintCan extends BaseSTBBlock {
 
 	@Override
 	public MaterialData getMaterialData() {
-		return getPaintLevel() > 0 ? new Wool(colour) : new MaterialData(Material.STAINED_GLASS, colour.getWoolData());
+		return getPaintLevel() > 0 ? new Wool(colour) : STBUtil.makeColouredMaterial(Material.STAINED_GLASS, colour);
 	}
 
 	@Override

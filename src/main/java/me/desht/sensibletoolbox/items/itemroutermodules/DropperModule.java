@@ -58,7 +58,6 @@ public class DropperModule extends DirectionalItemRouterModule {
 			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
 				return false;
 			}
-			Debugger.getInstance().debug(2, "prepare to drop " + getOwner().getBufferItem() + " from " + getOwner());
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
 			int toDrop = getOwner().getStackSize();
@@ -67,6 +66,7 @@ public class DropperModule extends DirectionalItemRouterModule {
 				Location loc = target.getLocation().add(0.5, 0.5, 0.5);
 				Item item = loc.getWorld().dropItem(loc, stack);
 				item.setVelocity(new Vector(0, 0, 0));
+				Debugger.getInstance().debug(2, "dropper dropped " + stack + " from " + getOwner());
 			}
 			return true;
 		}

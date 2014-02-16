@@ -2,7 +2,8 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.util.FuelItems;
+import me.desht.sensibletoolbox.recipes.FuelItems;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.CoalType;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -13,8 +14,8 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Coal;
 import org.bukkit.material.MaterialData;
 
-public class StirlingGenerator extends AbstractProcessingMachine {
-	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.ORANGE.getWoolData());
+public class StirlingGenerator extends Generator {
+	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
 	private static final FuelItems fuelItems = new FuelItems();
 	static {
 		fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), 15, 60);
@@ -30,26 +31,15 @@ public class StirlingGenerator extends AbstractProcessingMachine {
 
 	public StirlingGenerator() {
 		super();
-		setChargeDirection(ChargeDirection.CELL);
 		currentFuel = null;
 	}
 
 	public StirlingGenerator(ConfigurationSection conf) {
 		super(conf);
 		if (getProgress() > 0) {
-//			getGUI().thawSlots(conf.getString("processing", ""), getProgressItemSlot());
 			currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
 		}
 	}
-
-//	@Override
-//	public YamlConfiguration freeze() {
-//		YamlConfiguration conf = super.freeze();
-//		if (getProgress() > 0) {
-//			conf.set("processing", getGUI().freezeSlots(getProgressItemSlot()));
-//		}
-//		return conf;
-//	}
 
 	@Override
 	public int[] getInputSlots() {

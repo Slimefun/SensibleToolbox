@@ -4,7 +4,11 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
-import me.desht.sensibletoolbox.util.CustomRecipeCollection;
+import me.desht.sensibletoolbox.recipes.CustomRecipe;
+import me.desht.sensibletoolbox.recipes.CustomRecipeCollection;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.recipes.ProcessingResult;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -19,24 +23,24 @@ import org.bukkit.material.MaterialData;
 import java.util.Iterator;
 
 public class Smelter extends AbstractIOMachine {
-	private static final MaterialData md = new MaterialData(Material.STAINED_CLAY, DyeColor.CYAN.getWoolData());
-	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
-
-	static {
-		Iterator<Recipe> iter = Bukkit.recipeIterator();
-		while (iter.hasNext()) {
-			Recipe r = iter.next();
-			if (r instanceof FurnaceRecipe) {
-				FurnaceRecipe fr = (FurnaceRecipe) r;
-				ItemStack input = fr.getInput();
-				// why does the input item for a furnace recipe always have 32767 durability ?
-				if (input.getDurability() == 32767) input.setDurability((short) 0);
-				recipes.addCustomRecipe(input, fr.getResult(), getProcessingTime(input));
-			}
-		}
-		recipes.addCustomRecipe(new GoldDust().toItemStack(1), new ItemStack(Material.GOLD_INGOT), 120);
-		recipes.addCustomRecipe(new IronDust().toItemStack(1), new ItemStack(Material.IRON_INGOT), 120);
-	}
+	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.LIGHT_BLUE);
+//	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
+//
+//	static {
+//		Iterator<Recipe> iter = Bukkit.recipeIterator();
+//		while (iter.hasNext()) {
+//			Recipe r = iter.next();
+//			if (r instanceof FurnaceRecipe) {
+//				FurnaceRecipe fr = (FurnaceRecipe) r;
+//				ItemStack input = fr.getInput();
+//				// why does the input item for a furnace recipe always have 32767 durability ?
+//				if (input.getDurability() == 32767) input.setDurability((short) 0);
+//				recipes.addCustomRecipe(input, fr.getResult(), getProcessingTime(input));
+//			}
+//		}
+//		recipes.addCustomRecipe(new GoldDust().toItemStack(1), new ItemStack(Material.GOLD_INGOT), 120);
+//		recipes.addCustomRecipe(new IronDust().toItemStack(1), new ItemStack(Material.IRON_INGOT), 120);
+//	}
 
 	private static int getProcessingTime(ItemStack stack) {
 		if (stack.getType().isEdible()) {
@@ -50,6 +54,23 @@ public class Smelter extends AbstractIOMachine {
 
 	public Smelter(ConfigurationSection conf) {
 		super(conf);
+	}
+
+	@Override
+	public void addCustomRecipes(CustomRecipeManager crm) {
+		Iterator<Recipe> iter = Bukkit.recipeIterator();
+		while (iter.hasNext()) {
+			Recipe r = iter.next();
+			if (r instanceof FurnaceRecipe) {
+				FurnaceRecipe fr = (FurnaceRecipe) r;
+				ItemStack input = fr.getInput();
+				// why does the input item for a furnace recipe always have 32767 durability ?
+				if (input.getDurability() == 32767) input.setDurability((short) 0);
+				crm.addCustomRecipe(new CustomRecipe(this, input, fr.getResult(), getProcessingTime(input)));
+			}
+		}
+		crm.addCustomRecipe(new CustomRecipe(this, new GoldDust().toItemStack(1), new ItemStack(Material.GOLD_INGOT), 120));
+		crm.addCustomRecipe(new CustomRecipe(this, new IronDust().toItemStack(1), new ItemStack(Material.IRON_INGOT), 120));
 	}
 
 	@Override
@@ -93,16 +114,16 @@ public class Smelter extends AbstractIOMachine {
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;
 	}
-
-	@Override
-	public boolean acceptsItemType(ItemStack item) {
-		return recipes.hasRecipe(item);
-	}
-
-	@Override
-	protected CustomRecipeCollection.CustomRecipe getCustomRecipeFor(ItemStack stack) {
-		return recipes.get(stack);
-	}
+//
+//	@Override
+//	public boolean acceptsItemType(ItemStack item) {
+//		return CustomRecipeManager.getManager().hasRecipe(this, item);
+//	}
+//
+//	@Override
+//	protected ProcessingResult getCustomRecipeFor(ItemStack stack) {
+//		return CustomRecipeManager.getManager().getRecipe(this, stack);
+//	}
 
 	@Override
 	public int[] getInputSlots() {

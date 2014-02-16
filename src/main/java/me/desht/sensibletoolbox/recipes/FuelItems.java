@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.util;
+package me.desht.sensibletoolbox.recipes;
 
 import me.desht.dhutils.Debugger;
 import org.bukkit.inventory.ItemStack;

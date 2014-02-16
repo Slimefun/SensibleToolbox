@@ -10,14 +10,14 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
-public class BlankModule extends ItemRouterModule {
+public class BlankModule extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.PAPER);
 
 	public BlankModule() {
 	}
 
 	public BlankModule(ConfigurationSection conf) {
-		super(conf);
+//		super(conf);
 	}
 
 	@Override
@@ -51,10 +51,5 @@ public class BlankModule extends ItemRouterModule {
 	public boolean isIngredientFor(ItemStack result) {
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
 		return item != null && item instanceof ItemRouterModule;
-	}
-
-	@Override
-	public boolean execute() {
-		return false;  // no-op
 	}
 }

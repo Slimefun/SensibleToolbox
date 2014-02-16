@@ -52,7 +52,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 
 	@Override
 	public MaterialData getMaterialData() {
-		return new MaterialData(Material.STAINED_GLASS, color.getWoolData());
+		return STBUtil.makeColouredMaterial(Material.STAINED_GLASS, color);
 	}
 
 	@Override

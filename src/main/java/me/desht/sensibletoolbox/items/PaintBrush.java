@@ -62,6 +62,11 @@ public class PaintBrush extends BaseSTBItem {
 	}
 
 	@Override
+	public boolean isEnchantable() {
+		return false;
+	}
+
+	@Override
 	public YamlConfiguration freeze() {
 		YamlConfiguration res = super.freeze();
 		res.set("paintLevel", paintLevel);

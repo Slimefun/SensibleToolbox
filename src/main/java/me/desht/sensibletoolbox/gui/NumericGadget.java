@@ -51,13 +51,15 @@ public class NumericGadget extends ClickableGadget {
 	public ItemStack getTexture() {
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.YELLOW + title + ": " + ChatColor.AQUA + value);
+		String max = range.getMaximumInteger() == Integer.MAX_VALUE ? "\u221e" : Integer.toString(range.getMaximumInteger());
+		String min = range.getMaximumInteger() == Integer.MIN_VALUE ? "-\u221e" : Integer.toString(range.getMinimumInteger());
 		String[] lore = {
-				"Valid value range: " + range.getMinimumInteger() + "-" + range.getMaximumInteger(),
+				"Valid value range: " + min + "-" + max,
 				"L-Click: -" + largeIncr,
 				"R-Click: +" + largeIncr,
 				"With Shift held, +/-" + smallIncr
 		};
-		meta.setLore(makeLore(lore));
+		meta.setLore(InventoryGUI.makeLore(lore));
 		icon.setItemMeta(meta);
 		return icon;
 	}

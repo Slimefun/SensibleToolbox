@@ -8,7 +8,6 @@ import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -45,8 +44,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 				"Sends items elsewhere:" ,
 				" - An adjacent inventory OR",
 				" - Item Router with Receiver Module:",
-				"   within 10 blocks, with line of sight",
-				"   and facing this Sender Module"
+				"   within 10 blocks, with line of sight"
 		);
 	}
 
@@ -80,18 +78,18 @@ public class SenderModule extends DirectionalItemRouterModule {
 			int nToInsert = getOwner().getStackSize();
 			if (allowsItemsThrough(target.getType())) {
 				// search for a visible Item Router with an installed Receiver Module
-				ReceiverModule receiver = findReceiver();
+				ReceiverModule receiver = findReceiver(b);
 				if (receiver != null) {
 					Debugger.getInstance().debug(2, "sender found receiver module in " + receiver.getOwner());
 					ItemStack toSend = getOwner().getBufferItem().clone();
 					toSend.setAmount(Math.min(nToInsert, toSend.getAmount()));
-					int received = receiver.receiveItem(toSend);
-					getOwner().reduceBuffer(received);
-					if (received > 0 && SensibleToolboxPlugin.getInstance().getConfig().getInt("particle_effects") >= 2) {
+					int nReceived = receiver.receiveItem(toSend);
+					getOwner().reduceBuffer(nReceived);
+					if (nReceived > 0 && SensibleToolboxPlugin.getInstance().getConfig().getInt("particle_effects") >= 2) {
 						playSenderParticles(getOwner(), receiver.getOwner());
 
 					}
-					return received > 0;
+					return nReceived > 0;
 				}
 			} else {
 				BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
@@ -121,8 +119,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 		}
 	}
 
-	private ReceiverModule findReceiver() {
-		Block b = getOwner().getLocation().getBlock();
+	private ReceiverModule findReceiver(Block b) {
 		for (int i = 0; i < MAX_SENDER_DISTANCE; i++) {
 			b = b.getRelative(getDirection());
 			if (!allowsItemsThrough(b.getType())) {
@@ -132,7 +129,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 		ItemRouter rtr = LocationManager.getManager().get(b.getLocation(), ItemRouter.class);
 		if (rtr != null) {
 			for (ItemRouterModule mod : rtr.getInstalledModules()) {
-				if (mod instanceof ReceiverModule && ((ReceiverModule)mod).getDirection() == getDirection().getOppositeFace()) {
+				if (mod instanceof ReceiverModule) {
 					return (ReceiverModule) mod;
 				}
 			}

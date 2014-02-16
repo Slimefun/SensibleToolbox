@@ -55,6 +55,11 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
+	public boolean isEnchantable() {
+		return false;
+	}
+
+	@Override
 	public String[] getLore() {
 		return new String[] {
 				"Right-click dirt/grass: till 3x3 area",

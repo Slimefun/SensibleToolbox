@@ -25,7 +25,7 @@ public class ButtonGadget extends ClickableGadget {
 		ItemMeta meta = labelTexture.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + ChatColor.UNDERLINE.toString() + text);
 		if (lore != null) {
-			meta.setLore(makeLore(lore));
+			meta.setLore(InventoryGUI.makeLore(lore));
 		}
 		labelTexture.setItemMeta(meta);
 	}

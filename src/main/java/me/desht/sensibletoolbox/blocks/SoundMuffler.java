@@ -36,7 +36,8 @@ public class SoundMuffler extends BaseSTBBlock {
 		createGUI();
 	}
 
-	private void createGUI() {
+	@Override
+	protected InventoryGUI createGUI() {
 		InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
 		gui.addGadget(new NumericGadget(gui, "Volume", new IntRange(0, 100), getVolume(), 10, 1,new NumericGadget.UpdateListener() {
 			@Override
@@ -45,7 +46,7 @@ public class SoundMuffler extends BaseSTBBlock {
 				return true;
 			}
 		}), 0);
-		setGUI(gui);
+		return gui;
 	}
 
 	public YamlConfiguration freeze() {
@@ -123,6 +124,7 @@ public class SoundMuffler extends BaseSTBBlock {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
 			getGUI().show(event.getPlayer());
 		}
+		super.onInteractBlock(event);
 	}
 
 	@Override

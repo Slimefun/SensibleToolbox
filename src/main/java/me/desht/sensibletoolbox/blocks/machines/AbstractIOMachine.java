@@ -2,8 +2,9 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.CustomRecipeCollection;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -25,7 +26,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 		super(conf);
 	}
 
-	protected abstract CustomRecipeCollection.CustomRecipe getCustomRecipeFor(ItemStack stack);
+//	protected abstract ProcessingResult getCustomRecipeFor(ItemStack stack);
 
 	@Override
 	protected void playStartupSound() {
@@ -58,8 +59,23 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 				}
 				if (getProgress() <= 0 && !isJammed()) {
 					// done processing - try to move item into output
-					CustomRecipeCollection.CustomRecipe recipe = getCustomRecipeFor(getProcessing());
-					pushItemIntoOutput(recipe.getResult());
+					ProcessingResult recipe = getCustomRecipeFor(getProcessing());
+					if (recipe != null) {
+						// shouldn't ever be null, but let's be paranoid here
+						pushItemIntoOutput(recipe.getResult());
+					}
+				}
+			}
+			if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF && getTicksLived() % 10 == 0) {
+				for (int slot : getOutputSlots()) {
+					ItemStack stack = getInventory().getItem(slot);
+					if (stack != null) {
+						if (autoEject(stack)) {
+							stack.setAmount(stack.getAmount() - 1);
+							getInventory().setItem(slot, stack.getAmount() == 0 ? null : stack);
+						}
+						break;
+					}
 				}
 			}
 		}
@@ -67,9 +83,9 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	}
 
 	private void pushItemIntoOutput(ItemStack result) {
-		if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
-			result = autoEject(result);
-		}
+//		if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
+//			result = autoEject(result);
+//		}
 
 		if (result != null && result.getAmount() > 0) {
 			int slot = findOutputSlot(result);
@@ -95,40 +111,45 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	}
 
 	/**
-	 * Attempt to auto-eject a resulting item.
+	 * Attempt to auto-eject one from an output slot.
 	 *
 	 * @param result the item to eject
-	 * @return anything that could not be auto-ejected
+	 * @return true if an item was ejected, false otherwise
 	 */
-	private ItemStack autoEject(ItemStack result) {
+	private boolean autoEject(ItemStack result) {
 		Block target = getLocation().getBlock().getRelative(getAutoEjectDirection());
+		ItemStack item = result.clone();
+		item.setAmount(1);
 		if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
 			// no block there - just drop the item
 			target.getWorld().dropItem(target.getLocation().add(0.5, 0.5, 0.5), result);
-			result = null;
+			return true;
 		} else {
 			BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
-			ItemStack toInsert = result.clone();
+			int nInserted;
 			if (stb instanceof STBInventoryHolder) {
 				// try to insert into STB block
-				int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getAutoEjectDirection().getOppositeFace(), false);
-				result = toInsert;
-				result.setAmount(result.getAmount() - nInserted);
+				nInserted = ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false);
 			} else {
 				// vanilla insertion?
-				int nInserted = VanillaInventoryUtils.vanillaInsertion(target, toInsert, 1, getAutoEjectDirection().getOppositeFace(), false);
-				result = toInsert;
+				nInserted = VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false);
 			}
+			return nInserted > 0;
 		}
-		return result;
 	}
 
 	private void pullItemIntoProcessing(int inputSlot) {
 		ItemStack stack = getInventory().getItem(inputSlot);
 		ItemStack toProcess = stack.clone();
 		toProcess.setAmount(1);
+		ProcessingResult recipe = getCustomRecipeFor(toProcess);
+		if (recipe == null) {
+			// shouldn't happen but...
+			getLocation().getWorld().dropItemNaturally(getLocation(), stack);
+			getInventory().setItem(inputSlot, null);
+			return;
+		}
 		setProcessing(toProcess);
-		CustomRecipeCollection.CustomRecipe recipe = getCustomRecipeFor(toProcess);
 		getProgressCounter().initialize(recipe.getProcessingTime());
 		setProgress(recipe.getProcessingTime());
 		if (stack.getAmount() > 1) {
@@ -138,5 +159,25 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 		}
 		getInventory().setItem(inputSlot, stack);
 		updateBlock(false);
+	}
+
+
+	@Override
+	public boolean acceptsItemType(ItemStack item) {
+		return CustomRecipeManager.getManager().hasRecipe(this, item);
+	}
+
+	protected ProcessingResult getCustomRecipeFor(ItemStack stack) {
+		return CustomRecipeManager.getManager().getRecipe(this, stack);
+	}
+
+	@Override
+	public boolean acceptsEnergy(BlockFace face) {
+		return true;
+	}
+
+	@Override
+	public boolean suppliesEnergy(BlockFace face) {
+		return false;
 	}
 }

@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -40,7 +42,7 @@ public class GeneralListener extends STBBaseListener {
 		if (item != null) {
 			item.onInteractItem(event);
 		}
-		if (event.getClickedBlock() != null) {
+		if (!event.isCancelled() && event.getClickedBlock() != null) {
 			BaseSTBBlock stb = LocationManager.getManager().get(event.getClickedBlock().getLocation());
 			if (stb != null) {
 				stb.onInteractBlock(event);
@@ -97,13 +99,24 @@ public class GeneralListener extends STBBaseListener {
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onCablePlace(BlockPlaceEvent event) {
+		if (EnergyNetManager.isCable(event.getBlock())) {
+			EnergyNetManager.onCablePlaced(event.getBlock());
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBlockBreak(BlockBreakEvent event) {
-		BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
-		if (stb != null) {
-			boolean isCancelled = event.isCancelled();
-			stb.onBlockBreak(event);
-			if (event.isCancelled() != isCancelled) {
-				throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
+		if (EnergyNetManager.isCable(event.getBlock())) {
+			EnergyNetManager.onCableRemoved(event.getBlock());
+		} else {
+			BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+			if (stb != null) {
+				boolean isCancelled = event.isCancelled();
+				stb.onBlockBreak(event);
+				if (event.isCancelled() != isCancelled) {
+					throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
+				}
 			}
 		}
 	}
@@ -270,6 +283,14 @@ public class GeneralListener extends STBBaseListener {
 			if (gui != null) {
 				gui.receiveEvent(event);
 			}
+		}
+	}
+
+	@EventHandler
+	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+		if (item != null && !item.isEnchantable()) {
+			event.setCancelled(true);
 		}
 	}
 }
