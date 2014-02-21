@@ -112,7 +112,7 @@ public class CombineHoeListener extends STBBaseListener {
 			}
 			hoe.setSeedAmount(count);
 			hoe.setSeedType(seedType);
-			player.setItemInHand(hoe.toItemStack(1));
+			player.setItemInHand(hoe.toItemStack());
 		}
 	}
 

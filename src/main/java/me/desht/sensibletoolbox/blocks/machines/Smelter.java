@@ -4,10 +4,10 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
+import me.desht.sensibletoolbox.items.components.MachineFrame;
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
-import me.desht.sensibletoolbox.recipes.CustomRecipeCollection;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
-import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -24,23 +24,6 @@ import java.util.Iterator;
 
 public class Smelter extends AbstractIOMachine {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.LIGHT_BLUE);
-//	private static final CustomRecipeCollection recipes = new CustomRecipeCollection();
-//
-//	static {
-//		Iterator<Recipe> iter = Bukkit.recipeIterator();
-//		while (iter.hasNext()) {
-//			Recipe r = iter.next();
-//			if (r instanceof FurnaceRecipe) {
-//				FurnaceRecipe fr = (FurnaceRecipe) r;
-//				ItemStack input = fr.getInput();
-//				// why does the input item for a furnace recipe always have 32767 durability ?
-//				if (input.getDurability() == 32767) input.setDurability((short) 0);
-//				recipes.addCustomRecipe(input, fr.getResult(), getProcessingTime(input));
-//			}
-//		}
-//		recipes.addCustomRecipe(new GoldDust().toItemStack(1), new ItemStack(Material.GOLD_INGOT), 120);
-//		recipes.addCustomRecipe(new IronDust().toItemStack(1), new ItemStack(Material.IRON_INGOT), 120);
-//	}
 
 	private static int getProcessingTime(ItemStack stack) {
 		if (stack.getType().isEdible()) {
@@ -69,8 +52,8 @@ public class Smelter extends AbstractIOMachine {
 				crm.addCustomRecipe(new CustomRecipe(this, input, fr.getResult(), getProcessingTime(input)));
 			}
 		}
-		crm.addCustomRecipe(new CustomRecipe(this, new GoldDust().toItemStack(1), new ItemStack(Material.GOLD_INGOT), 120));
-		crm.addCustomRecipe(new CustomRecipe(this, new IronDust().toItemStack(1), new ItemStack(Material.IRON_INGOT), 120));
+		crm.addCustomRecipe(new CustomRecipe(this, new GoldDust().toItemStack(), new ItemStack(Material.GOLD_INGOT), 120));
+		crm.addCustomRecipe(new CustomRecipe(this, new IronDust().toItemStack(), new ItemStack(Material.IRON_INGOT), 120));
 	}
 
 	@Override
@@ -100,30 +83,29 @@ public class Smelter extends AbstractIOMachine {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Smelts items", "Like a vanilla furnace but", "faster and more efficient" };
+		return new String[] { "Smelts items", "Like a Furnace, but", "faster and more efficient" };
 	}
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
-		recipe.shape("SSS", "CIC", "RGR");
+		SimpleCircuit sc = new SimpleCircuit();
+		MachineFrame mf = new MachineFrame();
+		registerCustomIngredients(sc, mf);
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+		recipe.shape("CSC", "IFI", "RGR");
 		recipe.setIngredient('C', Material.BRICK);
-		recipe.setIngredient('S', Material.STONE);
-		recipe.setIngredient('I', Material.IRON_BLOCK);
+		recipe.setIngredient('S', Material.FURNACE);
+		recipe.setIngredient('I', sc.getMaterialData());
+		recipe.setIngredient('F', mf.getMaterialData());
 		recipe.setIngredient('R' ,Material.REDSTONE);
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;
 	}
-//
-//	@Override
-//	public boolean acceptsItemType(ItemStack item) {
-//		return CustomRecipeManager.getManager().hasRecipe(this, item);
-//	}
-//
-//	@Override
-//	protected ProcessingResult getCustomRecipeFor(ItemStack stack) {
-//		return CustomRecipeManager.getManager().getRecipe(this, stack);
-//	}
+
+	@Override
+	public boolean acceptsItemType(ItemStack stack) {
+		return CustomRecipeManager.getManager().hasRecipe(this, stack) && CustomRecipeManager.validateCustomSmelt(stack);
+	}
 
 	@Override
 	public int[] getInputSlots() {

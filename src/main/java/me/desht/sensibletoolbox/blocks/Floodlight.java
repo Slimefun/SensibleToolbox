@@ -71,7 +71,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("GDG", "TLT", " T ");
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		recipe.setIngredient('D', Material.DIAMOND);

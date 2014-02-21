@@ -94,9 +94,9 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 					if (toTransfer > 0) {
 						toTransfer = Math.min(toTransfer, getCharge());
 						setCharge(getCharge() - toTransfer);
-						player.setItemInHand(toItemStack(1));
+						player.setItemInHand(toItemStack());
 						c.setCharge(c.getCharge() + toTransfer);
-						player.getInventory().setItem(slot, item.toItemStack(1));
+						player.getInventory().setItem(slot, item.toItemStack());
 						break;
 					}
 				}

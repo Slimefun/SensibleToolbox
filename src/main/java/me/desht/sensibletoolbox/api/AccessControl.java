@@ -21,7 +21,7 @@ public enum AccessControl {
 	}
 
 	public ItemStack getTexture() {
-		ItemStack res = new Wool(color).toItemStack(1);
+		ItemStack res = new Wool(color).toItemStack();
 		ItemMeta meta = res.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label);
 		res.setItemMeta(meta);

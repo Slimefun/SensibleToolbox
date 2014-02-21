@@ -4,6 +4,7 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.recipes.FuelItems;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.CoalType;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -11,21 +12,26 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Coal;
 import org.bukkit.material.MaterialData;
+
+import java.util.Arrays;
 
 public class StirlingGenerator extends Generator {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
 	private static final FuelItems fuelItems = new FuelItems();
 	static {
-		fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), 15, 60);
-		fuelItems.addFuel(new ItemStack(Material.COAL), 15, 120);
-		fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), 15, 1440);
-		fuelItems.addFuel(new ItemStack(Material.BLAZE_ROD), 15, 180);
-		fuelItems.addFuel(new ItemStack(Material.LOG), 10, 40);
-		fuelItems.addFuel(new ItemStack(Material.LOG_2), 10, 40);
-		fuelItems.addFuel(new ItemStack(Material.WOOD), 5, 20);
-		fuelItems.addFuel(new ItemStack(Material.STICK), 2.5, 20);
+		fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
+		fuelItems.addFuel(new ItemStack(Material.COAL), false, 15, 120);
+		fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), true, 15, 1440);
+		fuelItems.addFuel(new ItemStack(Material.BLAZE_ROD), true, 15, 180);
+		fuelItems.addFuel(new ItemStack(Material.BLAZE_POWDER), true, 22.5, 30);
+		fuelItems.addFuel(new ItemStack(Material.LOG), true, 10, 40);
+		fuelItems.addFuel(new ItemStack(Material.LOG_2), true, 10, 40);
+		fuelItems.addFuel(new ItemStack(Material.WOOD), true, 5, 20);
+		fuelItems.addFuel(new ItemStack(Material.STICK), true, 2.5, 20);
+		fuelItems.addFuel(new ItemStack(Material.FIREBALL), true, 50, 20);
 	}
 	private FuelItems.FuelValues currentFuel;
 
@@ -103,7 +109,7 @@ public class StirlingGenerator extends Generator {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("III", "PCP", "RGR");
 		recipe.setIngredient('I', Material.IRON_INGOT);
 		recipe.setIngredient('P', Material.PISTON_BASE);
@@ -156,7 +162,7 @@ public class StirlingGenerator extends Generator {
 			} else if (getProgress() > 0) {
 				// currently processing....
 				setProgress(getProgress() - 1);
-				setCharge(Math.min(getMaxCharge(), getCharge() + currentFuel.getCharge()));
+				setCharge(getCharge() + currentFuel.getCharge());
 				playActiveParticleEffect();
 				if (getProgress() <= 0) {
 					// fuel burnt
@@ -170,14 +176,27 @@ public class StirlingGenerator extends Generator {
 
 	private void pullItemIntoProcessing(int inputSlot) {
 		ItemStack stack = getInventory().getItem(inputSlot);
-		ItemStack toProcess = stack.clone();
+		FuelItems.FuelValues fv = fuelItems.get(stack);
+		// generator is smart and will attempt to avoid wasting fuel
+		// only burn fuel if the total value won't take us over the max charge limit
+		if (getCharge() + fv.getTotalFuelValue() <= getMaxCharge()) {
+			currentFuel = fv;
+			ItemStack toProcess = makeProcessingItem(currentFuel, stack);
+			setProcessing(toProcess);
+			getProgressMeter().initialize(currentFuel.getBurnTime());
+			setProgress(currentFuel.getBurnTime());
+			stack.setAmount(stack.getAmount() - 1);
+			getInventory().setItem(inputSlot, stack.getAmount() > 0 ? stack : null);
+			updateBlock(false);
+		}
+	}
+
+	private ItemStack makeProcessingItem(FuelItems.FuelValues fuel, ItemStack input) {
+		ItemStack toProcess = input.clone();
 		toProcess.setAmount(1);
-		setProcessing(toProcess);
-		currentFuel = fuelItems.get(toProcess);
-		getProgressCounter().initialize(currentFuel.getBurnTime());
-		setProgress(currentFuel.getBurnTime());
-		stack.setAmount(stack.getAmount() - 1);
-		getInventory().setItem(inputSlot, stack.getAmount() > 0 ? stack : null);
-		updateBlock(false);
+		ItemMeta meta = toProcess.getItemMeta();
+		meta.setLore(Arrays.asList(ChatColor.GRAY.toString() + ChatColor.ITALIC + fuel.toString()));
+		toProcess.setItemMeta(meta);
+		return toProcess;
 	}
 }

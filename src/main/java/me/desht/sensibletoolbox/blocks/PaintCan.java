@@ -34,15 +34,15 @@ public class PaintCan extends BaseSTBBlock {
 	private int paintLevel;
 	private DyeColor colour;
 
+	public PaintCan() {
+		paintLevel = 0;
+		colour = DyeColor.WHITE;
+	}
+
 	public PaintCan(ConfigurationSection conf) {
 		super(conf);
 		setPaintLevel(conf.getInt("paintLevel"));
 		setColour(DyeColor.valueOf(conf.getString("paintColour")));
-	}
-
-	public PaintCan() {
-		paintLevel = 0;
-		colour = DyeColor.WHITE;
 	}
 
 	public static String getMixerTitle() {
@@ -99,7 +99,7 @@ public class PaintCan extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("ISI", "I I", "III");
 		recipe.setIngredient('S', Material.WOOD_STEP);
 		recipe.setIngredient('I', Material.IRON_INGOT);

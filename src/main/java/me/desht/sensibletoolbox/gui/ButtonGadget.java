@@ -21,7 +21,7 @@ public class ButtonGadget extends ClickableGadget {
 	public ButtonGadget(InventoryGUI owner, String text, String[] lore, ItemStack texture, Runnable callback) {
 		super(owner);
 		this.callback = callback;
-		labelTexture = texture == null ? new ItemStack(Material.ENDER_PORTAL) : texture;
+		labelTexture = texture == null ? new ItemStack(Material.ENDER_PORTAL) : texture.clone();
 		ItemMeta meta = labelTexture.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + ChatColor.UNDERLINE.toString() + text);
 		if (lore != null) {

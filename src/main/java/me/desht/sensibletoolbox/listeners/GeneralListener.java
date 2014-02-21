@@ -8,10 +8,14 @@ import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
+import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,10 +31,13 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.material.Lever;
 import org.bukkit.material.Sign;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Iterator;
 
 public class GeneralListener extends STBBaseListener {
+	private static final String LAST_PISTON_EXTEND = "STB_Last_Piston_Extend";
+
 	public GeneralListener(SensibleToolboxPlugin plugin) {
 		super(plugin);
 	}
@@ -55,7 +62,7 @@ public class GeneralListener extends STBBaseListener {
 		ItemStack stack = event.getPlayer().getItemInHand();
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
 		if (item != null) {
-			item.handleEntityInteraction(event);
+			item.onInteractEntity(event);
 		}
 	}
 
@@ -94,6 +101,7 @@ public class GeneralListener extends STBBaseListener {
 		if (item instanceof BaseSTBBlock) {
 			((BaseSTBBlock) item).onBlockPlace(event);
 		} else if (item != null) {
+			// prevent placing of non-block STB items, even if they use a block material (e.g. bag of holding)
 			event.setCancelled(true);
 		}
 	}
@@ -110,13 +118,17 @@ public class GeneralListener extends STBBaseListener {
 		if (EnergyNetManager.isCable(event.getBlock())) {
 			EnergyNetManager.onCableRemoved(event.getBlock());
 		} else {
+			boolean isCancelled = event.isCancelled();
+			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getPlayer().getItemInHand());
+			if (item != null) {
+				item.onBreakBlockWithItem(event);
+			}
 			BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
 			if (stb != null) {
-				boolean isCancelled = event.isCancelled();
 				stb.onBlockBreak(event);
-				if (event.isCancelled() != isCancelled) {
-					throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
-				}
+			}
+			if (event.isCancelled() != isCancelled) {
+				throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
 			}
 		}
 	}
@@ -178,7 +190,7 @@ public class GeneralListener extends STBBaseListener {
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
 		Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
 
-		// prevent STB items being used in vanilla crafting recipes
+		// prevent STB items being used where the vanilla material is expected
 		// (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)
 		for (ItemStack ingredient : event.getInventory().getMatrix()) {
 			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(ingredient);
@@ -214,15 +226,10 @@ public class GeneralListener extends STBBaseListener {
 		Block b = event.getBlock();
 		Furnace f = (Furnace) b.getState();
 		ItemStack stack = f.getInventory().getSmelting();
-		Class<? extends BaseSTBItem> klass = BaseSTBItem.getCustomSmelt(stack.getType());
-		if (klass != null) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
-			if (!klass.isInstance(item)) {
-				Debugger.getInstance().debug("stopped smelting of vanilla item: " + stack);
-				b.getLocation().getWorld().dropItemNaturally(b.getLocation(), stack);
-				f.getInventory().setSmelting(null);
-				event.setCancelled(true);
-			}
+		if (!CustomRecipeManager.validateCustomSmelt(stack)) {
+			b.getLocation().getWorld().dropItemNaturally(b.getLocation(), stack);
+			f.getInventory().setSmelting(null);
+			event.setCancelled(true);
 		}
 	}
 
@@ -291,6 +298,70 @@ public class GeneralListener extends STBBaseListener {
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
 		if (item != null && !item.isEnchantable()) {
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onPistonExtend(BlockPistonExtendEvent event) {
+
+		// work around CB bug where event is called multiple times for a block
+		Long when = (Long) STBUtil.getMetadataValue(event.getBlock(), LAST_PISTON_EXTEND);
+		long now = System.currentTimeMillis();
+		if (when != null && now - when < 50) {  // 50 ms = 1 tick
+			return;
+		}
+		event.getBlock().setMetadata(LAST_PISTON_EXTEND, new FixedMetadataValue(plugin, now));
+
+		LOOP: for (int i = event.getLength(); i > 0; i--) {
+			final Block moving = event.getBlock().getRelative(event.getDirection(), i);
+			final Block to = moving.getRelative(event.getDirection());
+			final BaseSTBBlock stb = LocationManager.getManager().get(moving.getLocation());
+			if (stb != null) {
+				switch (stb.getPistonMoveReaction()) {
+					case MOVE:
+						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+							@Override
+							public void run() {
+								LocationManager.getManager().moveBlock(stb, moving.getLocation(), to.getLocation());
+							}
+						});
+
+						break;
+					case BLOCK:
+						event.setCancelled(true);
+						break LOOP; // if this one blocks, all subsequent blocks do too
+					case BREAK:
+						// TODO
+						break;
+				}
+			}
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onPistonRetract(final BlockPistonRetractEvent event) {
+		if (event.isSticky()) {
+			final BaseSTBBlock stb = LocationManager.getManager().get(event.getRetractLocation());
+			if (stb != null) {
+				switch (stb.getPistonMoveReaction()) {
+					case MOVE:
+						BlockFace dir = event.getDirection().getOppositeFace();
+						final Location to = event.getRetractLocation().add(dir.getModX(), dir.getModY(), dir.getModZ());
+						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+							@Override
+							public void run() {
+								LocationManager.getManager().moveBlock(stb, event.getRetractLocation(), to);
+							}
+						});
+						break;
+					case BLOCK:
+						event.setCancelled(true);
+						break;
+					case BREAK:
+						// TODO
+						break;
+				}
+			}
 		}
 	}
 }

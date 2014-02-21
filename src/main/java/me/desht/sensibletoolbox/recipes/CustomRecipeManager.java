@@ -1,6 +1,8 @@
 package me.desht.sensibletoolbox.recipes;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -26,10 +28,10 @@ public class CustomRecipeManager {
 	}
 
 	public void addCustomRecipe(CustomRecipe recipe) {
-		if (!map.containsKey(recipe.getItemId())) {
-			map.put(recipe.getItemId(), new CustomRecipeCollection());
+		if (!map.containsKey(recipe.getProcessorID())) {
+			map.put(recipe.getProcessorID(), new CustomRecipeCollection());
 		}
-		CustomRecipeCollection collection = map.get(recipe.getItemId());
+		CustomRecipeCollection collection = map.get(recipe.getProcessorID());
 		collection.addCustomRecipe(recipe);
 
 		ItemStack result = makeSingle(recipe.getResult());
@@ -45,12 +47,12 @@ public class CustomRecipeManager {
 	}
 
 	public ProcessingResult getRecipe(BaseSTBMachine machine, ItemStack ingredient) {
-		CustomRecipeCollection collection = map.get(machine.getItemID());
+		CustomRecipeCollection collection = map.get(machine.getItemTypeID());
 		return collection == null ? null : collection.get(makeSingle(ingredient));
 	}
 
 	public boolean hasRecipe(BaseSTBMachine machine, ItemStack item) {
-		return map.containsKey(machine.getItemID()) && map.get(machine.getItemID()).hasRecipe(item);
+		return map.containsKey(machine.getItemTypeID()) && map.get(machine.getItemTypeID()).hasRecipe(item);
 	}
 
 	public Set<ItemStack> getAllResults() {
@@ -65,5 +67,25 @@ public class CustomRecipeManager {
 			stack2.setAmount(1);
 			return stack2;
 		}
+	}
+
+	/**
+	 * Validate that the given item stack is actually smeltable via a custom STB smelting recipe.
+	 * E.g. this will prevent the smelting of plain gunpowder as if it were Iron Dust, even though
+	 * Iron Dust uses gunpowder for its material representation.
+	 *
+	 * @param stack the stack to check
+	 * @return true if this item is smeltable
+	 */
+	public static boolean validateCustomSmelt(ItemStack stack) {
+		Class<? extends BaseSTBItem> klass = BaseSTBItem.getCustomSmelt(stack);
+		if (klass != null) {
+			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+			if (!klass.isInstance(item)) {
+				Debugger.getInstance().debug("stopped smelting of vanilla item: " + stack);
+				return false;
+			}
+		}
+		return true;
 	}
 }

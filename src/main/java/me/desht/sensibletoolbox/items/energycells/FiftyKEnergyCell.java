@@ -38,24 +38,14 @@ public class FiftyKEnergyCell extends EnergyCell {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
-		ItemStack stack = new ItemStack(Material.LEATHER_HELMET, 1, Material.LEATHER_HELMET.getMaxDurability());
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+		TenKEnergyCell cell = new TenKEnergyCell();
+		cell.setCharge(0.0);
+		registerCustomIngredients(cell);
 		recipe.shape("III", "CCC", "GIG");
 		recipe.setIngredient('I', Material.IRON_INGOT);
-		recipe.setIngredient('C', stack.getData()); // in fact, a 10k energy cell
+		recipe.setIngredient('C', cell.toItemStack().getData());
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;
-	}
-
-	@Override
-	public boolean isIngredientFor(ItemStack result) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
-		System.out.println("50k energy cell ingredient for " + item + " ?");
-		return item != null && item instanceof FiftyKBatteryBox;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.LEATHER_HELMET ? TenKEnergyCell.class : null;
 	}
 }

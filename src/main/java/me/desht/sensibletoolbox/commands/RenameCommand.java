@@ -37,7 +37,7 @@ public class RenameCommand extends AbstractCommand {
 		}
 
 		el.setAnimalName(args[0]);
-		player.setItemInHand(el.toItemStack(1));
+		player.setItemInHand(el.toItemStack());
 
 		MiscUtil.statusMessage(player, "Ender Leash animal renamed: " + ChatColor.GOLD + args[0]);
 

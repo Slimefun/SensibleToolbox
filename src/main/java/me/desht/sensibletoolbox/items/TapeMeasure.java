@@ -67,7 +67,7 @@ public class TapeMeasure extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("SSS", "SIS", "SSS");
 		recipe.setIngredient('S', Material.STRING);
 		recipe.setIngredient('I', Material.IRON_INGOT);
@@ -79,7 +79,7 @@ public class TapeMeasure extends BaseSTBItem {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (event.getPlayer().isSneaking()) {
 				setAnchor(event.getClickedBlock());
-				event.getPlayer().setItemInHand(toItemStack(1));
+				event.getPlayer().setItemInHand(toItemStack());
 				MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point set.");
 			} else {
 				makeMeasurement(event.getPlayer(), event.getClickedBlock());
@@ -87,7 +87,7 @@ public class TapeMeasure extends BaseSTBItem {
 			event.getPlayer().updateInventory();
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			setAnchor(null);
-			event.getPlayer().setItemInHand(toItemStack(1));
+			event.getPlayer().setItemInHand(toItemStack());
 			MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point cleared.");
 		}
 		event.setCancelled(true);

@@ -39,15 +39,11 @@ public class ReceiverModule extends ItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		registerCustomIngredients(new BlankModule());
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
 		recipe.addIngredient(Material.PAPER); // in fact a Blank Module
 		recipe.addIngredient(Material.TRAP_DOOR);
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.PAPER ? BlankModule.class : null;
 	}
 
 	@Override

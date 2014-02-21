@@ -4,10 +4,10 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.GoldDust;
 import me.desht.sensibletoolbox.items.IronDust;
+import me.desht.sensibletoolbox.items.components.MachineFrame;
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
-import me.desht.sensibletoolbox.recipes.CustomRecipeCollection;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
-import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -32,7 +32,6 @@ public class Masher extends AbstractIOMachine {
 	@Override
 	public void addCustomRecipes(CustomRecipeManager crm) {
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
-		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
 		Dye white = new Dye();
 		white.setColor(DyeColor.WHITE);
@@ -44,6 +43,7 @@ public class Masher extends AbstractIOMachine {
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.IRON_ORE), new IronDust().toItemStack(2), 120));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
 	}
 
 	@Override
@@ -63,11 +63,14 @@ public class Masher extends AbstractIOMachine {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		SimpleCircuit sc = new SimpleCircuit();
+		MachineFrame mf = new MachineFrame();
+		registerCustomIngredients(sc, mf);
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("FFF", "SIS", "RGR");
 		recipe.setIngredient('F', Material.FLINT);
-		recipe.setIngredient('S', Material.STONE);
-		recipe.setIngredient('I', Material.IRON_BLOCK);
+		recipe.setIngredient('S', sc.getMaterialData());
+		recipe.setIngredient('I', mf.getMaterialData());
 		recipe.setIngredient('R' ,Material.REDSTONE);
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;

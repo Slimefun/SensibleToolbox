@@ -170,7 +170,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new GeneralListener(this), this);
 		pm.registerEvents(new WorldListener(this), this);
 		pm.registerEvents(new BagOfHoldingListener(this), this);
-		pm.registerEvents(new CombineHoeListener(this), this);
+//		pm.registerEvents(new CombineHoeListener(this), this);
 		pm.registerEvents(new TrashCanListener(this), this);
 		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
@@ -206,7 +206,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		cmds.registerCommand(new DebugCommand());
 		cmds.registerCommand(new ParticleCommand());
 		cmds.registerCommand(new SoundCommand());
-		cmds.registerCommand(new SearchCommand());
+		cmds.registerCommand(new RecipeCommand());
 	}
 
 	@Override

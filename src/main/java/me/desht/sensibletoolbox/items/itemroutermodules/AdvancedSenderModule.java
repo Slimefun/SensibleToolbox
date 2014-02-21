@@ -87,16 +87,13 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
-		recipe.addIngredient(new SenderModule().getMaterialData());
+		SenderModule sm = new SenderModule();
+		registerCustomIngredients(sm);
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+		recipe.addIngredient(sm.getMaterialData());
 		recipe.addIngredient(Material.EYE_OF_ENDER);
 		recipe.addIngredient(Material.DIAMOND);
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.INK_SACK ? SenderModule.class : null;
 	}
 
 	@Override

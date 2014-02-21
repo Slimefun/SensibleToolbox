@@ -5,7 +5,6 @@ import me.desht.sensibletoolbox.gui.ProgressMeter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -16,7 +15,6 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 	private double progress; // ticks remaining till this work cycle is done
 	private int progressCounterId;
 	private ItemStack processing;
-	private String frozenProcessing;
 
 	protected AbstractProcessingMachine() {
 		super();
@@ -24,18 +22,6 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 
 	public AbstractProcessingMachine(ConfigurationSection conf) {
 		super(conf);
-		progress = conf.getDouble("progress");
-		frozenProcessing = conf.getString("processing", "");
-	}
-
-	@Override
-	public YamlConfiguration freeze() {
-		YamlConfiguration conf = super.freeze();
-		conf.set("progress", getProgress());
-		if (getProgress() > 0) {
-			conf.set("processing", getGUI().freezeSlots(getProgressItemSlot()));
-		}
-		return conf;
 	}
 
 	public abstract int getProgressItemSlot();
@@ -51,7 +37,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 
 	public void setProgress(double progress) {
 		this.progress = Math.max(0, progress);
-		getProgressCounter().repaintNeeded();
+		getProgressMeter().repaintNeeded();
 	}
 
 	@Override
@@ -61,22 +47,21 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 
 	public void setProcessing(ItemStack processing) {
 		this.processing = processing;
-		getProgressCounter().repaintNeeded();
+		getProgressMeter().repaintNeeded();
 	}
 
-	protected ProgressMeter getProgressCounter() {
+	protected ProgressMeter getProgressMeter() {
 		return (ProgressMeter) getGUI().getMonitor(progressCounterId);
 	}
 
 	@Override
 	public void setLocation(Location loc) {
 		if (loc == null && getProcessing() != null) {
-			loc.getWorld().dropItemNaturally(loc, getProcessing());
+			// any item being processed is lost, hard luck!
 			setProcessing(null);
 		}
 		super.setLocation(loc);
 		if (loc != null) {
-			getGUI().thawSlots(frozenProcessing, getProgressItemSlot());
 			progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
 		}
 	}
@@ -84,7 +69,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 	@Override
 	public void onServerTick() {
 		if (getTicksLived() % PROGRESS_INTERVAL == 0 && isRedstoneActive() && getGUI().getViewers().size() > 0) {
-			getProgressCounter().doRepaint();
+			getProgressMeter().doRepaint();
 		}
 		super.onServerTick();
 	}

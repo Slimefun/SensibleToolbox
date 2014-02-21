@@ -50,15 +50,11 @@ public class SenderModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		registerCustomIngredients(new BlankModule());
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
 		recipe.addIngredient(Material.PAPER); // in fact, a Blank Module
 		recipe.addIngredient(Material.ARROW);
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.PAPER ? BlankModule.class : null;
 	}
 
 	@Override
@@ -168,9 +164,4 @@ public class SenderModule extends DirectionalItemRouterModule {
 		return false;
 	}
 
-	@Override
-	public boolean isIngredientFor(ItemStack result) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
-		return item instanceof AdvancedSenderModule;
-	}
 }

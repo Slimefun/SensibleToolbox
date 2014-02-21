@@ -41,10 +41,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	private BlockFace autoEjectDirection;
 	private boolean needToProcessUpgrades;
 	private int chargeMeterId;
-	private String frozenInput, frozenOutput; //, frozenUpgrades;
 	private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
 	private final Map<BlockFace,EnergyNet> energyNets = new HashMap<BlockFace,EnergyNet>();
-
 
 	protected BaseSTBMachine() {
 		super();
@@ -83,8 +81,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			}
 		}
 		needToProcessUpgrades = true;
-		frozenInput = conf.getString("inputSlots");
-		frozenOutput = conf.getString("outputSlots");
 	}
 
 	@Override
@@ -96,7 +92,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		conf.set("chargeDirection", getChargeDirection().toString());
 		List<String> upg = new ArrayList<String>();
 		for (MachineUpgrade upgrade : upgrades) {
-			upg.add(upgrade.getItemID() + "::" + upgrade.getAmount() + "::" + upgrade.freeze().saveToString());
+			upg.add(upgrade.getItemTypeID() + "::" + upgrade.getAmount() + "::" + upgrade.freeze().saveToString());
 		}
 		conf.set("upgrades", upg);
 
@@ -105,7 +101,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			conf.set("outputSlots", getGUI().freezeSlots(getOutputSlots()));
 		}
 		if (installedCell != null) {
-			conf.set("energyCell", installedCell.getItemID());
+			conf.set("energyCell", installedCell.getItemTypeID());
 			conf.set("energyCellCharge", installedCell.getCharge());
 		}
 		return conf;
@@ -171,14 +167,22 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	@Override
 	public void setCharge(double charge) {
+		if (charge == this.charge) {
+			return;
+		}
 		if (charge <= 0 && this.charge > 0 && getLocation() != null) {
 			playOutOfChargeSound();
 		}
-		this.charge = Math.max(0, charge);
+		this.charge = Math.min(getMaxCharge(), Math.max(0, charge));
 		if (getGUI() != null) {
 			getGUI().getMonitor(chargeMeterId).repaintNeeded();
 		}
 		updateBlock(false);
+	}
+
+	@Override
+	public String[] getExtraLore() {
+		return new String[] { STBUtil.getChargeString(this) };
 	}
 
 	protected void playStartupSound() {
@@ -215,8 +219,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			gui.addLabel("Upgrades", getUpgradeLabelSlot(), null);
 		}
 		for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
-//			int amount = upgrades.get(i).getAmount();
-//			upgrades.get(i).setAmount(0);
 			System.out.println(this + " add upgrade " + upgrades.get(i) + " amount = " + upgrades.get(i).getAmount());
 			gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
 		}
@@ -230,7 +232,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		gui.addGadget(new ChargeDirectionGadget(gui), getChargeDirectionSlot());
 		chargeMeterId = gui.addMonitor(new ChargeMeter(gui));
 		if (installedCell != null) {
-			gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(1), true);
+			gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(), true);
 		}
 		return gui;
 	}
@@ -261,7 +263,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	@Override
 	public void onInteractBlock(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
 			getGUI().show(event.getPlayer());
 			event.setCancelled(true);
 		}
@@ -284,9 +286,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		}
 		super.setLocation(loc);
 		if (loc != null) {
-			createGUI();
-			getGUI().thawSlots(frozenInput, getInputSlots());
-			getGUI().thawSlots(frozenOutput, getOutputSlots());
 			EnergyNetManager.onMachinePlaced(this);
 		}
 	}
@@ -469,7 +468,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			EnergyCell cell = BaseSTBItem.getItemFromItemStack(toInsert, EnergyCell.class);
 			if (cell != null) {
 				installEnergyCell(cell);
-				getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack(1));
+				getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack());
 				return 1;
 			}
 		}
@@ -591,7 +590,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			}
 			if (!getInventory().getViewers().isEmpty()) {
 				if (transferred > 0.0) {
-					getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack(1));
+					getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack());
 				}
 				getGUI().getMonitor(chargeMeterId).doRepaint();
 			}
@@ -619,22 +618,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		return toTransfer;
 	}
 
-	/**
-	 * Attach this machine to the given energy net, on the given face.
-	 *
-	 * @param net the energy net to attach to
-	 * @param face the face of the machine block to attach to
-	 */
+	@Override
 	public void attachToEnergyNet(EnergyNet net, BlockFace face) {
 		Debugger.getInstance().debug(this + ": attach to enet " + net.getNetID());
 		energyNets.put(face, net);
 	}
 
-	/**
-	 * Detach this machine from the given energy net.
-	 *
-	 * @param net the net to detach from
-	 */
+	@Override
 	public void detachFromEnergyNet(EnergyNet net) {
 		Iterator<Map.Entry<BlockFace, EnergyNet>> iter = energyNets.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -646,24 +636,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		}
 	}
 
-	/**
-	 * Get an array of all energy nets to which this machine is attached.  Note that a machine
-	 * can be attached to the same energy net on more than one face.
-	 *
-	 * @return the attached energy nets.
-	 */
+	@Override
 	public EnergyNet[] getAttachedEnergyNets() {
 		Set<EnergyNet> nets = new HashSet<EnergyNet>();
 		nets.addAll(energyNets.values());
 		return nets.toArray(new EnergyNet[nets.size()]);
 	}
 
-	/**
-	 * Get the faces on which the given energy net is connected.
-	 *
-	 * @param net the net to look for
-	 * @return a list of blockfaces where this net is connected
-	 */
+	@Override
 	public List<BlockFace> getFacesForNet(EnergyNet net) {
 		List<BlockFace> res = new ArrayList<BlockFace>();
 		for (Map.Entry<BlockFace,EnergyNet> entry : energyNets.entrySet()) {
@@ -673,8 +653,4 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		}
 		return res;
 	}
-
-	public abstract boolean acceptsEnergy(BlockFace face);
-
-	public abstract boolean suppliesEnergy(BlockFace face);
 }

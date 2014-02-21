@@ -65,7 +65,7 @@ public class EjectorUpgrade extends MachineUpgrade {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("IRI", "IBI", "IGI");
 		recipe.setIngredient('I', Material.IRON_FENCE);
 		recipe.setIngredient('R', Material.REDSTONE);

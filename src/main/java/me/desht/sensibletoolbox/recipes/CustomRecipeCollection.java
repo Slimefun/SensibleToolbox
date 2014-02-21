@@ -16,6 +16,7 @@ public class CustomRecipeCollection {
 
 	public void addCustomRecipe(CustomRecipe recipe) {
 		recipes.put(CustomRecipeManager.makeSingle(recipe.getIngredient()), new ProcessingResult(recipe.getResult(), recipe.getProcessingTime()));
+		Debugger.getInstance().debug("added custom recipe: " + recipe.getIngredient() + " -> " + recipe.getResult() + " via " + recipe.getProcessorID());
 	}
 
 	public ProcessingResult get(ItemStack input) {

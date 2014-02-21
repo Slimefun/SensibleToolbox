@@ -34,16 +34,12 @@ public class SpeedModule extends ItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		registerCustomIngredients(new BlankModule());
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
 		recipe.addIngredient(Material.PAPER);
 		recipe.addIngredient(Material.BLAZE_POWDER);
 		recipe.addIngredient(Material.EMERALD);
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.PAPER ? BlankModule.class : null;
 	}
 
 	@Override

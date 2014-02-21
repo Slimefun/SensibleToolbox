@@ -11,16 +11,8 @@ public abstract class MachineUpgrade extends BaseSTBItem {
 	}
 
 	public MachineUpgrade(ConfigurationSection conf) {
-//		amount = conf.getInt("amount", 1);
 	}
-//
-//	@Override
-//	public YamlConfiguration freeze() {
-//		YamlConfiguration conf = super.freeze();
-//		conf.set("amount", amount);
-//		return conf;
-//	}
-//
+
 	public int getAmount() {
 		return amount;
 	}

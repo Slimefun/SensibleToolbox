@@ -74,7 +74,7 @@ public class ShowCommand extends AbstractCommand {
 	private void show(MessagePager pager, World w, String id) {
 		LocationManager mgr = LocationManager.getManager();
 		for (BaseSTBBlock stb : mgr.listBlocks(w, true)) {
-			if (id != null && !id.equalsIgnoreCase(stb.getItemID())) {
+			if (id != null && !id.equalsIgnoreCase(stb.getItemTypeID())) {
 				continue;
 			}
 			String name = stb.getItemName();

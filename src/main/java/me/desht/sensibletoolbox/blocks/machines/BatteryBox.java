@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.gui.EnergyFlowGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -115,6 +116,9 @@ public abstract class BatteryBox extends BaseSTBMachine {
 
 	public void setFlow(BlockFace face, EnergyFlow flow) {
 		energyFlow.put(face, flow);
+		for (EnergyNet net : getAttachedEnergyNets()) {
+			net.findSourcesAndSinks();
+		}
 	}
 
 	@Override

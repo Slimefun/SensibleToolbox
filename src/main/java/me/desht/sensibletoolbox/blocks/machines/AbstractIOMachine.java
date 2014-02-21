@@ -150,7 +150,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			return;
 		}
 		setProcessing(toProcess);
-		getProgressCounter().initialize(recipe.getProcessingTime());
+		getProgressMeter().initialize(recipe.getProcessingTime());
 		setProgress(recipe.getProcessingTime());
 		if (stack.getAmount() > 1) {
 			stack.setAmount(stack.getAmount() - 1);

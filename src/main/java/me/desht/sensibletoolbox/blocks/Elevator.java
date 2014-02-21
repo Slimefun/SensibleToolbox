@@ -54,14 +54,16 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 	@Override
 	public String[] getLore() {
 		return new String[] {
-				"Links to other elevators", " directly above or below",
-				"Press Space to go up", "Press Shift to go down"
+				"Links to other elevators",
+				" directly above or below",
+				"Press Space to go up",
+				"Press Shift to go down"
 		};
 	}
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("WWW", "WPW", "WWW");
 		recipe.setIngredient('W', Material.WOOL);
 		recipe.setIngredient('P', Material.ENDER_PEARL);

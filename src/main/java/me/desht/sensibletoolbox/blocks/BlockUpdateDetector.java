@@ -95,7 +95,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe res = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe res = new ShapedRecipe(toItemStack());
 		res.shape("SRS", "SPS", "STS");
 		res.setIngredient('S', Material.STONE);
 		res.setIngredient('P', Material.PISTON_STICKY_BASE);

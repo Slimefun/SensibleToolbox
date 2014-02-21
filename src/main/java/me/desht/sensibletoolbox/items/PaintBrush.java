@@ -5,6 +5,7 @@ import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.blocks.PaintCan;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.Art;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,6 +14,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -112,7 +114,7 @@ public class PaintBrush extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("R", "S", "S");
 		recipe.setIngredient('R', Material.STRING);
 		recipe.setIngredient('S', Material.STICK);
@@ -128,11 +130,10 @@ public class PaintBrush extends BaseSTBItem {
 		Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
-			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
 			PaintCan can = LocationManager.getManager().get(b.getLocation(), PaintCan.class);
 			if (can != null) {
 				refillFromCan(can);
-				player.setItemInHand(this.toItemStack(1));
+				player.setItemInHand(this.toItemStack());
 				event.setCancelled(true);
 			} else if ((STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.THIN_GLASS)
 					&& getBlockColour(b) != getColour() && getPaintLevel() > 0) {
@@ -145,12 +146,12 @@ public class PaintBrush extends BaseSTBItem {
 					Block[] blocks = findBlocksAround(b);
 					paintBlocks(blocks);
 				}
-				player.setItemInHand(toItemStack(1));
+				player.setItemInHand(toItemStack());
 				event.setCancelled(true);
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
 			setPaintLevel(0);
-			player.setItemInHand(toItemStack(1));
+			player.setItemInHand(toItemStack());
 		}
 	}
 
@@ -176,14 +177,40 @@ public class PaintBrush extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleEntityInteraction(PlayerInteractEntityEvent event) {
+	public void onInteractEntity(PlayerInteractEntityEvent event) {
+		event.setCancelled(true);
+		if (getPaintLevel() <= 0) {
+			return;
+		}
+		boolean painted = false;
 		Entity e = event.getRightClicked();
-		if (e instanceof Colorable && this.getPaintLevel() > 0) {
-			((Colorable) e).setColor(this.getColour());
-			this.setPaintLevel(this.getPaintLevel() - 1);
-			event.getPlayer().setItemInHand(toItemStack(1));
+		if (e instanceof Colorable) {
+			((Colorable) e).setColor(getColour());
+			painted = true;
+		} else if (e instanceof Painting) {
+			Painting painting = (Painting) e;
+			Art art = findNextArtwork(painting);
+			painting.setArt(art);
+			painted = true;
+		}
+		if (painted) {
+			setPaintLevel(getPaintLevel() - 1);
+			event.getPlayer().setItemInHand(toItemStack());
 			event.getPlayer().playSound(e.getLocation(), Sound.SPLASH2, 1.0f, 1.5f);
 		}
+	}
+
+	private Art findNextArtwork(Painting painting) {
+		Art current = painting.getArt();
+		int i = (current.ordinal() + 1) % Art.values().length;
+		while (i != current.ordinal()) {
+			Art a = Art.values()[i];
+			if (a.getBlockHeight() == current.getBlockHeight() && a.getBlockWidth() == current.getBlockWidth()) {
+				return a;
+			}
+			i = (i + 1) % Art.values().length;
+		}
+		return current;
 	}
 
 	private Block[] findBlocksAround(Block b) {

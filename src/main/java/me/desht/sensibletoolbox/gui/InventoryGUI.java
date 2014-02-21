@@ -100,7 +100,7 @@ public class InventoryGUI {
 		return res;
 	}
 
-	private static void setDisplayName(ItemStack stack, String disp) {
+	public static void setDisplayName(ItemStack stack, String disp) {
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName(disp);
 		stack.setItemMeta(meta);

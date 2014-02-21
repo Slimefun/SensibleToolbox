@@ -10,28 +10,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Wool;
 
-public interface STBMachine extends Chargeable, STBInventoryHolder {
+public interface STBMachine extends ChargeableBlock, STBInventoryHolder {
 	/**
 	 * Check if the machine is jammed; if it has work to do, but no space in its output slot(s).
 	 *
 	 * @return true if the machine is jammed
 	 */
 	public boolean isJammed();
-//
-//	/**
-//	 * Get this machine's current redstone behaviour; how it acts in the presences or absence of
-//	 * a redstone signal.
-//	 *
-//	 * @return the machine's redstone behaviour
-//	 */
-//	public RedstoneBehaviour getRedstoneBehaviour();
-//
-//	/**
-//	 * Get this machine's access control; who is allowed to open the GUI.
-//	 *
-//	 * @return the machine's access control
-//	 */
-//	public AccessControl getAccessControl();
 
 	/**
 	 * Check if the given item would be accepted as input to this machine.  By default, every item type
@@ -66,8 +51,25 @@ public interface STBMachine extends Chargeable, STBInventoryHolder {
 	 */
 	public boolean isUpgradeSlot(int slot);
 
+	/**
+	 * Get the charge direction for any energy cell that may be installed in this machine.
+	 *
+	 * @return the current charge direction
+	 */
 	public ChargeDirection getChargeDirection();
+
+	/**
+	 * Set the charge direction for any energy cell that may be installed in this machine.
+	 *
+	 * @param chargeDirection the new charge direction
+	 */
 	public void setChargeDirection(ChargeDirection chargeDirection);
+
+	/**
+	 * Get the slot number in the machine's GUI where a charge meter may be shown.
+	 *
+	 * @return a slot number
+	 */
 	public int getChargeMeterSlot();
 
 	/**
@@ -79,7 +81,7 @@ public interface STBMachine extends Chargeable, STBInventoryHolder {
 		private final Material material;
 		private final String label;
 
-		ChargeDirection(Material material, String label) {
+		private ChargeDirection(Material material, String label) {
 			this.label = label;
 			this.material = material;
 		}

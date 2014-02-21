@@ -100,7 +100,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("WWW", "WNW", "WWW");
 		recipe.setIngredient('W', Material.WOOL);
 		recipe.setIngredient('N', Material.NOTE_BLOCK);

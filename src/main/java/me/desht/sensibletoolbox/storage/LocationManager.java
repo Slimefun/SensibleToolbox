@@ -7,13 +7,14 @@ import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,7 +33,6 @@ public class LocationManager {
 	private final STBWorldMap worldMap;
 	private final Map<String, Set<ChunkCoords>> dirtyChunks;
 	private final File saveDir;
-	private final Set<String> unloadedWorlds = new HashSet<String>();
 	private final Map<String, Map<PersistableLocation,ConfigurationSection>> deferredBlocks =
 			new HashMap<String, Map<PersistableLocation, ConfigurationSection>>();
 	private boolean saveNeeded = false;
@@ -40,12 +40,14 @@ public class LocationManager {
 	private final Map<String,Set<BaseSTBBlock>> tickers = new HashMap<String,Set<BaseSTBBlock>>();
 	private long totalTicks;
 	private long totalTime;
+	private final SensibleToolboxPlugin plugin;
 
-	private LocationManager() {
+	private LocationManager(SensibleToolboxPlugin plugin) {
+		this.plugin = plugin;
 		lastSave = System.currentTimeMillis();
 		worldMap = new STBWorldMap();
 		dirtyChunks = new HashMap<String, Set<ChunkCoords>>();
-		saveDir = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), "blocks");
+		saveDir = new File(plugin.getDataFolder(), "blocks");
 		if (!saveDir.exists()) {
 			if (!saveDir.mkdir()) {
 				LogUtils.severe("can't create directory" + saveDir);
@@ -55,7 +57,7 @@ public class LocationManager {
 
 	public static synchronized LocationManager getManager() {
 		if (instance == null) {
-			instance = new LocationManager();
+			instance = new LocationManager(SensibleToolboxPlugin.getInstance());
 		}
 		return instance;
 	}
@@ -88,24 +90,25 @@ public class LocationManager {
 
 	public void registerLocation(Location loc, BaseSTBBlock stb) {
 		BaseSTBBlock stb2 = get(loc);
-		if (stb2 == null) {
-			String worldName = loc.getWorld().getName();
-			Chunk chunk = loc.getChunk();
-			BlockPosition pos = new BlockPosition(loc);
-			stb.setLocation(loc);
-			worldMap.get(worldName).get(chunk).put(pos, stb);
-			markChunkDirty(worldName, pos);
-			if (stb.shouldTick()) {
-				addTicker(stb);
-			}
-			Debugger.getInstance().debug("Registered " + stb + " @ " + loc);
-		} else {
+		if (stb2 != null) {
 			LogUtils.warning("Attempt to register duplicate STB block " + stb + " @ " + loc + " - existing block " + stb2);
+			return;
 		}
+
+		String worldName = loc.getWorld().getName();
+		Chunk chunk = loc.getChunk();
+		BlockPosition pos = new BlockPosition(loc);
+		stb.setLocation(loc);
+		worldMap.get(worldName).get(chunk).put(pos, stb);
+		loc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
+		markChunkDirty(worldName, pos);
+		if (stb.shouldTick()) {
+			addTicker(stb);
+		}
+		Debugger.getInstance().debug("Registered " + stb + " @ " + loc);
 	}
 
 	public void updateLocation(Location loc) {
-//		System.out.println("location " + loc + " updated");
 		String worldName = loc.getWorld().getName();
 		BlockPosition pos = new BlockPosition(loc);
 		markChunkDirty(worldName, pos);
@@ -122,11 +125,44 @@ public class LocationManager {
 			BlockPosition pos = new BlockPosition(loc);
 			Chunk chunk = loc.getChunk();
 			worldMap.get(worldName).get(chunk).remove(pos);
+			loc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
 			markChunkDirty(worldName, pos);
 			Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
 		} else {
 			LogUtils.warning("Attempt to unregister non-existent STB block @ " + loc);
 		}
+	}
+
+	/**
+	 * Move an existing STB block to a new location.  Note that this method doesn't do any
+	 * redrawing of blocks.
+	 *
+	 * @param oldLoc the STB block's old location
+	 * @param newLoc the STB block's new location
+	 */
+	public void moveBlock(BaseSTBBlock stb, Location oldLoc, Location newLoc) {
+		if (stb.shouldTick()) {
+			removeTicker(stb);
+		}
+
+		stb.moveTo(oldLoc, newLoc);
+
+		if (stb.shouldTick()) {
+			addTicker(stb);
+		}
+
+		oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
+		newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
+
+		BlockPosition oldPos = new BlockPosition(oldLoc);
+		worldMap.get(oldLoc.getWorld().getName()).get(oldLoc.getChunk()).remove(oldPos);
+		markChunkDirty(oldLoc.getWorld().getName(), oldPos);
+
+		BlockPosition newPos = new BlockPosition(newLoc);
+		worldMap.get(newLoc.getWorld().getName()).get(newLoc.getChunk()).put(newPos, stb);
+		markChunkDirty(newLoc.getWorld().getName(), newPos);
+
+		Debugger.getInstance().debug("moved " + stb + " from " + oldLoc + " to " + newLoc);
 	}
 
 	/**
@@ -136,22 +172,12 @@ public class LocationManager {
 	 * @return the STB block item at the given location, or null if no matching item
 	 */
 	public BaseSTBBlock get(Location loc) {
-		String worldName = loc.getWorld().getName();
-		Chunk chunk = loc.getChunk();
-		BlockPosition pos = new BlockPosition(loc);
-
-		BaseSTBBlock stb = worldMap.get(worldName).get(chunk).get(pos);
-		if (stb == null) {
-			List<MetadataValue> l = loc.getBlock().getMetadata(BaseSTBBlock.STB_MULTI_BLOCK);
-			for (MetadataValue mv : l) {
-				if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
-					BlockPosition pos2 = (BlockPosition) mv.value();
-					return worldMap.get(worldName).get(chunk).get(pos2);
-				}
-			}
-			return null;
-		} else {
+		BaseSTBBlock stb = (BaseSTBBlock) STBUtil.getMetadataValue(loc.getBlock(), BaseSTBBlock.STB_BLOCK);
+		if (stb != null) {
 			return stb;
+		} else {
+			// perhaps it's part of a multi-block structure
+			return (BaseSTBBlock) STBUtil.getMetadataValue(loc.getBlock(), BaseSTBBlock.STB_MULTI_BLOCK);
 		}
 	}
 
@@ -232,10 +258,9 @@ public class LocationManager {
 			World world = Bukkit.getWorld(worldName);
 			if (world != null) {
 				load(world);
-			} else {
-				// defer loading
-				unloadedWorlds.add(worldName);
 			}
+			// if the world is not found, no problem; data can be loaded later if & when the
+			// world gets loaded
 		}
 	}
 
@@ -311,9 +336,9 @@ public class LocationManager {
 	 * @param world the world that has been unloaded
 	 */
 	public void worldUnloaded(World world) {
+		save();
 		String worldName = world.getName();
 		worldMap.remove(worldName);
-		unloadedWorlds.add(worldName);
 	}
 
 	/**
@@ -323,7 +348,6 @@ public class LocationManager {
 	 */
 	public void worldLoaded(World world) {
 		load(world);
-		unloadedWorlds.remove(world.getName());
 	}
 
 	private void markChunkDirty(String worldName, BlockPosition pos) {

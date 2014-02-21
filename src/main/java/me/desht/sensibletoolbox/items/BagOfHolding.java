@@ -9,6 +9,8 @@ import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -29,6 +31,13 @@ public class BagOfHolding extends BaseSTBBlock {
 	public static final String BAG_SAVE_DIR = "bagofholding";
 	public static final int BAG_SIZE = 54;
 
+	public BagOfHolding() {
+	}
+
+	public BagOfHolding(ConfigurationSection conf) {
+		super(conf);
+	}
+
 	@Override
 	public MaterialData getMaterialData() {
 		return md;
@@ -46,7 +55,7 @@ public class BagOfHolding extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("WGW", "GCG", "WBW");
 		recipe.setIngredient('W', Material.WOOL);
 		recipe.setIngredient('G', Material.GOLD_INGOT);
@@ -82,12 +91,6 @@ public class BagOfHolding extends BaseSTBBlock {
 			}
 		}
 	}
-
-//	@Override
-//	public void onBlockPlace(BlockPlaceEvent event) {
-//		// the bag is not placeable in the world
-//		event.setCancelled(true);
-//	}
 
 	public String getInventoryTitle() {
 		return ChatColor.GOLD + getItemName();

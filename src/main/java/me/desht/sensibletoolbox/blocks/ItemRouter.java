@@ -83,7 +83,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 		YamlConfiguration conf = super.freeze();
 		List<String> mods = new ArrayList<String>();
 		for (ItemRouterModule module : modules) {
-			mods.add(module.getItemID() + "::" + module.freeze().saveToString());
+			mods.add(module.getItemTypeID() + "::" + module.freeze().saveToString());
 		}
 		conf.set("modules", mods);
 		Inventory inv = Bukkit.createInventory(null, 9);
@@ -110,8 +110,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	public String[] getLore() {
 		return new String[] {
 				"Routes items.  Insert one or",
-				"more Routing Modules.",
-				"R-click:" + ChatColor.RESET + " open module GUI"
+				"more Routing Modules to activate.",
+				"R-click block:" + ChatColor.RESET + " configure router"
 		};
 	}
 

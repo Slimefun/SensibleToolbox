@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -22,6 +23,12 @@ import java.util.List;
 
 public class MoistureChecker extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.GHAST_TEAR);
+
+	public MoistureChecker() {
+	}
+
+	public MoistureChecker(ConfigurationSection conf) {
+	}
 
 	@Override
 	public MaterialData getMaterialData() {
@@ -41,7 +48,7 @@ public class MoistureChecker extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("S", "D", "I");
 		recipe.setIngredient('S', Material.SIGN);
 		recipe.setIngredient('D', Material.DIODE);
@@ -52,12 +59,6 @@ public class MoistureChecker extends BaseSTBItem {
 	@Override
 	public boolean hasGlow() {
 		return true;
-	}
-
-	@Override
-	public boolean isIngredientFor(ItemStack result) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
-		return item != null && item instanceof AdvancedMoistureChecker;
 	}
 
 	protected int getRadius() {

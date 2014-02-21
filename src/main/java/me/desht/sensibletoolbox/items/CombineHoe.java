@@ -1,9 +1,11 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -12,13 +14,23 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+
 public abstract class CombineHoe extends BaseSTBItem {
 	private Material seedType;
 	private int seedAmount;
+	private InventoryGUI gui;
+
+	public static String getInventoryTitle() {
+		return ChatColor.DARK_GREEN + "Seed Bag";
+	}
 
 	public CombineHoe(ConfigurationSection conf) {
 		setSeedAmount(conf.getInt("amount"));
@@ -62,10 +74,11 @@ public abstract class CombineHoe extends BaseSTBItem {
 	@Override
 	public String[] getLore() {
 		return new String[] {
-				"Right-click dirt/grass: till 3x3 area",
-				"Left-click plants: harvest 3x3 area",
-				"Right-click soil: sow 3x3 area from seed bag",
-				"Right-click air: open seed bag"
+				"Right-click dirt/grass:" + ChatColor.RESET + " till 3x3 area",
+				"Right-click soil:" + ChatColor.RESET + " sow 3x3 area",
+				"Right-click other:" + ChatColor.RESET + " open seed bag",
+				"Left-click plants:" + ChatColor.RESET + " harvest 3x3 area",
+				"Left-click leaves:" + ChatColor.RESET + " break 3x3x3 area",
 		};
 	}
 
@@ -91,23 +104,122 @@ public abstract class CombineHoe extends BaseSTBItem {
 			if (b.getType() == Material.SOIL) {
 				plantSeeds(event.getPlayer(), b);
 				event.setCancelled(true);
+				return;
 			} else if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
 				tillSoil(event.getPlayer(), b);
 				event.setCancelled(true);
+				return;
 			}
-		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			if (STBUtil.isPlant(b.getType())) {
-				harvestPlants(event.getPlayer(), b);
-				event.setCancelled(true);
+		}
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			gui = new InventoryGUI(event.getPlayer(), this, 9, getInventoryTitle());
+			for (int i = 0; i < gui.getInventory().getSize(); i++) {
+				gui.setSlotType(i, InventoryGUI.SlotType.ITEM);
 			}
-		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-			Inventory inv = Bukkit.createInventory(event.getPlayer(), 9, getInventoryTitle());
-			populateSeedBag(inv);
-			event.getPlayer().openInventory(inv);
+			populateSeedBag(gui);
+			gui.show(event.getPlayer());
 		}
 	}
 
-	private void populateSeedBag(Inventory inv) {
+	@Override
+	public void onBreakBlockWithItem(BlockBreakEvent event) {
+		Block b = event.getBlock();
+		Player player = event.getPlayer();
+		if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
+			System.out.println("harvest leaves with hoe");
+			harvestLayer(player, b);
+			if (!player.isSneaking()) {
+				harvestLayer(player, b.getRelative(BlockFace.UP));
+				harvestLayer(player, b.getRelative(BlockFace.DOWN));
+			}
+			damageHeldItem(player, (short) 1);
+		} else if (STBUtil.isPlant(b.getType())) {
+			harvestLayer(player, b);
+			damageHeldItem(player, (short) 1);
+		}
+	}
+
+	private boolean verifyUnique(Inventory inv, ItemStack stack, int exclude) {
+		for (int i = 0; i < inv.getSize(); i++) {
+			if (i != exclude && inv.getItem(i) != null && inv.getItem(i).getType() != stack.getType()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		if (onCursor.getType() != Material.AIR && STBUtil.getCropType(onCursor.getType()) == null) {
+			return false;
+		} else if (!verifyUnique(gui.getInventory(), onCursor, slot)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return true;
+	}
+
+	@Override
+	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+		if (STBUtil.getCropType(toInsert.getType()) == null) {
+			return 0;
+		} else if (!verifyUnique(gui.getInventory(), toInsert, slot)) {
+			return 0;
+		} else {
+			HashMap<Integer,ItemStack> excess = gui.getInventory().addItem(toInsert);
+			int inserted = toInsert.getAmount();
+			for (ItemStack stack : excess.values()) {
+				inserted -= stack.getAmount();
+			}
+			return inserted;
+		}
+	}
+
+	@Override
+	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+		return true;
+	}
+
+	@Override
+	public boolean onClickOutside() {
+		return false;
+	}
+
+	public void onGUIClosed(InventoryCloseEvent event) {
+		Material seedType = null;
+		int count = 0;
+		String err = null;
+		Player player = (Player) event.getPlayer();
+		for (int i = 0; i < gui.getInventory().getSize(); i++) {
+			ItemStack stack = gui.getInventory().getItem(i);
+			if (stack != null) {
+				if (seedType != null && seedType != stack.getType()) {
+					player.getWorld().dropItemNaturally(player.getLocation(), stack);
+					err = "Mixed items in the seed bag??";
+				} else if (STBUtil.getCropType(stack.getType()) == null) {
+					player.getWorld().dropItemNaturally(player.getLocation(), stack);
+					err = "Non-seed items in the seed bag??";
+				} else {
+					seedType = stack.getType();
+					count += stack.getAmount();
+				}
+			}
+		}
+		if (err != null) {
+			MiscUtil.errorMessage(player, err);
+		}
+		setSeedAmount(count);
+		setSeedType(seedType);
+		player.setItemInHand(toItemStack());
+	}
+
+	private void populateSeedBag(InventoryGUI gui) {
+		Inventory inv = gui.getInventory();
 		if (getSeedType() != null && getSeedAmount() > 0) {
 			int nFullStacks = getSeedAmount() / getSeedType().getMaxStackSize();
 			int remainder = getSeedAmount() % getSeedType().getMaxStackSize();
@@ -118,10 +230,6 @@ public abstract class CombineHoe extends BaseSTBItem {
 				inv.setItem(nFullStacks, new ItemStack(getSeedType(), remainder));
 			}
 		}
-	}
-
-	public static String getInventoryTitle() {
-		return ChatColor.DARK_GREEN + "Seed Bag";
 	}
 
 	private void plantSeeds(Player player, Block b) {
@@ -143,18 +251,16 @@ public abstract class CombineHoe extends BaseSTBItem {
 			}
 		}
 		setSeedAmount(amountLeft);
-		player.setItemInHand(toItemStack(1));
+		player.setItemInHand(toItemStack());
 		player.updateInventory();
-	}
-
-	private void harvestPlants(Player player, Block b) {
-		harvestLayer(player, b);
-		damageHeldItem(player, (short) 1);
 	}
 
 	public void harvestLayer(Player player, Block b) {
 		for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-			if (STBUtil.isPlant(b1.getType())) {
+			System.out.println("harvest layer: check " + b1);
+			if (STBUtil.isPlant(b1.getType()) || b1.getType() == Material.LEAVES || b1.getType() == Material.LEAVES_2) {
+				System.out.println("break the block!");
+				b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
 				b1.breakNaturally();
 			}
 			if (player.isSneaking()) {

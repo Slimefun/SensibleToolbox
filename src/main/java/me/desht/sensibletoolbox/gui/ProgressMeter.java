@@ -35,8 +35,7 @@ public class ProgressMeter extends MonitorGadget {
 				int dur = (max * (int)pm.getProgress()) / maxProcessingTime;
 				stack.setDurability((short)dur);
 				ItemMeta meta = stack.getItemMeta();
-				int percent = (maxProcessingTime - (int)pm.getProgress()) * 100 / maxProcessingTime;
-				meta.setDisplayName("Progress: " + percent + "%");
+				meta.setDisplayName("Progress: " + getProgressPercent() + "%");
 				stack.setItemMeta(meta);
 			} else {
 				stack = InventoryGUI.BG_TEXTURE;
@@ -61,6 +60,11 @@ public class ProgressMeter extends MonitorGadget {
 		} else {
 			return new int[] { progressItemSlot };
 		}
+	}
+
+	public int getProgressPercent() {
+		ProcessingMachine pm = (ProcessingMachine) getOwner();
+		return (maxProcessingTime - (int)pm.getProgress()) * 100 / maxProcessingTime;
 	}
 
 	public void initialize(int processingTime) {

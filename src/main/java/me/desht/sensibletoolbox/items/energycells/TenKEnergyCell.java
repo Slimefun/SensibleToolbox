@@ -38,7 +38,7 @@ public class TenKEnergyCell extends EnergyCell {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("WWW", "WRW", "GWG");
 		recipe.setIngredient('W', Material.WOOD);
 		recipe.setIngredient('R', Material.REDSTONE);
@@ -46,9 +46,4 @@ public class TenKEnergyCell extends EnergyCell {
 		return recipe;
 	}
 
-	@Override
-	public boolean isIngredientFor(ItemStack result) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
-		return item != null && (item instanceof FiftyKEnergyCell || item instanceof BuildersMultiTool);
-	}
 }

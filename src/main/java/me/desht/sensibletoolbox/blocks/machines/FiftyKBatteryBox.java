@@ -33,19 +33,16 @@ public class FiftyKBatteryBox extends BatteryBox {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("GGG", "GCG", "RIR");
-		ItemStack stack = new ItemStack(Material.LEATHER_HELMET, 1, Material.LEATHER_HELMET.getMaxDurability());
+		FiftyKEnergyCell cell = new FiftyKEnergyCell();
+		cell.setCharge(0.0);
+		registerCustomIngredients(cell);
 		recipe.setIngredient('G', Material.GLASS);
-		recipe.setIngredient('C', stack.getData()); // actually a 50k energy cell
+		recipe.setIngredient('C', cell.toItemStack().getData());
 		recipe.setIngredient('R', Material.REDSTONE);
 		recipe.setIngredient('I', Material.GOLD_INGOT);
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.LEATHER_HELMET ? FiftyKEnergyCell.class : null;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -53,7 +54,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(this.toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(this.toItemStack());
 		recipe.shape(" G ", "FOF");
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		recipe.setIngredient('F', Material.FEATHER);
@@ -70,7 +71,6 @@ public class AngelicBlock extends BaseSTBBlock {
 			Location loc = p.getEyeLocation().add(v);
 			Block b = loc.getBlock();
 			if (b.isEmpty()) {
-				LogUtils.fine("placing angelic block...");
 				ItemStack stack = p.getItemInHand();
 				if (stack.getAmount() > 1) {
 					stack.setAmount(stack.getAmount() - 1);
@@ -96,13 +96,18 @@ public class AngelicBlock extends BaseSTBBlock {
 		Player p = event.getPlayer();
 		Block b = event.getBlock();
 		b.setType(Material.AIR);
-		HashMap<Integer,ItemStack> excess = p.getInventory().addItem(this.toItemStack(1));
+		HashMap<Integer,ItemStack> excess = p.getInventory().addItem(this.toItemStack());
 		for (ItemStack stack : excess.values()) {
 			p.getWorld().dropItemNaturally(p.getLocation(), stack);
 		}
 		b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
 		LocationManager.getManager().unregisterLocation(getLocation());
 		event.setCancelled(true);
+	}
+
+	@Override
+	public boolean onEntityExplode(EntityExplodeEvent event) {
+		return false; // immune to explosions
 	}
 
 	@Override

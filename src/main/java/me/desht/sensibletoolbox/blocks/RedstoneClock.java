@@ -25,16 +25,16 @@ public class RedstoneClock extends BaseSTBBlock {
 	private int frequency;
 	private int onDuration;
 
+	public RedstoneClock() {
+		frequency = 20;
+		onDuration = 5;
+		createGUI();
+	}
+
 	public RedstoneClock(ConfigurationSection conf) {
 		super(conf);
 		setFrequency(conf.getInt("frequency"));
 		setOnDuration(conf.getInt("onDuration"));
-		createGUI();
-	}
-
-	public RedstoneClock() {
-		frequency = 20;
-		onDuration = 5;
 		createGUI();
 	}
 
@@ -106,12 +106,17 @@ public class RedstoneClock extends BaseSTBBlock {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "Emits a redstone signal", "R-click: " + ChatColor.RESET + " configure clock" };
+		return new String[] {
+				"Clock-in-a-block",
+				"Emits a redstone signal with",
+				"configurable interval & duration",
+				"R-click block: " + ChatColor.RESET + " configure clock"
+		};
 	}
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe res = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe res = new ShapedRecipe(toItemStack());
 		res.shape("RSR", "STS", "RSR");
 		res.setIngredient('R', Material.REDSTONE);
 		res.setIngredient('S', Material.STONE);

@@ -1,12 +1,19 @@
 package me.desht.sensibletoolbox.items;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.MaterialData;
 
 public class GoldDust extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.GLOWSTONE_DUST);
+
+	public GoldDust() {
+	}
+
+	public GoldDust(ConfigurationSection conf) {
+	}
 
 	@Override
 	public MaterialData getMaterialData() {

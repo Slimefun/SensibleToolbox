@@ -5,11 +5,12 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.AccessControl;
+import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
-import me.desht.sensibletoolbox.gui.STBGUIHolder;
+import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -19,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,12 +31,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.util.ChatPaginator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseSTBBlock extends BaseSTBItem {
+	public static final String STB_BLOCK = "STB_Block";
 	public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
 	private PersistableLocation persistableLocation;
 	private BlockFace facing;
@@ -162,9 +164,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 * @param event the sign change event
 	 * @return true if the sign should be popped off the block
 	 */
-	public boolean onSignChange(SignChangeEvent event) { return false; }
-
-
+	public boolean onSignChange(SignChangeEvent event) {
+		return false;
+	}
 
 	/**
 	 * Called when this STB block has been hit by an explosion.  The default behaviour is to return
@@ -237,19 +239,18 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 			if (persistableLocation != null && !loc.equals(persistableLocation.getLocation())) {
 				throw new IllegalStateException("Attempt to change the location of existing STB block @ " + persistableLocation);
 			}
-			Block origin = loc.getBlock();
 			persistableLocation = new PersistableLocation(loc);
-			BlockPosition pos0 = new BlockPosition(origin.getLocation());
 			for (RelativePosition pos : getBlockStructure()) {
-				Block b1 = getMultiBlock(pos);
+				Block b1 = getMultiBlock(loc, pos);
 				Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + b1);
-				b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), pos0));
+				b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
 			}
 			setGUI(createGUI());
 		} else {
 			if (persistableLocation != null) {
+				Location l = getLocation();
 				for (RelativePosition pos : getBlockStructure()) {
-					Block b1 = getMultiBlock(pos);
+					Block b1 = getMultiBlock(l, pos);
 					b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
 				}
 			}
@@ -258,11 +259,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		}
 	}
 
-	protected Block getMultiBlock(RelativePosition pos) {
-		if (getLocation() == null) {
-			return null;
-		}
-		Block b = getLocation().getBlock();
+	private Block getMultiBlock(Location loc, RelativePosition pos) {
+		Block b = loc.getBlock();
 		int dx = 0, dz = 0;
 		switch (getFacing()) {
 			case NORTH: dz = -pos.getFront(); dx = -pos.getLeft(); break;
@@ -271,6 +269,25 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 			case WEST: dz = pos.getLeft(); dx = -pos.getFront(); break;
 		}
 		return b.getRelative(dx, pos.getUp(), dz);
+	}
+
+	public void moveTo(Location oldLoc, Location newLoc) {
+		for (RelativePosition pos : getBlockStructure()) {
+			Block b1 = getMultiBlock(oldLoc, pos);
+			b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
+		}
+		if (this instanceof ChargeableBlock) {
+			EnergyNetManager.onMachineRemoved((ChargeableBlock) this);
+		}
+		persistableLocation = new PersistableLocation(newLoc);
+		for (RelativePosition pos : getBlockStructure()) {
+			Block b1 = getMultiBlock(newLoc, pos);
+			Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + b1);
+			b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
+		}
+		if (this instanceof ChargeableBlock) {
+			EnergyNetManager.onMachinePlaced((ChargeableBlock) this);
+		}
 	}
 
 	/**
@@ -301,14 +318,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	}
 
 	public void breakBlock(Block b) {
-		Block origin = getLocation().getBlock();
+		Location baseLoc = getLocation();
+		Block origin = baseLoc.getBlock();
 		origin.setType(Material.AIR);
 		for (RelativePosition pos : getBlockStructure()) {
-			Block b1 = getMultiBlock(pos);
+			Block b1 = getMultiBlock(baseLoc, pos);
 			b1.setType(Material.AIR);
 		}
 		LocationManager.getManager().unregisterLocation(getLocation());
-		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack(1));
+		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack());
 	}
 
 	@Override
@@ -471,5 +489,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 */
 	protected InventoryGUI createGUI() {
 		return null;
+	}
+
+	/**
+	 * Check if this STB block can be pushed or pulled by a piston, and if doing so would break it.
+	 * Default is to allow movement; override this in subclasses to modify the behaviour.
+	 *
+	 * @return the move reaction: MOVE, BLOCK, or BREAK
+	 */
+	public PistonMoveReaction getPistonMoveReaction() {
+		return PistonMoveReaction.MOVE;
 	}
 }

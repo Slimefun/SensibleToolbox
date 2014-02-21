@@ -10,7 +10,6 @@ public class SpeedUpgrade extends MachineUpgrade {
 	private static final MaterialData md = new MaterialData(Material.SUGAR);
 
 	public SpeedUpgrade() {
-
 	}
 
 	public SpeedUpgrade(ConfigurationSection conf) {
@@ -39,7 +38,7 @@ public class SpeedUpgrade extends MachineUpgrade {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("IRI", "IBI", "IGI");
 		recipe.setIngredient('I', Material.IRON_FENCE);
 		recipe.setIngredient('R', Material.REDSTONE);

@@ -82,7 +82,7 @@ public class WateringCan extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		Dye d = new Dye();
 		d.setColor(DyeColor.WHITE);
 		recipe.shape("SM ", "SBS", " S ");
@@ -105,32 +105,32 @@ public class WateringCan extends BaseSTBItem {
 				player.playSound(player.getLocation(), Sound.WATER, 1.0f, 0.8f);
 				neighbour.setType(Material.AIR);
 				setWaterLevel(MAX_LEVEL);
-				newStack = toItemStack(1);
+				newStack = toItemStack();
 			} else if (STBUtil.isCrop(b.getType())) {
 				// attempt to grow the crops in a 3x3 area, and use some water from the can
 				waterCrops(player, b);
-				newStack = toItemStack(1);
+				newStack = toItemStack();
 			} else if (b.getType() == Material.SOIL) {
 				if (STBUtil.isCrop(b.getRelative(BlockFace.UP).getType())) {
 					waterCrops(player, b.getRelative(BlockFace.UP));
-					newStack = toItemStack(1);
+					newStack = toItemStack();
 				} else {
 					// make the soil wetter if possible
 					waterSoil(player, b);
-					newStack = toItemStack(1);
+					newStack = toItemStack();
 				}
 			} else if (b.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
 				if (new Random().nextBoolean()) {
 					b.setType(Material.MOSSY_COBBLESTONE);
 				}
 				useSomeWater(player, b, 10);
-				newStack = toItemStack(1);
+				newStack = toItemStack();
 			} else if (b.getType() == Material.SMOOTH_BRICK && b.getData() != 1  && getWaterLevel() >= 10) {
 				if (new Random().nextBoolean()) {
 					b.setData((byte) 1);
 				}
 				useSomeWater(player, b, 10);
-				newStack = toItemStack(1);
+				newStack = toItemStack();
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			Block b = player.getEyeLocation().getBlock();
@@ -139,7 +139,7 @@ public class WateringCan extends BaseSTBItem {
 				b.setType(Material.AIR);
 				player.playSound(player.getLocation(), Sound.WATER, 1.0f, 0.8f);
 				setWaterLevel(MAX_LEVEL);
-				newStack = toItemStack(1);
+				newStack = toItemStack();
 			}
 		}
 		if (newStack != null) {
@@ -161,7 +161,7 @@ public class WateringCan extends BaseSTBItem {
 			setWaterLevel(getWaterLevel() - FIRE_EXTINGUISH_AMOUNT);
 			MiscUtil.alertMessage(player, "The fire is out!");
 		}
-		player.setItemInHand(toItemStack(1));
+		player.setItemInHand(toItemStack());
 		player.updateInventory();
 		event.setCancelled(true);
 	}

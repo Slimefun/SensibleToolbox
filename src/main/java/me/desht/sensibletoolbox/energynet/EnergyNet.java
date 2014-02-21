@@ -1,6 +1,8 @@
 package me.desht.sensibletoolbox.energynet;
 
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.storage.BlockPosition;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -23,9 +25,11 @@ public class EnergyNet {
 	private final int netID;
 	private final String worldName;
 	private final List<BlockPosition> cables = new ArrayList<BlockPosition>();
-	private final Set<BaseSTBMachine> machines = new HashSet<BaseSTBMachine>();
+	private final Set<ChargeableBlock> machines = new HashSet<ChargeableBlock>();
 	private double totalDemand;
 	private double totalSupply;
+	private final Set<ChargeableBlock> energySinks = new HashSet<ChargeableBlock>();
+	private final Set<ChargeableBlock> energySources = new HashSet<ChargeableBlock>();
 
 	private EnergyNet(String worldName) {
 		this.worldName = worldName;
@@ -50,6 +54,7 @@ public class EnergyNet {
 				enet.addMachine(rec.getMachine(), rec.getDirection());
 			}
 		}
+		enet.findSourcesAndSinks();
 		System.out.println("built new net #" + enet.getNetID() + " with " + enet.cables.size() + " cables & " + enet.machines.size() + " machines");
 		return enet;
 	}
@@ -80,19 +85,41 @@ public class EnergyNet {
 		}
 	}
 
+	/**
+	 * Determine which machines on this net can supply energy, and which consume it.
+	 */
+	public void findSourcesAndSinks() {
+		energySinks.clear();
+		energySources.clear();
+
+		for (ChargeableBlock machine : machines) {
+			for (BlockFace face : machine.getFacesForNet(this)) {
+				if (machine.acceptsEnergy(face)) {
+					energySinks.add(machine);
+				} else if (machine.suppliesEnergy(face)) {
+					energySources.add(machine);
+				}
+			}
+		}
+		Debugger.getInstance().debug("Energy net #" + getNetID() + ": found "
+				+ energySources.size() + " sources and " + energySinks.size() + " sinks");
+	}
+
 	public int getNetID() {
 		return netID;
 	}
 
-	void addMachine(BaseSTBMachine machine, BlockFace face) {
+	void addMachine(ChargeableBlock machine, BlockFace face) {
 		machine.attachToEnergyNet(this, face);
 		machines.add(machine);
+		findSourcesAndSinks();
 		System.out.println("added machine " + machine + " to enet #" + getNetID() + " on face " + face);
 	}
 
-	public void removeMachine(BaseSTBMachine machine) {
+	public void removeMachine(ChargeableBlock machine) {
 		machine.detachFromEnergyNet(this);
 		machines.remove(machine);
+		findSourcesAndSinks();
 		System.out.println("removed machine " + machine + " from enet #" + getNetID());
 	}
 
@@ -117,7 +144,7 @@ public class EnergyNet {
 			}
 		}
 		cables.clear();
-		for (BaseSTBMachine machine : machines) {
+		for (ChargeableBlock machine : machines) {
 			machine.detachFromEnergyNet(this);
 		}
 		machines.clear();
@@ -128,8 +155,12 @@ public class EnergyNet {
 		return cables.size();
 	}
 
-	public int getMachineCount() {
-		return machines.size();
+	public int getSourceCount() {
+		return energySources.size();
+	}
+
+	public int getSinkCount() {
+		return energySinks.size();
 	}
 
 	@Override
@@ -150,29 +181,18 @@ public class EnergyNet {
 	}
 
 	public void tick() {
-		List<BaseSTBMachine> energySinks = new ArrayList<BaseSTBMachine>();
-		List<BaseSTBMachine> energySources = new ArrayList<BaseSTBMachine>();
-
 		totalDemand = totalSupply = 0;
 
-		// TODO cache the list of potential sources & sinks (recalc when a machine added/removed/updated)
-
-		// calculate who needs power, who can supply it, and the total supply/demand
-		for (BaseSTBMachine machine : machines) {
-			for (BlockFace face : machine.getFacesForNet(this)) {
-				if (machine.acceptsEnergy(face)) {
-					if (machine.getCharge() < machine.getMaxCharge()) {
-						energySinks.add(machine);
-						double needed = machine.getMaxCharge() - machine.getCharge();
-						needed = Math.min(needed, machine.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
-						totalDemand += needed;
-					}
-				} else if (machine.suppliesEnergy(face)) {
-					if (machine.getCharge() > 0) {
-						energySources.add(machine);
-						totalSupply += Math.min(machine.getCharge(), machine.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
-					}
-				}
+		for (ChargeableBlock machine : energySources) {
+			if (machine.getCharge() > 0) {
+				totalSupply += Math.min(machine.getCharge(), machine.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+			}
+		}
+		for (ChargeableBlock machine : energySinks) {
+			if (machine.getCharge() < machine.getMaxCharge()) {
+				double needed = machine.getMaxCharge() - machine.getCharge();
+				needed = Math.min(needed, machine.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+				totalDemand += needed;
 			}
 		}
 
@@ -183,25 +203,23 @@ public class EnergyNet {
 		double ratio = totalDemand / totalSupply;
 		if (ratio <= 1.0) {
 			// there's enough power to supply all sinks
-			for (BaseSTBMachine source : energySources) {
+			for (ChargeableBlock source : energySources) {
 				double toTake = Math.min(source.getCharge(), source.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
 				source.setCharge(source.getCharge() - toTake * ratio);
 			}
-			for (BaseSTBMachine sink : energySinks) {
-				double needed = sink.getMaxCharge() - sink.getCharge();
-				needed = Math.min(needed, sink.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
-				sink.setCharge(sink.getCharge() + needed);
+			for (ChargeableBlock sink : energySinks) {
+				double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+				sink.setCharge(sink.getCharge() + toGive);
 			}
 		} else {
 			// more demand than supply!
-			for (BaseSTBMachine source : energySources) {
+			for (ChargeableBlock source : energySources) {
 				double toTake = Math.min(source.getCharge(), source.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
 				source.setCharge(source.getCharge() - toTake);
 			}
-			for (BaseSTBMachine sink : energySinks) {
-				double needed = sink.getMaxCharge() - sink.getCharge();
-				needed = Math.min(needed, sink.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
-				sink.setCharge(sink.getCharge() + needed / ratio);
+			for (ChargeableBlock sink : energySinks) {
+				double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+				sink.setCharge(sink.getCharge() + toGive / ratio);
 			}
 		}
 	}

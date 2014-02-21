@@ -7,6 +7,7 @@ import me.desht.dhutils.block.MaterialWithData;
 import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -38,6 +39,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	private Mode mode;
 	private double charge;
 	private MaterialWithData mat;
+
 	public BuildersMultiTool() {
 		mode = Mode.BUILD;
 		charge = 0;
@@ -118,20 +120,18 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
-		ItemStack cell = new ItemStack(Material.LEATHER_HELMET, 1, Material.LEATHER_HELMET.getMaxDurability());
-		recipe.shape("DPD", "BEB", " I ");
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+		TenKEnergyCell cell = new TenKEnergyCell();
+		cell.setCharge(0.0);
+		SimpleCircuit sc =  new SimpleCircuit();
+		registerCustomIngredients(cell, sc);
+		recipe.shape(" DP", "CED", "I  ");
 		recipe.setIngredient('D', Material.DIAMOND);
 		recipe.setIngredient('P', Material.DIAMOND_AXE);
 		recipe.setIngredient('I', Material.IRON_INGOT);
-		recipe.setIngredient('E', cell.getData()); // an empty 10k energy cell
-		recipe.setIngredient('B', Material.IRON_FENCE);
+		recipe.setIngredient('E', cell.toItemStack().getData());
+		recipe.setIngredient('C', sc.toItemStack().getData());
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.LEATHER_HELMET ? TenKEnergyCell.class : null;
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 			o = 0;
 		}
 		setMode(Mode.values()[o]);
-		event.getPlayer().setItemInHand(toItemStack(1));
+		event.getPlayer().setItemInHand(toItemStack());
 	}
 
 	private void handleExchangeMode(PlayerInteractEvent event) {
@@ -217,7 +217,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 		}
 
 		if (done) {
-			player.setItemInHand(toItemStack(1));
+			player.setItemInHand(toItemStack());
 		} else {
 			player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 0.5f);
 		}
@@ -364,7 +364,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 			for (Block b : actualBlocks) {
 				b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
 			}
-			player.setItemInHand(toItemStack(1));
+			player.setItemInHand(toItemStack());
 			player.playSound(player.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
 		} else {
 			player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 0.5f);

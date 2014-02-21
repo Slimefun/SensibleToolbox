@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.energynet;
 import com.google.common.base.Joiner;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -123,7 +124,7 @@ public class EnergyNetManager {
 		}
 	}
 
-	public static void onMachinePlaced(BaseSTBMachine machine) {
+	public static void onMachinePlaced(ChargeableBlock machine) {
 		Block b = machine.getLocation().getBlock();
 		// scan adjacent blocks for cables
 		for (BlockFace face : STBUtil.directFaces) {
@@ -145,7 +146,7 @@ public class EnergyNetManager {
 		}
 	}
 
-	public static void onMachineRemoved(BaseSTBMachine machine) {
+	public static void onMachineRemoved(ChargeableBlock machine) {
 		for (EnergyNet net : machine.getAttachedEnergyNets()) {
 			net.removeMachine(machine);
 		}

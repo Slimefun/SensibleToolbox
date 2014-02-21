@@ -2,12 +2,21 @@ package me.desht.sensibletoolbox.items;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class PaintRoller extends PaintBrush {
 	private static final MaterialData md = new MaterialData(Material.IRON_SPADE);
+
+	public PaintRoller() {
+		super();
+	}
+
+	public PaintRoller(ConfigurationSection conf) {
+		super(conf);
+	}
 
 	@Override
 	public MaterialData getMaterialData() {
@@ -31,7 +40,7 @@ public class PaintRoller extends PaintBrush {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("WWW", "III", " S ");
 		recipe.setIngredient('W', Material.WOOL);
 		recipe.setIngredient('I', Material.IRON_INGOT);

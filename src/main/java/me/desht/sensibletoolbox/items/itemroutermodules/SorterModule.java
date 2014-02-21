@@ -48,16 +48,12 @@ public class SorterModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		registerCustomIngredients(new BlankModule());
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
 		recipe.addIngredient(Material.PAPER);
 		recipe.addIngredient(Material.SPIDER_EYE);
 		recipe.addIngredient(Material.ARROW);
 		return recipe;
-	}
-
-	@Override
-	public Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-		return mat == Material.PAPER ? BlankModule.class : null;
 	}
 
 	@Override

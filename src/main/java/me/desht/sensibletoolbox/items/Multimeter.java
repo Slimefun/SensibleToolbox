@@ -11,19 +11,26 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.material.Sign;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Sign;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Multimeter extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.BONE);
+
+	public Multimeter() {
+	}
+
+	public Multimeter(ConfigurationSection conf) {
+	}
 
 	@Override
 	public MaterialData getMaterialData() {
@@ -52,7 +59,7 @@ public class Multimeter extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
 		recipe.shape("IGI", "RSR", " T ");
 		recipe.setIngredient('I', Material.IRON_INGOT);
 		recipe.setIngredient('G', Material.GLOWSTONE_DUST);
@@ -91,9 +98,10 @@ public class Multimeter extends BaseSTBItem {
 
 	private void showNetInfo(Player player, EnergyNet net) {
 		String s1 = net.getCableCount() == 1 ? "" : "s";
-		String s2 = net.getMachineCount() == 1 ? "" : "s";
-		String msg = String.format("Energy net &f#%d&-, %d cable" + s1 + ", %d machine" + s2,
-				net.getNetID(), net.getCableCount(), net.getMachineCount());
+		String s2 = net.getSourceCount() == 1 ? "" : "s";
+		String s3 = net.getSinkCount() == 1 ? "" : "s";
+		String msg = String.format("Energy net &f#%d&-, %d cable" + s1 + ", %d source" + s2 + ", %d sink" + s3,
+				net.getNetID(), net.getCableCount(), net.getSourceCount(), net.getSinkCount());
 		MiscUtil.statusMessage(player, msg);
 		msg = String.format("▶ Instantaneous demand: &6%5.2f/t&-, supply available: &6%5.2f/t&-",
 				net.getDemand(), net.getSupply());

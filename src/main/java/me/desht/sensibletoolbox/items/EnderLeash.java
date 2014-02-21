@@ -25,6 +25,10 @@ public class EnderLeash extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.LEASH);
 	private YamlConfiguration capturedConf;
 
+	public EnderLeash() {
+		capturedConf = null;
+	}
+
 	public EnderLeash(ConfigurationSection conf) {
 		if (!conf.getKeys(false).isEmpty()) {
 			capturedConf = new YamlConfiguration();
@@ -32,10 +36,6 @@ public class EnderLeash extends BaseSTBItem {
 				capturedConf.set(k, conf.get(k));
 			}
 		}
-	}
-
-	public EnderLeash() {
-		capturedConf = null;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class EnderLeash extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(this.toItemStack(1));
+		ShapedRecipe recipe = new ShapedRecipe(this.toItemStack());
 		recipe.shape("GSG", "SPS", "GSG");
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		recipe.setIngredient('P', Material.ENDER_PEARL);
@@ -91,7 +91,7 @@ public class EnderLeash extends BaseSTBItem {
 	}
 
 	@Override
-	public void handleEntityInteraction(PlayerInteractEntityEvent event) {
+	public void onInteractEntity(PlayerInteractEntityEvent event) {
 		Entity target = event.getRightClicked();
 		Player p = event.getPlayer();
 		if (target instanceof Animals && isPassive(target) && p.getItemInHand().getAmount() == 1) {
@@ -100,7 +100,7 @@ public class EnderLeash extends BaseSTBItem {
 				capturedConf = freezeEntity((Animals) target);
 				target.getWorld().playEffect(target.getLocation(), Effect.ENDER_SIGNAL, 0);
 				target.remove();
-				p.setItemInHand(this.toItemStack(1));
+				p.setItemInHand(this.toItemStack());
 			} else {
 				// workaround CB bug to ensure client is updated properly
 				p.updateInventory();
@@ -118,7 +118,7 @@ public class EnderLeash extends BaseSTBItem {
 				Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
 				thawEntity((Animals) e, capturedConf);
 				capturedConf = null;
-				event.getPlayer().setItemInHand(this.toItemStack(1));
+				event.getPlayer().setItemInHand(this.toItemStack());
 				event.setCancelled(true);
 			}
 		}

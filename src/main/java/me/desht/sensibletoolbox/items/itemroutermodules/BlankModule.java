@@ -46,10 +46,4 @@ public class BlankModule extends BaseSTBItem {
 		recipe.setIngredient('B', d);
 		return recipe;
 	}
-
-	@Override
-	public boolean isIngredientFor(ItemStack result) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
-		return item != null && item instanceof ItemRouterModule;
-	}
 }

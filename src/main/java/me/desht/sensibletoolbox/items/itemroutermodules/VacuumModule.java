@@ -39,7 +39,8 @@ public class VacuumModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+		registerCustomIngredients(new BlankModule());
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
 		recipe.addIngredient(Material.PAPER);
 		recipe.addIngredient(Material.HOPPER);
 		recipe.addIngredient(Material.EYE_OF_ENDER);
