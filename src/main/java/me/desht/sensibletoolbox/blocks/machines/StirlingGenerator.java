@@ -21,6 +21,7 @@ import java.util.Arrays;
 public class StirlingGenerator extends Generator {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
 	private static final FuelItems fuelItems = new FuelItems();
+
 	static {
 		fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
 		fuelItems.addFuel(new ItemStack(Material.COAL), false, 15, 120);
@@ -183,7 +184,7 @@ public class StirlingGenerator extends Generator {
 			currentFuel = fv;
 			ItemStack toProcess = makeProcessingItem(currentFuel, stack);
 			setProcessing(toProcess);
-			getProgressMeter().initialize(currentFuel.getBurnTime());
+			getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
 			setProgress(currentFuel.getBurnTime());
 			stack.setAmount(stack.getAmount() - 1);
 			getInventory().setItem(inputSlot, stack.getAmount() > 0 ? stack : null);

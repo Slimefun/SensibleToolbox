@@ -130,29 +130,38 @@ public class PaintBrush extends BaseSTBItem {
 		Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
-			PaintCan can = LocationManager.getManager().get(b.getLocation(), PaintCan.class);
-			if (can != null) {
-				refillFromCan(can);
-				player.setItemInHand(this.toItemStack());
-				event.setCancelled(true);
-			} else if ((STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.THIN_GLASS)
-					&& getBlockColour(b) != getColour() && getPaintLevel() > 0) {
+			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+			if (stb instanceof PaintCan) {
+				refillFromCan((PaintCan) stb);
+			} else if (okToColor(b, stb)) {
+				int painted;
 				// Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
 				if (player.isSneaking()) {
 					// paint a single block
-					paintBlocks(b);
+					painted = paintBlocks(b);
 				} else {
 					// paint multiple blocks around the clicked block
 					Block[] blocks = findBlocksAround(b);
-					paintBlocks(blocks);
+					painted = paintBlocks(blocks);
 				}
-				player.setItemInHand(toItemStack());
-				event.setCancelled(true);
+				if (painted > 0) {
+					player.playSound(player.getLocation(), Sound.WATER, 1.0f, 1.5f);
+				}
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
 			setPaintLevel(0);
-			player.setItemInHand(toItemStack());
 		}
+		player.setItemInHand(toItemStack());
+		event.setCancelled(true);
+	}
+
+	private boolean okToColor(Block b, BaseSTBBlock stb) {
+		if (stb != null && !(stb instanceof Colorable)) {
+			// we don't want blocks which happen to use a Colorable material to be paintable
+			return false;
+		}
+		return (STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.THIN_GLASS)
+				&& getBlockColour(b) != getColour() && getPaintLevel() > 0;
 	}
 
 	private void refillFromCan(PaintCan can) {
@@ -170,7 +179,6 @@ public class PaintBrush extends BaseSTBItem {
 			this.setColour(can.getColour());
 			this.setPaintLevel(this.getPaintLevel() + actual);
 			can.setPaintLevel(can.getPaintLevel() - actual);
-			can.updateBlock();
 			Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColour());
 			Debugger.getInstance().debug("can now = " + can.getPaintLevel() + " " + can.getColour());
 		}
@@ -196,7 +204,7 @@ public class PaintBrush extends BaseSTBItem {
 		if (painted) {
 			setPaintLevel(getPaintLevel() - 1);
 			event.getPlayer().setItemInHand(toItemStack());
-			event.getPlayer().playSound(e.getLocation(), Sound.SPLASH2, 1.0f, 1.5f);
+			event.getPlayer().playSound(e.getLocation(), Sound.WATER, 1.0f, 1.5f);
 		}
 	}
 
@@ -240,7 +248,8 @@ public class PaintBrush extends BaseSTBItem {
 		return STBUtil.isColorable(b.getType()) ? DyeColor.getByWoolData(b.getData()) : null;
 	}
 
-	private void paintBlocks(Block... blocks) {
+	private int paintBlocks(Block... blocks) {
+		int painted = 0;
 		for (Block b : blocks) {
 			Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
 			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
@@ -254,10 +263,12 @@ public class PaintBrush extends BaseSTBItem {
 				}
 				b.setData(getColour().getWoolData());
 			}
+			painted++;
 			setPaintLevel(getPaintLevel() - 1);
 			if (getPaintLevel() <= 0) {
 				break;
 			}
 		}
+		return painted;
 	}
 }

@@ -38,7 +38,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
 	public void setColor(DyeColor color) {
 		this.color = color;
-		updateBlock();
+		updateBlock(true);
 	}
 
 	@Override
@@ -77,6 +77,8 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 		Elevator res = null;
 		while (b.getY() > 0 && b.getY() < b.getWorld().getMaxHeight()) {
 			b = b.getRelative(direction);
+
+
 			if (b.getType().isSolid()) {
 				res = LocationManager.getManager().get(b.getLocation(), Elevator.class);
 				break;

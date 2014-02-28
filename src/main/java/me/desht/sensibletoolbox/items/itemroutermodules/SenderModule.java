@@ -133,19 +133,6 @@ public class SenderModule extends DirectionalItemRouterModule {
 		return null;
 	}
 
-	private boolean vanillaInsertion(Block target, int amount, BlockFace side) {
-		ItemStack buffer = getOwner().getBufferItem();
-		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false);
-		if (nInserted == 0) {
-			// no insertion happened
-			return false;
-		} else {
-			// some or all items were inserted, buffer size has been adjusted accordingly
-			getOwner().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
-			return true;
-		}
-	}
-
 	private boolean allowsItemsThrough(Material mat) {
 		if (mat.isTransparent()) {
 			return true;

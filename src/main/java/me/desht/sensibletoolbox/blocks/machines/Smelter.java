@@ -152,7 +152,6 @@ public class Smelter extends AbstractIOMachine {
 		return 45;
 	}
 
-
 	@Override
 	protected void playStartupSound() {
 		getLocation().getWorld().playSound(getLocation(), Sound.FIRE, 1.0f, 1.0f);

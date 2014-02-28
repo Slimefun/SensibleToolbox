@@ -51,6 +51,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	private boolean isNMSenabled = false;
 	private SoundMufflerListener soundMufflerListener;
 	private FloodlightListener floodlightListener;
+	private PlayerUUIDTracker uuidTracker;
 
 	public static SensibleToolboxPlugin getInstance() {
 		return instance;
@@ -66,6 +67,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	public FloodlightListener getFloodlightListener() {
 		return floodlightListener;
+	}
+
+	public PlayerUUIDTracker getUuidTracker() {
+		return uuidTracker;
 	}
 
 	@Override
@@ -102,9 +107,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			LogUtils.warning("  No glowing items, reduced particle effects, Sound Muffler item disabled");
 		}
 
-		BaseSTBItem.registerItems(this);
 		registerEventListeners();
 		registerCommands();
+
+		BaseSTBItem.registerItems(this);
 
 		MessagePager.setPageCmd("/stb page [#|n|p]");
 		MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
@@ -170,11 +176,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		pm.registerEvents(new GeneralListener(this), this);
 		pm.registerEvents(new WorldListener(this), this);
 		pm.registerEvents(new BagOfHoldingListener(this), this);
-//		pm.registerEvents(new CombineHoeListener(this), this);
 		pm.registerEvents(new TrashCanListener(this), this);
-		pm.registerEvents(new PaintCanListener(this), this);
 		pm.registerEvents(new ElevatorListener(this), this);
 		pm.registerEvents(new AnvilListener(this), this);
+		uuidTracker = new PlayerUUIDTracker(this);
+		pm.registerEvents(uuidTracker, this);
 		if (isProtocolLibEnabled()) {
 			soundMufflerListener = new SoundMufflerListener(this);
 			soundMufflerListener.start();

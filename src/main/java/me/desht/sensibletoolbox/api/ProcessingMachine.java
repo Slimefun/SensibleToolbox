@@ -47,4 +47,11 @@ public interface ProcessingMachine extends STBMachine {
 	 * @return the material used to display the progress bar
 	 */
 	public Material getProgressIcon();
+
+	/**
+	 * Return a string to display as a tooltip on the progress counter icon.
+	 *
+	 * @return a progress message tooltip
+	 */
+	public String getProgressMessage();
 }

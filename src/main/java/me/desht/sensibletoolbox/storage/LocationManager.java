@@ -141,15 +141,7 @@ public class LocationManager {
 	 * @param newLoc the STB block's new location
 	 */
 	public void moveBlock(BaseSTBBlock stb, Location oldLoc, Location newLoc) {
-		if (stb.shouldTick()) {
-			removeTicker(stb);
-		}
-
 		stb.moveTo(oldLoc, newLoc);
-
-		if (stb.shouldTick()) {
-			addTicker(stb);
-		}
 
 		oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
 		newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
@@ -216,7 +208,11 @@ public class LocationManager {
 		for (World w : Bukkit.getWorlds()) {
 			if (tickers.containsKey(w.getName())) {
 				for (BaseSTBBlock stb : tickers.get(w.getName())) {
-					stb.onServerTick();
+					PersistableLocation pLoc = stb.getPersistableLocation();
+					int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
+					if (w.isChunkLoaded(x >> 4, z >> 4)) {
+						stb.onServerTick();
+					}
 				}
 			}
 		}
@@ -277,6 +273,10 @@ public class LocationManager {
 						BlockPosition pos = BlockPosition.fromString(k);
 						Location loc = new Location(world, pos.getX(), pos.getY(), pos.getZ());
 						String type = cs.getString("TYPE");
+
+						// temp
+						if (!cs.contains("owner")) cs.set("owner", "808df108-8a23-35c4-97f4-2a1088d130fe");
+
 						BaseSTBItem tmpl = BaseSTBItem.getItemById(type, cs);
 						if (tmpl != null) {
 							if (tmpl instanceof BaseSTBBlock) {
@@ -302,7 +302,9 @@ public class LocationManager {
 				}
 			}
 		}
-		dirtyChunks.get(worldName).clear();
+		if (dirtyChunks.containsKey(worldName)) {
+			dirtyChunks.get(worldName).clear();
+		}
 		saveNeeded = false;
 	}
 

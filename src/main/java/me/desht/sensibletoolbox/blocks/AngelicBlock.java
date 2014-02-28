@@ -79,7 +79,7 @@ public class AngelicBlock extends BaseSTBBlock {
 					p.setItemInHand(new ItemStack(Material.AIR));
 				}
 				b.setType(getMaterial());
-				placeBlock(b, STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
+				placeBlock(b, event.getPlayer(), STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
 			}
 		}
 	}

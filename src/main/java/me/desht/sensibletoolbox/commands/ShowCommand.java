@@ -33,10 +33,12 @@ public class ShowCommand extends AbstractCommand {
 		if (args.length >= 1) {
 			showDetails(pager, args[0]);
 		} else if (getBooleanOption("perf")) {
-			pager.add(Bukkit.getWorlds().get(0).getLoadedChunks().length + " loaded chunks");
+			for (World w : Bukkit.getWorlds()) {
+				pager.add(w.getName() + ": " + w.getLoadedChunks().length + " loaded chunks");
+			}
 			long avg = LocationManager.getManager().getAverageTimePerTick();
 			double pct = avg / 200000.0;
-			pager.add(LocationManager.getManager().getAverageTimePerTick() + " ns/tick (" + pct + "%) spent in ticking STB blocks");
+			pager.add(avg + " ns/tick (" + pct + "%) spent in ticking STB blocks");
 		} else {
 			String id = getStringOption("id");
 			if (hasOption("w")) {

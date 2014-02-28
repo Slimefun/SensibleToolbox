@@ -41,6 +41,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	private BlockFace autoEjectDirection;
 	private boolean needToProcessUpgrades;
 	private int chargeMeterId;
+	private final String frozenInput;
+	private final String frozenOutput;
 	private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
 	private final Map<BlockFace,EnergyNet> energyNets = new HashMap<BlockFace,EnergyNet>();
 
@@ -51,6 +53,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		jammed = false;
 		autoEjectDirection = null;
 		needToProcessUpgrades = false;
+		frozenInput = frozenOutput = null;
 	}
 
 	public BaseSTBMachine(ConfigurationSection conf) {
@@ -81,6 +84,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			}
 		}
 		needToProcessUpgrades = true;
+		frozenInput = conf.getString("inputSlots");
+		frozenOutput = conf.getString("outputSlots");
 	}
 
 	@Override
@@ -123,6 +128,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	public void setJammed(boolean jammed) {
+		System.out.println(this + " jammed = " + jammed);
 		this.jammed = jammed;
 	}
 
@@ -174,7 +180,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			playOutOfChargeSound();
 		}
 		this.charge = Math.min(getMaxCharge(), Math.max(0, charge));
-		if (getGUI() != null) {
+		if (getGUI() != null && chargeMeterId >= 0) {
 			getGUI().getMonitor(chargeMeterId).repaintNeeded();
 		}
 		updateBlock(false);
@@ -207,9 +213,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		for (int slot : getInputSlots()) {
 			gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
 		}
+		gui.thawSlots(frozenInput, getInputSlots());
 		for (int slot : getOutputSlots()) {
 			gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
 		}
+		gui.thawSlots(frozenOutput, getOutputSlots());
 
 		int[] upgradeSlots = getUpgradeSlots();
 		for (int slot : upgradeSlots) {
@@ -230,7 +238,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			gui.setSlotType(getEnergyCellSlot(), InventoryGUI.SlotType.ITEM);
 		}
 		gui.addGadget(new ChargeDirectionGadget(gui), getChargeDirectionSlot());
-		chargeMeterId = gui.addMonitor(new ChargeMeter(gui));
+		chargeMeterId = getMaxCharge() > 0 ? gui.addMonitor(new ChargeMeter(gui)) : -1;
 		if (installedCell != null) {
 			gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(), true);
 		}
@@ -273,6 +281,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	@Override
 	public void setLocation(Location loc) {
 		if (loc == null) {
+			System.out.println("eject items!");
 			getGUI().ejectItems(getInputSlots());
 			getGUI().ejectItems(getOutputSlots());
 			getGUI().ejectItems(getUpgradeSlots());
@@ -454,13 +463,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
 			ItemStack inMachine = getInventory().getItem(insertionSlot);
 			if (inMachine == null) {
+				// insert the whole stack
 				getInventory().setItem(insertionSlot, toInsert);
 				return toInsert.getAmount();
 			} else {
-				int nToInsert = Math.min(inMachine.getType().getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
+				// insert as much as possible
+				int nToInsert = Math.min(inMachine.getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
 				inMachine.setAmount(inMachine.getAmount() + nToInsert);
 				getInventory().setItem(insertionSlot, inMachine);
-				toInsert.setAmount(toInsert.getAmount() - nToInsert);
 				return nToInsert;
 			}
 		}
@@ -497,6 +507,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			installEnergyCell(null);
 		} else if (isUpgradeSlot(slot)) {
 			needToProcessUpgrades = true;
+		} else if (isOutputSlot(slot)) {
+			setJammed(false);
 		}
 		return true;
 	}
@@ -509,8 +521,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	private int findAvailableUpgradeSlot(ItemStack upgrade) {
 		for (int slot : getUpgradeSlots()) {
 			ItemStack inSlot = getInventory().getItem(slot);
-			dumpAttributes(upgrade);
-			if (inSlot != null) dumpAttributes(inSlot);
+//			dumpAttributes(upgrade);
+//			if (inSlot != null) dumpAttributes(inSlot);
 			if (inSlot == null || inSlot.isSimilar(upgrade) && inSlot.getAmount() + upgrade.getAmount() <= upgrade.getType().getMaxStackSize()) {
 				return slot;
 			}
@@ -518,13 +530,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		return -1;
 	}
 
-	private void dumpAttributes(ItemStack item) {
-		Attributes attrs = new Attributes(item);
-		System.out.println("dump attrs: " +item);
-		for (Attributes.Attribute a : attrs.values()) {
-			System.out.println("> " + Joiner.on("|").join(a.getUUID(), a.getName(), a.getAttributeType(), a.getOperation(), a.getAmount()));
-		}
-	}
+//	private void dumpAttributes(ItemStack item) {
+//		Attributes attrs = new Attributes(item);
+//		System.out.println("dump attrs: " +item);
+//		for (Attributes.Attribute a : attrs.values()) {
+//			System.out.println("> " + Joiner.on("|").join(a.getUUID(), a.getName(), a.getAttributeType(), a.getOperation(), a.getAmount()));
+//		}
+//	}
 
 	private void scanUpgradeSlots() {
 		upgrades.clear();
@@ -566,7 +578,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	public void installEnergyCell(EnergyCell cell) {
 		installedCell = cell;
 		Debugger.getInstance().debug("installed energy cell " + cell + " in " + this);
-		updateBlock();
+		updateBlock(false);
 	}
 
 	@Override
@@ -592,7 +604,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 				if (transferred > 0.0) {
 					getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack());
 				}
-				getGUI().getMonitor(chargeMeterId).doRepaint();
+				if (chargeMeterId >= 0) {
+					getGUI().getMonitor(chargeMeterId).doRepaint();
+				}
 			}
 		}
 		if (needToProcessUpgrades) {

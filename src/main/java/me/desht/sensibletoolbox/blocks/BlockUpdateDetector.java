@@ -30,14 +30,12 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 	public BlockUpdateDetector() {
 		quiet = 1;
 		duration = 2;
-		createGUI();
 	}
 
 	public BlockUpdateDetector(ConfigurationSection conf) {
 		super(conf);
 		setDuration(conf.getInt("duration"));
 		setQuiet(conf.getInt("quiet"));
-		createGUI();
 	}
 
 	@Override
@@ -54,7 +52,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
-		updateBlock();
+		updateBlock(false);
 	}
 
 	public int getQuiet() {
@@ -63,7 +61,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
 	public void setQuiet(int quiet) {
 		this.quiet = quiet;
-		updateBlock();
+		updateBlock(false);
 	}
 
 	@Override
@@ -151,16 +149,5 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 		gui.addGadget(new RedstoneBehaviourGadget(gui), 8);
 		gui.addGadget(new AccessControlGadget(gui), 7);
 		return gui;
-	}
-
-	@Override
-	public void setLocation(Location loc) {
-		if (loc == null) {
-			setGUI(null);
-		}
-		super.setLocation(loc);
-		if (loc != null) {
-			setGUI(createGUI());
-		}
 	}
 }

@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -150,7 +149,9 @@ public abstract class CombineHoe extends BaseSTBItem {
 
 	@Override
 	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-		if (onCursor.getType() != Material.AIR && STBUtil.getCropType(onCursor.getType()) == null) {
+		if (onCursor.getType() == Material.AIR) {
+			return true;
+		} else if (STBUtil.getCropType(onCursor.getType()) == null) {
 			return false;
 		} else if (!verifyUnique(gui.getInventory(), onCursor, slot)) {
 			return false;
@@ -190,32 +191,34 @@ public abstract class CombineHoe extends BaseSTBItem {
 		return false;
 	}
 
-	public void onGUIClosed(InventoryCloseEvent event) {
-		Material seedType = null;
-		int count = 0;
-		String err = null;
-		Player player = (Player) event.getPlayer();
-		for (int i = 0; i < gui.getInventory().getSize(); i++) {
-			ItemStack stack = gui.getInventory().getItem(i);
-			if (stack != null) {
-				if (seedType != null && seedType != stack.getType()) {
-					player.getWorld().dropItemNaturally(player.getLocation(), stack);
-					err = "Mixed items in the seed bag??";
-				} else if (STBUtil.getCropType(stack.getType()) == null) {
-					player.getWorld().dropItemNaturally(player.getLocation(), stack);
-					err = "Non-seed items in the seed bag??";
-				} else {
-					seedType = stack.getType();
-					count += stack.getAmount();
+	public void onGUIClosed() {
+		if (gui.getPrimaryPlayer() != null) {
+			Player player = gui.getPrimaryPlayer();
+			Material seedType = null;
+			int count = 0;
+			String err = null;
+			for (int i = 0; i < gui.getInventory().getSize(); i++) {
+				ItemStack stack = gui.getInventory().getItem(i);
+				if (stack != null) {
+					if (seedType != null && seedType != stack.getType()) {
+						player.getWorld().dropItemNaturally(player.getLocation(), stack);
+						err = "Mixed items in the seed bag??";
+					} else if (STBUtil.getCropType(stack.getType()) == null) {
+						player.getWorld().dropItemNaturally(player.getLocation(), stack);
+						err = "Non-seed items in the seed bag??";
+					} else {
+						seedType = stack.getType();
+						count += stack.getAmount();
+					}
 				}
 			}
+			if (err != null) {
+				MiscUtil.errorMessage(player, err);
+			}
+			setSeedAmount(count);
+			setSeedType(seedType);
+			player.setItemInHand(toItemStack());
 		}
-		if (err != null) {
-			MiscUtil.errorMessage(player, err);
-		}
-		setSeedAmount(count);
-		setSeedType(seedType);
-		player.setItemInHand(toItemStack());
 	}
 
 	private void populateSeedBag(InventoryGUI gui) {

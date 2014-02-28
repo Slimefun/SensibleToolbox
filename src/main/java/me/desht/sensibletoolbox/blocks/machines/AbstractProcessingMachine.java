@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.api.ProcessingMachine;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ProgressMeter;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class AbstractProcessingMachine extends BaseSTBMachine implements ProcessingMachine {
 	private static final long PROGRESS_INTERVAL = 10;
 	private double progress; // ticks remaining till this work cycle is done
-	private int progressCounterId;
+	private int progressMeterId;
 	private ItemStack processing;
 
 	protected AbstractProcessingMachine() {
@@ -51,7 +52,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 	}
 
 	protected ProgressMeter getProgressMeter() {
-		return (ProgressMeter) getGUI().getMonitor(progressCounterId);
+		return (ProgressMeter) getGUI().getMonitor(progressMeterId);
 	}
 
 	@Override
@@ -61,9 +62,15 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 			setProcessing(null);
 		}
 		super.setLocation(loc);
-		if (loc != null) {
-			progressCounterId = getGUI().addMonitor(new ProgressMeter(getGUI()));
-		}
+	}
+
+	@Override
+	protected InventoryGUI createGUI() {
+		InventoryGUI gui = super.createGUI();
+
+		progressMeterId = gui.addMonitor(new ProgressMeter(gui));
+
+		return gui;
 	}
 
 	@Override
@@ -72,5 +79,10 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 			getProgressMeter().doRepaint();
 		}
 		super.onServerTick();
+	}
+
+	@Override
+	public String getProgressMessage() {
+		return "Progress: " + getProgressMeter().getProgressPercent() + "%";
 	}
 }

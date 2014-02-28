@@ -10,14 +10,6 @@ public class ButtonGadget extends ClickableGadget {
 	private final ItemStack labelTexture;
 	private final Runnable callback;
 
-	public ButtonGadget(InventoryGUI owner, String text) {
-		this(owner, text, null, null, null);
-	}
-
-	public ButtonGadget(InventoryGUI owner, String text, String[] lore) {
-		this(owner, text, lore, null, null);
-	}
-
 	public ButtonGadget(InventoryGUI owner, String text, String[] lore, ItemStack texture, Runnable callback) {
 		super(owner);
 		this.callback = callback;

@@ -1,24 +1,27 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.ItemNames;
-import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.api.FilterType;
 import me.desht.sensibletoolbox.api.Filtering;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.gui.FilterTypeGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ToggleButton;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.Filter;
 import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -224,8 +227,8 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 		return false;
 	}
 
-	public void onGUIClosed(InventoryCloseEvent event) {
-		if (event.getPlayer() instanceof Player) {
+	public void onGUIClosed() {
+		if (gui.getPrimaryPlayer() != null) {
 			filter.clear();
 			for (int slot : filterSlots) {
 				ItemStack stack = gui.getInventory().getItem(slot);
@@ -233,15 +236,46 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 					filter.addItem(stack);
 				}
 			}
-
-			Player player = (Player) event.getPlayer();
-			InventoryGUI gui = InventoryGUI.getOpenGUI(player);
-			if (gui != null) {
-				player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
-			} else {
-				LogUtils.warning("Player " + player + " should be holding recipe book, but is not!");
-			}
+			gui.getPrimaryPlayer().setItemInHand(toItemStack());
 		}
-		gui = null;
+	}
+
+	protected boolean doPull(BlockFace from) {
+		ItemStack inBuffer = getOwner().getBufferItem();
+		if (inBuffer != null && inBuffer.getAmount() >= inBuffer.getType().getMaxStackSize()) {
+			return false;
+		}
+		int nToPull = getOwner().getStackSize();
+		Block b = getOwner().getLocation().getBlock();
+		Block target = b.getRelative(from);
+		BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+		ItemStack pulled;
+		if (stb instanceof STBInventoryHolder) {
+			pulled = ((STBInventoryHolder)stb).extractItems(from.getOppositeFace(), inBuffer, nToPull);
+		} else {
+			// possible vanilla inventory holder
+			pulled = VanillaInventoryUtils.pullFromInventory(target, nToPull, inBuffer, getFilter());
+		}
+		if (pulled != null) {
+			if (stb != null) {
+				stb.updateBlock(false);
+			}
+			getOwner().setBufferItem(inBuffer == null ? pulled : inBuffer);
+			return true;
+		}
+		return false;
+	}
+
+	protected boolean vanillaInsertion(Block target, int amount, BlockFace side) {
+		ItemStack buffer = getOwner().getBufferItem();
+		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false);
+		if (nInserted == 0) {
+			// no insertion happened
+			return false;
+		} else {
+			// some or all items were inserted, buffer size has been adjusted accordingly
+			getOwner().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
+			return true;
+		}
 	}
 }

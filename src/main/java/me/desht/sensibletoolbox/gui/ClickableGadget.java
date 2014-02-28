@@ -1,21 +1,11 @@
 package me.desht.sensibletoolbox.gui;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public abstract class ClickableGadget {
-	private final InventoryGUI gui;
-
+public abstract class ClickableGadget extends Gadget {
 	protected ClickableGadget(InventoryGUI gui) {
-		this.gui = gui;
-	}
-
-	public InventoryGUI getGUI() {
-		return gui;
+		super(gui);
 	}
 
 	public abstract void onClicked(InventoryClickEvent event);

@@ -52,6 +52,6 @@ public class FiftyKBatteryBox extends BatteryBox {
 
 	@Override
 	public int getChargeRate() {
-		return 500;
+		return isRedstoneActive() ? 500 : 0;
 	}
 }

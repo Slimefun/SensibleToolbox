@@ -70,6 +70,7 @@ public class EnergyNet {
 		if (discovered.size() > MAX_BLOCKS_IN_CABLE || discovered.contains(b)) {
 			return;
 		}
+
 		if (!EnergyNetManager.isCable(b)) {
 			BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
 			if (machine != null) {

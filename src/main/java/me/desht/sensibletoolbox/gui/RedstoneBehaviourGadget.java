@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 public class RedstoneBehaviourGadget extends ClickableGadget {
 	private RedstoneBehaviour behaviour;
 
-	public RedstoneBehaviourGadget(InventoryGUI owner) {
-		super(owner);
+	public RedstoneBehaviourGadget(InventoryGUI gui) {
+		super(gui);
 		behaviour = getGUI().getOwningBlock().getRedstoneBehaviour();
 	}
 

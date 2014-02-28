@@ -4,20 +4,20 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class STBUtil {
 	public static final BlockFace[] directFaces = {
@@ -360,7 +360,6 @@ public class STBUtil {
 		return res;
 	}
 
-
 	/**
 	 * Convenience method to get a coloured material: stained clay/glass/glass panes/wool.
 	 * Also gets all the deprecated method calls into one place.
@@ -370,6 +369,41 @@ public class STBUtil {
 	 * @return the material data object
 	 */
 	public static MaterialData makeColouredMaterial(Material mat, DyeColor colour) {
+		if (mat == Material.GLASS) mat = Material.STAINED_GLASS;
+		else if (mat == Material.THIN_GLASS) mat = Material.STAINED_GLASS_PANE;
+
 		return new MaterialData(mat, colour.getWoolData());
+	}
+
+	/**
+	 * Workaround method: ensure that the given inventory is refreshed to all its viewers.
+	 * This is needed in some cases to avoid ghost items being left around (in particular
+	 * if an item is shift-clicked into a machine inventory and then shortly after moved
+	 * to a different slot).
+	 *
+	 * @param inv the inventory to refresh
+	 */
+	public static void forceInventoryRefresh(Inventory inv) {
+		// workaround to avoid leaving ghost items in the input slot
+		for (HumanEntity entity : inv.getViewers()) {
+			if (entity instanceof Player) {
+				((Player) entity).updateInventory();
+			}
+		}
+	}
+
+	public static ItemStack makeStack(MaterialData materialData, String title, String... lore) {
+		ItemStack stack = materialData.toItemStack();
+		if (title != null) {
+			ItemMeta meta = stack.getItemMeta();
+			meta.setDisplayName(title);
+			List<String> newLore = new ArrayList<String>(lore.length);
+			for (String l : lore) {
+				newLore.add(BaseSTBItem.LORE_COLOR + l);
+			}
+			meta.setLore(newLore);
+			stack.setItemMeta(meta);
+		}
+		return stack;
 	}
 }

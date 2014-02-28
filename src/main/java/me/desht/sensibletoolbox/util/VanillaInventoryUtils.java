@@ -9,6 +9,16 @@ import org.bukkit.inventory.*;
 import java.util.HashMap;
 
 public class VanillaInventoryUtils {
+	public static boolean isVanillaInventory(Block target) {
+		switch (target.getType()) {
+			case CHEST: case DISPENSER: case HOPPER: case DROPPER:
+			case FURNACE: case BREWING_STAND: case BURNING_FURNACE:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public static Inventory getVanillaInventoryFor(Block target) {
 		switch (target.getType()) {
 			case CHEST:

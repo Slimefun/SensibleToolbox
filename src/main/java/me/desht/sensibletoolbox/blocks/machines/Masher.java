@@ -121,16 +121,6 @@ public class Masher extends AbstractIOMachine {
 		return 20;
 	}
 
-//	@Override
-//	public boolean acceptsItemType(ItemStack item) {
-//		return CustomRecipeManager.getManager().hasRecipe(this, item);
-//	}
-//
-//	@Override
-//	protected ProcessingResult getCustomRecipeFor(ItemStack stack) {
-//		return CustomRecipeManager.getManager().getRecipe(this, stack);
-//	}
-
 	@Override
 	public int getProgressItemSlot() {
 		return 12;

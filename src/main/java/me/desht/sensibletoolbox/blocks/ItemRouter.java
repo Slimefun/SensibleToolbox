@@ -14,16 +14,18 @@ import me.desht.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterMod
 import me.desht.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.SpeedModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.StackModule;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +34,10 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
@@ -45,6 +50,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	private int stackSize;
 	private int tickRate;
 	private boolean needToProcessModules = false;
+	private final List<BlockFace> neighbours = new ArrayList<BlockFace>();
 
 	public ItemRouter() {
 		setStackSize(1);
@@ -170,7 +176,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 					Block b = getLocation().getBlock().getRelative(event.getBlockFace());
 					getLocation().getWorld().dropItemNaturally(b.getLocation(), getBufferItem());
 					setBufferItem(null);
-					updateBlock();
+					updateBlock(false);
 					event.getPlayer().playSound(getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
 				}
 				event.setCancelled(true);
@@ -213,6 +219,15 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			clearModules();
 		}
 		super.setLocation(loc);
+		if (loc != null) {
+			// defer this so we can be sure all neighbouring STB blocks are actually created first
+			Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+				@Override
+				public void run() {
+					findNeighbourInventories();
+				}
+			});
+		}
 	}
 
 	@Override
@@ -246,6 +261,30 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			playParticles();
 		}
 		super.onServerTick();
+	}
+
+	@Override
+	public void onBlockPhysics(BlockPhysicsEvent event) {
+		Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+				findNeighbourInventories();
+			}
+		});
+	}
+
+	private void findNeighbourInventories() {
+		Block b = getLocation().getBlock();
+		neighbours.clear();
+		for (BlockFace face : STBUtil.directFaces) {
+			Block b1 = b.getRelative(face);
+			BaseSTBBlock stb = LocationManager.getManager().get(b1.getLocation());
+			if (stb instanceof STBInventoryHolder) {
+				neighbours.add(face);
+			} else if (VanillaInventoryUtils.isVanillaInventory(b1)) {
+				neighbours.add(face);
+			}
+		}
 	}
 
 	private void playParticles() {
@@ -348,7 +387,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			return returned;
 		} else if (receiver.isSimilar(bufferItem)) {
 			int nExtracted = Math.min(amount, bufferItem.getAmount());
-			nExtracted = Math.min(nExtracted, receiver.getType().getMaxStackSize() - receiver.getAmount());
+			nExtracted = Math.min(nExtracted, receiver.getMaxStackSize() - receiver.getAmount());
 			receiver.setAmount(receiver.getAmount() + nExtracted);
 			setBufferAmount(bufferItem.getAmount() - nExtracted);
 			return receiver;
@@ -415,8 +454,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 		return false;
 	}
 
-	public void onGUIClosed(InventoryCloseEvent event) {
-
+	@Override
+	public void onGUIClosed() {
+		// no action needed here
 	}
 
 	private void processModules() {
@@ -438,6 +478,10 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			insertModule(mod);
 		}
 		Debugger.getInstance().debug("re-processed modules for " + this + " tick-rate=" + getTickRate() + " stack-size=" + getStackSize());
-		updateBlock();
+		updateBlock(false);
+	}
+
+	public List<BlockFace> getNeighbours() {
+		return neighbours;
 	}
 }

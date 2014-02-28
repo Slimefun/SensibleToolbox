@@ -51,30 +51,6 @@ public class PullerModule extends DirectionalItemRouterModule {
 
 	@Override
 	public boolean execute() {
-		if (getOwner() != null) {
-			ItemStack inBuffer = getOwner().getBufferItem();
-			if (inBuffer != null && inBuffer.getAmount() >= inBuffer.getType().getMaxStackSize()) {
-				return false;
-			}
-			int nToPull = getOwner().getStackSize();
-			Block b = getOwner().getLocation().getBlock();
-			Block target = b.getRelative(getDirection());
-			BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
-			ItemStack pulled;
-			if (stb instanceof STBInventoryHolder) {
-				pulled = ((STBInventoryHolder)stb).extractItems(getDirection().getOppositeFace(), inBuffer, nToPull);
-			} else {
-				// possible vanilla inventory holder
-				pulled = VanillaInventoryUtils.pullFromInventory(target, nToPull, inBuffer, getFilter());
-			}
-			if (pulled != null) {
-				if (stb != null) {
-					stb.updateBlock(false);
-				}
-				getOwner().setBufferItem(inBuffer == null ? pulled : inBuffer);
-				return true;
-			}
-		}
-		return false;
+		return getOwner() != null && doPull(getDirection());
 	}
 }

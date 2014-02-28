@@ -1,32 +1,25 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.LightMeter;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Wool;
 
-public class BasicSolarCell extends BaseSTBMachine {
+public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 	private static final MaterialData md = new MaterialData(Material.LAPIS_BLOCK);
-	private static final int ENERGY_RATE = 20;
+	private static final int ENERGY_RATE = 20;  // how often to recalculate light & energy levels
 	private static final double SCU_PER_TICK = 1.0;
 	private static final int LIGHT_SLOT = 13;
-	private static final ItemStack BRIGHT = new Wool(DyeColor.YELLOW).toItemStack();
-	private static final ItemStack DIM = new Wool(DyeColor.ORANGE).toItemStack();
-	private static final ItemStack DARK = new Wool(DyeColor.BLACK).toItemStack();
 
-	static {
-		InventoryGUI.setDisplayName(BRIGHT, "Full Efficiency");
-		InventoryGUI.setDisplayName(DIM, "Reduced Efficiency");
-		InventoryGUI.setDisplayName(DARK, "No Power Output");
-	}
+	private byte effectiveLightLevel;
+	private int lightMeterId;
 
 	public BasicSolarCell() {
 
@@ -138,23 +131,54 @@ public class BasicSolarCell extends BaseSTBMachine {
 	@Override
 	public void onServerTick() {
 		if (getTicksLived() % ENERGY_RATE == 0) {
-			Block b = getLocation().getBlock().getRelative(BlockFace.UP);
-			byte lightFromSky = b.getLightFromSky();
-			byte overallLight = lightFromSky < 14 ? 0 : b.getLightLevel();
-			if (lightFromSky < 15) overallLight--;
+			calculateLightLevel();
 
-			if (!getGUI().getViewers().isEmpty()) {
-				getGUI().getInventory().setItem(LIGHT_SLOT, getIndicator(overallLight));
-			}
 			if (getCharge() < getMaxCharge()) {
-				double toAdd = SCU_PER_TICK * ENERGY_RATE * getChargeMult(overallLight);
+				double toAdd = SCU_PER_TICK * ENERGY_RATE * getChargeMultiplier(getLightLevel());
 				setCharge(getCharge() + toAdd);
 			}
+
+			getLightMeter().doRepaint();
 		}
 		super.onServerTick();
 	}
 
-	private double getChargeMult(byte light) {
+	private LightMeter getLightMeter() {
+		return (LightMeter) getGUI().getMonitor(lightMeterId);
+	}
+
+	private void calculateLightLevel() {
+		Block b = getLocation().getBlock().getRelative(BlockFace.UP);
+		byte lightFromSky = b.getLightFromSky();
+		byte newLight = lightFromSky < 14 ? 0 : b.getLightLevel();
+		if (lightFromSky < 15) newLight--;
+		if (b.getWorld().hasStorm()) newLight--;
+		if (newLight != effectiveLightLevel) {
+			getLightMeter().repaintNeeded();
+			effectiveLightLevel = newLight;
+		}
+	}
+
+	@Override
+	public byte getLightLevel() {
+		return effectiveLightLevel;
+	}
+
+	@Override
+	protected InventoryGUI createGUI() {
+		InventoryGUI gui = super.createGUI();
+
+		lightMeterId = gui.addMonitor(new LightMeter(gui));
+
+		return gui;
+	}
+
+	@Override
+	public int getLightMeterSlot() {
+		return LIGHT_SLOT;
+	}
+
+	private double getChargeMultiplier(byte light) {
 		switch (light) {
 			case 15: return 1.0;
 			case 14: return 0.75;
@@ -164,13 +188,4 @@ public class BasicSolarCell extends BaseSTBMachine {
 		}
 	}
 
-	private ItemStack getIndicator(byte light) {
-		if (light < 12) {
-			return DARK;
-		} else if (light < 15) {
-			return DIM;
-		} else {
-			return BRIGHT;
-		}
-	}
 }

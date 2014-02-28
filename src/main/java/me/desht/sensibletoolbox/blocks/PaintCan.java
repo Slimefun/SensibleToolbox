@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.gui.*;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
 import me.desht.sensibletoolbox.util.RelativePosition;
@@ -11,28 +11,33 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
-import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.HashMap;
 
 public class PaintCan extends BaseSTBBlock {
-	public static final String STB_PAINT_CAN = "STB_Paint_Can";
 	public static final int MAX_PAINT_LEVEL = 200;
 	private static final int PAINT_PER_DYE = 25;
+	private static final int[] ITEM_SLOTS = new int[] {0, 1};
+	private static final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLD_SPADE);
+	private static final ItemStack EMPTY_TEXTURE = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE).toItemStack();
 	private int paintLevel;
 	private DyeColor colour;
+	private int levelMonitorId;
 
 	public PaintCan() {
 		paintLevel = 0;
@@ -43,10 +48,6 @@ public class PaintCan extends BaseSTBBlock {
 		super(conf);
 		setPaintLevel(conf.getInt("paintLevel"));
 		setColour(DyeColor.valueOf(conf.getString("paintColour")));
-	}
-
-	public static String getMixerTitle() {
-		return ChatColor.DARK_BLUE + "Paint Mixer";
 	}
 
 	public static int getMaxPaintLevel() {
@@ -65,7 +66,13 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	public void setPaintLevel(int paintLevel) {
+		int oldLevel = this.paintLevel;
 		this.paintLevel = paintLevel;
+		updateBlock(oldLevel == 0 && paintLevel != 0 || oldLevel != 0 && paintLevel == 0);
+		updateAttachedLabelSigns();
+		if (getPaintLevelMonitor() != null) {
+			getPaintLevelMonitor().repaint();
+		}
 	}
 
 	public DyeColor getColour() {
@@ -73,7 +80,15 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	public void setColour(DyeColor colour) {
+		DyeColor oldColour = this.colour;
 		this.colour = colour;
+		if (this.colour != oldColour) {
+			updateBlock(true);
+			updateAttachedLabelSigns();
+			if (getPaintLevelMonitor() != null) {
+				getPaintLevelMonitor().repaint();
+			}
+		}
 	}
 
 	@Override
@@ -113,16 +128,122 @@ public class PaintCan extends BaseSTBBlock {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			PaintBrush brush = BaseSTBItem.getItemFromItemStack(stack, PaintBrush.class);
 			if (brush == null) {
-				// open inventory to mix more paint
-				Inventory inv = Bukkit.createInventory(player, 9, getMixerTitle());
-				player.openInventory(inv);
-				// make a note of which block this inventory is connected to
-				player.setMetadata(STB_PAINT_CAN,
-						new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), getLocation()));
-				event.setCancelled(true);
+				// refilling a paintbrush/roller from the can is handled in the PaintBrush object
+				getGUI().show(player);
+				getPaintLevelMonitor().repaint();
 			}
+			event.setCancelled(true);
 		} else {
 			super.onInteractBlock(event);
+		}
+	}
+
+	@Override
+	public InventoryGUI createGUI() {
+		InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
+		for (int slot : ITEM_SLOTS) {
+			gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+		}
+		gui.addGadget(new ButtonGadget(gui, "Mix/Dye", null, MIX_TEXTURE, new Runnable() {
+			@Override
+			public void run() {
+				if (tryMix()) {
+					Location loc = getLocation();
+					loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
+				}
+			}
+		}), 3);
+		gui.addGadget(new ButtonGadget(gui, "! Empty Paint !", null, EMPTY_TEXTURE, new Runnable() {
+			@Override
+			public void run() {
+				emptyPaintCan();
+			}
+		}), 4);
+		levelMonitorId = gui.addMonitor(new LevelMonitor(gui, new LevelMonitor.LevelReporter() {
+			@Override
+			public int getLevel() { return getPaintLevel(); }
+
+			@Override
+			public int getMaxLevel() { return MAX_PAINT_LEVEL; }
+
+			@Override
+			public Material getIcon() { return Material.DIAMOND_LEGGINGS; }
+
+			@Override
+			public int getSlot() { return 6; }
+
+			@Override
+			public String getMessage() {
+				ChatColor cc = STBUtil.toChatColor(getColour());
+				return ChatColor.WHITE + "Paint Level: " + getPaintLevel() + "/" + MAX_PAINT_LEVEL  + " " + cc + getColour();
+			}
+		}));
+		gui.addGadget(new AccessControlGadget(gui), 8);
+		return gui;
+	}
+
+	private void emptyPaintCan() {
+		setPaintLevel(0);
+		Location loc = getLocation();
+		loc.getWorld().playSound(loc, Sound.SPLASH2, 1.0f, 1.0f);
+	}
+
+	private LevelMonitor getPaintLevelMonitor() {
+		return getGUI() == null ? null: (LevelMonitor) getGUI().getMonitor(levelMonitorId);
+	}
+
+	private boolean validItem(ItemStack item) {
+		return STBUtil.isColorable(item.getType()) ||
+				item.getType() == Material.MILK_BUCKET || item.getType() == Material.INK_SACK ||
+				item.getType() == Material.GLASS || item.getType() == Material.THIN_GLASS;
+	}
+
+	@Override
+	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return onCursor.getType() == Material.AIR || validItem(onCursor);
+	}
+
+	@Override
+	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+		return true;
+	}
+
+	@Override
+	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+		if (!validItem(toInsert)) {
+			return 0;
+		} else {
+			HashMap<Integer,ItemStack> excess = getGUI().getInventory().addItem(toInsert);
+			int inserted = toInsert.getAmount();
+			for (ItemStack stack : excess.values()) {
+				inserted -= stack.getAmount();
+			}
+			return inserted;
+		}
+	}
+
+	@Override
+	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+		return true;
+	}
+
+	@Override
+	public boolean onClickOutside() {
+		return false;
+	}
+
+	@Override
+	public void onGUIClosed() {
+		if (getGUI().getViewers().size() == 1) {
+			// last player closing inventory - eject any remaining items
+			Location loc = getLocation();
+			for (int slot : ITEM_SLOTS) {
+				ItemStack item = getGUI().getInventory().getItem(slot);
+				if (item != null) {
+					loc.getWorld().dropItemNaturally(getLocation(), item);
+					getGUI().getInventory().setItem(slot, null);
+				}
+			}
 		}
 	}
 
@@ -164,41 +285,45 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	/**
-	 * Attempt to refill the can from the contents of the given inventory.  The mixer needs to find
-	 * a milk bucket and at least one dye.  If mixing is successful, the bucket is replace with an
-	 * empty bucket and one dye is removed, the method returns true, and it is up to the caller to dispose
-	 * of any remaining items in the inventory as appropriate (either returning them or destroying them).
+	 * Attempt to refill the can from the contents of the can's inventory.  The mixer needs to find
+	 * a milk bucket and at least one dye.  If mixing is successful, the bucket is replaced with an
+	 * empty bucket and dye is removed, and the method returns true.
 	 *
-	 * @param inventory the inventory to supply items from
 	 * @return true if mixing was successful, false otherwise
 	 */
-	public boolean tryMix(Inventory inventory) {
+	public boolean tryMix() {
 		int bucketSlot = -1;
 		int dyeSlot = -1;
-		int woolSlot = -1;
+		int dyeableSlot = -1;
 
-		// first try to find a milk bucket and a dye
-		for (int i = 0; i < inventory.getSize(); i++) {
-			if (inventory.getItem(i) != null) {
-				if (inventory.getItem(i).getType() == Material.MILK_BUCKET && bucketSlot == -1) {
-					bucketSlot = i;
-				} else if (inventory.getItem(i).getType() == Material.INK_SACK && dyeSlot == -1) {
-					dyeSlot = i;
-				} else if (inventory.getItem(i).getType() == Material.WOOL && woolSlot == -1) {
-					woolSlot = i;
+		Inventory inventory = getGUI().getInventory();
+
+		// first try to find a milk bucket, dye and/or wool
+		for (int slot : ITEM_SLOTS) {
+			ItemStack stack = inventory.getItem(slot);
+			if (stack != null) {
+				if (stack.getType() == Material.MILK_BUCKET && bucketSlot == -1) {
+					bucketSlot = slot;
+				} else if (stack.getType() == Material.INK_SACK && dyeSlot == -1) {
+					dyeSlot = slot;
+				} else if (validItem(stack) && dyeableSlot == -1) {
+					dyeableSlot = slot;
 				} else {
-					// eject the item
-					getLocation().getWorld().dropItemNaturally(getLocation(), inventory.getItem(i));
+					// not an item we want - eject it
+					getLocation().getWorld().dropItemNaturally(getLocation(), stack);
+					inventory.setItem(slot, null);
 				}
 			}
 		}
-		Debugger.getInstance().debug(this + ": wool=" + woolSlot + " dye=" + dyeSlot + " milk=" + bucketSlot);
+		Debugger.getInstance().debug(this + ": dyeable=" + dyeableSlot + " dye=" + dyeSlot + " milk=" + bucketSlot);
 
 		if (bucketSlot >= 0 && dyeSlot >= 0) {
-			// ok, we have the items - mix it up!
-			DyeColor newColour = DyeColor.getByDyeData((byte)inventory.getItem(dyeSlot).getDurability());
-			int amount = inventory.getItem(dyeSlot).getAmount();
-			int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / PAINT_PER_DYE, amount);
+			// we have milk & some dye - mix it up!
+			ItemStack dyeStack = inventory.getItem(dyeSlot);
+			Dye dye = (Dye) dyeStack.getData();
+			DyeColor newColour = dye.getColor();
+			int dyeAmount = dyeStack.getAmount();
+			int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / PAINT_PER_DYE, dyeAmount);
 			if (toUse == 0) {
 				// not enough room for any mixing
 				return false;
@@ -207,8 +332,8 @@ public class PaintCan extends BaseSTBBlock {
 				// two different colours - do they mix?
 				DyeColor mixedColour = mixDyes(getColour(), newColour);
 				if (mixedColour == null) {
-					// no - just replace the can with the new colour
-					toUse = Math.min(getMaxPaintLevel() / PAINT_PER_DYE, amount);
+					// no - just replace the can's contents with the new colour
+					toUse = Math.min(getMaxPaintLevel() / PAINT_PER_DYE, dyeAmount);
 					setColour(newColour);
 					setPaintLevel(PAINT_PER_DYE * toUse);
 				} else {
@@ -217,67 +342,38 @@ public class PaintCan extends BaseSTBBlock {
 					setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
 				}
 			} else {
+				// either adding to an empty can, or adding more of the same colour
 				setColour(newColour);
 				setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
 			}
 			Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColour());
-			updateBlock(true);
-			updateAttachedLabelSigns();
+
+			Location loc = getLocation();
+			loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
+
 			inventory.setItem(bucketSlot, new ItemStack(Material.BUCKET));
-			ItemStack dyeStack = inventory.getItem(dyeSlot);
-			if (dyeStack.getAmount() > 1) {
-				dyeStack.setAmount(dyeStack.getAmount() - toUse);
-				inventory.setItem(dyeSlot, dyeStack);
-			} else {
-				inventory.setItem(dyeSlot, null);
-			}
+			dyeStack.setAmount(dyeStack.getAmount() - toUse);
+			inventory.setItem(dyeSlot, dyeStack.getAmount() > 0 ? dyeStack : null);
+
 			return true;
-		} else if (woolSlot >= 0 && getPaintLevel() > 0) {
-			// soak up any paint with the wool, dye it and return it
-			Debugger.getInstance().debug(this + ": wool soak!");
-			setPaintLevel(0);
-			ItemStack stack = inventory.getItem(woolSlot);
-			stack.setDurability(getColour().getWoolData());
-			inventory.setItem(woolSlot, stack);
+		} else if (dyeableSlot >= 0 && getPaintLevel() > 0) {
+			// soak up some paint with the dyeable item(s)
+			int toDye = inventory.getItem(dyeableSlot).getAmount();
+			Debugger.getInstance().debug(this + ": dyeing " + inventory.getItem(dyeableSlot));
+			int canDye = Math.min(toDye, getPaintLevel());
+			ItemStack undyed = inventory.getItem(dyeableSlot).getData().toItemStack(inventory.getItem(dyeableSlot).getAmount());
+			ItemStack dyed = STBUtil.makeColouredMaterial(undyed.getType(), getColour()).toItemStack(Math.min(canDye, undyed.getAmount()));
+			undyed.setAmount(undyed.getAmount() - dyed.getAmount());
+			inventory.setItem(0, dyed.getAmount() > 0 ? dyed : null);
+			inventory.setItem(1, undyed.getAmount() > 0 ? undyed : null);
+			setPaintLevel(getPaintLevel() - canDye);
+			Location loc = getLocation();
+			loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
 			return true;
 		} else {
 			return false;
 		}
 	}
-
-//	protected void updateAttachedLabelSigns() {
-//		String[] text = getSignLabel();
-//		for (Sign sign : findAttachedLabelSigns()) {
-//			for (int i = 0; i < text.length; i++) {
-//				sign.setLine(i, text[i]);
-//			}
-//			sign.update();
-//		}
-//		Block b = getLocation().getBlock();
-//		for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH} ) {
-//			if (b.getRelative(face).getType() == Material.WALL_SIGN) {
-//				Debugger.getInstance().debug(this + ": update sign " + face);
-//				Sign sign = (Sign) b.getRelative(face).getState();
-//				org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
-//				if (sign.getLine(0).equals(getItemName())) {
-//					if (s.getAttachedFace() == face.getOppositeFace()) {
-//						String[] text = getSignLabel();
-//						for (int i = 0; i < text.length; i++) {
-//							sign.setLine(i, text[i]);
-//						}
-//						sign.update();
-//						break;
-//					}
-//				}
-//			}
-//		}
-//	}
-
-//	@Override
-//	public void updateBlock() {
-//		super.updateBlock();
-//		updateAttachedLabelSigns();
-//	}
 
 	private DyeColor mixDyes(DyeColor dye1, DyeColor dye2) {
 		if (dye1.compareTo(dye2) > 0) {

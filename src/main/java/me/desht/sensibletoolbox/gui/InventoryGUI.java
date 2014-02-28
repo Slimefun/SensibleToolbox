@@ -24,6 +24,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class InventoryGUI {
 	private final SlotType[] slotTypes;
 	private final IntRange slotRange;
 	private final List<MonitorGadget> monitors = new ArrayList<MonitorGadget>();
+	private WeakReference<Player> player;
 
 	public InventoryGUI(InventoryGUIListener listener, int size, String title) {
 		this(null, listener, size, title);
@@ -83,6 +85,7 @@ public class InventoryGUI {
 
 	public static void setOpenGUI(Player player, InventoryGUI gui) {
 		if (gui != null) {
+			gui.setPrimaryPlayer(player);
 			player.setMetadata(STB_OPEN_GUI, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), gui));
 		} else {
 			player.removeMetadata(STB_OPEN_GUI, SensibleToolboxPlugin.getInstance());
@@ -133,6 +136,25 @@ public class InventoryGUI {
 			setSlotType(slot, SlotType.GADGET);
 		}
 		return monitors.size() - 1;
+	}
+
+	public Player getPrimaryPlayer() {
+		if (player == null || player.get() == null) {
+			if (getViewers().isEmpty()) {
+				return null;
+			} else {
+				player = new WeakReference<Player>((Player) getViewers().get(0));
+			}
+		}
+		return player.get();
+	}
+
+	private void setPrimaryPlayer(Player player) {
+		if (player == null) {
+			this.player = null;
+		} else if (this.player == null || this.player.get() == null) {
+			this.player = new WeakReference<Player>(player);
+		}
 	}
 
 	public MonitorGadget getMonitor(int monitorId) {
@@ -260,9 +282,13 @@ public class InventoryGUI {
 
 	public void receiveEvent(InventoryCloseEvent event) {
 		Debugger.getInstance().debug("received GUI close event for " + event.getPlayer().getName());
-		listener.onGUIClosed(event);
+		listener.onGUIClosed();
 		if (event.getPlayer() instanceof Player) {
 			setOpenGUI((Player) event.getPlayer(), null);
+			Player p = getPrimaryPlayer();
+			if (p != null && p.getUniqueId().equals(event.getPlayer().getUniqueId())) {
+				setPrimaryPlayer(null);
+			}
 		}
 		Debugger.getInstance().debug(event.getPlayer().getName() + " closed GUI for " + getOwningItem());
 	}
@@ -344,12 +370,11 @@ public class InventoryGUI {
 		public int onShiftClickInsert(int slot, ItemStack toInsert);
 		public boolean onShiftClickExtract(int slot, ItemStack toExtract);
 		public boolean onClickOutside();
-		public void onGUIClosed(InventoryCloseEvent event);
+		public void onGUIClosed();
 	}
 
 	public enum SlotType {
 		BACKGROUND,
-//		LABEL,
 		ITEM,
 		GADGET
 	}

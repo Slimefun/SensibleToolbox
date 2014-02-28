@@ -51,6 +51,7 @@ public class GeneralListener extends STBBaseListener {
 		}
 		if (!event.isCancelled() && event.getClickedBlock() != null) {
 			BaseSTBBlock stb = LocationManager.getManager().get(event.getClickedBlock().getLocation());
+			System.out.println("get stb block for click " + stb);
 			if (stb != null) {
 				stb.onInteractBlock(event);
 			}
@@ -325,7 +326,6 @@ public class GeneralListener extends STBBaseListener {
 								LocationManager.getManager().moveBlock(stb, moving.getLocation(), to.getLocation());
 							}
 						});
-
 						break;
 					case BLOCK:
 						event.setCancelled(true);

@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.gui.EnergyFlowGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
@@ -25,6 +26,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
 		for (BlockFace face : STBUtil.directFaces) {
 			energyFlow.put(face, EnergyFlow.NONE);
 		}
+		setChargeDirection(ChargeDirection.CELL);
 	}
 
 	public BatteryBox(ConfigurationSection conf) {

@@ -18,7 +18,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -303,18 +302,10 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	@Override
-	public void onGUIClosed(InventoryCloseEvent event) {
-		if (event.getPlayer() instanceof Player) {
-			Player player = (Player) event.getPlayer();
-			InventoryGUI gui = InventoryGUI.getOpenGUI(player);
-			if (gui != null) {
-				player.setItemInHand(toItemStack());
-			} else {
-				LogUtils.warning("Player " + player + " should be holding recipe book, but is not!");
-			}
+	public void onGUIClosed() {
+		if (gui.getPrimaryPlayer() != null) {
+			gui.getPrimaryPlayer().setItemInHand(toItemStack());
 		}
-		player = null;
-		gui = null;
 	}
 
 	private void tryFabrication(Recipe recipe) {
@@ -326,24 +317,26 @@ public class RecipeBook extends BaseSTBItem {
 
 		List<ItemStack> ingredients = mergeIngredients();
 		List<ItemCost> costs = new ArrayList<ItemCost>(ingredients.size());
+		boolean ok = true;
 		for (ItemStack ingredient : ingredients) {
 			ItemCost cost = new ItemCost(ingredient);
-			System.out.println("check for " + ingredient);
 			if (!cost.isAffordable(player)) {
 				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-				MiscUtil.errorMessage(player, "Missing: " + ItemNames.lookup(ingredient));
-				return;
+				MiscUtil.errorMessage(player, "Missing: &f" + ItemNames.lookup(ingredient));
+				ok = false;
 			}
 			costs.add(cost);
 		}
-		player.getInventory().addItem(recipe.getResult());
-		for (ItemCost cost : costs) {
-			Debugger.getInstance().debug(2, this + ": apply cost " + cost.getDescription() + " to player");
-			cost.apply(player);
+		if (ok) {
+			for (ItemCost cost : costs) {
+				Debugger.getInstance().debug(2, this + ": apply cost " + cost.getDescription() + " to player");
+				cost.apply(player);
+			}
+			player.getInventory().addItem(recipe.getResult());
+			player.updateInventory();
+			player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
+			MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(recipe.getResult()));
 		}
-		player.updateInventory();
-		player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-		MiscUtil.statusMessage(player, "Fabricated: " + ItemNames.lookup(recipe.getResult()));
 	}
 
 

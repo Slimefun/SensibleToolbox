@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -18,7 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.material.MaterialData;
 
-public class TrashCan extends BaseSTBBlock {
+public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 	private static final MaterialData md = new MaterialData(Material.DROPPER);
 
 	public TrashCan() {
@@ -106,6 +107,27 @@ public class TrashCan extends BaseSTBBlock {
 			}
 			Debugger.getInstance().debug(this + ": trash emptied");
 			d.getInventory().clear();
+		}
+	}
+
+	@Override
+	public int insertItems(ItemStack item, BlockFace face, boolean sorting) {
+		return item.getAmount();
+	}
+
+	@Override
+	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount) {
+		return null;
+	}
+
+	@Override
+	public Inventory getInventory() {
+		Location l = getLocation();
+		if (l != null && l.getBlock().getType() == getMaterial()) {
+			Dropper d = (Dropper) getLocation().getBlock().getState();
+			return d.getInventory();
+		} else {
+			return null;
 		}
 	}
 }

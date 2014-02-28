@@ -10,7 +10,6 @@ import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.*;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.items.components.CircuitBoard;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
@@ -47,7 +46,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBItem>, InventoryGUI.InventoryGUIListener {
-	protected static final ChatColor LORE_COLOR = ChatColor.GRAY;
+	public static final ChatColor LORE_COLOR = ChatColor.GRAY;
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	public static final String SUFFIX_SEPARATOR = " \uff1a ";
@@ -77,13 +76,13 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new PaintCan());
 		registerItem(new Elevator());
 		registerItem(new TapeMeasure());
-		registerItem(new CircuitBoard());
 		registerItem(new SimpleCircuit());
 		registerItem(new BuildersMultiTool());
 		registerItem(new Floodlight());
 		registerItem(new MachineFrame());
 		registerItem(new Smelter());
 		registerItem(new Masher());
+		registerItem(new Sawmill());
 		registerItem(new IronDust());
 		registerItem(new GoldDust());
 		registerItem(new ItemRouter());
@@ -91,6 +90,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new PullerModule());
 		registerItem(new DropperModule());
 		registerItem(new SenderModule());
+		registerItem(new DistributorModule());
 		registerItem(new AdvancedSenderModule());
 		registerItem(new ReceiverModule());
 		registerItem(new SorterModule());
@@ -106,6 +106,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		registerItem(new BasicSolarCell());
 		registerItem(new RecipeBook());
 		registerItem(new Multimeter());
+		registerItem(new BigStorageUnit());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -573,6 +574,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 		return false;
 	}
 
-	public void onGUIClosed(InventoryCloseEvent event) {
+	@Override
+	public void onGUIClosed() {
 	}
 }

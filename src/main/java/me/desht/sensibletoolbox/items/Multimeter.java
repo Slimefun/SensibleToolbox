@@ -2,14 +2,14 @@ package me.desht.sensibletoolbox.items;
 
 import com.google.common.base.Joiner;
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
+import me.desht.sensibletoolbox.nametags.NameTagSpawner;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -75,7 +75,7 @@ public class Multimeter extends BaseSTBItem {
 			EnergyNet net = EnergyNetManager.getEnergyNet(event.getClickedBlock());
 			Player player = event.getPlayer();
 			if (net != null) {
-				showNetInfo(player, net);
+				showNetInfo(player, net, event.getClickedBlock());
 			} else {
 				Block b;
 				if (event.getClickedBlock().getType() == Material.WALL_SIGN) {
@@ -96,16 +96,29 @@ public class Multimeter extends BaseSTBItem {
 		}
 	}
 
-	private void showNetInfo(Player player, EnergyNet net) {
+	private void showNetInfo(final Player player, EnergyNet net, Block clicked) {
 		String s1 = net.getCableCount() == 1 ? "" : "s";
 		String s2 = net.getSourceCount() == 1 ? "" : "s";
 		String s3 = net.getSinkCount() == 1 ? "" : "s";
-		String msg = String.format("Energy net &f#%d&-, %d cable" + s1 + ", %d source" + s2 + ", %d sink" + s3,
+		String line1 = String.format("Net &f#%d&-, %d cable" + s1 + ", %d source" + s2 + ", %d sink" + s3,
 				net.getNetID(), net.getCableCount(), net.getSourceCount(), net.getSinkCount());
-		MiscUtil.statusMessage(player, msg);
-		msg = String.format("▶ Instantaneous demand: &6%5.2f/t&-, supply available: &6%5.2f/t&-",
+		String line2 = String.format("▶ Demand: &6%5.2f/t&-, Supply: &6%5.2f/t&-",
 				net.getDemand(), net.getSupply());
-		MiscUtil.statusMessage(player, msg);
+//		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+//			final NameTagSpawner spawner = new NameTagSpawner(2);
+//			Location loc = clicked.getLocation();
+//			spawner.setNameTag(0, player, loc, 1.0, ChatColor.translateAlternateColorCodes('&', line1));
+//			spawner.setNameTag(1, player, loc, 0.75, ChatColor.translateAlternateColorCodes('&', line2));
+//			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+//				@Override
+//				public void run() {
+//					spawner.clearNameTags(player);
+//				}
+//			}, 50L);
+//		} else {
+			MiscUtil.statusMessage(player, line1);
+			MiscUtil.statusMessage(player, line2);
+//		}
 		player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
 	}
 

@@ -63,4 +63,11 @@ public interface ChargeableBlock extends Chargeable {
 	 * @return an array of the attached energy nets.
 	 */
 	public EnergyNet[] getAttachedEnergyNets();
+
+	/**
+	 * Get the slot in this block's GUI where the charge meter should be displayed.
+	 *
+	 * @return the slot number
+	 */
+	int getChargeMeterSlot();
 }

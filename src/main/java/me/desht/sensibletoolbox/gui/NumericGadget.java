@@ -18,8 +18,8 @@ public class NumericGadget extends ClickableGadget {
 	private final ItemStack icon = new ItemStack(Material.PAPER);
 	private int value;
 
-	public NumericGadget(InventoryGUI owner, String title, IntRange range, int value, int largeIncr, int smallIncr, UpdateListener callback) {
-		super(owner);
+	public NumericGadget(InventoryGUI gui, String title, IntRange range, int value, int largeIncr, int smallIncr, UpdateListener callback) {
+		super(gui);
 		this.title = title;
 		this.range = range;
 		this.value = value;

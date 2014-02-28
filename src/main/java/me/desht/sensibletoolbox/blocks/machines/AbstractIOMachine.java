@@ -5,12 +5,15 @@ import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -24,13 +27,6 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
 	public AbstractIOMachine(ConfigurationSection conf) {
 		super(conf);
-	}
-
-//	protected abstract ProcessingResult getCustomRecipeFor(ItemStack stack);
-
-	@Override
-	protected void playStartupSound() {
-		getLocation().getWorld().playSound(getLocation(), Sound.HORSE_SKELETON_IDLE, 1.0f, 0.5f);
 	}
 
 	@Override
@@ -83,10 +79,6 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	}
 
 	private void pushItemIntoOutput(ItemStack result) {
-//		if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
-//			result = autoEject(result);
-//		}
-
 		if (result != null && result.getAmount() > 0) {
 			int slot = findOutputSlot(result);
 			if (slot >= 0) {
@@ -111,7 +103,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	}
 
 	/**
-	 * Attempt to auto-eject one from an output slot.
+	 * Attempt to auto-eject one item from an output slot.
 	 *
 	 * @param result the item to eject
 	 * @return true if an item was ejected, false otherwise
@@ -150,7 +142,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			return;
 		}
 		setProcessing(toProcess);
-		getProgressMeter().initialize(recipe.getProcessingTime());
+		getProgressMeter().setMaxProgress(recipe.getProcessingTime());
 		setProgress(recipe.getProcessingTime());
 		if (stack.getAmount() > 1) {
 			stack.setAmount(stack.getAmount() - 1);
@@ -158,6 +150,12 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			stack = null;
 		}
 		getInventory().setItem(inputSlot, stack);
+
+		if (stack == null) {
+			// workaround to avoid leaving ghost items in the input slot
+			STBUtil.forceInventoryRefresh(getInventory());
+		}
+
 		updateBlock(false);
 	}
 

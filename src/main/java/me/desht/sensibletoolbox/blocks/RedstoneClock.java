@@ -28,14 +28,12 @@ public class RedstoneClock extends BaseSTBBlock {
 	public RedstoneClock() {
 		frequency = 20;
 		onDuration = 5;
-		createGUI();
 	}
 
 	public RedstoneClock(ConfigurationSection conf) {
 		super(conf);
 		setFrequency(conf.getInt("frequency"));
 		setOnDuration(conf.getInt("onDuration"));
-		createGUI();
 	}
 
 	@Override
@@ -126,9 +124,8 @@ public class RedstoneClock extends BaseSTBBlock {
 
 	@Override
 	public String[] getExtraLore() {
-		String l = BaseSTBItem.LORE_COLOR + " every " + ChatColor.GOLD + getFrequency() +
-				LORE_COLOR + " ticks for " + ChatColor.GOLD + getOnDuration() +
-				LORE_COLOR + " ticks";
+		String l = BaseSTBItem.LORE_COLOR + "Frequency: " + ChatColor.GOLD + getFrequency() +
+				LORE_COLOR + "t, Duration: " + ChatColor.GOLD + getOnDuration() + LORE_COLOR + "t";
 		return new String[] { l };
 	}
 
@@ -164,16 +161,5 @@ public class RedstoneClock extends BaseSTBBlock {
 			getGUI().show(event.getPlayer());
 		}
 		super.onInteractBlock(event);
-	}
-
-	@Override
-	public void setLocation(Location loc) {
-		if (loc == null) {
-			setGUI(null);
-		}
-		super.setLocation(loc);
-		if (loc != null) {
-			setGUI(createGUI());
-		}
 	}
 }
