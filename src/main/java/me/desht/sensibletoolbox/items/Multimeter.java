@@ -6,6 +6,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.nametags.NameTagSpawner;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Multimeter extends BaseSTBItem {
-	private static final MaterialData md = new MaterialData(Material.BONE);
+	private static final MaterialData md = new MaterialData(Material.WATCH);
 
 	public Multimeter() {
 	}
@@ -59,11 +60,13 @@ public class Multimeter extends BaseSTBItem {
 
 	@Override
 	public Recipe getRecipe() {
+		SimpleCircuit sc = new SimpleCircuit();
+		registerCustomIngredients(sc);
 		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("IGI", "RSR", " T ");
+		recipe.shape("IGI", "CSC", " T ");
 		recipe.setIngredient('I', Material.IRON_INGOT);
 		recipe.setIngredient('G', Material.GLOWSTONE_DUST);
-		recipe.setIngredient('R' ,Material.REDSTONE);
+		recipe.setIngredient('C', sc.getMaterialData());
 		recipe.setIngredient('S', Material.SIGN);
 		recipe.setIngredient('T' ,Material.STICK);
 		return recipe;
