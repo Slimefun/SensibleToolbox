@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -32,7 +33,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	public BigStorageUnit() {
 		setStored(null);
 		signLabel[0] = makeItemLabel();
-		amount = 0;
+		oldAmount = amount = 0;
 	}
 
 	public BigStorageUnit(ConfigurationSection conf) {
@@ -45,6 +46,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			e.printStackTrace();
 		}
 		setAmount(conf.getInt("amount"));
+		oldAmount = amount;
 	}
 
 	@Override
@@ -58,7 +60,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	}
 
 	public void setAmount(int amount) {
-		this.amount = amount;
+		this.amount = Math.max(0, amount);
+		if (amount <= 0) {
+			setStored(null);
+		}
 		signLabel[1] = amount > 0 ? Integer.toString(amount) : "";
 	}
 
@@ -81,7 +86,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 				signLabel[3] = lines[1];
 			}
 		} else {
-			signLabel[2] = signLabel[3] = "";
+			signLabel[2] = ChatColor.ITALIC + "Empty";
+			signLabel[3] = "";
 		}
 	}
 
@@ -187,7 +193,6 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 				int toPull = Math.min(stackIn.getAmount(), maxCapacity - amount);
 				setAmount(amount + toPull);
 				stackIn.setAmount(stackIn.getAmount() - toPull);
-				System.out.println("set input slot = " + stackIn);
 				getGUI().getInventory().setItem(inputSlot, stackIn.getAmount() > 0 ? stackIn : null);
 				if (stackIn.getAmount() == 0) {
 					// workaround to avoid leaving ghost items in the input slot
@@ -201,22 +206,20 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 				ItemStack stackOut = getGUI().getInventory().getItem(outputSlot);
 				int toPush = Math.min(amount, stored.getMaxStackSize() - (stackOut == null ? 0 : stackOut.getAmount()));
 				if (toPush > 0) {
-					setAmount(amount - toPush);
 					if (stackOut == null) {
 						stackOut = stored.clone();
 						stackOut.setAmount(toPush);
 					} else {
 						stackOut.setAmount(stackOut.getAmount() + toPush);
 					}
-					if (amount == 0) {
-						setStored(null);
-					}
 					getGUI().getInventory().setItem(outputSlot, stackOut);
+					setAmount(amount - toPush);
 				}
 			}
 
 			// 3. perform any necessary updates if storage has changed
 			if (amount != oldAmount) {
+				Debugger.getInstance().debug(2, this + " amount changed! " + oldAmount + " -> " + amount);
 				getProgressMeter().setMaxProgress(maxCapacity);
 				setProcessing(stored);
 				setProgress(maxCapacity - amount);
@@ -242,8 +245,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 					current.getWorld().dropItemNaturally(current, stack);
 					amount -= stored.getMaxStackSize();
 				}
-				amount = 0;
-				stored = null;
+				setAmount(0);
 			}
 		}
 		super.setLocation(loc);
@@ -324,9 +326,6 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			nExtracted = Math.min(nExtracted, receiver.getMaxStackSize() - receiver.getAmount());
 			receiver.setAmount(receiver.getAmount() + nExtracted);
 			setAmount(getAmount() - nExtracted);
-			if (getAmount() <= 0) {
-				setStored(null);
-			}
 			return receiver;
 		} else {
 			return null;
