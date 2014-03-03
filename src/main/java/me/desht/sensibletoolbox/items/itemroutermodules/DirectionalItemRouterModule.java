@@ -62,6 +62,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 		if (conf.contains("filtered")) {
 			boolean isWhite = conf.getBoolean("filterWhitelist", true);
 			FilterType filterType = FilterType.valueOf(conf.getString("filterType", "MATERIAL"));
+			@SuppressWarnings("unchecked")
 			List<ItemStack> l = (List<ItemStack>) conf.getList("filtered");
 			filter = Filter.fromItemList(isWhite, l, filterType);
 		} else {
@@ -228,7 +229,8 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 	}
 
 	public void onGUIClosed() {
-		if (gui.getPrimaryPlayer() != null) {
+		Player player = gui.getPrimaryPlayer();
+		if (player != null) {
 			filter.clear();
 			for (int slot : filterSlots) {
 				ItemStack stack = gui.getInventory().getItem(slot);
@@ -236,7 +238,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 					filter.addItem(stack);
 				}
 			}
-			gui.getPrimaryPlayer().setItemInHand(toItemStack());
+			player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
 		}
 	}
 
