@@ -38,7 +38,7 @@ public class CircuitBoard extends BaseSTBItem {
 	public Recipe getRecipe() {
 		Dye greenDye = new Dye();
 		greenDye.setColor(DyeColor.GREEN);
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(2));
 		recipe.addIngredient(Material.STONE_PLATE);
 		recipe.addIngredient(greenDye);
 		return recipe;
