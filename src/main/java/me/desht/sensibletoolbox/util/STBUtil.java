@@ -376,6 +376,21 @@ public class STBUtil {
 	}
 
 	/**
+	 * Convenience method to get a log of the right species
+	 *
+	 * @param species
+	 * @return
+	 */
+	public static MaterialData makeLog(TreeSpecies species) {
+		switch (species) {
+			case DARK_OAK: case ACACIA:
+				return new MaterialData(Material.LOG_2, species.getData());
+			default:
+				return new MaterialData(Material.LOG, species.getData());
+		}
+	}
+
+	/**
 	 * Workaround method: ensure that the given inventory is refreshed to all its viewers.
 	 * This is needed in some cases to avoid ghost items being left around (in particular
 	 * if an item is shift-clicked into a machine inventory and then shortly after moved

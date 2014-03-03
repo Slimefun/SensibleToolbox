@@ -9,10 +9,7 @@ import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -52,6 +49,15 @@ public class Smelter extends AbstractIOMachine {
 				crm.addCustomRecipe(new CustomRecipe(this, input, fr.getResult(), getProcessingTime(input)));
 			}
 		}
+
+		// different log types need to be handled explicitly
+		ItemStack charcoal = new ItemStack(Material.COAL, 1, (byte) 1);
+		for (TreeSpecies species : TreeSpecies.values()) {
+			ItemStack input = STBUtil.makeLog(species).toItemStack();
+			crm.addCustomRecipe(new CustomRecipe(this, input, charcoal, getProcessingTime(input)));
+		}
+
+		// custom STB items
 		crm.addCustomRecipe(new CustomRecipe(this, new GoldDust().toItemStack(), new ItemStack(Material.GOLD_INGOT), 120));
 		crm.addCustomRecipe(new CustomRecipe(this, new IronDust().toItemStack(), new ItemStack(Material.IRON_INGOT), 120));
 	}
