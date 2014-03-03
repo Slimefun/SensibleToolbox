@@ -112,7 +112,7 @@ public class EnderLeash extends BaseSTBItem {
 	@Override
 	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !STBUtil.isInteractive(event.getClickedBlock().getType())) {
-			if (capturedConf != null) {
+			if (capturedConf != null && capturedConf.contains("type")) {
 				Block where = event.getClickedBlock().getRelative(event.getBlockFace());
 				EntityType type = EntityType.valueOf(capturedConf.getString("type"));
 				Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
