@@ -237,7 +237,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
 	@Override
 	public void onServerTick() {
-		boolean update = false;
+		boolean didSomeWork = false;
 		if (needToProcessModules) {
 			processModules();
 			needToProcessModules = false;
@@ -247,7 +247,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 				if (module instanceof DirectionalItemRouterModule) {
 					DirectionalItemRouterModule dmod = (DirectionalItemRouterModule) module;
 					if (dmod.execute()) {
-						update = true;
+						didSomeWork = true;
 						if (dmod.isTerminator()) {
 							break;
 						}
@@ -256,7 +256,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
 			}
 		}
-		if (update) {
+		if (didSomeWork) {
 			updateBlock(false);
 			playParticles();
 		}
@@ -274,8 +274,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	private void findNeighbourInventories() {
-		Block b = getLocation().getBlock();
 		neighbours.clear();
+		Location loc = getLocation();
+		if (loc == null) {
+			return;
+		}
+		Block b = loc.getBlock();
 		for (BlockFace face : STBUtil.directFaces) {
 			Block b1 = b.getRelative(face);
 			BaseSTBBlock stb = LocationManager.getManager().get(b1.getLocation());
