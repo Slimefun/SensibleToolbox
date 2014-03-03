@@ -12,6 +12,7 @@ import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.TreeSpecies;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -33,9 +34,8 @@ public class Masher extends AbstractIOMachine {
 	public void addCustomRecipes(CustomRecipeManager crm) {
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
-		Dye white = new Dye();
-		white.setColor(DyeColor.WHITE);
-		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BONE), white.toItemStack(5), 40));
+		ItemStack whiteDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.WHITE).toItemStack(5);
+		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BONE), whiteDye, 40));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BLAZE_ROD), new ItemStack(Material.BLAZE_POWDER, 4), 80));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COAL_ORE), new ItemStack(Material.COAL, 2), 100));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100));
@@ -44,6 +44,10 @@ public class Masher extends AbstractIOMachine {
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
+		ItemStack greenDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.GREEN).toItemStack(1);
+		for (TreeSpecies species : TreeSpecies.values()) {
+			crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeLeaves(species).toItemStack(), greenDye, 40));
+		}
 	}
 
 	@Override

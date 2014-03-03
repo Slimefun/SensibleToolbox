@@ -361,7 +361,7 @@ public class STBUtil {
 	}
 
 	/**
-	 * Convenience method to get a coloured material: stained clay/glass/glass panes/wool.
+	 * Convenience method to get a coloured material: stained clay/glass/glass panes/wool/dye.
 	 * Also gets all the deprecated method calls into one place.
 	 *
 	 * @param mat the material
@@ -372,21 +372,36 @@ public class STBUtil {
 		if (mat == Material.GLASS) mat = Material.STAINED_GLASS;
 		else if (mat == Material.THIN_GLASS) mat = Material.STAINED_GLASS_PANE;
 
-		return new MaterialData(mat, colour.getWoolData());
+		return new MaterialData(mat, mat == Material.INK_SACK ? colour.getDyeData() : colour.getWoolData());
 	}
 
 	/**
 	 * Convenience method to get a log of the right species
 	 *
-	 * @param species
-	 * @return
+	 * @param species the tree species
+	 * @return a MaterialData object representing the right log type
 	 */
 	public static MaterialData makeLog(TreeSpecies species) {
 		switch (species) {
 			case DARK_OAK: case ACACIA:
-				return new MaterialData(Material.LOG_2, species.getData());
+				return new MaterialData(Material.LOG_2, (byte) (species.getData() - 4));
 			default:
 				return new MaterialData(Material.LOG, species.getData());
+		}
+	}
+
+	/**
+	 * Convenience method to get leaves of the right species
+	 *
+	 * @param species the tree species
+	 * @return a MaterialData object representing the right log type
+	 */
+	public static MaterialData makeLeaves(TreeSpecies species) {
+		switch (species) {
+			case DARK_OAK: case ACACIA:
+				return new MaterialData(Material.LEAVES_2, (byte) (species.getData() - 4));
+			default:
+				return new MaterialData(Material.LEAVES, species.getData());
 		}
 	}
 
