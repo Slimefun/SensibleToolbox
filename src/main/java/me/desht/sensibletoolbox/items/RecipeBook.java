@@ -5,6 +5,7 @@ import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.gui.ButtonGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
@@ -221,7 +222,7 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	private void showShapedRecipe(ShapedRecipe recipe) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
+		STBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
 		String[] shape = recipe.getShape();
 		Map<Character,ItemStack> map = recipe.getIngredientMap();
 		for (int i = 0; i < shape.length; i++) {
@@ -236,7 +237,7 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	private void showShapelessRecipe(ShapelessRecipe recipe) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
+		STBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
 		List<ItemStack> ingredients = recipe.getIngredientList();
 		for (int i = 0; i < ingredients.size(); i++) {
 			ItemStack ingredient = getIngredient(item, ingredients.get(i));
@@ -253,20 +254,20 @@ public class RecipeBook extends BaseSTBItem {
 
 	private void showCustomRecipe(CustomRecipe recipe) {
 		gui.getInventory().setItem(RESULT_SLOT, recipe.getResult());
-		BaseSTBItem item = BaseSTBItem.getItemById(recipe.getProcessorID());
+		STBItem item = BaseSTBItem.getItemById(recipe.getProcessorID());
 		gui.getInventory().setItem(TYPE_SLOT, item.toItemStack());
 		gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
 	}
 
-	private ItemStack getIngredient(BaseSTBItem item, ItemStack stack) {
+	private ItemStack getIngredient(STBItem item, ItemStack stack) {
 		if (stack == null) {
 			return null;
 		}
 		if (item != null) {
-			Class<? extends BaseSTBItem> c = item.getCraftingRestriction(stack.getType());
+			Class<? extends STBItem> c = item.getCraftingRestriction(stack.getType());
 			if (c != null) {
 				try {
-					BaseSTBItem item2 = c.getDeclaredConstructor().newInstance();
+					STBItem item2 = c.getDeclaredConstructor().newInstance();
 					return item2.toItemStack();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -283,10 +284,10 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	private ItemStack getSmeltingIngredient(ItemStack stack) {
-		Class<? extends BaseSTBItem> c = BaseSTBItem.getCustomSmelt(stack);
+		Class<? extends STBItem> c = BaseSTBItem.getCustomSmelt(stack);
 		if (c != null) {
 			try {
-				BaseSTBItem item2 = c.getDeclaredConstructor().newInstance();
+				STBItem item2 = c.getDeclaredConstructor().newInstance();
 				return item2.toItemStack();
 			} catch (Exception e) {
 				e.printStackTrace();

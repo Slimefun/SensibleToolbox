@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.Debugger;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.blocks.PaintCan;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -130,7 +130,7 @@ public class PaintBrush extends BaseSTBItem {
 		Player player = event.getPlayer();
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
-			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+			STBBlock stb = LocationManager.getManager().get(b.getLocation());
 			if (stb instanceof PaintCan) {
 				refillFromCan((PaintCan) stb);
 			} else if (okToColor(b, stb)) {
@@ -155,7 +155,7 @@ public class PaintBrush extends BaseSTBItem {
 		event.setCancelled(true);
 	}
 
-	private boolean okToColor(Block b, BaseSTBBlock stb) {
+	private boolean okToColor(Block b, STBBlock stb) {
 		if (stb != null && !(stb instanceof Colorable)) {
 			// we don't want blocks which happen to use a Colorable material to be paintable
 			return false;
@@ -252,7 +252,7 @@ public class PaintBrush extends BaseSTBItem {
 		int painted = 0;
 		for (Block b : blocks) {
 			Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
-			BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+			STBBlock stb = LocationManager.getManager().get(b.getLocation());
 			if (stb != null && stb instanceof Colorable) {
 				((Colorable) stb).setColor(getColour());
 			} else {

@@ -6,13 +6,12 @@ import me.desht.sensibletoolbox.blocks.machines.AbstractProcessingMachine;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -22,18 +21,19 @@ import org.bukkit.material.MaterialData;
 import java.io.IOException;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
-	private static final MaterialData md = new MaterialData(Material.LOG_2, (byte) 1);
+	private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
 	private static final int TICK_RATE = 5;
 	private ItemStack stored;
-	private int amount;
+	private int storageAmount;
+	private int outputAmount;
 	private int maxCapacity;
 	private final String signLabel[] = new String[4];
-	private int oldAmount = -1;
+	private int oldTotalAmount = -1;
 
 	public BigStorageUnit() {
 		setStored(null);
 		signLabel[0] = makeItemLabel();
-		oldAmount = amount = 0;
+		oldTotalAmount = storageAmount = outputAmount = 0;
 	}
 
 	public BigStorageUnit(ConfigurationSection conf) {
@@ -45,8 +45,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		setAmount(conf.getInt("amount"));
-		oldAmount = amount;
+		setStorageAmount(conf.getInt("amount"));
+		oldTotalAmount = storageAmount;
 	}
 
 	@Override
@@ -55,29 +55,42 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 		Inventory inv = Bukkit.createInventory(null, 9);
 		inv.setItem(0, stored);
 		conf.set("stored", BukkitSerialization.toBase64(inv, 1));
-		conf.set("amount", amount);
+		conf.set("amount", storageAmount);
 		return conf;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = Math.max(0, amount);
-		if (amount <= 0) {
-			setStored(null);
-		}
-		signLabel[1] = amount > 0 ? Integer.toString(amount) : "";
+	public void setStorageAmount(int storageAmount) {
+		this.storageAmount = Math.max(0, storageAmount);
 	}
 
-	public int getAmount() {
-		return amount;
+	public int getStorageAmount() {
+		return storageAmount;
+	}
+
+	public int getTotalAmount() {
+		return getStorageAmount() + outputAmount;
 	}
 
 	public ItemStack getStored() {
 		return stored;
 	}
 
+	public int getOutputAmount() {
+		return outputAmount;
+	}
+
+	public void setOutputAmount(int outputAmount) {
+		this.outputAmount = outputAmount;
+	}
+
 	public void setStored(ItemStack stored) {
 		Debugger.getInstance().debug(this + " set stored item = " + stored);
-		this.stored = stored;
+		if (stored != null) {
+			this.stored = stored.clone();
+			this.stored.setAmount(1);
+		} else {
+			this.stored = null;
+		}
 		maxCapacity = getStackCapacity() * (stored == null ? 64 : stored.getMaxStackSize());
 		if (stored != null) {
 			String[] lines = WordUtils.wrap(ItemNames.lookup(stored), 15).split("\\n");
@@ -103,12 +116,17 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
 	@Override
 	public int[] getUpgradeSlots() {
-		return new int[] { 50, 51, 52, 53 };
+		return new int[] { 41, 42, 43, 44 };
 	}
 
 	@Override
 	public int getUpgradeLabelSlot() {
-		return 49;
+		return 40;
+	}
+
+	@Override
+	public int getInventoryGUISize() {
+		return 45;
 	}
 
 	@Override
@@ -183,53 +201,65 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 		if (getTicksLived() % TICK_RATE == 0) {
 			// 1. move items from input to storage
 			int inputSlot = getInputSlots()[0];
-			ItemStack stackIn = getGUI().getInventory().getItem(inputSlot);
+			ItemStack stackIn = getInventoryItem(inputSlot);
 			if (stackIn != null && (stored == null || stackIn.isSimilar(stored) && !isFull()))  {
 				if (stored == null) {
-					ItemStack copy = stackIn.clone();
-					copy.setAmount(1);
-					setStored(copy);
+					setStored(stackIn);
 				}
-				int toPull = Math.min(stackIn.getAmount(), maxCapacity - amount);
-				setAmount(amount + toPull);
+				int toPull = Math.min(stackIn.getAmount(), maxCapacity - getStorageAmount());
+				setStorageAmount(getStorageAmount() + toPull);
 				stackIn.setAmount(stackIn.getAmount() - toPull);
-				getGUI().getInventory().setItem(inputSlot, stackIn.getAmount() > 0 ? stackIn : null);
+				setInventoryItem(inputSlot, stackIn.getAmount() > 0 ? stackIn : null);
 				if (stackIn.getAmount() == 0) {
 					// workaround to avoid leaving ghost items in the input slot
 					STBUtil.forceInventoryRefresh(getInventory());
 				}
 			}
 
-			// 2. move items from storage to output
+			ItemStack stackOut = getOutputItem();
+			int newAmount = stackOut == null ? 0 : stackOut.getAmount();
+			if (getOutputAmount() != newAmount) {
+				System.out.println("output buffer size change! " + getOutputAmount() + " => " + newAmount);
+				setOutputAmount(newAmount);
+			}
+
+			// 2. top up the output stack from storage
 			if (stored != null) {
-				int outputSlot = getOutputSlots()[0];
-				ItemStack stackOut = getGUI().getInventory().getItem(outputSlot);
-				int toPush = Math.min(amount, stored.getMaxStackSize() - (stackOut == null ? 0 : stackOut.getAmount()));
+				int toPush = Math.min(getStorageAmount(), stored.getMaxStackSize() - getOutputAmount());
 				if (toPush > 0) {
+					System.out.println("push " + toPush + " from storage to output");
 					if (stackOut == null) {
 						stackOut = stored.clone();
 						stackOut.setAmount(toPush);
 					} else {
 						stackOut.setAmount(stackOut.getAmount() + toPush);
 					}
-					getGUI().getInventory().setItem(outputSlot, stackOut);
-					setAmount(amount - toPush);
+					setOutputItem(stackOut);
+					setStorageAmount(getStorageAmount() - toPush);
 				}
 			}
 
 			// 3. perform any necessary updates if storage has changed
-			if (amount != oldAmount) {
-				Debugger.getInstance().debug(2, this + " amount changed! " + oldAmount + " -> " + amount);
+			if (getTotalAmount() != oldTotalAmount) {
+				signLabel[1] = getTotalAmount() > 0 ? Integer.toString(getTotalAmount()) : "";
+				if (getTotalAmount() == 0) {
+					setStored(null);
+				}
+				Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
 				getProgressMeter().setMaxProgress(maxCapacity);
 				setProcessing(stored);
-				setProgress(maxCapacity - amount);
+				setProgress(maxCapacity - getStorageAmount());
 				updateBlock(false);
 				updateAttachedLabelSigns();
-				oldAmount = amount;
+				oldTotalAmount = getTotalAmount();
 			}
 		}
 
 		super.onServerTick();
+	}
+
+	private void setOutputItem(ItemStack stackOut) {
+		setInventoryItem(getOutputSlots()[0], stackOut);
 	}
 
 	@Override
@@ -238,21 +268,55 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			if (dropsItemsOnBreak()) {
 				// dump contents on floor (could make a big mess)
 				Location current = getLocation();
-				amount = Math.min(4096, amount);  // max 64 stacks will be dropped
-				while (amount > 0) {
+				storageAmount = Math.min(4096, storageAmount);  // max 64 stacks will be dropped
+				while (storageAmount > 0) {
 					ItemStack stack = stored.clone();
-					stack.setAmount(Math.min(amount, stored.getMaxStackSize()));
+					stack.setAmount(Math.min(storageAmount, stored.getMaxStackSize()));
 					current.getWorld().dropItemNaturally(current, stack);
-					amount -= stored.getMaxStackSize();
+					storageAmount -= stored.getMaxStackSize();
 				}
-				setAmount(0);
+				setStorageAmount(0);
 			}
 		}
 		super.setLocation(loc);
 		if (loc != null) {
 			getProgressMeter().setMaxProgress(maxCapacity);
 			setProcessing(stored);
-			setProgress(maxCapacity - amount);
+			setProgress(maxCapacity - storageAmount);
+			ItemStack output = getOutputItem();
+			outputAmount = output == null ? 0 : output.getAmount();
+		}
+	}
+
+	@Override
+	public void onInteractBlock(PlayerInteractEvent event) {
+		ItemStack inHand = event.getPlayer().getItemInHand();
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStored() != null && (inHand.getType() == Material.AIR || inHand.isSimilar(getStored()))) {
+			System.out.println(this + " left click, hand = " + inHand + ", stored = " + getStored());
+			// try to extract items from the output stack
+			int wanted = event.getPlayer().isSneaking() ? 1 : getStored().getMaxStackSize();
+			int nExtracted = Math.min(wanted, getOutputAmount());
+			if (nExtracted > 0) {
+				Location loc = event.getClickedBlock().getRelative(event.getBlockFace()).getLocation().add(0.5, 0.5, 0.5);
+				ItemStack stack = getStored().clone();
+				stack.setAmount(nExtracted);
+				loc.getWorld().dropItem(loc, stack);
+				setOutputAmount(getOutputAmount() - nExtracted);
+				stack.setAmount(getOutputAmount());
+				setOutputItem(stack);
+			}
+			event.setCancelled(true);
+		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
+				inHand.getType() != Material.AIR &&
+				(getStored() == null || inHand.isSimilar(getStored()))) {
+			setStorageAmount(getStorageAmount() + inHand.getAmount());
+			if (getStored() == null) {
+				setStored(inHand);
+			}
+			event.getPlayer().setItemInHand(null);
+			event.setCancelled(true);
+		} else {
+			super.onInteractBlock(event);
 		}
 	}
 
@@ -276,12 +340,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	}
 
 	public boolean isFull() {
-		return stored != null && amount >= getStackCapacity() * stored.getMaxStackSize();
+		return stored != null && storageAmount >= getStackCapacity() * stored.getMaxStackSize();
 	}
 
 	@Override
 	public String getProgressMessage() {
-		return "Stored: " + getAmount() + "/" + maxCapacity;
+		return "Stored: " + getStorageAmount() + "/" + maxCapacity;
 	}
 
 	@Override
@@ -294,17 +358,19 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 		return signLabel;
 	}
 
+	public ItemStack getOutputItem() {
+		return getInventoryItem(getOutputSlots()[0]);
+	}
+
 	@Override
 	public int insertItems(ItemStack item, BlockFace face, boolean sorting) {
 		if (stored == null) {
-			ItemStack in = item.clone();
-			in.setAmount(1);
-			setStored(in);
-			setAmount(item.getAmount());
+			setStored(item);
+			setStorageAmount(item.getAmount());
 			return item.getAmount();
 		} else if (item.isSimilar(stored)) {
-			int toInsert = Math.min(item.getAmount(), maxCapacity - getAmount());
-			setAmount(getAmount() + toInsert);
+			int toInsert = Math.min(item.getAmount(), maxCapacity - getStorageAmount());
+			setStorageAmount(getStorageAmount() + toInsert);
 			return toInsert;
 		} else {
 			return 0;
@@ -313,22 +379,45 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
 	@Override
 	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount) {
-		if (stored == null) {
+		if (getStorageAmount() == 0 && getOutputAmount() == 0) {
 			return null;
-		} else if (receiver == null) {
+		}
+
+		if (receiver != null) {
+			amount = Math.min(amount, receiver.getMaxStackSize() - receiver.getAmount());
+			if (getStorageAmount() > 0 && !receiver.isSimilar(getStored())) {
+				return null;
+			}
+			if (amount > getStorageAmount() && getOutputAmount() > 0 && !receiver.isSimilar(getOutputItem())) {
+				return null;
+			}
+		}
+
+		int fromStorage = Math.min(getStorageAmount(), amount);
+		if (fromStorage > 0) {
+			amount -= fromStorage;
+			setStorageAmount(getStorageAmount() - fromStorage);
+		}
+		int fromOutput = 0;
+		if (amount > 0) {
+			fromOutput = Math.min(getOutputAmount(), amount);
+			if (fromOutput > 0) {
+				setOutputAmount(getOutputAmount() - fromOutput);
+				ItemStack output = getOutputItem();
+				output.setAmount(getOutputAmount());
+				setOutputItem(output.getAmount() > 0 ? output : null);
+			}
+		}
+
+		System.out.println(this + "pulling " + fromStorage + " from storage & " + fromOutput + " from output stack");
+
+		if (receiver == null) {
 			ItemStack returned = stored.clone();
-			int nExtracted = Math.min(amount, getAmount());
-			returned.setAmount(nExtracted);
-			setAmount(getAmount() - nExtracted);
+			returned.setAmount(fromStorage + fromOutput);
 			return returned;
-		} else if (receiver.isSimilar(stored)) {
-			int nExtracted = Math.min(amount, getAmount());
-			nExtracted = Math.min(nExtracted, receiver.getMaxStackSize() - receiver.getAmount());
-			receiver.setAmount(receiver.getAmount() + nExtracted);
-			setAmount(getAmount() - nExtracted);
-			return receiver;
 		} else {
-			return null;
+			receiver.setAmount(receiver.getAmount() + fromStorage + fromOutput);
+			return receiver;
 		}
 	}
 }

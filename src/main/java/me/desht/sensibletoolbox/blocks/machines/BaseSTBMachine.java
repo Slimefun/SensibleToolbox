@@ -1,11 +1,9 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
-import com.google.common.base.Joiner;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
-import me.desht.sensibletoolbox.attributes.Attributes;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
@@ -17,6 +15,7 @@ import me.desht.sensibletoolbox.items.machineupgrades.MachineUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -128,7 +127,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	public void setJammed(boolean jammed) {
-		System.out.println(this + " jammed = " + jammed);
 		this.jammed = jammed;
 	}
 
@@ -156,6 +154,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	@Override
 	public void setChargeDirection(ChargeDirection chargeDirection) {
 		this.chargeDirection = chargeDirection;
+		updateBlock(false);
 	}
 
 	public void setAutoEjectDirection(BlockFace direction) {
@@ -202,6 +201,16 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	@Override
 	public Inventory getInventory() {
 		return getGUI().getInventory();
+	}
+
+	public ItemStack getInventoryItem(int slot) {
+		return getInventory().getItem(slot);
+	}
+
+	public void setInventoryItem(int slot, ItemStack item) {
+		Validate.isTrue(getGUI().getSlotType(slot) == InventoryGUI.SlotType.ITEM, "Attempt to insert item into non-item slot");
+		getInventory().setItem(slot, item != null && item.getAmount() > 0 ? item : null);
+		updateBlock(false);
 	}
 
 	@Override
@@ -309,7 +318,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	 */
 	protected int findAvailableInputSlot(ItemStack item, BlockFace side) {
 		for (int slot : getInputSlots()) {
-			ItemStack inSlot = getInventory().getItem(slot);
+			ItemStack inSlot = getInventoryItem(slot);
 			if (inSlot == null || inSlot.isSimilar(item)) {
 				return slot;
 			} else if (inSlot.isSimilar(item)) {
@@ -322,7 +331,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	protected int findOutputSlot(ItemStack item) {
 		for (int slot : getOutputSlots()) {
-			ItemStack outSlot = getInventory().getItem(slot);
+			ItemStack outSlot = getInventoryItem(slot);
 			if (outSlot == null) {
 				return slot;
 			} else if (outSlot.isSimilar(item) && outSlot.getAmount() + item.getAmount() <= item.getType().getMaxStackSize() ) {
@@ -369,16 +378,15 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		int slot = findAvailableInputSlot(toInsert, side);
 		int nInserted = 0;
 		if (slot >= 0 && acceptsItemType(toInsert)) {
-			ItemStack inMachine = getInventory().getItem(slot);
+			ItemStack inMachine = getInventoryItem(slot);
 			if (inMachine == null) {
 				nInserted = toInsert.getAmount();
-				getInventory().setItem(slot, toInsert);
+				setInventoryItem(slot, toInsert);
 			} else {
 				nInserted = Math.min(toInsert.getAmount(), inMachine.getType().getMaxStackSize() - inMachine.getAmount());
 				if (nInserted > 0) {
 					inMachine.setAmount(inMachine.getAmount() + nInserted);
-					getInventory().setItem(slot, inMachine);
-					updateBlock(false);
+					setInventoryItem(slot, inMachine);
 				}
 			}
 			if (Debugger.getInstance().getLevel() > 1) {
@@ -395,7 +403,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		int max = slots == null ? getInventory().getSize() : slots.length;
 		for (int i = 0; i < max; i++) {
 			int slot = slots == null ? i : slots[i];
-			ItemStack stack = getInventory().getItem(slot);
+			ItemStack stack = getInventoryItem(slot);
 			if (stack != null) {
 				if (receiver == null || stack.isSimilar(receiver)) {
 					int toTake = Math.min(amount, stack.getAmount());
@@ -409,7 +417,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 							receiver.setAmount(receiver.getAmount() + toTake);
 						}
 						stack.setAmount(stack.getAmount() - toTake);
-						getInventory().setItem(slot, stack.getAmount() > 0 ? stack : null);
+						setInventoryItem(slot, stack.getAmount() > 0 ? stack : null);
 						setJammed(false);
 						updateBlock(false);
 						if (Debugger.getInstance().getLevel() > 1) {
@@ -461,16 +469,16 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	public int onShiftClickInsert(int slot, ItemStack toInsert) {
 		int insertionSlot = findAvailableInputSlot(toInsert, BlockFace.SELF);
 		if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
-			ItemStack inMachine = getInventory().getItem(insertionSlot);
+			ItemStack inMachine = getInventoryItem(insertionSlot);
 			if (inMachine == null) {
 				// insert the whole stack
-				getInventory().setItem(insertionSlot, toInsert);
+				setInventoryItem(insertionSlot, toInsert);
 				return toInsert.getAmount();
 			} else {
 				// insert as much as possible
 				int nToInsert = Math.min(inMachine.getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
 				inMachine.setAmount(inMachine.getAmount() + nToInsert);
-				getInventory().setItem(insertionSlot, inMachine);
+				setInventoryItem(insertionSlot, inMachine);
 				return nToInsert;
 			}
 		}
@@ -478,7 +486,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			EnergyCell cell = BaseSTBItem.getItemFromItemStack(toInsert, EnergyCell.class);
 			if (cell != null) {
 				installEnergyCell(cell);
-				getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack());
+				setInventoryItem(getEnergyCellSlot(), installedCell.toItemStack());
 				return 1;
 			}
 		}
@@ -486,10 +494,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			if (BaseSTBItem.isSTBItem(toInsert, MachineUpgrade.class)) {
 				int upgradeSlot = findAvailableUpgradeSlot(toInsert);
 				if (upgradeSlot >= 0) {
-					if (getInventory().getItem(upgradeSlot) != null) {
-						toInsert.setAmount(toInsert.getAmount() + getInventory().getItem(upgradeSlot).getAmount());
+					if (getInventoryItem(upgradeSlot) != null) {
+						toInsert.setAmount(toInsert.getAmount() + getInventoryItem(upgradeSlot).getAmount());
 					}
-					getInventory().setItem(upgradeSlot, toInsert);
+					setInventoryItem(upgradeSlot, toInsert);
 					needToProcessUpgrades = true;
 					return toInsert.getAmount();
 				}
@@ -520,9 +528,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	private int findAvailableUpgradeSlot(ItemStack upgrade) {
 		for (int slot : getUpgradeSlots()) {
-			ItemStack inSlot = getInventory().getItem(slot);
-//			dumpAttributes(upgrade);
-//			if (inSlot != null) dumpAttributes(inSlot);
+			ItemStack inSlot = getInventoryItem(slot);
 			if (inSlot == null || inSlot.isSimilar(upgrade) && inSlot.getAmount() + upgrade.getAmount() <= upgrade.getType().getMaxStackSize()) {
 				return slot;
 			}
@@ -530,22 +536,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 		return -1;
 	}
 
-//	private void dumpAttributes(ItemStack item) {
-//		Attributes attrs = new Attributes(item);
-//		System.out.println("dump attrs: " +item);
-//		for (Attributes.Attribute a : attrs.values()) {
-//			System.out.println("> " + Joiner.on("|").join(a.getUUID(), a.getName(), a.getAttributeType(), a.getOperation(), a.getAmount()));
-//		}
-//	}
-
 	private void scanUpgradeSlots() {
 		upgrades.clear();
 		for (int slot : getUpgradeSlots()) {
-			ItemStack stack = getInventory().getItem(slot);
+			ItemStack stack = getInventoryItem(slot);
 			if (stack != null) {
 				MachineUpgrade upgrade = BaseSTBItem.getItemFromItemStack(stack, MachineUpgrade.class);
 				if (upgrade == null) {
-					getInventory().setItem(slot, null);
+					setInventoryItem(slot, null);
 					if (getLocation() != null) {
 						getLocation().getWorld().dropItemNaturally(getLocation(), stack);
 					}
@@ -602,7 +600,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			}
 			if (!getInventory().getViewers().isEmpty()) {
 				if (transferred > 0.0) {
-					getInventory().setItem(getEnergyCellSlot(), installedCell.toItemStack());
+					setInventoryItem(getEnergyCellSlot(), installedCell.toItemStack());
 				}
 				if (chargeMeterId >= 0) {
 					getGUI().getMonitor(chargeMeterId).doRepaint();

@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.items.energycells;
 
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,6 +22,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 	private double charge;
 
 	protected EnergyCell() {
+		setCharge(0.0);
 	}
 
 	public EnergyCell(ConfigurationSection conf) {
@@ -87,7 +88,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 				if (slot == held)
 					continue;
 				ItemStack stack = player.getInventory().getItem(slot);
-				BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+				STBItem item = BaseSTBItem.getItemFromItemStack(stack);
 				if (item != null && item instanceof Chargeable) {
 					Chargeable c = (Chargeable) item;
 					double toTransfer = Math.min(c.getMaxCharge() - c.getCharge(), c.getChargeRate());

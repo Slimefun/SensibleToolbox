@@ -1,6 +1,8 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
+import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
@@ -44,13 +46,17 @@ public class GeneralListener extends STBBaseListener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		ItemStack stack = event.getPlayer().getItemInHand();
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
 		if (item != null) {
 			item.onInteractItem(event);
 		}
-		if (!event.isCancelled() && event.getClickedBlock() != null) {
-			BaseSTBBlock stb = LocationManager.getManager().get(event.getClickedBlock().getLocation());
+		Block clicked = event.getClickedBlock();
+		if (!event.isCancelled() && clicked != null) {
+			if (clicked.getType() == Material.SIGN_POST || clicked.getType() == Material.WALL_SIGN) {
+				Sign sign = (Sign) clicked.getState().getData();
+				clicked = clicked.getRelative(sign.getAttachedFace());
+			}
+			BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation());
 			if (stb != null) {
 				stb.onInteractBlock(event);
 			}
@@ -97,8 +103,8 @@ public class GeneralListener extends STBBaseListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		BaseSTBItem item =  BaseSTBItem.getItemFromItemStack(event.getItemInHand());
-		if (item instanceof BaseSTBBlock) {
+		STBItem item =  BaseSTBItem.getItemFromItemStack(event.getItemInHand());
+		if (item instanceof STBBlock) {
 			((BaseSTBBlock) item).onBlockPlace(event);
 		} else if (item != null) {
 			// prevent placing of non-block STB items, even if they use a block material (e.g. bag of holding)
@@ -193,7 +199,7 @@ public class GeneralListener extends STBBaseListener {
 		// prevent STB items being used where the vanilla material is expected
 		// (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)
 		for (ItemStack ingredient : event.getInventory().getMatrix()) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(ingredient);
+			STBItem item = BaseSTBItem.getItemFromItemStack(ingredient);
 			if (item != null && !item.isIngredientFor(event.getRecipe().getResult())) {
 				Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
 				event.getInventory().setResult(null);
@@ -202,12 +208,12 @@ public class GeneralListener extends STBBaseListener {
 		}
 
 		// and ensure vanilla items can't be used in place of custom STB ingredients
-		// (e.g. paper can't be used to craft item router modules, even though a blank module uses paper)
-		BaseSTBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
+		// (e.g. paper can't be used to craft item router modules, even though a blank module uses paper for its material)
+		STBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
 		if (result != null) {
 			for (ItemStack ingredient : event.getInventory().getMatrix()) {
 				if (ingredient != null) {
-					Class<? extends BaseSTBItem> c = result.getCraftingRestriction(ingredient.getType());
+					Class<? extends STBItem> c = result.getCraftingRestriction(ingredient.getType());
 					if (c != null && !BaseSTBItem.isSTBItem(ingredient, c)) {
 						Debugger.getInstance().debug("stopped crafting of " + result + " with vanilla item: " + ingredient.getType());
 						event.getInventory().setResult(null);
@@ -295,7 +301,7 @@ public class GeneralListener extends STBBaseListener {
 
 	@EventHandler
 	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+		STBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
 		if (item != null && !item.isEnchantable()) {
 			event.setCancelled(true);
 		}
@@ -319,6 +325,8 @@ public class GeneralListener extends STBBaseListener {
 			if (stb != null) {
 				switch (stb.getPistonMoveReaction()) {
 					case MOVE:
+						// this has to be deferred, because it's possible that this piston extension was caused
+						// by a STB block ticking, and modifying the tickers list directly would throw a CME
 						Bukkit.getScheduler().runTask(plugin, new Runnable() {
 							@Override
 							public void run() {
@@ -330,7 +338,7 @@ public class GeneralListener extends STBBaseListener {
 						event.setCancelled(true);
 						break LOOP; // if this one blocks, all subsequent blocks do too
 					case BREAK:
-						// TODO
+						stb.breakBlock(moving);
 						break;
 				}
 			}
@@ -357,7 +365,7 @@ public class GeneralListener extends STBBaseListener {
 						event.setCancelled(true);
 						break;
 					case BREAK:
-						// TODO
+						stb.breakBlock(event.getRetractLocation().getBlock());
 						break;
 				}
 			}

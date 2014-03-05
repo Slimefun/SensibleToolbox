@@ -3,8 +3,9 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.api.FilterType;
 import me.desht.sensibletoolbox.api.Filtering;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.gui.FilterTypeGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ToggleButton;
@@ -139,7 +140,8 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 			event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
 			event.setCancelled(true);
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			if (event.getClickedBlock() == null || !STBUtil.isInteractive(event.getClickedBlock().getType())) {
+			ItemRouter rtr = event.getClickedBlock() == null ? null : LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
+			if (event.getClickedBlock() == null || (rtr == null && !STBUtil.isInteractive(event.getClickedBlock().getType()))) {
 				// open module configuration GUI
 				gui = createGUI(event.getPlayer());
 				gui.show(event.getPlayer());
@@ -149,7 +151,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 	}
 
 	private InventoryGUI createGUI(Player player) {
-		InventoryGUI gui = new InventoryGUI(player, this, 27, ChatColor.DARK_GREEN + "Module Configuration");
+		InventoryGUI gui = new InventoryGUI(player, this, 27, ChatColor.DARK_RED + "Module Configuration");
 
 		gui.addGadget(new ToggleButton(gui, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
 			@Override
@@ -250,7 +252,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 		int nToPull = getOwner().getStackSize();
 		Block b = getOwner().getLocation().getBlock();
 		Block target = b.getRelative(from);
-		BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+		STBBlock stb = LocationManager.getManager().get(target.getLocation());
 		ItemStack pulled;
 		if (stb instanceof STBInventoryHolder) {
 			pulled = ((STBInventoryHolder)stb).extractItems(from.getOppositeFace(), inBuffer, nToPull);

@@ -3,17 +3,14 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -88,7 +85,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 					return nReceived > 0;
 				}
 			} else {
-				BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+				STBBlock stb = LocationManager.getManager().get(target.getLocation());
 				if (stb instanceof STBInventoryHolder) {
 					ItemStack toInsert = getOwner().getBufferItem().clone();
 					toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));

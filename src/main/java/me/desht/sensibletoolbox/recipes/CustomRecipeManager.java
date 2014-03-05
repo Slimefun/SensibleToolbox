@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.recipes;
 
 import me.desht.dhutils.Debugger;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.inventory.ItemStack;
@@ -78,9 +79,9 @@ public class CustomRecipeManager {
 	 * @return true if this item is smeltable
 	 */
 	public static boolean validateCustomSmelt(ItemStack stack) {
-		Class<? extends BaseSTBItem> klass = BaseSTBItem.getCustomSmelt(stack);
+		Class<? extends STBItem> klass = BaseSTBItem.getCustomSmelt(stack);
 		if (klass != null) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+			STBItem item = BaseSTBItem.getItemFromItemStack(stack);
 			if (!klass.isInstance(item)) {
 				Debugger.getInstance().debug("stopped smelting of vanilla item: " + stack);
 				return false;

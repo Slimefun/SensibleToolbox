@@ -21,13 +21,12 @@ import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
+import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.items.BagOfHolding;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.RecipeBook;
-import me.desht.sensibletoolbox.listeners.FloodlightListener;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
@@ -52,6 +51,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	private SoundMufflerListener soundMufflerListener;
 	private FloodlightListener floodlightListener;
 	private PlayerUUIDTracker uuidTracker;
+	private boolean inited = false;
 
 	public static SensibleToolboxPlugin getInstance() {
 		return instance;
@@ -107,15 +107,21 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			LogUtils.warning("  No glowing items, reduced particle effects, Sound Muffler item disabled");
 		}
 
+		BaseSTBItem.registerItems(this);
 		registerEventListeners();
 		registerCommands();
 
-		BaseSTBItem.registerItems(this);
+		try {
+			LocationManager.getManager().load();
+//			LocationManager.getManager().loadFromDatabase(Bukkit.getWorlds().get(0));
+		} catch (Exception e) {
+			e.printStackTrace();
+			setEnabled(false);
+			return;
+		}
 
 		MessagePager.setPageCmd("/stb page [#|n|p]");
 		MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
-
-		LocationManager.getManager().load();
 
 		BaseSTBItem.setupRecipes();
 		BagOfHolding.createSaveDirectory(this);
@@ -138,9 +144,14 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 				EnergyNetManager.tick();
 			}
 		}, 1L, EnergyNetManager.ENERGY_TICK_RATE);
+
+		inited = true;
 	}
 
 	public void onDisable() {
+		if (!inited) {
+			return;
+		}
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			// Any open inventory GUI's must be closed -
 			// if they stay open after server reload, event dispatch will probably not work,
@@ -155,6 +166,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			soundMufflerListener.clear();
 		}
 		LocationManager.getManager().save();
+		LocationManager.getManager().shutdown();
 
 		Bukkit.getScheduler().cancelTasks(this);
 
@@ -232,7 +244,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	@Override
 	public void onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
-		// nothing yet...
+		if (key.equals("save_interval")) {
+			DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
+		}
 	}
 
 	@Override
@@ -245,11 +259,12 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			} else {
 				dbg.setTarget(null);
 			}
+		} else if (key.equals("save_interval")) {
+			LocationManager.getManager().setSaveInterval((Integer) newVal);
 		}
 	}
 
 	public ConfigurationManager getConfigManager() {
 		return configManager;
 	}
-
 }

@@ -5,6 +5,8 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -12,52 +14,65 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class LocationManager {
-	private static final long MIN_SAVE_INTERVAL = 30000;  // 10 sec
-	private static final FilenameFilter ymlFilter = new FilenameFilter() {
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.endsWith(".yml");
-		}
-	};
 	private static LocationManager instance;
-	private final STBWorldMap worldMap;
-	private final Map<String, Set<ChunkCoords>> dirtyChunks;
-	private final File saveDir;
-	private final Map<String, Map<PersistableLocation,ConfigurationSection>> deferredBlocks =
-			new HashMap<String, Map<PersistableLocation, ConfigurationSection>>();
-	private boolean saveNeeded = false;
+
+	private final Set<String> deferredBlocks = new HashSet<String>();
+	private final PreparedStatement queryStmt;
+	private final PreparedStatement queryTypeStmt;
 	private long lastSave;
-	private final Map<String,Set<BaseSTBBlock>> tickers = new HashMap<String,Set<BaseSTBBlock>>();
+	private int saveInterval;  // ms
 	private long totalTicks;
 	private long totalTime;
 	private final SensibleToolboxPlugin plugin;
+	private final DBStorage dbStorage;
+	private final Thread updaterTask;
 
-	private LocationManager(SensibleToolboxPlugin plugin) {
+	// tracks those blocks which need to do something on a server tick
+	private final Map<String,Set<BaseSTBBlock>> tickers = new HashMap<String,Set<BaseSTBBlock>>();
+	// indexes all loaded blocks by world and (frozen) location
+	private final Map<String,Map<String,BaseSTBBlock>> blockIndex = new HashMap<String, Map<String, BaseSTBBlock>>();
+	// tracks the pending updates by (frozen) location since the last save was done
+	private final Map<String,UpdateRecord> pendingUpdates = new HashMap<String, UpdateRecord>();
+	// blocking queue is used to pass actual updates over to the DB writer thread
+	private final BlockingQueue<UpdateRecord> updateQueue = new LinkedBlockingQueue<UpdateRecord>();
+
+	private LocationManager(SensibleToolboxPlugin plugin) throws SQLException {
 		this.plugin = plugin;
+		saveInterval = plugin.getConfig().getInt("save_interval", 30) * 1000;
 		lastSave = System.currentTimeMillis();
-		worldMap = new STBWorldMap();
-		dirtyChunks = new HashMap<String, Set<ChunkCoords>>();
-		saveDir = new File(plugin.getDataFolder(), "blocks");
-		if (!saveDir.exists()) {
-			if (!saveDir.mkdir()) {
-				LogUtils.severe("can't create directory" + saveDir);
-			}
+		try {
+			dbStorage = new DBStorage();
+			dbStorage.getConnection().setAutoCommit(false);
+			queryStmt = dbStorage.getConnection().prepareStatement("SELECT * FROM " + DBStorage.makeTableName("blocks") + " WHERE world_id = ?");
+			queryTypeStmt = dbStorage.getConnection().prepareStatement("SELECT * FROM " + DBStorage.makeTableName("blocks") + " WHERE world_id = ? and type = ?");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IllegalStateException("Unable to initialise DB storage: " + e.getMessage());
 		}
+		updaterTask = new Thread(new DBUpdaterTask(this));
+		updaterTask.start();
 	}
 
 	public static synchronized LocationManager getManager() {
 		if (instance == null) {
-			instance = new LocationManager(SensibleToolboxPlugin.getInstance());
+			try {
+				instance = new LocationManager(SensibleToolboxPlugin.getInstance());
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 		return instance;
 	}
@@ -66,6 +81,10 @@ public class LocationManager {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
+	}
+
+	DBStorage getDbStorage() {
+		return dbStorage;
 	}
 
 	public void addTicker(BaseSTBBlock stb) {
@@ -78,7 +97,7 @@ public class LocationManager {
 		tickers.get(w.getName()).add(stb);
 	}
 
-	private void removeTicker(BaseSTBBlock stb) {
+	private void removeTicker(STBBlock stb) {
 		Location l = stb.getLocation();
 		World w = l.getWorld();
 		if (!tickers.containsKey(w.getName())) {
@@ -88,45 +107,61 @@ public class LocationManager {
 		tickers.get(w.getName()).remove(stb);
 	}
 
-	public void registerLocation(Location loc, BaseSTBBlock stb) {
-		BaseSTBBlock stb2 = get(loc);
+	private Map<String,BaseSTBBlock> getWorldIndex(World w) {
+		if (!blockIndex.containsKey(w.getName())) {
+			blockIndex.put(w.getName(), new HashMap<String, BaseSTBBlock>());
+		}
+		return blockIndex.get(w.getName());
+	}
+
+	public void registerLocation(Location loc, BaseSTBBlock stb, boolean newBlock) {
+		STBBlock stb2 = get(loc);
 		if (stb2 != null) {
 			LogUtils.warning("Attempt to register duplicate STB block " + stb + " @ " + loc + " - existing block " + stb2);
 			return;
 		}
 
-		String worldName = loc.getWorld().getName();
-		Chunk chunk = loc.getChunk();
-		BlockPosition pos = new BlockPosition(loc);
 		stb.setLocation(loc);
-		worldMap.get(worldName).get(chunk).put(pos, stb);
 		loc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
-		markChunkDirty(worldName, pos);
+		String locStr = MiscUtil.formatLocation(loc);
+		getWorldIndex(loc.getWorld()).put(locStr, stb);
+		if (newBlock) {
+			UpdateRecord rec = pendingUpdates.get(locStr);
+			if (rec == null) {
+				System.out.println("add pending insertion " + locStr + " = " + stb);
+				pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc, stb.getItemTypeID(), stb));
+				System.out.println("added: " + pendingUpdates.get(locStr));
+			} else if (rec.getOp() == UpdateRecord.Operation.DELETE) {
+				System.out.println("add update following deletion " + locStr + " = " + stb);
+				pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE,loc, stb.getItemTypeID(), stb));
+			}
+		}
+
 		if (stb.shouldTick()) {
 			addTicker(stb);
 		}
+
 		Debugger.getInstance().debug("Registered " + stb + " @ " + loc);
 	}
 
-	public void updateLocation(Location loc) {
-		String worldName = loc.getWorld().getName();
-		BlockPosition pos = new BlockPosition(loc);
-		markChunkDirty(worldName, pos);
+	public void updateLocation(Location loc, BaseSTBBlock stb) {
+		String locStr = MiscUtil.formatLocation(loc);
+		UpdateRecord rec = pendingUpdates.get(locStr);
+		if (rec == null || rec.getOp() != UpdateRecord.Operation.INSERT) {
+			pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
+		}
 	}
 
-	public void unregisterLocation(Location loc) {
-		BaseSTBBlock stb = get(loc);
+	public void unregisterLocation(Location loc, BaseSTBBlock stb) {
 		if (stb != null) {
 			if (stb.shouldTick()) {
 				removeTicker(stb);
 			}
 			stb.setLocation(null);
-			String worldName = loc.getWorld().getName();
-			BlockPosition pos = new BlockPosition(loc);
-			Chunk chunk = loc.getChunk();
-			worldMap.get(worldName).get(chunk).remove(pos);
 			loc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
-			markChunkDirty(worldName, pos);
+			String locStr = MiscUtil.formatLocation(loc);
+			pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc, stb.getItemTypeID(), stb));
+			getWorldIndex(loc.getWorld()).remove(locStr);
 			Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
 		} else {
 			LogUtils.warning("Attempt to unregister non-existent STB block @ " + loc);
@@ -141,18 +176,17 @@ public class LocationManager {
 	 * @param newLoc the STB block's new location
 	 */
 	public void moveBlock(BaseSTBBlock stb, Location oldLoc, Location newLoc) {
+		oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
+		String locStr = MiscUtil.formatLocation(oldLoc);
+		pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, oldLoc, stb.getItemTypeID(), stb));
+		getWorldIndex(oldLoc.getWorld()).remove(locStr);
+
 		stb.moveTo(oldLoc, newLoc);
 
-		oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
 		newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
-
-		BlockPosition oldPos = new BlockPosition(oldLoc);
-		worldMap.get(oldLoc.getWorld().getName()).get(oldLoc.getChunk()).remove(oldPos);
-		markChunkDirty(oldLoc.getWorld().getName(), oldPos);
-
-		BlockPosition newPos = new BlockPosition(newLoc);
-		worldMap.get(newLoc.getWorld().getName()).get(newLoc.getChunk()).put(newPos, stb);
-		markChunkDirty(newLoc.getWorld().getName(), newPos);
+		locStr = MiscUtil.formatLocation(newLoc);
+		pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, newLoc, stb.getItemTypeID(), stb));
+		getWorldIndex(newLoc.getWorld()).put(locStr, stb);
 
 		Debugger.getInstance().debug("moved " + stb + " from " + oldLoc + " to " + newLoc);
 	}
@@ -174,19 +208,6 @@ public class LocationManager {
 	}
 
 	/**
-	 * Get all the STB blocks in the given chunk
-	 *
-	 * @param chunk the chunk to check
-	 * @return an array of STB block objects
-	 */
-	public BaseSTBBlock[] get(Chunk chunk) {
-		String worldName = chunk.getWorld().getName();
-		STBBlockMap stbm = worldMap.get(worldName).get(chunk);
-		List<? extends BaseSTBBlock> l = stbm.list();
-		return l.toArray(new BaseSTBBlock[l.size()]);
-	}
-
-	/**
 	 * Get the STB block of the given type at the given location.
 	 *
 	 * @param loc the location to check at
@@ -195,12 +216,29 @@ public class LocationManager {
 	 * @return the STB block item at the given location, or null if no matching item
 	 */
 	public <T extends BaseSTBBlock> T get(Location loc, Class<T> type) {
-		BaseSTBBlock stbBlock = get(loc);
+		STBBlock stbBlock = get(loc);
 		if (stbBlock != null && type.isAssignableFrom(stbBlock.getClass())) {
 			return type.cast(stbBlock);
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Get all the STB blocks in the given chunk
+	 *
+	 * @param chunk the chunk to check
+	 * @return an array of STB block objects
+	 */
+	public List<STBBlock> get(Chunk chunk) {
+		List<STBBlock> res = new ArrayList<STBBlock>();
+		for (STBBlock stb : listBlocks(chunk.getWorld(), false)) {
+			PersistableLocation pLoc = stb.getPersistableLocation();
+			if ((int) pLoc.getX() >> 4 == chunk.getX() && (int) pLoc.getZ() >> 4 == chunk.getZ()) {
+				res.add(stb);
+			}
+		}
+		return res;
 	}
 
 	public void tick() {
@@ -219,114 +257,87 @@ public class LocationManager {
 		totalTicks++;
 		totalTime += System.nanoTime() - now;
 //		System.out.println("tickers took " + (System.nanoTime() - now) + " ns");
-		if (System.currentTimeMillis() - lastSave > MIN_SAVE_INTERVAL) {
+		if (System.currentTimeMillis() - lastSave > saveInterval) {
 			save();
 		}
 	}
 
 	public void save() {
-		if (!saveNeeded) {
-			return;
-		}
-
-		Debugger.getInstance().debug("saving " + dirtyChunks.size() + " chunks");
-		for (Map.Entry<String, Set<ChunkCoords>> entry : dirtyChunks.entrySet()) {
-			for (ChunkCoords cc : entry.getValue()) {
-				YamlConfiguration conf = worldMap.get(entry.getKey()).get(cc).freeze();
-				File dir = getWorldFolder(entry.getKey());
-				File f = new File(dir, "C_" + cc.getX() + "_" + cc.getZ() + ".yml");
-				try {
-					Debugger.getInstance().debug(2, "saving " + conf.getKeys(false).size() + " objects to " + f);
-					conf.save(f);
-				} catch (IOException e) {
-					LogUtils.severe("can't save data to " + f);
-				}
+		// send any pending updates over to the DB updater thread via a BlockingQueue
+		if (!pendingUpdates.isEmpty()) {
+			for (Map.Entry<String,UpdateRecord> rec : pendingUpdates.entrySet()) {
+				updateQueue.add(rec.getValue());
 			}
-			entry.getValue().clear();
+			updateQueue.add(UpdateRecord.commitRecord());
+			pendingUpdates.clear();
 		}
 		lastSave = System.currentTimeMillis();
-		saveNeeded = false;
 	}
 
-	public void load() {
-		for (File worldDir : saveDir.listFiles()) {
-			String worldName = worldDir.getName();
-			World world = Bukkit.getWorld(worldName);
-			if (world != null) {
-				load(world);
-			}
-			// if the world is not found, no problem; data can be loaded later if & when the
-			// world gets loaded
+	public void loadFromDatabase(World world, String wantedType) throws SQLException {
+		ResultSet rs;
+		if (wantedType == null) {
+			queryStmt.setString(1, world.getUID().toString());
+			rs = queryStmt.executeQuery();
+		} else {
+			queryTypeStmt.setString(1, world.getUID().toString());
+			queryTypeStmt.setString(2, wantedType);
+			rs = queryTypeStmt.executeQuery();
 		}
-	}
-
-	public void load(World world) {
-		String worldName = world.getName();
-		File worldDir = new File(saveDir, worldName);
-		if (worldDir.exists()) {
-			for (File saveFile : worldDir.listFiles(ymlFilter)) {
-				try {
-					YamlConfiguration conf = new YamlConfiguration();
-					conf.load(saveFile);
-					for (String k : conf.getKeys(false)) {
-						ConfigurationSection cs = conf.getConfigurationSection(k);
-						BlockPosition pos = BlockPosition.fromString(k);
-						Location loc = new Location(world, pos.getX(), pos.getY(), pos.getZ());
-						String type = cs.getString("TYPE");
-
-						// temp
-						if (!cs.contains("owner")) cs.set("owner", "808df108-8a23-35c4-97f4-2a1088d130fe");
-
-						BaseSTBItem tmpl = BaseSTBItem.getItemById(type, cs);
-						if (tmpl != null) {
-							if (tmpl instanceof BaseSTBBlock) {
-								registerLocation(loc, (BaseSTBBlock) tmpl);
-							} else {
-								LogUtils.severe("STB item " + type + " @ " + loc + " is not a block!");
-							}
-						} else {
-							// defer it - should hopefully be registered by another plugin later
-							deferBlockLoad(world, pos, cs);
-						}
+		while (rs.next()) {
+			String type = rs.getString(5);
+			if (deferredBlocks.contains(type) && !type.equals(wantedType)) {
+				continue;
+			}
+			int x = rs.getInt(2);
+			int y = rs.getInt(3);
+			int z = rs.getInt(4);
+			String data = rs.getString(6);
+			try {
+				System.out.println(String.format("loading STB block %s at %s,%d,%d,%d", type, world.getName(), x, y, z));
+				YamlConfiguration conf = new YamlConfiguration();
+				conf.loadFromString(data);
+				STBItem stbItem = BaseSTBItem.getItemById(type, conf);
+				if (stbItem != null) {
+					Location loc = new Location(world, x, y, z);
+					if (stbItem instanceof STBBlock) {
+						registerLocation(loc, (BaseSTBBlock) stbItem, false);
+					} else {
+						LogUtils.severe("STB item " + type + " @ " + loc + " is not a block!");
 					}
-					Debugger.getInstance().debug("loaded " + conf.getKeys(false).size() + " objects from " + saveFile);
-					if (conf.getKeys(false).size() == 0) {
-						Debugger.getInstance().debug("deleting empty chunk file " + saveFile);
-						if (!saveFile.delete()) {
-							LogUtils.warning("can't delete empty chunk file " + saveFile);
-						}
-					}
-				} catch (Exception e) {
-					LogUtils.severe("can't load " + saveFile + ": " + e.getMessage());
-					e.printStackTrace();
+				} else {
+					// defer it - should hopefully be registered by another plugin later
+					Debugger.getInstance().debug("deferring load for unrecognised block type '" + type + "'");
+					deferBlockLoad(type);
 				}
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+				LogUtils.severe(String.format("Can't load STB block at %s,%d,%d,%d: %s", world.getName(), x, y, z, e.getMessage()));
 			}
 		}
-		if (dirtyChunks.containsKey(worldName)) {
-			dirtyChunks.get(worldName).clear();
-		}
-		saveNeeded = false;
 	}
 
-	private void deferBlockLoad(World world, BlockPosition pos, ConfigurationSection cs) {
-		String type = cs.getString("TYPE");
-		if (!deferredBlocks.containsKey(type)) {
-			deferredBlocks.put(type, new HashMap<PersistableLocation, ConfigurationSection>());
+	public void load() throws SQLException {
+		for (World w : Bukkit.getWorlds()) {
+			loadFromDatabase(w, null);
 		}
-		PersistableLocation pl = new PersistableLocation(world, pos.getX(), pos.getY(), pos.getZ());
-		Debugger.getInstance().debug(2, "block loading for " + type + " @ " + pl + " deferred - no registration for it yet");
-		deferredBlocks.get(type).put(pl, cs);
 	}
 
-	public void loadDeferredBlock(String type) {
-		Map<PersistableLocation, ConfigurationSection> map = deferredBlocks.get(type);
-		if (map != null) {
-			Debugger.getInstance().debug("loading " + map.size() + " deferred blocks of type: " + type);
-			for (Map.Entry<PersistableLocation, ConfigurationSection> entry : map.entrySet()) {
-				if (entry.getKey().isWorldAvailable()) {
-					BaseSTBItem stb = BaseSTBItem.getItemById(type, entry.getValue());
-					registerLocation(entry.getKey().getLocation(), (BaseSTBBlock) stb);
-				}
+	private void deferBlockLoad(String typeID) {
+		deferredBlocks.add(typeID);
+	}
+
+	/**
+	 * Load all blocks for the given block type.  Called when a block is registered after the
+	 * initial DB load is done.
+	 *
+	 * @param type the block type
+	 * @throws SQLException if there is a problem loading from the DB
+	 */
+	public void loadDeferredBlocks(String type) throws SQLException {
+		if (deferredBlocks.contains(type)) {
+			for (World world : Bukkit.getWorlds()) {
+				loadFromDatabase(world, type);
 			}
 			deferredBlocks.remove(type);
 		}
@@ -339,8 +350,12 @@ public class LocationManager {
 	 */
 	public void worldUnloaded(World world) {
 		save();
-		String worldName = world.getName();
-		worldMap.remove(worldName);
+
+		Map<String,BaseSTBBlock> map = blockIndex.get(world.getName());
+		if (map != null) {
+			map.clear();
+			blockIndex.remove(world.getName());
+		}
 	}
 
 	/**
@@ -349,36 +364,70 @@ public class LocationManager {
 	 * @param world the world that has been loaded
 	 */
 	public void worldLoaded(World world) {
-		load(world);
-	}
-
-	private void markChunkDirty(String worldName, BlockPosition pos) {
-		if (!dirtyChunks.containsKey(worldName)) {
-			dirtyChunks.put(worldName, new HashSet<ChunkCoords>());
-		}
-		dirtyChunks.get(worldName).add(new ChunkCoords(pos));
-		saveNeeded = true;
-	}
-
-	private File getWorldFolder(String worldName) {
-		File f = new File(saveDir, worldName);
-		if (!f.exists()) {
-			if (!f.mkdir()) {
-				LogUtils.severe("can't create directory " + f);
+		if (!blockIndex.containsKey(world.getName())) {
+			try {
+				loadFromDatabase(world, null);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				LogUtils.severe("can't load STB data for world " + world.getName() + ": " + e.getMessage());
 			}
- 		}
-		return f;
+		}
 	}
 
+	/**
+	 * Get an array of all STB blocks for the given world.
+	 *
+	 * @param world the world to query
+	 * @param sorted if true, the array is sorted by block type
+	 * @return an array of STB block objects
+	 */
 	public BaseSTBBlock[] listBlocks(World world, boolean sorted) {
-		STBChunkMap stcm = worldMap.get(world.getName());
-		List<? extends BaseSTBBlock> stb = stcm.list();
+		Collection<BaseSTBBlock> list = getWorldIndex(world).values();
 		return sorted ?
-				MiscUtil.asSortedList(stb).toArray(new BaseSTBBlock[stb.size()]) :
-				stb.toArray(new BaseSTBBlock[stb.size()]);
+				MiscUtil.asSortedList(list).toArray(new BaseSTBBlock[list.size()]) :
+				list.toArray(new BaseSTBBlock[list.size()]);
 	}
 
+	/**
+	 * Get the average time in nanoseconds that the plugin has spent ticking tickable blocks
+	 * since the plugin started up.
+	 *
+	 * @return the average time spent ticking blocks
+	 */
 	public long getAverageTimePerTick() {
 		return totalTime / totalTicks;
+	}
+
+	/**
+	 * Set the save interval; any changes will be written to the persisted DB this often.
+	 *
+	 * @param saveInterval the save interval, in seconds.
+	 */
+	public void setSaveInterval(int saveInterval) {
+		this.saveInterval = saveInterval * 1000;
+	}
+
+	/**
+	 * Shut down the location manager after ensuring all pending changes are written to the DB,
+	 * and the DB thread has exited.  This may block the main thread for a short time, but should only
+	 * be called when the plugin is being disabled.
+	 */
+	public void shutdown() {
+		updateQueue.add(UpdateRecord.finishingRecord());
+		try {
+			// 5 seconds is hopefully enough for the DB thread to finish its work
+			updaterTask.join(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			dbStorage.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	UpdateRecord getUpdateRecord() throws InterruptedException {
+		return updateQueue.take();
 	}
 }

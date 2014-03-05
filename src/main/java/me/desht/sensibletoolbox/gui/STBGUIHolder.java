@@ -1,13 +1,13 @@
 package me.desht.sensibletoolbox.gui;
 
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.STBBlock;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 public class STBGUIHolder implements InventoryHolder {
-	private final BaseSTBBlock owner;
+	private final STBBlock owner;
 
-	public STBGUIHolder(BaseSTBBlock owner) {
+	public STBGUIHolder(STBBlock owner) {
 		this.owner = owner;
 	}
 

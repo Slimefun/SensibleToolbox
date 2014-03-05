@@ -4,6 +4,7 @@ import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -40,7 +41,7 @@ public class GiveCommand extends AbstractCommand {
 			target = (Player) sender;
 		}
 		String id = args[0].replace(" ", "").toLowerCase();
-		BaseSTBItem item = BaseSTBItem.getItemById(id);
+		STBItem item = BaseSTBItem.getItemById(id);
 		DHValidate.notNull(item, "Unknown SensibleToolbox item: " + args[0]);
 		target.getInventory().addItem(item.toItemStack(amount));
 		MiscUtil.statusMessage(target, "You received " + amount + " x &6" + item.getItemName() + "&-.");

@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
@@ -21,12 +22,12 @@ public abstract class STBBaseListener implements Listener {
 	protected void filterItemsAllowed(InventoryClickEvent event, Class<? extends BaseSTBItem> c) {
 		Inventory topInv = event.getView().getTopInventory();
 		if (event.getRawSlot() >= 0 && event.getRawSlot() < topInv.getSize() && event.getCursor().getType() != Material.AIR) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor(), c);
+			STBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor(), c);
 			if (item == null) {
 				event.setCancelled(true);
 			}
 		} else if (event.getRawSlot() >= topInv.getSize() && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-			BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem(), c);
+			STBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem(), c);
 			if (item == null) {
 				event.setCancelled(true);
 			}
@@ -42,7 +43,7 @@ public abstract class STBBaseListener implements Listener {
 					event.setCancelled(true);
 					break;
 				} else {
-					BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getOldCursor(), c);
+					STBItem item = BaseSTBItem.getItemFromItemStack(event.getOldCursor(), c);
 					if (item == null) {
 						event.setCancelled(true);
 						break;

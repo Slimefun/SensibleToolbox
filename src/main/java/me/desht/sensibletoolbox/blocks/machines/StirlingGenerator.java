@@ -2,6 +2,8 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.recipes.FuelItems;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
@@ -110,10 +112,14 @@ public class StirlingGenerator extends Generator {
 
 	@Override
 	public Recipe getRecipe() {
+		SimpleCircuit sc = new SimpleCircuit();
+		TenKEnergyCell ec = new TenKEnergyCell();
+		registerCustomIngredients(sc, ec);
 		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("III", "PCP", "RGR");
+		recipe.shape("III", "SCE", "RGR");
 		recipe.setIngredient('I', Material.IRON_INGOT);
-		recipe.setIngredient('P', Material.PISTON_BASE);
+		recipe.setIngredient('S', sc.getMaterialData());
+		recipe.setIngredient('E', ec.getMaterialData());
 		recipe.setIngredient('C', Material.CAULDRON_ITEM);
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		recipe.setIngredient('R', Material.REDSTONE);
@@ -155,7 +161,7 @@ public class StirlingGenerator extends Generator {
 		if (isRedstoneActive()) {
 			if (getProcessing() == null && getCharge() < getMaxCharge()) {
 				for (int slot : getInputSlots()) {
-					if (getInventory().getItem(slot) != null) {
+					if (getInventoryItem(slot) != null) {
 						pullItemIntoProcessing(slot);
 						break;
 					}
@@ -176,7 +182,7 @@ public class StirlingGenerator extends Generator {
 	}
 
 	private void pullItemIntoProcessing(int inputSlot) {
-		ItemStack stack = getInventory().getItem(inputSlot);
+		ItemStack stack = getInventoryItem(inputSlot);
 		FuelItems.FuelValues fv = fuelItems.get(stack);
 		// generator is smart and will attempt to avoid wasting fuel
 		// only burn fuel if the total value won't take us over the max charge limit
@@ -187,7 +193,7 @@ public class StirlingGenerator extends Generator {
 			getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
 			setProgress(currentFuel.getBurnTime());
 			stack.setAmount(stack.getAmount() - 1);
-			getInventory().setItem(inputSlot, stack.getAmount() > 0 ? stack : null);
+			setInventoryItem(inputSlot, stack.getAmount() > 0 ? stack : null);
 			updateBlock(false);
 		}
 	}

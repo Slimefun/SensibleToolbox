@@ -10,7 +10,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 public class TenKEnergyCell extends EnergyCell {
-	public TenKEnergyCell() { }
+	public TenKEnergyCell() {
+		super();
+	}
 
 	public TenKEnergyCell(ConfigurationSection conf) {
 		super(conf);
@@ -39,8 +41,9 @@ public class TenKEnergyCell extends EnergyCell {
 	@Override
 	public Recipe getRecipe() {
 		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("WWW", "WRW", "GWG");
+		recipe.shape("WWW", "WSW", "GRG");
 		recipe.setIngredient('W', Material.WOOD);
+		recipe.setIngredient('S', Material.SUGAR);
 		recipe.setIngredient('R', Material.REDSTONE);
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;

@@ -6,6 +6,8 @@ import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.*;
@@ -21,6 +23,7 @@ import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -40,20 +43,21 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import java.lang.reflect.Constructor;
+import java.sql.SQLException;
 import java.util.*;
 
-public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBItem>, InventoryGUI.InventoryGUIListener {
+public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, InventoryGUI.InventoryGUIListener, STBItem {
 	public static final ChatColor LORE_COLOR = ChatColor.GRAY;
 	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
 	public static final String SUFFIX_SEPARATOR = " \uff1a ";
 
 	private static final Map<String, Class<? extends BaseSTBItem>> id2class = new HashMap<String, Class<? extends BaseSTBItem>>();
-	private static final Map<Material,Class<? extends BaseSTBItem>> customSmelts = new HashMap<Material, Class<? extends BaseSTBItem>>();
-	private static final Map<String, Class<? extends BaseSTBItem>> customIngredients = new HashMap<String, Class<? extends BaseSTBItem>>();
+	private static final Map<Material,Class<? extends STBItem>> customSmelts = new HashMap<Material, Class<? extends STBItem>>();
+	private static final Map<String, Class<? extends STBItem>> customIngredients = new HashMap<String, Class<? extends STBItem>>();
+	public static final int MAX_ITEM_ID_LENGTH = 32;
 
 	private Map<Enchantment,Integer> enchants;
 
@@ -114,17 +118,21 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	private static void registerItem(BaseSTBItem item) {
-//		String id = item.getItemName().toLowerCase().replaceAll("[^a-z0-9]", "");
 		String id = item.getItemTypeID();
+		Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 		id2class.put(id, item.getClass());
-		if (item instanceof BaseSTBBlock) {
-			LocationManager.getManager().loadDeferredBlock(id);
+		if (item instanceof STBBlock) {
+			try {
+				LocationManager.getManager().loadDeferredBlocks(id);
+			} catch (SQLException e) {
+				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			}
 		}
 	}
 
 	public static void setupRecipes() {
 		for (String key : id2class.keySet()) {
-			BaseSTBItem item = getItemById(key);
+			STBItem item = getItemById(key);
 			Recipe r = item.getRecipe();
 			if (r != null) {
 				Bukkit.addRecipe(r);
@@ -139,7 +147,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			}
 		}
 		for (String key : id2class.keySet()) {
-			BaseSTBItem item = getItemById(key);
+			STBItem item = getItemById(key);
 			if (item instanceof BaseSTBMachine) {
 				((BaseSTBMachine)item).addCustomRecipes(CustomRecipeManager.getManager());
 			}
@@ -153,7 +161,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
  	 * @param stack the item stack to check
 	 * @return the required STB class, or null if no custom smelting restriction has been registered
 	 */
-	public static Class<? extends BaseSTBItem> getCustomSmelt(ItemStack stack) {
+	public static Class<? extends STBItem> getCustomSmelt(ItemStack stack) {
 		return customSmelts.get(stack.getType());
 	}
 
@@ -194,7 +202,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @return the STB item, or null if the item stack is not an STB item of the desired class
 	 */
 	public static <T extends BaseSTBItem> T getItemFromItemStack(ItemStack stack, Class<T> type) {
-		BaseSTBItem item = getItemFromItemStack(stack);
+		STBItem item = getItemFromItemStack(stack);
 		if (item != null && type.isAssignableFrom(item.getClass())) {
 			return type.cast(item);
 		} else {
@@ -208,7 +216,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @param id the item ID
 	 * @return the STB item
 	 */
-	public static BaseSTBItem getItemById(String id) {
+	public static STBItem getItemById(String id) {
 		return getItemById(id, null);
 	}
 
@@ -258,7 +266,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @param c a subclass of BaseSTBItem
 	 * @return true if this item stack is an STB item of (or extending) the given class
 	 */
-	public static boolean isSTBItem(ItemStack stack, Class<? extends BaseSTBItem> c) {
+	public static boolean isSTBItem(ItemStack stack, Class<? extends STBItem> c) {
 		if (stack == null || !stack.hasItemMeta()) {
 			return false;
 		}
@@ -268,7 +276,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 			if (!lore.isEmpty() && lore.get(0).equals(STB_LORE_LINE)) {
 				if (c != null) {
 					Configuration conf = BaseSTBItem.getItemAttributes(stack);
-					Class<? extends BaseSTBItem> c2 = id2class.get(conf.getString("*TYPE"));
+					Class<? extends STBItem> c2 = id2class.get(conf.getString("*TYPE"));
 					return c2 != null && c.isAssignableFrom(c2);
 				} else {
 					return true;
@@ -305,27 +313,14 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 
 
 	/**
-	 * Get the material and data used to represent this item.
-	 *
-	 * @return the material data
-	 */
-	public abstract MaterialData getMaterialData();
-
-	/**
 	 * Get the Bukkit Material used to represent this item.
 	 *
 	 * @return the Bukkit Material
 	 */
+	@Override
 	public Material getMaterial() {
 		return getMaterialData().getItemType();
 	}
-
-	/**
-	 * Get the item's displayed name.
-	 *
-	 * @return the item name
-	 */
-	public abstract String getItemName();
 
 	/**
 	 * Get any suffix to be appended to the item's displayed name.  Override this in
@@ -334,14 +329,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @return the display suffix
 	 */
+	@Override
 	public String getDisplaySuffix() { return null; }
-
-	/**
-	 * Get the base lore to display for the item.
-	 *
-	 * @return the item lore
-	 */
-	public abstract String[] getLore();
 
 	/**
 	 * Get extra lore to be appended to the base lore.  verride this in
@@ -350,20 +339,15 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @return the extra item lore
 	 */
+	@Override
 	public String[] getExtraLore() { return new String[0]; }
-
-	/**
-	 * Get the recipe used to create the item.
-	 *
-	 * @return the recipe, or null if the item does not have a vanilla crafting recipe
-	 */
-	public abstract Recipe getRecipe();
 
 	/**
 	 * Get any alternative recipes used to create the item.
 	 *
 	 * @return an array of recipes
 	 */
+	@Override
 	public Recipe[] getExtraRecipes() {
 		return new Recipe[0];
 	}
@@ -375,7 +359,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @param mat the ingredient material
 	 * @return null for no restriction, or a BaseSTBItem subclass to specify a restriction
 	 */
-	public final Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
+	@Override
+	public final Class<? extends STBItem> getCraftingRestriction(Material mat) {
 		return customIngredients.get(getItemTypeID() + ":" + mat);
 	}
 
@@ -385,12 +370,13 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @param result the resulting item
 	 * @return true if this item may be used, false otherwise
 	 */
+	@Override
 	public final boolean isIngredientFor(ItemStack result) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(result);
+		STBItem item = BaseSTBItem.getItemFromItemStack(result);
 		if (item == null) {
 			return false;
 		}
-		Class<? extends BaseSTBItem> c = item.getCraftingRestriction(getMaterial());
+		Class<? extends STBItem> c = item.getCraftingRestriction(getMaterial());
 		return c == getClass();
 	}
 
@@ -401,8 +387,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @param items the STB items to register as custom ingredients
 	 */
-	protected void registerCustomIngredients(BaseSTBItem... items) {
-		for (BaseSTBItem item : items) {
+	protected void registerCustomIngredients(STBItem... items) {
+		for (STBItem item : items) {
 			customIngredients.put(getItemTypeID() + ":" + item.getMaterial(), item.getClass());
 		}
 	}
@@ -412,6 +398,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @return true if the item should glow
 	 */
+	@Override
 	public boolean hasGlow() { return false; }
 
 	/**
@@ -447,6 +434,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @return the resulting itemstack, or null if this object does not smelt
 	 */
+	@Override
 	public ItemStack getSmeltingResult() { return null; }
 
 	/**
@@ -454,6 +442,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @return true if the item can be enchanted
 	 */
+	@Override
 	public boolean isEnchantable() {
 		return true;
 	}
@@ -474,6 +463,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 *
 	 * @return the new ItemStack
 	 */
+	@Override
 	public ItemStack toItemStack() {
 		return toItemStack(1);
 	}
@@ -484,6 +474,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	 * @param amount number of items in the stack
 	 * @return the new ItemStack
 	 */
+	@Override
 	public ItemStack toItemStack(int amount) {
 		ItemStack res = getMaterialData().toItemStack(amount);
 
@@ -541,11 +532,12 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<BaseSTBIte
 	}
 
 	@Override
-	public int compareTo(BaseSTBItem other) {
+	public int compareTo(STBItem other) {
 		return getItemName().compareTo(other.getItemName());
 	}
 
 
+	@Override
 	public String getItemTypeID() {
 		return getClass().getSimpleName().toLowerCase();
 	}

@@ -5,7 +5,9 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.gui.AccessControlGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.RedstoneBehaviourGadget;
@@ -53,6 +55,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	private final List<BlockFace> neighbours = new ArrayList<BlockFace>();
 
 	public ItemRouter() {
+		bufferItem = null;
 		setStackSize(1);
 		setTickRate(20);
 	}
@@ -96,10 +99,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 		inv.setItem(0, getBufferItem());
 		conf.set("buffer", BukkitSerialization.toBase64(inv, 1));
 		return conf;
-	}
-
-	public static String getInventoryTitle() {
-		return ChatColor.GOLD + "Item Router: Module Management";
 	}
 
 	@Override
@@ -282,7 +281,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 		Block b = loc.getBlock();
 		for (BlockFace face : STBUtil.directFaces) {
 			Block b1 = b.getRelative(face);
-			BaseSTBBlock stb = LocationManager.getManager().get(b1.getLocation());
+			STBBlock stb = LocationManager.getManager().get(b1.getLocation());
 			if (stb instanceof STBInventoryHolder) {
 				neighbours.add(face);
 			} else if (VanillaInventoryUtils.isVanillaInventory(b1)) {
@@ -335,6 +334,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
 	public void setBufferItem(ItemStack bufferItem) {
 		this.bufferItem = bufferItem;
+		if (bufferItem != null && (bufferItem.getAmount() == 0 || bufferItem.getType() == Material.AIR)) {
+			this.bufferItem = null;
+		}
 		updateBufferIndicator(false);
 	}
 
@@ -422,7 +424,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
 	@Override
 	public int onShiftClickInsert(int slot, ItemStack toInsert) {
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(toInsert, ItemRouterModule.class);
+		STBItem item = BaseSTBItem.getItemFromItemStack(toInsert, ItemRouterModule.class);
 		if (item == null) {
 			return 0;
 		}

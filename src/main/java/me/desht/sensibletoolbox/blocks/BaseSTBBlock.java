@@ -3,10 +3,9 @@ package me.desht.sensibletoolbox.blocks;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.PersistableLocation;
+import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.AccessControl;
-import me.desht.sensibletoolbox.api.ChargeableBlock;
-import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.api.*;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.STBGUIHolder;
@@ -38,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class BaseSTBBlock extends BaseSTBItem {
+public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 	public static final String STB_BLOCK = "STB_Block";
 	public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
 	private PersistableLocation persistableLocation;
@@ -80,19 +79,23 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		return conf;
 	}
 
+	@Override
 	public RedstoneBehaviour getRedstoneBehaviour() {
 		return redstoneBehaviour;
 	}
 
+	@Override
 	public void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
 		this.redstoneBehaviour = redstoneBehaviour;
 		updateBlock(false);
 	}
 
+	@Override
 	public AccessControl getAccessControl() {
 		return accessControl;
 	}
 
+	@Override
 	public void setAccessControl(AccessControl accessControl) {
 		this.accessControl = accessControl;
 		updateBlock(false);
@@ -102,6 +105,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		return guiHolder;
 	}
 
+	@Override
 	public InventoryGUI getGUI() {
 		return inventoryGUI;
 	}
@@ -110,18 +114,22 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		this.inventoryGUI = inventoryGUI;
 	}
 
+	@Override
 	public BlockFace getFacing() {
 		return facing;
 	}
 
+	@Override
 	public void setFacing(BlockFace facing) {
 		this.facing = facing;
 	}
 
+	@Override
 	public UUID getOwner() {
 		return owner;
 	}
 
+	@Override
 	public void setOwner(UUID owner) {
 		this.owner = owner;
 	}
@@ -205,6 +213,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 *
 	 * @return an array of relative offsets for extra blocks in the item
 	 */
+	@Override
 	public RelativePosition[] getBlockStructure() { return new RelativePosition[0]; }
 
 	/**
@@ -242,10 +251,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 *
 	 * @return the base block location
 	 */
+	@Override
 	public Location getLocation() {
 		return persistableLocation == null ? null : persistableLocation.getLocation();
 	}
 
+	@Override
 	public PersistableLocation getPersistableLocation() {
 		return persistableLocation;
 	}
@@ -295,6 +306,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		return b.getRelative(dx, pos.getUp(), dz);
 	}
 
+	@Override
 	public void moveTo(Location oldLoc, Location newLoc) {
 		for (RelativePosition pos : getBlockStructure()) {
 			Block b1 = getMultiBlock(oldLoc, pos);
@@ -339,18 +351,18 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	protected void placeBlock(Block b, Player p, BlockFace facing) {
 		setFacing(facing);
 		setOwner(p.getUniqueId());
-		LocationManager.getManager().registerLocation(b.getLocation(), this);
+		LocationManager.getManager().registerLocation(b.getLocation(), this, true);
 	}
 
 	public void breakBlock(Block b) {
-		Location baseLoc = getLocation();
+		Location baseLoc = this.getLocation();
 		Block origin = baseLoc.getBlock();
 		origin.setType(Material.AIR);
 		for (RelativePosition pos : getBlockStructure()) {
 			Block b1 = getMultiBlock(baseLoc, pos);
 			b1.setType(Material.AIR);
 		}
-		LocationManager.getManager().unregisterLocation(getLocation());
+		LocationManager.getManager().unregisterLocation(baseLoc, this);
 		b.getWorld().dropItemNaturally(b.getLocation(), toItemStack());
 	}
 
@@ -372,14 +384,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		return persistableLocation != null ? persistableLocation.hashCode() : 0;
 	}
 
+	@Override
 	public void updateBlock(boolean redraw) {
-		if (getLocation() != null) {
+		Location loc = getLocation();
+		if (loc != null) {
 			if (redraw) {
-				Block b = getLocation().getBlock();
+				Block b = loc.getBlock();
 				// maybe one day Bukkit will have a block set method which takes a MaterialData
 				b.setTypeIdAndData(getMaterial().getId(), getMaterialData().getData(), true);
 			}
-			LocationManager.getManager().updateLocation(getLocation());
+			LocationManager.getManager().updateLocation(loc, this);
 		}
 	}
 
@@ -403,7 +417,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 		}
 
 		// ok, player is allowed to put a sign here
-		signBlock.setTypeIdAndData(event.getBlockFace() == BlockFace.UP ? Material.SIGN_POST.getId() : Material.WALL_SIGN.getId(), (byte) 0, false);
+		signBlock.setType(event.getBlockFace() == BlockFace.UP ? Material.SIGN_POST : Material.WALL_SIGN);
 		Sign sign = (Sign) signBlock.getState();
 		org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
 		if (event.getBlockFace() == BlockFace.UP) {
@@ -528,6 +542,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	 *
 	 * @return the move reaction: MOVE, BLOCK, or BREAK
 	 */
+	@Override
 	public PistonMoveReaction getPistonMoveReaction() {
 		return PistonMoveReaction.MOVE;
 	}

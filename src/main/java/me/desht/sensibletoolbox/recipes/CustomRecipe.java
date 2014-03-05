@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.recipes;
 
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.STBItem;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
@@ -10,7 +10,7 @@ public class CustomRecipe implements Recipe {
 	private final ItemStack result;
 	private final int processingTime; // in ticks
 
-	public CustomRecipe(BaseSTBItem processor, ItemStack ingredient, ItemStack result, int processingTime) {
+	public CustomRecipe(STBItem processor, ItemStack ingredient, ItemStack result, int processingTime) {
 		this.processorID = processor.getItemTypeID();
 		this.ingredient = ingredient;
 		this.result = result;

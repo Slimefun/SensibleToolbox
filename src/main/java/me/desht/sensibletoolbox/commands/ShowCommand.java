@@ -5,6 +5,7 @@ import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -59,9 +60,9 @@ public class ShowCommand extends AbstractCommand {
 	private void showDetails(MessagePager pager, String locStr) {
 		try {
 			Location loc = MiscUtil.parseLocation(locStr);
-			BaseSTBBlock stb = LocationManager.getManager().get(loc);
+			STBBlock stb = LocationManager.getManager().get(loc);
 			DHValidate.notNull(stb, "No STB block at " + locStr);
-			YamlConfiguration conf = stb.freeze();
+			YamlConfiguration conf = ((BaseSTBBlock) stb).freeze();
 			pager.add(ChatColor.YELLOW.toString() + stb + ":");
 			for (String l : conf.saveToString().split("\\n")) {
 				if (!l.isEmpty()) {

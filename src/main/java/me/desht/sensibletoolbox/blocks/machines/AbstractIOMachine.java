@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -12,8 +12,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -40,7 +38,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			if (getProcessing() == null) {
 				// not doing any processing - anything in input to take?
 				for (int slot : getInputSlots()) {
-					if (getInventory().getItem(slot) != null) {
+					if (getInventoryItem(slot) != null) {
 						pullItemIntoProcessing(slot);
 						playStartupSound();
 						break;
@@ -64,11 +62,11 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			}
 			if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF && getTicksLived() % 10 == 0) {
 				for (int slot : getOutputSlots()) {
-					ItemStack stack = getInventory().getItem(slot);
+					ItemStack stack = getInventoryItem(slot);
 					if (stack != null) {
 						if (autoEject(stack)) {
 							stack.setAmount(stack.getAmount() - 1);
-							getInventory().setItem(slot, stack.getAmount() == 0 ? null : stack);
+							setInventoryItem(slot, stack.getAmount() == 0 ? null : stack);
 						}
 						break;
 					}
@@ -83,13 +81,13 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			int slot = findOutputSlot(result);
 			if (slot >= 0) {
 				// good, there's space to move it out of processing
-				ItemStack stack = getInventory().getItem(slot);
+				ItemStack stack = getInventoryItem(slot);
 				if (stack == null) {
 					stack = result;
 				} else {
 					stack.setAmount(stack.getAmount() + result.getAmount());
 				}
-				getInventory().setItem(slot, stack);
+				setInventoryItem(slot, stack);
 			} else {
 				// no space!
 				setJammed(true);
@@ -112,12 +110,13 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 		Block target = getLocation().getBlock().getRelative(getAutoEjectDirection());
 		ItemStack item = result.clone();
 		item.setAmount(1);
+		System.out.println(this + " auto-eject item " + getAutoEjectDirection());
 		if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
 			// no block there - just drop the item
 			target.getWorld().dropItem(target.getLocation().add(0.5, 0.5, 0.5), result);
 			return true;
 		} else {
-			BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+			STBBlock stb = LocationManager.getManager().get(target.getLocation());
 			int nInserted;
 			if (stb instanceof STBInventoryHolder) {
 				// try to insert into STB block
@@ -131,25 +130,21 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	}
 
 	private void pullItemIntoProcessing(int inputSlot) {
-		ItemStack stack = getInventory().getItem(inputSlot);
+		ItemStack stack = getInventoryItem(inputSlot);
 		ItemStack toProcess = stack.clone();
 		toProcess.setAmount(1);
 		ProcessingResult recipe = getCustomRecipeFor(toProcess);
 		if (recipe == null) {
 			// shouldn't happen but...
 			getLocation().getWorld().dropItemNaturally(getLocation(), stack);
-			getInventory().setItem(inputSlot, null);
+			setInventoryItem(inputSlot, null);
 			return;
 		}
 		setProcessing(toProcess);
 		getProgressMeter().setMaxProgress(recipe.getProcessingTime());
 		setProgress(recipe.getProcessingTime());
-		if (stack.getAmount() > 1) {
-			stack.setAmount(stack.getAmount() - 1);
-		} else {
-			stack = null;
-		}
-		getInventory().setItem(inputSlot, stack);
+		stack.setAmount(stack.getAmount() - 1);
+		setInventoryItem(inputSlot, stack);
 
 		if (stack == null) {
 			// workaround to avoid leaving ghost items in the input slot

@@ -5,6 +5,7 @@ import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -30,7 +31,7 @@ public class ChargeCommand extends AbstractCommand {
 		notFromConsole(sender);
 
 		Player player = (Player) sender;
-		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
+		STBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
 		BaseSTBBlock stb = null;
 		Chargeable c = null;
 		if (item != null && item instanceof Chargeable) {

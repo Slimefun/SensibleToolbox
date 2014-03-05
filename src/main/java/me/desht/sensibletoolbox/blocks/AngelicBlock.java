@@ -101,7 +101,7 @@ public class AngelicBlock extends BaseSTBBlock {
 			p.getWorld().dropItemNaturally(p.getLocation(), stack);
 		}
 		b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-		LocationManager.getManager().unregisterLocation(getLocation());
+		LocationManager.getManager().unregisterLocation(b.getLocation(), this);
 		event.setCancelled(true);
 	}
 

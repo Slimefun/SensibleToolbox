@@ -1,11 +1,9 @@
 package me.desht.sensibletoolbox.gui;
 
-import me.desht.sensibletoolbox.api.STBMachine;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import org.apache.commons.lang.Validate;
+import me.desht.sensibletoolbox.api.STBBlock;
 
 public abstract class MonitorGadget extends Gadget {
-	private final BaseSTBBlock owner;
+	private final STBBlock owner;
 	private boolean repaintNeeded = true;
 
 	public abstract void repaint();
@@ -16,7 +14,7 @@ public abstract class MonitorGadget extends Gadget {
 		this.owner = gui.getOwningBlock();
 	}
 
-	public BaseSTBBlock getOwner() {
+	public STBBlock getOwner() {
 		return owner;
 	}
 

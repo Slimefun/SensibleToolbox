@@ -1,13 +1,11 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
-import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.gui.EnergyFlowGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -121,6 +119,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
 		for (EnergyNet net : getAttachedEnergyNets()) {
 			net.findSourcesAndSinks();
 		}
+		updateBlock(false);
 	}
 
 	@Override

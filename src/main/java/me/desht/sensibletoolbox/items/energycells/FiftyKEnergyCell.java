@@ -10,7 +10,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 public class FiftyKEnergyCell extends EnergyCell {
-	public FiftyKEnergyCell() { }
+	public FiftyKEnergyCell() {
+		super();
+	}
 
 	public FiftyKEnergyCell(ConfigurationSection conf) {
 		super(conf);
@@ -42,8 +44,9 @@ public class FiftyKEnergyCell extends EnergyCell {
 		TenKEnergyCell cell = new TenKEnergyCell();
 		cell.setCharge(0.0);
 		registerCustomIngredients(cell);
-		recipe.shape("III", "CCC", "GIG");
+		recipe.shape("III", "CCC", "GRG");
 		recipe.setIngredient('I', Material.IRON_INGOT);
+		recipe.setIngredient('I', Material.REDSTONE);
 		recipe.setIngredient('C', cell.toItemStack().getData());
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		return recipe;

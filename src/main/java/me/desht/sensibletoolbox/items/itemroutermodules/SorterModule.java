@@ -1,9 +1,8 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.Debugger;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.DyeColor;
@@ -66,7 +65,7 @@ public class SorterModule extends DirectionalItemRouterModule {
 			Block b = getOwner().getLocation().getBlock();
 			Block target = b.getRelative(getDirection());
 			int nToInsert = getOwner().getStackSize();
-			BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+			STBBlock stb = LocationManager.getManager().get(target.getLocation());
 			int nInserted;
 			if (stb instanceof STBInventoryHolder) {
 				ItemStack toInsert = getOwner().getBufferItem().clone();

@@ -3,8 +3,9 @@ package me.desht.sensibletoolbox.gui;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
@@ -31,7 +32,7 @@ import java.util.List;
 public class InventoryGUI {
 	// some handy stock textures
 	public static final ItemStack INPUT_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
-	public static final ItemStack OUTPUT_TEXTURE = new ItemStack(Material.STATIONARY_LAVA);
+	public static final ItemStack OUTPUT_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
 	public static final ItemStack BG_TEXTURE = new ItemStack(Material.STATIONARY_WATER);
 	static {
 		setDisplayName(INPUT_TEXTURE, ChatColor.AQUA + "Input");
@@ -161,16 +162,16 @@ public class InventoryGUI {
 		return monitors.get(monitorId);
 	}
 
-	public BaseSTBBlock getOwningBlock() {
-		if (listener instanceof BaseSTBBlock) {
-			return (BaseSTBBlock) listener;
+	public STBBlock getOwningBlock() {
+		if (listener instanceof STBBlock) {
+			return (STBBlock) listener;
 		}
 		throw new IllegalStateException("attempt to get STB block for non-block listener");
 	}
 
-	public BaseSTBItem getOwningItem() {
-		if (listener instanceof BaseSTBItem) {
-			return (BaseSTBItem) listener;
+	public STBItem getOwningItem() {
+		if (listener instanceof STBItem) {
+			return (STBItem) listener;
 		}
 		throw new IllegalStateException("attempt to get STB item for non-item listener");
 	}
