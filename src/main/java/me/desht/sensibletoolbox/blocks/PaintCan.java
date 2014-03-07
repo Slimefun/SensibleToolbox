@@ -259,18 +259,12 @@ public class PaintCan extends BaseSTBBlock {
 
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event) {
-		// ensure there's enough room
-		if (!event.getBlockPlaced().getRelative(BlockFace.UP).isEmpty()) {
-			MiscUtil.errorMessage(event.getPlayer(), "Not enough room here (need one empty block above).");
-			event.setCancelled(true);
-			return;
-		}
-
 		super.onBlockPlace(event);
-
-		Block above = event.getBlock().getRelative(BlockFace.UP);
-		Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", event.getPlayer());
-		skull.update();
+		if (!event.isCancelled()) {
+			Block above = event.getBlock().getRelative(BlockFace.UP);
+			Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", event.getPlayer());
+			skull.update();
+		}
 	}
 
 	@Override

@@ -19,6 +19,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.material.MaterialData;
 
+import java.util.UUID;
+
 public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 	private static final MaterialData md = new MaterialData(Material.DROPPER);
 
@@ -65,21 +67,15 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event) {
-		// ensure there's enough room
-		if (!event.getBlockPlaced().getRelative(BlockFace.UP).isEmpty()) {
-			MiscUtil.errorMessage(event.getPlayer(), "Not enough room here (need one empty block above).");
-			event.setCancelled(true);
-			return;
-		}
-
 		setInventoryTitle(event, ChatColor.DARK_RED + "!!! " + getItemName() + " !!!");
 
 		super.onBlockPlace(event);
-
-		// put a skull on top of the main block
-		Block above = event.getBlock().getRelative(BlockFace.UP);
-		Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", event.getPlayer());
-		skull.update();
+		if (!event.isCancelled()) {
+			// put a skull on top of the main block
+			Block above = event.getBlock().getRelative(BlockFace.UP);
+			Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", event.getPlayer());
+			skull.update();
+		}
 	}
 
 	@Override
@@ -111,12 +107,12 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public int insertItems(ItemStack item, BlockFace face, boolean sorting) {
+	public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
 		return item.getAmount();
 	}
 
 	@Override
-	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount) {
+	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
 		return null;
 	}
 

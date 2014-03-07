@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.Dye;
 
 public abstract class ItemRouterModule extends BaseSTBItem {
-	private ItemRouter owner;
+	private ItemRouter itemRouter;
 	private int amount;
 
 	protected static Dye makeDye(DyeColor color) {
@@ -45,12 +45,12 @@ public abstract class ItemRouterModule extends BaseSTBItem {
 		return true;
 	}
 
-	public ItemRouter getOwner() {
-		return owner;
+	public ItemRouter getItemRouter() {
+		return itemRouter;
 	}
 
-	public void setOwner(ItemRouter owner) {
-		this.owner = owner;
+	public void setItemRouter(ItemRouter owner) {
+		this.itemRouter = owner;
 	}
 
 

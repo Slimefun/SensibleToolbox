@@ -4,6 +4,8 @@ rename_level_cost: 5
 particle_effects: 2
 debug_level: 0
 save_interval: 30
+database:
+  table_prefix: "stb_"
 enable:
   angelicblock: true
   blockupdatedetector: true

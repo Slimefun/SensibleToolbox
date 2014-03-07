@@ -177,6 +177,15 @@ public class GeneralListener extends STBBaseListener {
 		}
 	}
 
+	@EventHandler
+	public void onFlow(BlockFromToEvent event) {
+		BaseSTBBlock item = LocationManager.getManager().get(event.getToBlock().getLocation());
+		if (item != null) {
+			// this prevents things like the carpet layer on a solar cell being washed off
+			event.setCancelled(true);
+		}
+	}
+
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event) {
 		Iterator<Block> iter = event.blockList().iterator();

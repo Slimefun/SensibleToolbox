@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.Debugger;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,9 +35,10 @@ public class DropperModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		registerCustomIngredients(new BlankModule());
+		BlankModule bm = new BlankModule();
+		registerCustomIngredients(bm);
 		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(Material.PAPER); // in fact, a Blank Module
+		recipe.addIngredient(bm.getMaterialData());
 		recipe.addIngredient(Material.COBBLESTONE);
 		return recipe;
 	}
@@ -49,20 +49,18 @@ public class DropperModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
-		if (getOwner() != null && getOwner().getBufferItem() != null) {
-			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
+	public boolean execute(Location loc) {
+		if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
+			if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
 				return false;
 			}
-			Block b = getOwner().getLocation().getBlock();
-			Block target = b.getRelative(getDirection());
-			int toDrop = getOwner().getStackSize();
-			ItemStack stack = getOwner().extractItems(BlockFace.SELF, null, toDrop);
+			int toDrop = getItemRouter().getStackSize();
+			ItemStack stack = getItemRouter().extractItems(BlockFace.SELF, null, toDrop, null);
 			if (stack != null) {
-				Location loc = target.getLocation().add(0.5, 0.5, 0.5);
-				Item item = loc.getWorld().dropItem(loc, stack);
+				Location targetLoc = getTargetLocation(loc).add(0.5, 0.5, 0.5);
+				Item item = targetLoc.getWorld().dropItem(targetLoc, stack);
 				item.setVelocity(new Vector(0, 0, 0));
-				Debugger.getInstance().debug(2, "dropper dropped " + stack + " from " + getOwner());
+				Debugger.getInstance().debug(2, "dropper dropped " + stack + " from " + getItemRouter());
 			}
 			return true;
 		}

@@ -48,27 +48,27 @@ public class VacuumModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
+	public boolean execute(Location loc) {
 		int dist = RADIUS * RADIUS;
-		Location loc = getOwner().getLocation().add(0.5, 0.5, 0.5);
-		ItemStack buffer = getOwner().getBufferItem();
+		loc.add(0.5, 0.5, 0.5);
+		ItemStack buffer = getItemRouter().getBufferItem();
 		boolean acted = false;
-		for (Item item : getOwner().getLocation().getWorld().getEntitiesByClass(Item.class)) {
+		for (Item item : getItemRouter().getLocation().getWorld().getEntitiesByClass(Item.class)) {
 			double d = loc.distanceSquared(item.getLocation());
 			ItemStack onGround = item.getItemStack();
-			if (!getFilter().shouldPass(onGround)) {
+			if (!getFilter().shouldPass(onGround) || !rightDirection(item, loc)) {
 				continue;
 			}
 			if (d < 2.0) {
 				// slurp
 				if (buffer == null) {
-					getOwner().setBufferItem(onGround);
-					buffer = getOwner().getBufferItem();
+					getItemRouter().setBufferItem(onGround);
+					buffer = getItemRouter().getBufferItem();
 					item.remove();
 				} else if (buffer.isSimilar(onGround)) {
 					int toSlurp = Math.min(onGround.getAmount(), buffer.getType().getMaxStackSize() - buffer.getAmount());
-					getOwner().setBufferAmount(buffer.getAmount() + toSlurp);
-					buffer = getOwner().getBufferItem();
+					getItemRouter().setBufferAmount(buffer.getAmount() + toSlurp);
+					buffer = getItemRouter().getBufferItem();
 					onGround.setAmount(onGround.getAmount() - toSlurp);
 					if (onGround.getAmount() == 0) {
 						item.remove();
@@ -79,10 +79,25 @@ public class VacuumModule extends DirectionalItemRouterModule {
 				acted = true;
 			} else if (d < dist) {
 				Vector vel = loc.subtract(item.getLocation()).toVector().normalize().multiply(Math.min(d * 0.06, 1.0));
-				System.out.println("d = " + d + ", item velocity : " + vel + " = " + vel.length());
 				item.setVelocity(vel);
 			}
 		}
 		return acted;
+	}
+
+	private boolean rightDirection(Item item, Location loc) {
+		if (getDirection() == null) {
+			return true;
+		}
+		Location itemLoc = item.getLocation();
+		switch (getDirection()) {
+			case NORTH: return itemLoc.getZ() < loc.getZ();
+			case EAST: return itemLoc.getX() > loc.getX();
+			case SOUTH: return itemLoc.getZ() > loc.getZ();
+			case WEST: return itemLoc.getX() > loc.getX();
+			case UP: return itemLoc.getY() > loc.getY();
+			case DOWN: return itemLoc.getY() < loc.getY();
+			default: return true;
+		}
 	}
 }

@@ -120,7 +120,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 			int nInserted;
 			if (stb instanceof STBInventoryHolder) {
 				// try to insert into STB block
-				nInserted = ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false);
+				nInserted = ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner());
 			} else {
 				// vanilla insertion?
 				nInserted = VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false);

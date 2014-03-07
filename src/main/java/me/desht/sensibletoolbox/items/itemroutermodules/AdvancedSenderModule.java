@@ -2,7 +2,6 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -73,8 +72,8 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 			return "[Not Linked]";
 		} else {
 			String prefix = "";
-			if (getOwner() != null) {
-				Location loc = getOwner().getLocation();
+			if (getItemRouter() != null) {
+				Location loc = getItemRouter().getLocation();
 				if (loc.getWorld() != linkedLoc.getWorld() || loc.distanceSquared(linkedLoc) > RANGE * RANGE) {
 					prefix = ChatColor.RED.toString() + ChatColor.ITALIC;
 				}
@@ -130,16 +129,15 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
-		if (getOwner() != null && getOwner().getBufferItem() != null && linkedLoc != null) {
-			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
+	public boolean execute(Location loc) {
+		if (getItemRouter() != null && getItemRouter().getBufferItem() != null && linkedLoc != null) {
+			if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
 				return false;
 			}
 			ItemRouter rtr = LocationManager.getManager().get(linkedLoc, ItemRouter.class);
 			if (rtr != null) {
-				Location loc1 = getOwner().getLocation();
 				Location loc2 = rtr.getLocation();
-				if (loc1.getWorld() != loc2.getWorld() || loc1.distanceSquared(loc2) > RANGE * RANGE) {
+				if (loc.getWorld() != loc2.getWorld() || loc.distanceSquared(loc2) > RANGE * RANGE) {
 					return false;
 				}
 				for (ItemRouterModule mod : rtr.getInstalledModules()) {
@@ -154,12 +152,12 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 	}
 
 	private int sendItems(ReceiverModule receiver) {
-		System.out.println(this.getOwner() + ": adv.sender sending items to receiver module in " + receiver.getOwner());
-		int nToSend = getOwner().getStackSize();
-		ItemStack toSend = getOwner().getBufferItem().clone();
+		System.out.println(this.getItemRouter() + ": adv.sender sending items to receiver module in " + receiver.getItemRouter());
+		int nToSend = getItemRouter().getStackSize();
+		ItemStack toSend = getItemRouter().getBufferItem().clone();
 		toSend.setAmount(Math.min(nToSend, toSend.getAmount()));
-		int received = receiver.receiveItem(toSend);
-		getOwner().reduceBuffer(received);
+		int received = receiver.receiveItem(toSend, getItemRouter().getOwner());
+		getItemRouter().reduceBuffer(received);
 		return received;
 	}
 }

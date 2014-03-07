@@ -60,8 +60,8 @@ public class Filter {
 	}
 
 	public boolean shouldPass(ItemStack stack) {
-		if (!whiteList && filteredItems.isEmpty()) {
-			return true;
+		if (filteredItems.isEmpty()) {
+			return !whiteList;
 		}
 		switch (filterType) {
 			case MATERIAL:

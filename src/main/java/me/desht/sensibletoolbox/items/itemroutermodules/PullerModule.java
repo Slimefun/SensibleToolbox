@@ -1,15 +1,9 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
-import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
@@ -37,9 +31,10 @@ public class PullerModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		registerCustomIngredients(new BlankModule());
+		BlankModule bm = new BlankModule();
+		registerCustomIngredients(bm);
 		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(Material.PAPER); // in fact, a Blank Module
+		recipe.addIngredient(bm.getMaterialData());
 		recipe.addIngredient(Material.PISTON_STICKY_BASE);
 		return recipe;
 	}
@@ -50,7 +45,7 @@ public class PullerModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
-		return getOwner() != null && doPull(getDirection());
+	public boolean execute(Location loc) {
+		return getItemRouter() != null && doPull(getDirection(), loc);
 	}
 }

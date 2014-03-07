@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.gui;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
@@ -10,10 +11,7 @@ import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.IntRange;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
@@ -185,7 +183,11 @@ public class InventoryGUI {
 	}
 
 	public void show(Player player) {
-		// TODO ownership/permission validation
+		if (getOwningItem() instanceof BaseSTBBlock && !getOwningBlock().hasAccessRights(player)) {
+			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+			MiscUtil.errorMessage(player, "That " + getOwningItem().getItemName() + " is private!");
+			return;
+		}
 		if (inventory.getViewers().isEmpty()) {
 			// no one's already looking at this inventory/gui, so ensure it's up to date
 			Debugger.getInstance().debug("refreshing GUI inventory of " + getOwningItem());

@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
@@ -34,9 +33,10 @@ public class StackModule extends ItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		registerCustomIngredients(new BlankModule());
+		BlankModule bm = new BlankModule();
+		registerCustomIngredients(bm);
 		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(Material.PAPER);
+		recipe.addIngredient(bm.getMaterialData());
 		recipe.addIngredient(Material.BRICK);
 		return recipe;
 	}

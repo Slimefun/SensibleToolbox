@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.blocks.machines.AbstractProcessingMachine;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
 	private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
@@ -203,16 +205,21 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			int inputSlot = getInputSlots()[0];
 			ItemStack stackIn = getInventoryItem(inputSlot);
 			if (stackIn != null && (stored == null || stackIn.isSimilar(stored) && !isFull()))  {
-				if (stored == null) {
-					setStored(stackIn);
-				}
-				int toPull = Math.min(stackIn.getAmount(), maxCapacity - getStorageAmount());
-				setStorageAmount(getStorageAmount() + toPull);
-				stackIn.setAmount(stackIn.getAmount() - toPull);
-				setInventoryItem(inputSlot, stackIn.getAmount() > 0 ? stackIn : null);
-				if (stackIn.getAmount() == 0) {
-					// workaround to avoid leaving ghost items in the input slot
-					STBUtil.forceInventoryRefresh(getInventory());
+				double chargeNeeded = getChargePerOperation(stackIn.getAmount());
+				if (getCharge() >= chargeNeeded) {
+					if (stored == null) {
+						setStored(stackIn);
+					}
+					int toPull = Math.min(stackIn.getAmount(), maxCapacity - getStorageAmount());
+					System.out.println(this + "pull " + stackIn + " into storage, toPull=" + toPull);
+					setStorageAmount(getStorageAmount() + toPull);
+					stackIn.setAmount(stackIn.getAmount() - toPull);
+					setInventoryItem(inputSlot, stackIn.getAmount() > 0 ? stackIn : null);
+					setCharge(getCharge() - chargeNeeded);
+					if (stackIn.getAmount() == 0) {
+						// workaround to avoid leaving ghost items in the input slot
+						STBUtil.forceInventoryRefresh(getInventory());
+					}
 				}
 			}
 
@@ -258,7 +265,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 		super.onServerTick();
 	}
 
-	private void setOutputItem(ItemStack stackOut) {
+	protected void setOutputItem(ItemStack stackOut) {
 		setInventoryItem(getOutputSlots()[0], stackOut);
 	}
 
@@ -291,7 +298,9 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	@Override
 	public void onInteractBlock(PlayerInteractEvent event) {
 		ItemStack inHand = event.getPlayer().getItemInHand();
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStored() != null && (inHand.getType() == Material.AIR || inHand.isSimilar(getStored()))) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStored() != null &&
+				hasAccessRights(event.getPlayer()) &&
+				(inHand.getType() == Material.AIR || inHand.isSimilar(getStored()))) {
 			System.out.println(this + " left click, hand = " + inHand + ", stored = " + getStored());
 			// try to extract items from the output stack
 			int wanted = event.getPlayer().isSneaking() ? 1 : getStored().getMaxStackSize();
@@ -307,20 +316,28 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			}
 			event.setCancelled(true);
 		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
+				hasAccessRights(event.getPlayer()) &&
 				inHand.getType() != Material.AIR &&
 				(getStored() == null || inHand.isSimilar(getStored()))) {
-			setStorageAmount(getStorageAmount() + inHand.getAmount());
-			if (getStored() == null) {
-				setStored(inHand);
+			double chargeNeeded = getChargePerOperation(inHand.getAmount());
+			if (getCharge() >= chargeNeeded) {
+				setStorageAmount(getStorageAmount() + inHand.getAmount());
+				if (getStored() == null) {
+					setStored(inHand);
+				}
+				event.getPlayer().setItemInHand(null);
+				setCharge(getCharge() - chargeNeeded);
+			} else {
+				event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+				MiscUtil.errorMessage(event.getPlayer(), getItemName() + " has insufficient charge to accept items.");
 			}
-			event.getPlayer().setItemInHand(null);
 			event.setCancelled(true);
 		} else {
 			super.onInteractBlock(event);
 		}
 	}
 
-	private boolean dropsItemsOnBreak() {
+	protected boolean dropsItemsOnBreak() {
 		return true;
 	}
 
@@ -345,7 +362,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
 	@Override
 	public String getProgressMessage() {
-		return "Stored: " + getStorageAmount() + "/" + maxCapacity;
+		return ChatColor.YELLOW + "Stored: " + getStorageAmount() + "/" + maxCapacity;
 	}
 
 	@Override
@@ -363,14 +380,22 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	}
 
 	@Override
-	public int insertItems(ItemStack item, BlockFace face, boolean sorting) {
-		if (stored == null) {
+	public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
+		if (!hasAccessRights(uuid)) {
+			return 0;
+		}
+		double chargeNeeded = getChargePerOperation(item.getAmount());
+		if (!isRedstoneActive() || getCharge() < chargeNeeded) {
+			return 0;
+		} else if (stored == null) {
 			setStored(item);
 			setStorageAmount(item.getAmount());
+			setCharge(getCharge() - chargeNeeded);
 			return item.getAmount();
 		} else if (item.isSimilar(stored)) {
 			int toInsert = Math.min(item.getAmount(), maxCapacity - getStorageAmount());
 			setStorageAmount(getStorageAmount() + toInsert);
+			setCharge(getCharge() - chargeNeeded);
 			return toInsert;
 		} else {
 			return 0;
@@ -378,8 +403,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	}
 
 	@Override
-	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount) {
-		if (getStorageAmount() == 0 && getOutputAmount() == 0) {
+	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+		if (!hasAccessRights(uuid)) {
+			return null;
+		}
+		double chargeNeeded = getChargePerOperation(amount);
+		if (!isRedstoneActive() || getStorageAmount() == 0 && getOutputAmount() == 0 || getCharge() < chargeNeeded) {
 			return null;
 		}
 
@@ -409,6 +438,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			}
 		}
 
+		setCharge(getCharge() - chargeNeeded);
+
 		System.out.println(this + "pulling " + fromStorage + " from storage & " + fromOutput + " from output stack");
 
 		if (receiver == null) {
@@ -419,5 +450,9 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			receiver.setAmount(receiver.getAmount() + fromStorage + fromOutput);
 			return receiver;
 		}
+	}
+
+	public double getChargePerOperation(int nItems) {
+		return 0.0;
 	}
 }

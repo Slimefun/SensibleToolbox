@@ -112,6 +112,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		registerItem(new RecipeBook());
 		registerItem(new Multimeter());
 		registerItem(new BigStorageUnit());
+		registerItem(new HyperStorageUnit());
 		if (plugin.isProtocolLibEnabled()) {
 			registerItem(new SoundMuffler());
 		}
@@ -125,7 +126,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 			try {
 				LocationManager.getManager().loadDeferredBlocks(id);
 			} catch (SQLException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LogUtils.severe("There was a problem restoring blocks of type '" + id + "' from persisted storage:");
+				e.printStackTrace();
 			}
 		}
 	}

@@ -47,9 +47,10 @@ public class SenderModule extends DirectionalItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		registerCustomIngredients(new BlankModule());
+		BlankModule bm = new BlankModule();
+		registerCustomIngredients(bm);
 		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(Material.PAPER); // in fact, a Blank Module
+		recipe.addIngredient(bm.getMaterialData());
 		recipe.addIngredient(Material.ARROW);
 		return recipe;
 	}
@@ -60,26 +61,26 @@ public class SenderModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
-		if (getOwner() != null && getOwner().getBufferItem() != null) {
-			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
+	public boolean execute(Location loc) {
+		if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
+			if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
 				return false;
 			}
-			Debugger.getInstance().debug(2, "sender in " + getOwner() + " has: " + getOwner().getBufferItem());
-			Block b = getOwner().getLocation().getBlock();
+			Debugger.getInstance().debug(2, "sender in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
+			Block b = loc.getBlock();
 			Block target = b.getRelative(getDirection());
-			int nToInsert = getOwner().getStackSize();
+			int nToInsert = getItemRouter().getStackSize();
 			if (allowsItemsThrough(target.getType())) {
 				// search for a visible Item Router with an installed Receiver Module
 				ReceiverModule receiver = findReceiver(b);
 				if (receiver != null) {
-					Debugger.getInstance().debug(2, "sender found receiver module in " + receiver.getOwner());
-					ItemStack toSend = getOwner().getBufferItem().clone();
+					Debugger.getInstance().debug(2, "sender found receiver module in " + receiver.getItemRouter());
+					ItemStack toSend = getItemRouter().getBufferItem().clone();
 					toSend.setAmount(Math.min(nToInsert, toSend.getAmount()));
-					int nReceived = receiver.receiveItem(toSend);
-					getOwner().reduceBuffer(nReceived);
+					int nReceived = receiver.receiveItem(toSend, getItemRouter().getOwner());
+					getItemRouter().reduceBuffer(nReceived);
 					if (nReceived > 0 && SensibleToolboxPlugin.getInstance().getConfig().getInt("particle_effects") >= 2) {
-						playSenderParticles(getOwner(), receiver.getOwner());
+						playSenderParticles(getItemRouter(), receiver.getItemRouter());
 
 					}
 					return nReceived > 0;
@@ -87,10 +88,10 @@ public class SenderModule extends DirectionalItemRouterModule {
 			} else {
 				STBBlock stb = LocationManager.getManager().get(target.getLocation());
 				if (stb instanceof STBInventoryHolder) {
-					ItemStack toInsert = getOwner().getBufferItem().clone();
+					ItemStack toInsert = getItemRouter().getBufferItem().clone();
 					toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
-					int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), false);
-					getOwner().reduceBuffer(nInserted);
+					int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), false, getItemRouter().getOwner());
+					getItemRouter().reduceBuffer(nInserted);
 					return nInserted > 0;
 				} else {
 					// vanilla inventory holder?

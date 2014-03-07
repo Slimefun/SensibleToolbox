@@ -36,10 +36,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
@@ -168,20 +165,18 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			updateBufferIndicator(true);
 			getGUI().show(event.getPlayer());
 			event.setCancelled(true);
-		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			if (event.getPlayer().getItemInHand().getType() == Material.AIR) {
-				MiscUtil.alertMessage(event.getPlayer(), "Item router buffer: " + ChatColor.GOLD + STBUtil.describeItemStack(getBufferItem()));
-				if (event.getPlayer().isSneaking() && getBufferItem() != null) {
-					Block b = getLocation().getBlock().getRelative(event.getBlockFace());
-					getLocation().getWorld().dropItemNaturally(b.getLocation(), getBufferItem());
-					setBufferItem(null);
-					updateBlock(false);
-					event.getPlayer().playSound(getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
-				}
-				event.setCancelled(true);
+		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && getBufferItem() != null) {
+			if (hasAccessRights(event.getPlayer())) {
+				Block b = getLocation().getBlock().getRelative(event.getBlockFace());
+				b.getWorld().dropItemNaturally(b.getLocation(), getBufferItem());
+				setBufferItem(null);
+				updateBlock(false);
+				event.getPlayer().playSound(b.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
 			}
+			event.setCancelled(true);
+		} else {
+			super.onInteractBlock(event);
 		}
-		super.onInteractBlock(event);
 	}
 
 	@Override
@@ -242,10 +237,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 			needToProcessModules = false;
 		}
 		if (isRedstoneActive() && getTicksLived() % getTickRate() == 0) {
+			Location loc = getLocation();
 			for (ItemRouterModule module : modules) {
 				if (module instanceof DirectionalItemRouterModule) {
 					DirectionalItemRouterModule dmod = (DirectionalItemRouterModule) module;
-					if (dmod.execute()) {
+					if (dmod.execute(loc.clone())) {
 						didSomeWork = true;
 						if (dmod.isTerminator()) {
 							break;
@@ -304,7 +300,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	private void insertModule(ItemRouterModule module) {
-		module.setOwner(this);
+		module.setItemRouter(this);
 		if (module instanceof DirectionalItemRouterModule) {
 			DirectionalItemRouterModule dm = (DirectionalItemRouterModule) module;
 			if (dm.getDirection() == null) {
@@ -367,7 +363,10 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public int insertItems(ItemStack item, BlockFace face, boolean sorting) {
+	public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
+		if (!hasAccessRights(uuid)) {
+			return 0;
+		}
 		// item routers don't care about sorters - they will take items from them happily
 		if (bufferItem == null) {
 			setBufferItem(item.clone());
@@ -382,8 +381,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount) {
-		if (bufferItem == null) {
+	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+		if (!hasAccessRights(uuid) || bufferItem == null) {
 			return null;
 		} else if (receiver == null) {
 			ItemStack returned = bufferItem.clone();

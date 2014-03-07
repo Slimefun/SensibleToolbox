@@ -103,9 +103,9 @@ public class Multimeter extends BaseSTBItem {
 		String s1 = net.getCableCount() == 1 ? "" : "s";
 		String s2 = net.getSourceCount() == 1 ? "" : "s";
 		String s3 = net.getSinkCount() == 1 ? "" : "s";
-		String line1 = String.format("Net &f#%d&-, %d cable" + s1 + ", %d source" + s2 + ", %d sink" + s3,
+		String line1 = String.format("&6Net &f#%d&-, &f%d&- cable" + s1 + ", &f%d&- source" + s2 + ", &f%d&- sink" + s3,
 				net.getNetID(), net.getCableCount(), net.getSourceCount(), net.getSinkCount());
-		String line2 = String.format("▶ Demand: &6%5.2f/t&-, Supply: &6%5.2f/t&-",
+		String line2 = String.format("▶ Demand: &e%5.2f SCU/t&-, Supply: &e%5.2f SCU/t&-",
 				net.getDemand(), net.getSupply());
 //		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
 //			final NameTagSpawner spawner = new NameTagSpawner(2);
@@ -139,7 +139,7 @@ public class Multimeter extends BaseSTBItem {
 			MiscUtil.statusMessage(player, String.format("&6%s&- is attached to %d energy net%s: &f%s",
 					machine.getItemName(), ids.size(), s, nets));
 		}
-		MiscUtil.statusMessage(player, "▶ Charge: " + STBUtil.getChargeString(machine) + "&-, charge rate: &e" + machine.getChargeRate() + " SCU/t");
+		MiscUtil.statusMessage(player, "▶ Charge: " + STBUtil.getChargeString(machine) + "&-, max charge rate: &e" + machine.getChargeRate() + " SCU/t");
 		player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
 	}
 }

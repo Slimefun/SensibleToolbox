@@ -15,6 +15,7 @@ import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -49,7 +50,13 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 	private InventoryGUI gui;
 	private final int[] filterSlots = { 1, 2, 3, 10, 11, 12, 19, 20, 21 };
 
-	public abstract boolean execute();
+	/**
+	 * Run this module's action.
+	 *
+	 * @param loc the location of the module's owning item router
+	 * @return true if the module did some work on this tick
+	 */
+	public abstract boolean execute(Location loc);
 
 	public DirectionalItemRouterModule() {
 		filter = new Filter();  // default filter: blacklist, no items
@@ -139,6 +146,11 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 			setDirection(event.getBlockFace().getOppositeFace());
 			event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
 			event.setCancelled(true);
+		} else if (event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
+			// unset module direction
+			setDirection(BlockFace.SELF);
+			event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+			event.setCancelled(true);
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			ItemRouter rtr = event.getClickedBlock() == null ? null : LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
 			if (event.getClickedBlock() == null || (rtr == null && !STBUtil.isInteractive(event.getClickedBlock().getType()))) {
@@ -193,8 +205,9 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 	}
 
 	protected String[] makeDirectionalLore(String... lore) {
-		String[] newLore = Arrays.copyOf(lore, lore.length + 1);
+		String[] newLore = Arrays.copyOf(lore, lore.length + 2);
 		newLore[lore.length] = "L-click Block: " + ChatColor.RESET + " Set direction";
+		newLore[lore.length + 1] = "⇧ + L-click Air: " + ChatColor.RESET + " Unset direction";
 		return newLore;
 	}
 
@@ -244,42 +257,46 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 		}
 	}
 
-	protected boolean doPull(BlockFace from) {
-		ItemStack inBuffer = getOwner().getBufferItem();
+	protected boolean doPull(BlockFace from, Location loc) {
+		ItemStack inBuffer = getItemRouter().getBufferItem();
 		if (inBuffer != null && inBuffer.getAmount() >= inBuffer.getType().getMaxStackSize()) {
 			return false;
 		}
-		int nToPull = getOwner().getStackSize();
-		Block b = getOwner().getLocation().getBlock();
-		Block target = b.getRelative(from);
-		STBBlock stb = LocationManager.getManager().get(target.getLocation());
+		int nToPull = getItemRouter().getStackSize();
+		Location targetLoc = getTargetLocation(loc);
 		ItemStack pulled;
+		STBBlock stb = LocationManager.getManager().get(targetLoc);
 		if (stb instanceof STBInventoryHolder) {
-			pulled = ((STBInventoryHolder)stb).extractItems(from.getOppositeFace(), inBuffer, nToPull);
+			pulled = ((STBInventoryHolder)stb).extractItems(from.getOppositeFace(), inBuffer, nToPull, getItemRouter().getOwner());
 		} else {
 			// possible vanilla inventory holder
-			pulled = VanillaInventoryUtils.pullFromInventory(target, nToPull, inBuffer, getFilter());
+			pulled = VanillaInventoryUtils.pullFromInventory(targetLoc.getBlock(), nToPull, inBuffer, getFilter());
 		}
 		if (pulled != null) {
 			if (stb != null) {
 				stb.updateBlock(false);
 			}
-			getOwner().setBufferItem(inBuffer == null ? pulled : inBuffer);
+			getItemRouter().setBufferItem(inBuffer == null ? pulled : inBuffer);
 			return true;
 		}
 		return false;
 	}
 
 	protected boolean vanillaInsertion(Block target, int amount, BlockFace side) {
-		ItemStack buffer = getOwner().getBufferItem();
+		ItemStack buffer = getItemRouter().getBufferItem();
 		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false);
 		if (nInserted == 0) {
 			// no insertion happened
 			return false;
 		} else {
 			// some or all items were inserted, buffer size has been adjusted accordingly
-			getOwner().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
+			getItemRouter().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
 			return true;
 		}
+	}
+
+	protected Location getTargetLocation(Location loc) {
+		BlockFace face = getDirection();
+		return loc.clone().add(face.getModX(), face.getModY(), face.getModZ());
 	}
 }

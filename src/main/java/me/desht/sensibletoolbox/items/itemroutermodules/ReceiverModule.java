@@ -1,8 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.Debugger;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -12,6 +10,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
+
+import java.util.UUID;
 
 public class ReceiverModule extends ItemRouterModule {
 	private static final Dye md = makeDye(DyeColor.ORANGE);
@@ -39,9 +39,10 @@ public class ReceiverModule extends ItemRouterModule {
 
 	@Override
 	public Recipe getRecipe() {
-		registerCustomIngredients(new BlankModule());
+		BlankModule bm = new BlankModule();
+		registerCustomIngredients(bm);
 		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(Material.PAPER); // in fact a Blank Module
+		recipe.addIngredient(bm.getMaterialData());
 		recipe.addIngredient(Material.TRAP_DOOR);
 		return recipe;
 	}
@@ -51,11 +52,11 @@ public class ReceiverModule extends ItemRouterModule {
 		return md;
 	}
 
-	public int receiveItem(ItemStack item) {
-		int received = getOwner().insertItems(item, BlockFace.SELF, false);
+	public int receiveItem(ItemStack item, UUID senderUUID) {
+		int received = getItemRouter().insertItems(item, BlockFace.SELF, false, senderUUID);
 		if (received > 0) {
-			Debugger.getInstance().debug(2, "receiver in " + getOwner() + " received " + received + " of " + item +
-					", now has " + getOwner().getBufferItem());
+			Debugger.getInstance().debug(2, "receiver in " + getItemRouter() + " received " + received + " of " + item +
+					", now has " + getItemRouter().getBufferItem());
 		}
 		return received;
 	}

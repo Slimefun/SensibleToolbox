@@ -22,13 +22,15 @@ public class DBUpdaterTask implements Runnable {
 	@Override
 	public void run() {
 		Debugger.getInstance().debug("database writer thread starting");
-		LOOP: while (true) {
+		boolean finished = false;
+		while (!finished) {
 			try {
 				UpdateRecord rec = manager.getUpdateRecord(); // block till available
 				int n = 0;
 				switch (rec.getOp()) {
 					case FINISH:
-						break LOOP;
+						finished = true;
+						break;
 					case COMMIT:
 						manager.getDbStorage().getConnection().commit();
 						break;

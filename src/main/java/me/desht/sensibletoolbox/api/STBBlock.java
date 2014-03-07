@@ -9,6 +9,7 @@ import me.desht.sensibletoolbox.util.RelativePosition;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -42,4 +43,13 @@ public interface STBBlock {
 	void updateBlock(boolean redraw);
 
 	public PistonMoveReaction getPistonMoveReaction();
+
+	/**
+	 * Check if this block may be interacted with by the given player, based on its
+	 * security settings.
+	 *
+	 * @param player the player to check
+	 * @return true if the block may be accessed
+	 */
+	public boolean hasAccessRights(Player player);
 }

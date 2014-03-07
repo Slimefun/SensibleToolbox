@@ -290,7 +290,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	@Override
 	public void setLocation(Location loc) {
 		if (loc == null) {
-			System.out.println("eject items!");
 			getGUI().ejectItems(getInputSlots());
 			getGUI().ejectItems(getOutputSlots());
 			getGUI().ejectItems(getUpgradeSlots());
@@ -371,7 +370,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public int insertItems(ItemStack toInsert, BlockFace side, boolean sorting) {
+	public int insertItems(ItemStack toInsert, BlockFace side, boolean sorting, UUID uuid) {
+		if (!hasAccessRights(uuid)) {
+			return 0;
+		}
 		if (sorting) {
 			return 0; // machines don't take items from sorters
 		}
@@ -398,7 +400,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount) {
+	public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+		if (!hasAccessRights(uuid)) {
+			return null;
+		}
 		int[] slots = getOutputSlots();
 		int max = slots == null ? getInventory().getSize() : slots.length;
 		for (int i = 0; i < max; i++) {

@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.PermissionUtils;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
@@ -136,6 +137,29 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 
 	protected long getTicksLived() {
 		return ticksLived;
+	}
+
+	/**
+	 * Check if this block may be interacted with by the given player, based on its
+	 * security settings.
+	 *
+	 * @param player the player to check
+	 * @return true if the block may be accessed
+	 */
+	public boolean hasAccessRights(Player player) {
+		switch (getAccessControl()) {
+			case PUBLIC: return true;
+			case PRIVATE: return getOwner().equals(player.getUniqueId()) || PermissionUtils.isAllowedTo(player, "stb.access.any");
+			default: return false;
+		}
+	}
+
+	public boolean hasAccessRights(UUID uuid) {
+		switch (getAccessControl()) {
+			case PUBLIC: return true;
+			case PRIVATE: return uuid == null || getOwner().equals(uuid);
+			default: return false;
+		}
 	}
 
 	/**
@@ -333,6 +357,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 	 * @param event the block place event
 	 */
 	public void onBlockPlace(BlockPlaceEvent event) {
+		Location baseLoc = event.getBlock().getLocation();
+		for (RelativePosition rPos : getBlockStructure()) {
+			Block b = getMultiBlock(baseLoc, rPos);
+			if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.STATIONARY_WATER) {
+				MiscUtil.errorMessage(event.getPlayer(), "Not enough room to place this multi-block structure");
+				event.setCancelled(true);
+				return;
+			}
+		}
 		placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
 	}
 

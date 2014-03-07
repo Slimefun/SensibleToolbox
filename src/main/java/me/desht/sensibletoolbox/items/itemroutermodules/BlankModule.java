@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,7 +18,6 @@ public class BlankModule extends BaseSTBItem {
 	}
 
 	public BlankModule(ConfigurationSection conf) {
-//		super(conf);
 	}
 
 	@Override
@@ -41,9 +41,7 @@ public class BlankModule extends BaseSTBItem {
 		recipe.shape("PPP", "PRP", "PBP");
 		recipe.setIngredient('P', Material.PAPER);
 		recipe.setIngredient('R', Material.REDSTONE);
-		Dye d = new Dye();
-		d.setColor(DyeColor.BLUE);
-		recipe.setIngredient('B', d);
+		recipe.setIngredient('B', STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE));
 		return recipe;
 	}
 }

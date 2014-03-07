@@ -1,20 +1,27 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.LightMeter;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.util.RelativePosition;
+import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
-	private static final MaterialData md = new MaterialData(Material.LAPIS_BLOCK);
-	private static final int ENERGY_RATE = 20;  // how often to recalculate light & energy levels
+	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
+
+	private static final int ENERGY_INTERVAL = 20;  // how often to recalculate light & energy levels
 	private static final double SCU_PER_TICK = 1.0;
 	private static final int LIGHT_SLOT = 13;
 
@@ -129,12 +136,41 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 	}
 
 	@Override
+	public void onBlockPlace(BlockPlaceEvent event) {
+		super.onBlockPlace(event);
+		if (!event.isCancelled()) {
+		// put a carpet on top of the main block to represent the PV cell
+			Block above = event.getBlock().getRelative(BlockFace.UP);
+			MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, getCapColour());
+			above.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
+		}
+	}
+
+	protected DyeColor getCapColour() {
+		return DyeColor.BLUE;
+	}
+
+	@Override
+	public RelativePosition[] getBlockStructure() {
+		return new RelativePosition[] { new RelativePosition(0, 1, 0) };
+	}
+
+	@Override
+	public void onBlockPhysics(BlockPhysicsEvent event) {
+		// ensure carpet layer doesn't get popped off (and thus not cleared) when block is broken
+		if (event.getBlock().getType() == Material.CARPET) {
+			event.setCancelled(true);
+			System.out.println(this + " cancel physics for solar cell carpet");
+		}
+	}
+
+	@Override
 	public void onServerTick() {
-		if (getTicksLived() % ENERGY_RATE == 0) {
+		if (getTicksLived() % ENERGY_INTERVAL == 0) {
 			calculateLightLevel();
 
 			if (getCharge() < getMaxCharge()) {
-				double toAdd = SCU_PER_TICK * ENERGY_RATE * getChargeMultiplier(getLightLevel());
+				double toAdd = SCU_PER_TICK * ENERGY_INTERVAL * getChargeMultiplier(getLightLevel());
 				setCharge(getCharge() + toAdd);
 			}
 

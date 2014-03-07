@@ -4,6 +4,7 @@ import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -59,27 +60,27 @@ public class DistributorModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
-		if (getOwner() == null) {
+	public boolean execute(Location loc) {
+		if (getItemRouter() == null) {
 			return false; // shouldn't happen...
 		}
 
-		doPull(getDirection());
+		doPull(getDirection(), loc);
 
-		if (getOwner().getNeighbours().size() > 1 && getOwner().getBufferItem() != null) {
-			int nToInsert = getOwner().getStackSize();
+		if (getItemRouter().getNeighbours().size() > 1 && getItemRouter().getBufferItem() != null) {
+			int nToInsert = getItemRouter().getStackSize();
 			BlockFace face = getNextNeighbour();
 			if (face == getDirection()) {
 				return false;  // shouldn't happen...
 			}
-			Block b = getOwner().getLocation().getBlock();
+			Block b = loc.getBlock();
 			Block target = b.getRelative(face);
 			STBBlock stb = LocationManager.getManager().get(target.getLocation());
 			if (stb instanceof STBInventoryHolder) {
-				ItemStack toInsert = getOwner().getBufferItem().clone();
+				ItemStack toInsert = getItemRouter().getBufferItem().clone();
 				toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
-				int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, face.getOppositeFace(), false);
-				getOwner().reduceBuffer(nInserted);
+				int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, face.getOppositeFace(), false, getItemRouter().getOwner());
+				getItemRouter().reduceBuffer(nInserted);
 				return nInserted > 0;
 			} else {
 				// vanilla inventory holder?
@@ -91,7 +92,7 @@ public class DistributorModule extends DirectionalItemRouterModule {
 	}
 
 	private BlockFace getNextNeighbour() {
-		List<BlockFace> neighbours = getOwner().getNeighbours();
+		List<BlockFace> neighbours = getItemRouter().getNeighbours();
 		nextNeighbour = (nextNeighbour + 1) % neighbours.size();
 		if (neighbours.get(nextNeighbour) == getDirection()) {
 			nextNeighbour = (nextNeighbour + 1) % neighbours.size();

@@ -6,6 +6,7 @@ import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -56,36 +57,35 @@ public class SorterModule extends DirectionalItemRouterModule {
 	}
 
 	@Override
-	public boolean execute() {
-		if (getOwner() != null && getOwner().getBufferItem() != null) {
-			if (getFilter() != null && !getFilter().shouldPass(getOwner().getBufferItem())) {
+	public boolean execute(Location loc) {
+		if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
+			if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
 				return false;
 			}
-			Debugger.getInstance().debug(2, "sorter in " + getOwner() + " has: " + getOwner().getBufferItem());
-			Block b = getOwner().getLocation().getBlock();
-			Block target = b.getRelative(getDirection());
-			int nToInsert = getOwner().getStackSize();
-			STBBlock stb = LocationManager.getManager().get(target.getLocation());
+			Debugger.getInstance().debug(2, "sorter in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
+			Location targetLoc = getTargetLocation(loc);
+			int nToInsert = getItemRouter().getStackSize();
+			STBBlock stb = LocationManager.getManager().get(targetLoc);
 			int nInserted;
 			if (stb instanceof STBInventoryHolder) {
-				ItemStack toInsert = getOwner().getBufferItem().clone();
+				ItemStack toInsert = getItemRouter().getBufferItem().clone();
 				toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
-				nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), true);
+				nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), true, getItemRouter().getOwner());
 			} else {
 				// vanilla inventory holder?
-				nInserted = vanillaSortInsertion(target, nToInsert, getDirection().getOppositeFace());
+				nInserted = vanillaSortInsertion(targetLoc.getBlock(), nToInsert, getDirection().getOppositeFace());
 			}
-			getOwner().reduceBuffer(nInserted);
+			getItemRouter().reduceBuffer(nInserted);
 			return nInserted > 0;
 		}
 		return false;
 	}
 
 	private int vanillaSortInsertion(Block target, int amount, BlockFace side) {
-		ItemStack buffer = getOwner().getBufferItem();
+		ItemStack buffer = getItemRouter().getBufferItem();
 		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, true);
 		if (nInserted > 0) {
-			getOwner().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
+			getItemRouter().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
 		}
 		return nInserted;
 	}
