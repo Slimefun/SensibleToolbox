@@ -27,6 +27,7 @@ public class DBUpdaterTask implements Runnable {
 			try {
 				UpdateRecord rec = manager.getUpdateRecord(); // block till available
 				int n = 0;
+				Debugger.getInstance().debug("DB write [" + rec + "]");
 				switch (rec.getOp()) {
 					case FINISH:
 						finished = true;
@@ -60,7 +61,7 @@ public class DBUpdaterTask implements Runnable {
 						n = deleteStmt.executeUpdate();
 						break;
 				}
-				Debugger.getInstance().debug("DB write [" + rec + "]: rows modified = " + n);
+				Debugger.getInstance().debug("DB write complete: rows modified = " + n);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (SQLException e) {

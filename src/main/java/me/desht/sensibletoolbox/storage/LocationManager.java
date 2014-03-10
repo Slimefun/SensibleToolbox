@@ -114,7 +114,7 @@ public class LocationManager {
 		return blockIndex.get(w.getName());
 	}
 
-	public void registerLocation(Location loc, BaseSTBBlock stb, boolean newBlock) {
+	public void registerLocation(Location loc, BaseSTBBlock stb, boolean isPlacing) {
 		STBBlock stb2 = get(loc);
 		if (stb2 != null) {
 			LogUtils.warning("Attempt to register duplicate STB block " + stb + " @ " + loc + " - existing block " + stb2);
@@ -125,16 +125,9 @@ public class LocationManager {
 		loc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
 		String locStr = MiscUtil.formatLocation(loc);
 		getWorldIndex(loc.getWorld()).put(locStr, stb);
-		if (newBlock) {
-			UpdateRecord rec = pendingUpdates.get(locStr);
-			if (rec == null) {
-				System.out.println("add pending insertion " + locStr + " = " + stb);
-				pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc, stb.getItemTypeID(), stb));
-				System.out.println("added: " + pendingUpdates.get(locStr));
-			} else if (rec.getOp() == UpdateRecord.Operation.DELETE) {
-				System.out.println("add update following deletion " + locStr + " = " + stb);
-				pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE,loc, stb.getItemTypeID(), stb));
-			}
+
+		if (isPlacing) {
+			addPendingDBOperation(loc, locStr, stb, UpdateRecord.Operation.INSERT);
 		}
 
 		if (stb.shouldTick()) {
@@ -145,11 +138,7 @@ public class LocationManager {
 	}
 
 	public void updateLocation(Location loc, BaseSTBBlock stb) {
-		String locStr = MiscUtil.formatLocation(loc);
-		UpdateRecord rec = pendingUpdates.get(locStr);
-		if (rec == null || rec.getOp() != UpdateRecord.Operation.INSERT) {
-			pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
-		}
+		addPendingDBOperation(loc, MiscUtil.formatLocation(loc), stb, UpdateRecord.Operation.UPDATE);
 	}
 
 	public void unregisterLocation(Location loc, BaseSTBBlock stb) {
@@ -160,7 +149,7 @@ public class LocationManager {
 			stb.setLocation(null);
 			loc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
 			String locStr = MiscUtil.formatLocation(loc);
-			pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc, stb.getItemTypeID(), stb));
+			addPendingDBOperation(loc, locStr, stb, UpdateRecord.Operation.DELETE);
 			getWorldIndex(loc.getWorld()).remove(locStr);
 			Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
 		} else {
@@ -178,18 +167,51 @@ public class LocationManager {
 	public void moveBlock(BaseSTBBlock stb, Location oldLoc, Location newLoc) {
 		oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
 		String locStr = MiscUtil.formatLocation(oldLoc);
-		pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, oldLoc, stb.getItemTypeID(), stb));
+		addPendingDBOperation(oldLoc, locStr, stb, UpdateRecord.Operation.DELETE);
 		getWorldIndex(oldLoc.getWorld()).remove(locStr);
 
 		stb.moveTo(oldLoc, newLoc);
 
 		newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
 		locStr = MiscUtil.formatLocation(newLoc);
-		pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, newLoc, stb.getItemTypeID(), stb));
+		addPendingDBOperation(newLoc, locStr, stb, UpdateRecord.Operation.INSERT);
 		getWorldIndex(newLoc.getWorld()).put(locStr, stb);
 
 		Debugger.getInstance().debug("moved " + stb + " from " + oldLoc + " to " + newLoc);
 	}
+
+	private void addPendingDBOperation(Location loc, String locStr, BaseSTBBlock stb, UpdateRecord.Operation op) {
+		UpdateRecord existingRec = pendingUpdates.get(locStr);
+		switch (op) {
+			case INSERT:
+				if (existingRec == null) {
+					System.out.println("add pending insertion " + locStr + " = " + stb);
+					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc, stb.getItemTypeID(), stb));
+				} else if (existingRec.getOp() == UpdateRecord.Operation.DELETE) {
+					System.out.println("add (re-insert) update following deletion " + locStr + " = " + stb);
+					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
+				}
+				break;
+			case UPDATE:
+				if (existingRec == null || existingRec.getOp() != UpdateRecord.Operation.INSERT) {
+					System.out.println("add pending update " + locStr + " = " + stb);
+					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
+				}
+				break;
+			case DELETE:
+				if (existingRec != null && existingRec.getOp() == UpdateRecord.Operation.INSERT) {
+					System.out.println("remove pending insertion " + locStr + " = " + stb);
+					pendingUpdates.remove(locStr);
+				} else {
+					System.out.println("add pending deletion " + locStr + " = " + stb);
+					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc, stb.getItemTypeID(), stb));
+				}
+				break;
+			default:
+				throw new IllegalArgumentException("Unexpected operation: " + op);
+		}
+	}
+
 
 	/**
 	 * Get the STB block at the given location.
