@@ -317,8 +317,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			event.setCancelled(true);
 		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
 				hasAccessRights(event.getPlayer()) &&
-				inHand.getType() != Material.AIR &&
-				(getStored() == null || inHand.isSimilar(getStored()))) {
+				inHand.getType() != Material.AIR && inHand.isSimilar(getStored())) {
 			double chargeNeeded = getChargePerOperation(inHand.getAmount());
 			if (getCharge() >= chargeNeeded) {
 				setStorageAmount(getStorageAmount() + inHand.getAmount());
