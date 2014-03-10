@@ -201,7 +201,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 	 * @param event the interaction event
 	 */
 	public void onInteractBlock(PlayerInteractEvent event) {
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN
+				&& event.getClickedBlock().getType() != Material.WALL_SIGN && event.getClickedBlock().getType() != Material.SIGN_POST ) {
 			// attach a label sign
 			attachLabelSign(event);
 			event.setCancelled(true);
