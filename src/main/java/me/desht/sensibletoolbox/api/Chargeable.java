@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
 /**
- * Represents an STB item which can hold an electric charge (SCU: Sensible Charge Units).
+ * Represents an STB item or block which can hold an electric charge (SCU: Sensible Charge Units).
  */
 public interface Chargeable {
 	/**
@@ -28,7 +28,7 @@ public interface Chargeable {
 	/**
 	 * Get the max rate at which this device can charge or discharge in SCU/tick.  Note that this does
 	 * not necessarily limit the amount of charge used when the device is working, only when it is
-	 * charging/discharging via battery block or energy cell.
+	 * charging/discharging via connected battery block or installed energy cell.
 	 *
 	 * @return the max charge rate
  	 */

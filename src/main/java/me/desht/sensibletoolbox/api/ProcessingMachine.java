@@ -3,6 +3,9 @@ package me.desht.sensibletoolbox.api;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Represents a machine which processes an item in some way.,
+ */
 public interface ProcessingMachine extends STBMachine {
 	/**
 	 * Get the ticks remaining until this work cycle is complete, or 0 if the machine is not currently

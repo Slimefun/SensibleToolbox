@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 /**
- * Represents the user-based access control in force for this machine.
+ * Represents the user-based access control in force for this STB block.
  */
 public enum AccessControl {
 	PUBLIC(DyeColor.GREEN, "Public Access"),

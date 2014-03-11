@@ -6,9 +6,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
+/**
+ * Represents an STB block which can hold an inventory of items.
+ */
 public interface STBInventoryHolder extends InventoryHolder {
 	/**
-	 * Attempt to actually insert an item into the inventory on the given side.
+	 * Attempt to actually insert an item into the block on the given side.
 	 * <p>
 	 * If a non-null uuid is provided, an access rights check should be made.
 	 *
@@ -21,7 +24,7 @@ public interface STBInventoryHolder extends InventoryHolder {
 	public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid);
 
 	/**
-	 * Attempt to extract items from the inventory on the given side.  The size of the returned
+	 * Attempt to extract items from the block on the given side.  The size of the returned
 	 * item stack could be smaller than the requested amount.
 	 * <p>
 	 * If a receiver is specified, items will be only be extracted if they will stack with the receiver,

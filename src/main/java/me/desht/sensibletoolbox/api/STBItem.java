@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.MaterialData;
