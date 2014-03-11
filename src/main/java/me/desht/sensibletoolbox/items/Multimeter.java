@@ -2,15 +2,15 @@ package me.desht.sensibletoolbox.items;
 
 import com.google.common.base.Joiner;
 import me.desht.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import me.desht.sensibletoolbox.nametags.NameTagSpawner;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -88,7 +88,7 @@ public class Multimeter extends BaseSTBItem {
 					b = event.getClickedBlock();
 				}
 				BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
-				if (machine != null) {
+				if (machine != null && machine.getMaxCharge() > 0) {
 					showMachineInfo(player, machine);
 				} else {
 					// nothing to examine here
