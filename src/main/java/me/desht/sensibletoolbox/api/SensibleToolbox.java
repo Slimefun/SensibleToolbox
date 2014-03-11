@@ -7,4 +7,8 @@ public class SensibleToolbox {
 	public static STBItem getItemFromItemStack(ItemStack stack) {
 		return BaseSTBItem.getItemFromItemStack(stack);
 	}
+
+	public static void registerItem(BaseSTBItem item) {
+		BaseSTBItem.registerItem(item);
+	}
 }
