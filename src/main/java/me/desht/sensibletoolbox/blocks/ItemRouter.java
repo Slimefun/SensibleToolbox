@@ -25,6 +25,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.inventory.ClickType;
@@ -407,7 +408,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		if (onCursor.getType() == Material.AIR || BaseSTBItem.getItemFromItemStack(onCursor, ItemRouterModule.class) != null) {
 			needToProcessModules = true;
 			return true;
@@ -417,12 +418,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return true;
 	}
 
 	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+	public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
 		STBItem item = BaseSTBItem.getItemFromItemStack(toInsert, ItemRouterModule.class);
 		if (item == null) {
 			return 0;
@@ -450,17 +451,17 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	}
 
 	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+	public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
 		return true;
 	}
 
 	@Override
-	public boolean onClickOutside() {
+	public boolean onClickOutside(HumanEntity player) {
 		return false;
 	}
 
 	@Override
-	public void onGUIClosed() {
+	public void onGUIClosed(HumanEntity player) {
 		// no action needed here
 	}
 

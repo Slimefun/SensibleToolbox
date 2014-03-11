@@ -1,14 +1,9 @@
 package me.desht.sensibletoolbox.api;
 
-import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Wool;
 
 public interface STBMachine extends ChargeableBlock, STBInventoryHolder {
 	/**

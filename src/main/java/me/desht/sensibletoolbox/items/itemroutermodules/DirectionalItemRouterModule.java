@@ -21,6 +21,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
@@ -212,7 +213,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		if (onCursor.getType() == Material.AIR) {
 			gui.getInventory().setItem(slot, null);
 		} else {
@@ -224,37 +225,35 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 	}
 
 	@Override
-	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return true;
 	}
 
 	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+	public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
 		return 0;
 	}
 
 	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+	public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
 		return false;
 	}
 
 	@Override
-	public boolean onClickOutside() {
+	public boolean onClickOutside(HumanEntity player) {
 		return false;
 	}
 
-	public void onGUIClosed() {
-		Player player = gui.getPrimaryPlayer();
-		if (player != null) {
-			filter.clear();
-			for (int slot : filterSlots) {
-				ItemStack stack = gui.getInventory().getItem(slot);
-				if (stack != null) {
-					filter.addItem(stack);
-				}
+	@Override
+	public void onGUIClosed(HumanEntity player) {
+		filter.clear();
+		for (int slot : filterSlots) {
+			ItemStack stack = gui.getInventory().getItem(slot);
+			if (stack != null) {
+				filter.addItem(stack);
 			}
-			player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
 		}
+		player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
 	}
 
 	protected boolean doPull(BlockFace from, Location loc) {

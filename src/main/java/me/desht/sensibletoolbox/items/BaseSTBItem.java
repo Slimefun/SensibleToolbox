@@ -33,6 +33,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -118,7 +119,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		}
 	}
 
-	private static void registerItem(BaseSTBItem item) {
+	public static void registerItem(BaseSTBItem item) {
 		String id = item.getItemTypeID();
 		Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 		id2class.put(id, item.getClass());
@@ -237,10 +238,10 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		try {
 			BaseSTBItem item;
 			if (conf == null) {
-				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor();
+				Constructor<? extends BaseSTBItem> cons = c.getConstructor();
 				item = cons.newInstance();
 			} else {
-				Constructor<? extends BaseSTBItem> cons = c.getDeclaredConstructor(ConfigurationSection.class);
+				Constructor<? extends BaseSTBItem> cons = c.getConstructor(ConfigurationSection.class);
 				item = cons.newInstance(conf);
 			}
 			return item;
@@ -313,65 +314,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		enchants = stack.getEnchantments();
 	}
 
-
-	/**
-	 * Get the Bukkit Material used to represent this item.
-	 *
-	 * @return the Bukkit Material
-	 */
-	@Override
-	public Material getMaterial() {
-		return getMaterialData().getItemType();
-	}
-
-	/**
-	 * Get any suffix to be appended to the item's displayed name.  Override this in
-	 * implementing classes where you wish to represent some or all of the item's state
-	 * in the display name.
-	 *
-	 * @return the display suffix
-	 */
-	@Override
-	public String getDisplaySuffix() { return null; }
-
-	/**
-	 * Get extra lore to be appended to the base lore.  verride this in
-	 * implementing classes where you wish to represent some or all of the item's state
-	 * in the item lore.
-	 *
-	 * @return the extra item lore
-	 */
-	@Override
-	public String[] getExtraLore() { return new String[0]; }
-
-	/**
-	 * Get any alternative recipes used to create the item.
-	 *
-	 * @return an array of recipes
-	 */
-	@Override
-	public Recipe[] getExtraRecipes() {
-		return new Recipe[0];
-	}
-
-	/**
-	 * Given a material name, return the type of STB item that crafting ingredients of this type
-	 * must be to count as a valid crafting ingredient for this item.
-	 *
-	 * @param mat the ingredient material
-	 * @return null for no restriction, or a BaseSTBItem subclass to specify a restriction
-	 */
 	@Override
 	public final Class<? extends STBItem> getCraftingRestriction(Material mat) {
 		return customIngredients.get(getItemTypeID() + ":" + mat);
 	}
 
-	/**
-	 * Check if this item is used as an ingredient for the given resulting item.
-	 *
-	 * @param result the resulting item
-	 * @return true if this item may be used, false otherwise
-	 */
 	@Override
 	public final boolean isIngredientFor(ItemStack result) {
 		STBItem item = BaseSTBItem.getItemFromItemStack(result);
@@ -382,6 +329,18 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		return c == getClass();
 	}
 
+	@Override
+	public final Material getMaterial() { return getMaterialData().getItemType(); }
+
+	@Override
+	public String getDisplaySuffix() { return null; }
+
+	@Override
+	public String[] getExtraLore() { return new String[0]; }
+
+	@Override
+	public Recipe[] getExtraRecipes() { return new Recipe[0]; }
+
 	/**
 	 * Register one or more STB items as custom ingredients in the crafting recipe for
 	 * this item.  This will ensure that only these items, and not the vanilla item which
@@ -389,17 +348,12 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 	 *
 	 * @param items the STB items to register as custom ingredients
 	 */
-	protected void registerCustomIngredients(STBItem... items) {
+	protected final void registerCustomIngredients(STBItem... items) {
 		for (STBItem item : items) {
 			customIngredients.put(getItemTypeID() + ":" + item.getMaterial(), item.getClass());
 		}
 	}
 
-	/**
-	 * Check if the item should glow.  This will only work if ProtocolLib is installed.
-	 *
-	 * @return true if the item should glow
-	 */
 	@Override
 	public boolean hasGlow() { return false; }
 
@@ -431,19 +385,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 	 */
 	public void onItemHeld(PlayerItemHeldEvent event) { }
 
-	/**
-	 * Get the item into which this item would be smelted.
-	 *
-	 * @return the resulting itemstack, or null if this object does not smelt
-	 */
 	@Override
 	public ItemStack getSmeltingResult() { return null; }
 
-	/**
-	 * Check if this item can be enchanted normally in an enchanting table.
-	 *
-	 * @return true if the item can be enchanted
-	 */
 	@Override
 	public boolean isEnchantable() {
 		return true;
@@ -460,22 +404,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 	public void onBreakBlockWithItem(BlockBreakEvent event) {
 	}
 
-	/**
-	 * Get an ItemStack with one item from this STB item, serializing any item-specific data into the ItemStack.
-	 *
-	 * @return the new ItemStack
-	 */
 	@Override
 	public ItemStack toItemStack() {
 		return toItemStack(1);
 	}
 
-	/**
-	 * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
-	 *
-	 * @param amount number of items in the stack
-	 * @return the new ItemStack
-	 */
 	@Override
 	public ItemStack toItemStack(int amount) {
 		ItemStack res = getMaterialData().toItemStack(amount);
@@ -538,38 +471,37 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		return getItemName().compareTo(other.getItemName());
 	}
 
-
 	@Override
 	public String getItemTypeID() {
 		return getClass().getSimpleName().toLowerCase();
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return false;
 	}
 
 	@Override
-	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return true;
 	}
 
 	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+	public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
 		return 0;
 	}
 
 	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+	public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
 		return true;
 	}
 
 	@Override
-	public boolean onClickOutside() {
+	public boolean onClickOutside(HumanEntity player) {
 		return false;
 	}
 
 	@Override
-	public void onGUIClosed() {
+	public void onGUIClosed(HumanEntity player) {
 	}
 }

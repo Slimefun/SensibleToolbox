@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
@@ -195,7 +196,7 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		if (viewingItem == -1) {
 			// switch to viewing the item's recipe
 			if (itemListPos.containsKey(inSlot)) {
@@ -303,10 +304,8 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	@Override
-	public void onGUIClosed() {
-		if (gui.getPrimaryPlayer() != null) {
-			gui.getPrimaryPlayer().setItemInHand(toItemStack());
-		}
+	public void onGUIClosed(HumanEntity player) {
+		player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
 	}
 
 	private void tryFabrication(Recipe recipe) {
@@ -364,27 +363,27 @@ public class RecipeBook extends BaseSTBItem {
 		return res;
 	}
 
-	private List<ItemStack> mergeIngredients(Map<Character, ItemStack> ingredientMap) {
-		Map<ItemStack,Integer> amounts = new HashMap<ItemStack, Integer>();
-		for (ItemStack stack : ingredientMap.values()) {
-			if (stack != null) {
-				System.out.println("merge stack " + stack);
-				Integer existing = amounts.get(stack);
-				if (existing == null) {
-					amounts.put(stack, 1);
-				} else {
-					amounts.put(stack, existing + 1);
-				}
-			}
-		}
-		List<ItemStack> res = new ArrayList<ItemStack>();
-		for (Map.Entry<ItemStack,Integer> e : amounts.entrySet()) {
-			ItemStack stack = e.getKey().clone();
-			stack.setAmount(e.getValue());
-			res.add(stack);
-		}
-		return res;
-	}
+//	private List<ItemStack> mergeIngredients(Map<Character, ItemStack> ingredientMap) {
+//		Map<ItemStack,Integer> amounts = new HashMap<ItemStack, Integer>();
+//		for (ItemStack stack : ingredientMap.values()) {
+//			if (stack != null) {
+//				System.out.println("merge stack " + stack);
+//				Integer existing = amounts.get(stack);
+//				if (existing == null) {
+//					amounts.put(stack, 1);
+//				} else {
+//					amounts.put(stack, existing + 1);
+//				}
+//			}
+//		}
+//		List<ItemStack> res = new ArrayList<ItemStack>();
+//		for (Map.Entry<ItemStack,Integer> e : amounts.entrySet()) {
+//			ItemStack stack = e.getKey().clone();
+//			stack.setAmount(e.getValue());
+//			res.add(stack);
+//		}
+//		return res;
+//	}
 
 	private void drawRecipePage() {
 		final ItemStack result = fullItemList.get(viewingItem);

@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.commands;
 
+import com.google.common.base.Joiner;
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MessagePager;
@@ -9,14 +10,21 @@ import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.BukkitSerialization;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +33,14 @@ public class ShowCommand extends AbstractCommand {
 		super("stb show");
 		setPermissionNode("stb.commands.show");
 		setUsage("/<command> show [-w <world>] [-id <itemid>] [-perf]");
-		setOptions("w:s", "id:s", "perf");
+		setOptions("w:s", "type:s", "perf");
 	}
 
 	@Override
 	public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
 		MessagePager pager = MessagePager.getPager(sender).clear();
 		if (args.length >= 1) {
-			showDetails(pager, args[0]);
+			showDetails(sender, pager, args[0]);
 		} else if (getBooleanOption("perf")) {
 			for (World w : Bukkit.getWorlds()) {
 				pager.add(w.getName() + ": " + w.getLoadedChunks().length + " loaded chunks");
@@ -41,7 +49,7 @@ public class ShowCommand extends AbstractCommand {
 			double pct = avg / 200000.0;
 			pager.add(avg + " ns/tick (" + pct + "%) spent in ticking STB blocks");
 		} else {
-			String id = getStringOption("id");
+			String id = getStringOption("type");
 			if (hasOption("w")) {
 				World w = Bukkit.getWorld(getStringOption("w"));
 				DHValidate.notNull(w, "Unknown world: " + getStringOption("w"));
@@ -57,21 +65,60 @@ public class ShowCommand extends AbstractCommand {
 		return true;
 	}
 
-	private void showDetails(MessagePager pager, String locStr) {
-		try {
-			Location loc = MiscUtil.parseLocation(locStr);
-			STBBlock stb = LocationManager.getManager().get(loc);
-			DHValidate.notNull(stb, "No STB block at " + locStr);
-			YamlConfiguration conf = ((BaseSTBBlock) stb).freeze();
-			pager.add(ChatColor.YELLOW.toString() + stb + ":");
-			for (String l : conf.saveToString().split("\\n")) {
-				if (!l.isEmpty()) {
-					pager.add(ChatColor.AQUA + l);
+	private void showDetails(CommandSender sender, MessagePager pager, String locStr) {
+		BaseSTBItem item;
+		if (locStr.equals(".")) {
+			notFromConsole(sender);
+			Player player = (Player) sender;
+			// try to show either the held item or the targeted block
+			item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
+			if (item == null) {
+				Block b = player.getTargetBlock(null, 10);
+				item = LocationManager.getManager().get(b.getLocation());
+			}
+		} else {
+			try {
+				Location loc = MiscUtil.parseLocation(locStr);
+				item = LocationManager.getManager().get(loc);
+				DHValidate.notNull(item, "No STB block at " + locStr);
+			} catch (IllegalArgumentException e) {
+				throw new DHUtilsException(e.getMessage());
+			}
+		}
+		DHValidate.notNull(item, "No valid STB item/block found");
+
+		YamlConfiguration conf = item.freeze();
+		pager.add(ChatColor.YELLOW.toString() + item + ":");
+		for (String k : conf.getKeys(true)) {
+			if (!conf.isConfigurationSection(k)) {
+				Object o = conf.get(k);
+				if (o.toString().startsWith("rO")) {
+					// is it safe to assume base64-encoded string always starts with "rO" ?
+					String s = getStringFromBase64(o);
+					pager.add(ChatColor.WHITE + k + " = " + ChatColor.YELLOW + s);
+				} else {
+					pager.add(ChatColor.WHITE + k + " = " + ChatColor.YELLOW + o);
 				}
 			}
-		} catch (IllegalArgumentException e) {
-			throw new DHUtilsException(e.getMessage());
 		}
+	}
+
+	private String getStringFromBase64(Object o) {
+		String s;
+		try {
+			Inventory inv = BukkitSerialization.fromBase64(o.toString());
+			List<String> l = new ArrayList<String>(inv.getSize());
+			StringBuilder sb = new StringBuilder();
+			for (ItemStack stack : inv) {
+				if (stack != null) {
+					l.add(STBUtil.describeItemStack(inv.getItem(0)));
+				}
+			}
+			s = Joiner.on(", ").join(l);
+		} catch (IOException e) {
+			s = "???";
+		}
+		return s;
 	}
 
 	private void show(MessagePager pager, World w, String id) {

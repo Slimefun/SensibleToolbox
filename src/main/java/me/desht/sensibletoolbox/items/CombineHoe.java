@@ -12,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -125,7 +126,6 @@ public abstract class CombineHoe extends BaseSTBItem {
 		Block b = event.getBlock();
 		Player player = event.getPlayer();
 		if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
-			System.out.println("harvest leaves with hoe");
 			harvestLayer(player, b);
 			if (!player.isSneaking()) {
 				harvestLayer(player, b.getRelative(BlockFace.UP));
@@ -148,7 +148,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		if (onCursor.getType() == Material.AIR) {
 			return true;
 		} else if (STBUtil.getCropType(onCursor.getType()) == null) {
@@ -161,12 +161,12 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
-	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return true;
 	}
 
 	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+	public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
 		if (STBUtil.getCropType(toInsert.getType()) == null) {
 			return 0;
 		} else if (!verifyUnique(gui.getInventory(), toInsert, slot)) {
@@ -182,43 +182,41 @@ public abstract class CombineHoe extends BaseSTBItem {
 	}
 
 	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+	public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
 		return true;
 	}
 
 	@Override
-	public boolean onClickOutside() {
+	public boolean onClickOutside(HumanEntity player) {
 		return false;
 	}
 
-	public void onGUIClosed() {
-		if (gui.getPrimaryPlayer() != null) {
-			Player player = gui.getPrimaryPlayer();
-			Material seedType = null;
-			int count = 0;
-			String err = null;
-			for (int i = 0; i < gui.getInventory().getSize(); i++) {
-				ItemStack stack = gui.getInventory().getItem(i);
-				if (stack != null) {
-					if (seedType != null && seedType != stack.getType()) {
-						player.getWorld().dropItemNaturally(player.getLocation(), stack);
-						err = "Mixed items in the seed bag??";
-					} else if (STBUtil.getCropType(stack.getType()) == null) {
-						player.getWorld().dropItemNaturally(player.getLocation(), stack);
-						err = "Non-seed items in the seed bag??";
-					} else {
-						seedType = stack.getType();
-						count += stack.getAmount();
-					}
+	@Override
+	public void onGUIClosed(HumanEntity player) {
+		Material seedType = null;
+		int count = 0;
+		String err = null;
+		for (int i = 0; i < gui.getInventory().getSize(); i++) {
+			ItemStack stack = gui.getInventory().getItem(i);
+			if (stack != null) {
+				if (seedType != null && seedType != stack.getType()) {
+					player.getWorld().dropItemNaturally(player.getLocation(), stack);
+					err = "Mixed items in the seed bag??";
+				} else if (STBUtil.getCropType(stack.getType()) == null) {
+					player.getWorld().dropItemNaturally(player.getLocation(), stack);
+					err = "Non-seed items in the seed bag??";
+				} else {
+					seedType = stack.getType();
+					count += stack.getAmount();
 				}
 			}
-			if (err != null) {
-				MiscUtil.errorMessage(player, err);
-			}
-			setSeedAmount(count);
-			setSeedType(seedType);
-			player.setItemInHand(toItemStack());
 		}
+		if (err != null) {
+			MiscUtil.errorMessage((Player) player, err);
+		}
+		setSeedAmount(count);
+		setSeedType(seedType);
+		player.setItemInHand(toItemStack());
 	}
 
 	private void populateSeedBag(InventoryGUI gui) {

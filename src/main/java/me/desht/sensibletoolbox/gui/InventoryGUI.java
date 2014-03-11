@@ -23,7 +23,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,6 @@ public class InventoryGUI {
 	private final SlotType[] slotTypes;
 	private final IntRange slotRange;
 	private final List<MonitorGadget> monitors = new ArrayList<MonitorGadget>();
-	private WeakReference<Player> player;
 
 	public InventoryGUI(InventoryGUIListener listener, int size, String title) {
 		this(null, listener, size, title);
@@ -84,7 +82,6 @@ public class InventoryGUI {
 
 	public static void setOpenGUI(Player player, InventoryGUI gui) {
 		if (gui != null) {
-			gui.setPrimaryPlayer(player);
 			player.setMetadata(STB_OPEN_GUI, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), gui));
 		} else {
 			player.removeMetadata(STB_OPEN_GUI, SensibleToolboxPlugin.getInstance());
@@ -135,25 +132,6 @@ public class InventoryGUI {
 			setSlotType(slot, SlotType.GADGET);
 		}
 		return monitors.size() - 1;
-	}
-
-	public Player getPrimaryPlayer() {
-		if (player == null || player.get() == null) {
-			if (getViewers().isEmpty()) {
-				return null;
-			} else {
-				player = new WeakReference<Player>((Player) getViewers().get(0));
-			}
-		}
-		return player.get();
-	}
-
-	private void setPrimaryPlayer(Player player) {
-		if (player == null) {
-			this.player = null;
-		} else if (this.player == null || this.player.get() == null) {
-			this.player = new WeakReference<Player>(player);
-		}
 	}
 
 	public MonitorGadget getMonitor(int monitorId) {
@@ -230,18 +208,18 @@ public class InventoryGUI {
 		} else if (event.getRawSlot() > 0) {
 			// clicking inside the player's inventory
 			if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-				int nInserted = listener.onShiftClickInsert(event.getRawSlot(), event.getCurrentItem());
+				int nInserted = listener.onShiftClickInsert(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
 				if (nInserted > 0) {
 					ItemStack stack = event.getCurrentItem();
 					stack.setAmount(stack.getAmount() - nInserted);
 					event.setCurrentItem(stack.getAmount() > 0 ? stack: null);
 				}
 			} else {
-				shouldCancel = !listener.onPlayerInventoryClick(event.getSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
+				shouldCancel = !listener.onPlayerInventoryClick(event.getWhoClicked(), event.getSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
 			}
 		} else {
 			// clicking outside the inventory entirely
-			shouldCancel = !listener.onClickOutside();
+			shouldCancel = !listener.onClickOutside(event.getWhoClicked());
 		}
 		if (shouldCancel) {
 			event.setCancelled(true);
@@ -260,7 +238,7 @@ public class InventoryGUI {
 			// we only allow drags with a single slot involved, and we fake that as a left-click on the slot
 			if (event.getRawSlots().size() == 1) {
 				int slot = (event.getRawSlots().toArray(new Integer[1]))[0];
-				shouldCancel = !listener.onSlotClick(slot, ClickType.LEFT, inventory.getItem(slot), event.getOldCursor());
+				shouldCancel = !listener.onSlotClick(event.getWhoClicked(), slot, ClickType.LEFT, inventory.getItem(slot), event.getOldCursor());
 			}
 		} else {
 			// drag is purely in the player's inventory; allow it
@@ -274,10 +252,10 @@ public class InventoryGUI {
 	private boolean processGUIInventoryAction(InventoryClickEvent event) {
 		switch (event.getAction()) {
 			case MOVE_TO_OTHER_INVENTORY:
-				return listener.onShiftClickExtract(event.getRawSlot(), event.getCurrentItem());
+				return listener.onShiftClickExtract(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
 			case PLACE_ONE: case PLACE_ALL: case PLACE_SOME: case SWAP_WITH_CURSOR:
 			case PICKUP_ALL: case PICKUP_HALF: case PICKUP_ONE: case PICKUP_SOME:
-				return listener.onSlotClick(event.getRawSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
+				return listener.onSlotClick(event.getWhoClicked(), event.getRawSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
 			default:
 				return false;
 		}
@@ -285,13 +263,9 @@ public class InventoryGUI {
 
 	public void receiveEvent(InventoryCloseEvent event) {
 		Debugger.getInstance().debug("received GUI close event for " + event.getPlayer().getName());
-		listener.onGUIClosed();
+		listener.onGUIClosed(event.getPlayer());
 		if (event.getPlayer() instanceof Player) {
 			setOpenGUI((Player) event.getPlayer(), null);
-			Player p = getPrimaryPlayer();
-			if (p != null && p.getUniqueId().equals(event.getPlayer().getUniqueId())) {
-				setPrimaryPlayer(null);
-			}
 		}
 		Debugger.getInstance().debug(event.getPlayer().getName() + " closed GUI for " + getOwningItem());
 	}
@@ -368,12 +342,66 @@ public class InventoryGUI {
 	}
 
 	public interface InventoryGUIListener {
-		public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
-		public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
-		public int onShiftClickInsert(int slot, ItemStack toInsert);
-		public boolean onShiftClickExtract(int slot, ItemStack toExtract);
-		public boolean onClickOutside();
-		public void onGUIClosed();
+		/**
+		 * Called when a slot in an inventory GUI is clicked by a player.
+		 *
+		 * @param player the player who clicked
+		 * @param slot the raw inventory slot which was clicked
+		 * @param click the click type
+		 * @param inSlot the item currently in the clicked slot
+		 * @param onCursor the item on the player's cursor
+		 * @return true if the click should go ahead, false if it should be cancelled
+		 */
+		public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
+
+		/**
+		 * Called when a slot in a player inventory is clicked by a player while an inventory GUI is shown.
+		 *
+		 * @param player the player who clicked
+		 * @param slot the raw inventory slot which was clicked
+		 * @param click the click type
+		 * @param inSlot the item currently in the clicked slot
+		 * @param onCursor the item on the player's cursor
+		 * @return true if the click should go ahead, false if it should be cancelled
+		 */
+		public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
+
+		/**
+		 * Called when an attempt is made to shift-click an item into an inventory GUI.  The implementor is
+		 * responsible for actually putting items into the appropriate slot(s) of the inventory GUI, but
+		 * the stack being clicked will be automatically adjusted.
+		 *
+		 * @param player the player who clicked
+		 * @param slot the slot that was shift-clicked
+		 * @param toInsert the item stack to be inserted
+		 * @return the number of items from the stack that were actually inserted
+		 */
+		public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert);
+
+		/**
+		 * Called when an attempt is made to shift-click an item out of an inventory GUI.
+		 *
+		 * @param player the player who clicked
+		 * @param slot the slot in the inventory GUI that was shift-clicked
+		 * @param toExtract the number of items being extracted
+		 * @return true if items were should be extracted, false otherwise
+		 */
+		public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract);
+
+		/**
+		 * Called when a player clicks outside the inventory window.
+		 *
+		 * @param player player who clicked
+		 * @return true if the click should go ahead, false to cancel the event
+		 */
+		public boolean onClickOutside(HumanEntity player);
+
+		/**
+		 * Called when an inventory GUI window is closed.
+		 *
+		 * @param player player who closed the window
+		 */
+		public void onGUIClosed(HumanEntity player);
 	}
 
 	public enum SlotType {

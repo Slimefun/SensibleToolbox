@@ -14,6 +14,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -199,17 +200,17 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return onCursor.getType() == Material.AIR || validItem(onCursor);
 	}
 
 	@Override
-	public boolean onPlayerInventoryClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		return true;
 	}
 
 	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+	public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
 		if (!validItem(toInsert)) {
 			return 0;
 		} else {
@@ -223,17 +224,17 @@ public class PaintCan extends BaseSTBBlock {
 	}
 
 	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+	public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
 		return true;
 	}
 
 	@Override
-	public boolean onClickOutside() {
+	public boolean onClickOutside(HumanEntity player) {
 		return false;
 	}
 
 	@Override
-	public void onGUIClosed() {
+	public void onGUIClosed(HumanEntity player) {
 		if (getGUI().getViewers().size() == 1) {
 			// last player closing inventory - eject any remaining items
 			Location loc = getLocation();

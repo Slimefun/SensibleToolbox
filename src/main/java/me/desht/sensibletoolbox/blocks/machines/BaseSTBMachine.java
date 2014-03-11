@@ -22,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -437,7 +438,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public boolean onSlotClick(int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+	public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
 		if (isInputSlot(slot)) {
 			if (onCursor.getType() != Material.AIR && !acceptsItemType(onCursor)) {
 				return false;
@@ -471,7 +472,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public int onShiftClickInsert(int slot, ItemStack toInsert) {
+	public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
 		int insertionSlot = findAvailableInputSlot(toInsert, BlockFace.SELF);
 		if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
 			ItemStack inMachine = getInventoryItem(insertionSlot);
@@ -514,7 +515,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public boolean onShiftClickExtract(int slot, ItemStack toExtract) {
+	public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
 		// allow extraction to continue in all cases
 		if (slot == getEnergyCellSlot() && toExtract != null) {
 			installEnergyCell(null);
@@ -527,7 +528,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	}
 
 	@Override
-	public boolean onClickOutside() {
+	public boolean onClickOutside(HumanEntity player) {
 		return false;
 	}
 

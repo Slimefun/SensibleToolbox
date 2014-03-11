@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.blocks;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.machines.AbstractProcessingMachine;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -11,6 +12,7 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -25,6 +28,8 @@ import java.util.UUID;
 public class BigStorageUnit extends AbstractProcessingMachine {
 	private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
 	private static final int TICK_RATE = 5;
+	private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
+	private static final long DOUBLE_CLICK_TIME = 200L;
 	private ItemStack stored;
 	private int storageAmount;
 	private int outputAmount;
@@ -297,13 +302,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
 	@Override
 	public void onInteractBlock(PlayerInteractEvent event) {
-		ItemStack inHand = event.getPlayer().getItemInHand();
+		Player player = event.getPlayer();
+		ItemStack inHand = player.getItemInHand();
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStored() != null &&
-				hasAccessRights(event.getPlayer()) &&
-				(inHand.getType() == Material.AIR || inHand.isSimilar(getStored()))) {
-			System.out.println(this + " left click, hand = " + inHand + ", stored = " + getStored());
+				hasAccessRights(player) && hasOKItem(player)) {
 			// try to extract items from the output stack
-			int wanted = event.getPlayer().isSneaking() ? 1 : getStored().getMaxStackSize();
+			int wanted = player.isSneaking() ? 1 : getStored().getMaxStackSize();
 			int nExtracted = Math.min(wanted, getOutputAmount());
 			if (nExtracted > 0) {
 				Location loc = event.getClickedBlock().getRelative(event.getBlockFace()).getLocation().add(0.5, 0.5, 0.5);
@@ -315,24 +319,64 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 				setOutputItem(stack);
 			}
 			event.setCancelled(true);
-		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
-				hasAccessRights(event.getPlayer()) &&
-				inHand.getType() != Material.AIR && inHand.isSimilar(getStored())) {
-			double chargeNeeded = getChargePerOperation(inHand.getAmount());
-			if (getCharge() >= chargeNeeded) {
-				setStorageAmount(getStorageAmount() + inHand.getAmount());
-				if (getStored() == null) {
-					setStored(inHand);
+		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking() &&
+				hasAccessRights(player)) {
+			Long lastInsert = (Long) STBUtil.getMetadataValue(player, STB_LAST_BSU_INSERT);
+			long now = System.currentTimeMillis();
+			System.out.println("right click insert: last = " + lastInsert + ", now = " + now + ", in hand = " + inHand);
+			if (inHand.getType() == Material.AIR && lastInsert != null && now - lastInsert < DOUBLE_CLICK_TIME) {
+				System.out.println("double click full insert!");
+				for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+					ItemStack stack = player.getInventory().getItem(slot);
+					if (stack != null && stack.isSimilar(getStored()) && rightClickInsert(player, slot) == 0) {
+						break;
+					}
 				}
-				event.getPlayer().setItemInHand(null);
-				setCharge(getCharge() - chargeNeeded);
+				player.updateInventory();
+				event.setCancelled(true);
+			} else if (inHand.isSimilar(getStored())) {
+				System.out.println("insert item in hand");
+				rightClickInsert(player, player.getInventory().getHeldItemSlot());
+				event.setCancelled(true);
 			} else {
-				event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-				MiscUtil.errorMessage(event.getPlayer(), getItemName() + " has insufficient charge to accept items.");
+				super.onInteractBlock(event);
 			}
-			event.setCancelled(true);
 		} else {
 			super.onInteractBlock(event);
+		}
+	}
+
+	private boolean hasOKItem(Player player) {
+		switch (player.getItemInHand().getType()) {
+			case SIGN: case WOOD_AXE: case STONE_AXE: case IRON_AXE: case DIAMOND_AXE: return false;
+			default: return true;
+		}
+	}
+
+	private int rightClickInsert(Player player, int slot) {
+		ItemStack stack = player.getInventory().getItem(slot);
+		int toInsert = Math.min(stack.getAmount(), maxCapacity - getStorageAmount());
+		if (toInsert == 0) {
+			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+			MiscUtil.errorMessage(player, getItemName() + " is full.");
+			return 0;
+		}
+		double chargeNeeded = getChargePerOperation(toInsert);
+		if (getCharge() >= chargeNeeded) {
+			setStorageAmount(getStorageAmount() + toInsert);
+			if (getStored() == null) {
+				setStored(stack);
+			}
+			stack.setAmount(stack.getAmount() - toInsert);
+			player.getInventory().setItem(slot, stack.getAmount() == 0 ? null : stack);
+			setCharge(getCharge() - chargeNeeded);
+			player.setMetadata(STB_LAST_BSU_INSERT,
+					new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), System.currentTimeMillis()));
+			return toInsert;
+		} else {
+			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+			MiscUtil.errorMessage(player, getItemName() + " has insufficient charge to accept items.");
+			return 0;
 		}
 	}
 
