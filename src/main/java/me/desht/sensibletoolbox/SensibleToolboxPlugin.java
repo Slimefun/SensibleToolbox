@@ -113,7 +113,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 		try {
 			LocationManager.getManager().load();
-//			LocationManager.getManager().loadFromDatabase(Bukkit.getWorlds().get(0));
 		} catch (Exception e) {
 			e.printStackTrace();
 			setEnabled(false);
@@ -123,12 +122,12 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		MessagePager.setPageCmd("/stb page [#|n|p]");
 		MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
-		BaseSTBItem.setupRecipes();
 		BagOfHolding.createSaveDirectory(this);
 
 		Bukkit.getScheduler().runTask(this, new Runnable() {
 			@Override
 			public void run() {
+				BaseSTBItem.setupRecipes();
 				RecipeBook.buildRecipes();
 			}
 		});
