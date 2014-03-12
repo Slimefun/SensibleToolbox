@@ -68,6 +68,25 @@ public class STBUtil {
 	}
 
 	/**
+	 * Check if the given material is a wearable (armour) item.
+	 *
+	 * @param type the material to check
+	 * @return true if the material is wearable
+	 */
+	public static boolean isWearable(Material type) {
+		switch (type) {
+			case LEATHER_HELMET: case LEATHER_BOOTS: case LEATHER_CHESTPLATE: case LEATHER_LEGGINGS:
+			case IRON_HELMET: case IRON_BOOTS: case IRON_CHESTPLATE: case IRON_LEGGINGS:
+			case GOLD_HELMET: case GOLD_BOOTS: case GOLD_CHESTPLATE: case GOLD_LEGGINGS:
+			case DIAMOND_HELMET: case DIAMOND_BOOTS: case DIAMOND_CHESTPLATE: case DIAMOND_LEGGINGS:
+			case CHAINMAIL_HELMET: case CHAINMAIL_BOOTS: case CHAINMAIL_CHESTPLATE: case CHAINMAIL_LEGGINGS:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	/**
 	 * Get the blocks horizontally surrounding the given block.
 	 *
 	 * @param b the centre block

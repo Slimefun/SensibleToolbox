@@ -29,7 +29,7 @@ public class FiftyKEnergyCell extends EnergyCell {
 	}
 
 	@Override
-	public Color getColor() {
+	public Color getCellColor() {
 		return Color.PURPLE;
 	}
 

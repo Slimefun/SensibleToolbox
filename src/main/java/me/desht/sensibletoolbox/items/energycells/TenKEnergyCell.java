@@ -1,11 +1,8 @@
 package me.desht.sensibletoolbox.items.energycells;
 
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.items.BuildersMultiTool;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
@@ -29,7 +26,7 @@ public class TenKEnergyCell extends EnergyCell {
 	}
 
 	@Override
-	public Color getColor() {
+	public Color getCellColor() {
 		return Color.MAROON;
 	}
 

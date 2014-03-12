@@ -1,6 +1,8 @@
 package me.desht.sensibletoolbox.listeners;
 
+import com.google.common.base.Joiner;
 import me.desht.dhutils.Debugger;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
@@ -8,8 +10,6 @@ import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -30,7 +30,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Lever;
 import org.bukkit.material.Sign;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -249,26 +249,47 @@ public class GeneralListener extends STBBaseListener {
 	}
 
 	@EventHandler
-	public void onEquipEnergyCell(InventoryClickEvent event) {
+	public void onArmourEquipCheck(InventoryClickEvent event) {
 		if (event.getInventory().getType() == InventoryType.CRAFTING) {
 			if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {
-				if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-					if (BaseSTBItem.isSTBItem(event.getCurrentItem(), EnergyCell.class)) {
-						event.setCancelled(true); // no shift-clicking a energy cell into the helmet slot
+				if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && STBUtil.isWearable(event.getCurrentItem().getType())) {
+					STBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem());
+					if (item != null && !item.isWearable()) {
+						event.setCancelled(true);
+						// TODO: move it between hot bar and main inventory instead of just cancelling
 					}
 				}
 			} else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
-				if (BaseSTBItem.isSTBItem(event.getCursor(), EnergyCell.class)) {
-					event.setCancelled(true); // no placing an energy cell into the helmet slot
+				STBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor());
+				if (item != null && !item.isWearable()) {
+					event.setCancelled(true);
 				}
 			}
 		}
 	}
 
 	@EventHandler
-	public void onEquipEnergyCell(BlockDispenseEvent event) {
-		if (BaseSTBItem.isSTBItem(event.getItem(), EnergyCell.class)) {
-			event.setCancelled(true); // no dispensing energy cells (as armour item)
+	public void onArmourEquipCheck(InventoryDragEvent event) {
+		if (event.getInventory().getType() == InventoryType.CRAFTING && STBUtil.isWearable(event.getOldCursor().getType())) {
+			for (int slot : event.getRawSlots()) {
+				if (slot >= 5 && slot <= 8) {
+					// armour slots
+					STBItem item = BaseSTBItem.getItemFromItemStack(event.getOldCursor());
+					if (item != null && !item.isWearable()) {
+						event.setCancelled(true);
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onArmourEquipCheck(BlockDispenseEvent event) {
+		if (STBUtil.isWearable(event.getItem().getType())) {
+			STBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+			if (item != null && !item.isWearable()) {
+				event.setCancelled(true);
+			}
 		}
 	}
 

@@ -108,7 +108,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		registerItem(new FiftyKBatteryBox());
 		registerItem(new SpeedUpgrade());
 		registerItem(new EjectorUpgrade());
-		registerItem(new StirlingGenerator());
+		registerItem(new HeatEngine());
 		registerItem(new BasicSolarCell());
 		registerItem(new RecipeBook());
 		registerItem(new Multimeter());
@@ -474,6 +474,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 	@Override
 	public String getItemTypeID() {
 		return getClass().getSimpleName().toLowerCase();
+	}
+
+	@Override
+	public boolean isWearable() {
+		return STBUtil.isWearable(getMaterial());
 	}
 
 	@Override

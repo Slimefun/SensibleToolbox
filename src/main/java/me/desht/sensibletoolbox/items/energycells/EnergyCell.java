@@ -50,15 +50,24 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 		return new String[] { STBUtil.getChargeString(this) };
 	}
 
+	@Override
 	public abstract int getMaxCharge();
-	public abstract Color getColor();
 
+	public abstract Color getCellColor();
+
+	@Override
 	public double getCharge() {
 		return charge;
 	}
 
+	@Override
 	public void setCharge(double charge) {
 		this.charge = charge;
+	}
+
+	@Override
+	public boolean isWearable() {
+		return false;
 	}
 
 	@Override
@@ -66,7 +75,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 		ItemStack res = super.toItemStack(amount);
 		ItemMeta meta = res.getItemMeta();
 		if (meta instanceof LeatherArmorMeta) {
-			((LeatherArmorMeta) meta).setColor(getColor());
+			((LeatherArmorMeta) meta).setColor(getCellColor());
 			res.setItemMeta(meta);
 		}
 		return res;
