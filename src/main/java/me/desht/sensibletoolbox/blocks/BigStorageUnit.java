@@ -219,7 +219,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 					System.out.println(this + "pull " + stackIn + " into storage, toPull=" + toPull);
 					setStorageAmount(getStorageAmount() + toPull);
 					stackIn.setAmount(stackIn.getAmount() - toPull);
-					setInventoryItem(inputSlot, stackIn.getAmount() > 0 ? stackIn : null);
+					setInventoryItem(inputSlot, stackIn);
 					setCharge(getCharge() - chargeNeeded);
 					if (stackIn.getAmount() == 0) {
 						// workaround to avoid leaving ghost items in the input slot

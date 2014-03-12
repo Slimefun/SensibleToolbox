@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -19,6 +20,8 @@ import org.bukkit.inventory.ItemStack;
  * an internal processing store, and places resulting items in its output slots.
  */
 public abstract class AbstractIOMachine extends AbstractProcessingMachine {
+	private static final int TICK_RATE = 10;
+
 	protected AbstractIOMachine() {
 		super();
 	}
@@ -34,7 +37,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
 	@Override
 	public void onServerTick() {
-		if (isRedstoneActive()) {
+		if (isRedstoneActive() && getTicksLived() % TICK_RATE == 0) {
 			if (getProcessing() == null) {
 				// not doing any processing - anything in input to take?
 				for (int slot : getInputSlots()) {
@@ -44,29 +47,32 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 						break;
 					}
 				}
-			} else {
-				if (getProgress() > 0 && getCharge() > 0) {
-					// currently processing....
-					setProgress(getProgress() - getSpeedMultiplier());
-					setCharge(getCharge() - getPowerMultiplier());
-					playActiveParticleEffect();
-				}
-				if (getProgress() <= 0 && !isJammed()) {
-					// done processing - try to move item into output
-					ProcessingResult recipe = getCustomRecipeFor(getProcessing());
-					if (recipe != null) {
-						// shouldn't ever be null, but let's be paranoid here
-						pushItemIntoOutput(recipe.getResult());
-					}
+			}
+
+			if (getProgress() > 0 && getCharge() > 0) {
+				// currently processing....
+				setProgress(getProgress() - getSpeedMultiplier() * TICK_RATE);
+				setCharge(getCharge() - getPowerMultiplier() * TICK_RATE);
+				playActiveParticleEffect();
+			}
+
+			if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
+				// done processing - try to move item into output
+				ProcessingResult recipe = getCustomRecipeFor(getProcessing());
+				if (recipe != null) {
+					// shouldn't ever be null, but let's be paranoid here
+					pushItemIntoOutput(recipe.getResult());
 				}
 			}
-			if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF && getTicksLived() % 10 == 0) {
+
+			if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
 				for (int slot : getOutputSlots()) {
 					ItemStack stack = getInventoryItem(slot);
 					if (stack != null) {
 						if (autoEject(stack)) {
 							stack.setAmount(stack.getAmount() - 1);
-							setInventoryItem(slot, stack.getAmount() == 0 ? null : stack);
+							setInventoryItem(slot, stack);
+							setJammed(false);
 						}
 						break;
 					}
@@ -107,24 +113,19 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 	 * @return true if an item was ejected, false otherwise
 	 */
 	private boolean autoEject(ItemStack result) {
-		Block target = getLocation().getBlock().getRelative(getAutoEjectDirection());
+		Location loc = getRelativeLocation(getAutoEjectDirection());
+		Block target = loc.getBlock();
 		ItemStack item = result.clone();
 		item.setAmount(1);
-		System.out.println(this + " auto-eject item " + getAutoEjectDirection());
 		if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
 			// no block there - just drop the item
-			target.getWorld().dropItem(target.getLocation().add(0.5, 0.5, 0.5), result);
+			loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), result);
 			return true;
 		} else {
-			STBBlock stb = LocationManager.getManager().get(target.getLocation());
-			int nInserted;
-			if (stb instanceof STBInventoryHolder) {
-				// try to insert into STB block
-				nInserted = ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner());
-			} else {
-				// vanilla insertion?
-				nInserted = VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false);
-			}
+			STBBlock stb = LocationManager.getManager().get(loc);
+			int nInserted = stb instanceof STBInventoryHolder ?
+					((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) :
+					VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false);
 			return nInserted > 0;
 		}
 	}

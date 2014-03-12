@@ -422,7 +422,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 							receiver.setAmount(receiver.getAmount() + toTake);
 						}
 						stack.setAmount(stack.getAmount() - toTake);
-						setInventoryItem(slot, stack.getAmount() > 0 ? stack : null);
+						setInventoryItem(slot, stack);
 						setJammed(false);
 						updateBlock(false);
 						if (Debugger.getInstance().getLevel() > 1) {
