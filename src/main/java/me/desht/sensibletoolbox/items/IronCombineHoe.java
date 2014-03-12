@@ -12,11 +12,12 @@ import java.util.Map;
 public class IronCombineHoe extends CombineHoe {
 	private static final MaterialData md = new MaterialData(Material.IRON_HOE);
 
-	public IronCombineHoe(ConfigurationSection conf) {
-		super(conf);
+	public IronCombineHoe() {
+		super();
 	}
 
-	public IronCombineHoe() {
+	public IronCombineHoe(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override

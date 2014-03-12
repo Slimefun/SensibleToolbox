@@ -3,17 +3,13 @@ package me.desht.sensibletoolbox.items;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.SoilSaturation;
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
@@ -25,9 +21,11 @@ public class MoistureChecker extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.GHAST_TEAR);
 
 	public MoistureChecker() {
+		super();
 	}
 
 	public MoistureChecker(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override
@@ -43,7 +41,10 @@ public class MoistureChecker extends BaseSTBItem {
 	@Override
 	public String[] getLore() {
 		int r = getRadius() * 2 + 1;
-		return new String[] { "Tests the saturation level", " of a " + r + "x" + r + " area of farmland.", "R-click to use." };
+		return new String[] {
+				"Tests the saturation level", " of a " + r + "x" + r + " area of farmland.",
+				"R-click: " + ChatColor.RESET + "use"
+		};
 	}
 
 	@Override

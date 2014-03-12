@@ -25,13 +25,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class BagOfHolding extends BaseSTBBlock {
+public class BagOfHolding extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.ENDER_PORTAL_FRAME);
 
 	public static final String BAG_SAVE_DIR = "bagofholding";
 	public static final int BAG_SIZE = 54;
 
 	public BagOfHolding() {
+		super();
 	}
 
 	public BagOfHolding(ConfigurationSection conf) {
@@ -56,8 +57,9 @@ public class BagOfHolding extends BaseSTBBlock {
 	@Override
 	public Recipe getRecipe() {
 		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("WGW", "GCG", "WBW");
+		recipe.shape("WEW", "GCG", "WBW");
 		recipe.setIngredient('W', Material.WOOL);
+		recipe.setIngredient('E', Material.ENDER_PEARL);
 		recipe.setIngredient('G', Material.GOLD_INGOT);
 		recipe.setIngredient('C', Material.CHEST);
 		recipe.setIngredient('B', Material.GOLD_BLOCK);

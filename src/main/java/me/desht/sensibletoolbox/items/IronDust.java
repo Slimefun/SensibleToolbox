@@ -10,9 +10,11 @@ public class IronDust extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.SULPHUR);
 
 	public IronDust() {
+		super();
 	}
 
 	public IronDust(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override

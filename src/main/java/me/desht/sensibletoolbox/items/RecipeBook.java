@@ -68,7 +68,9 @@ public class RecipeBook extends BaseSTBItem {
 		meta.setDisplayName(ChatColor.YELLOW + label);
 		stack.setItemMeta(meta);
 	}
+
 	public RecipeBook() {
+		super();
 		fabricationAvailable = false;
 		page = 0;
 		viewingItem = -1;
@@ -78,6 +80,7 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	public RecipeBook(ConfigurationSection conf) {
+		super(conf);
 		fabricationAvailable = false;
 		page = conf.getInt("page");
 		viewingItem = conf.getInt("viewingItem");
@@ -125,7 +128,6 @@ public class RecipeBook extends BaseSTBItem {
 					filteredItems.add(stack);
 				}
 			}
-			System.out.println("built filtered list: " + filteredItems.size() + " items");
 		} else {
 			filteredItems = fullItemList;
 		}
@@ -202,7 +204,6 @@ public class RecipeBook extends BaseSTBItem {
 			if (itemListPos.containsKey(inSlot)) {
 				viewingItem = itemListPos.get(inSlot);
 				recipeNumber = 0;
-				System.out.println("viewingItem now = " + viewingItem + " - " + fullItemList.get(viewingItem));
 				drawRecipePage();
 			} else {
 				LogUtils.warning("could not find item " + inSlot + " in the recipe list!");
@@ -212,7 +213,6 @@ public class RecipeBook extends BaseSTBItem {
 			if (gui.getSlotType(slot) == InventoryGUI.SlotType.ITEM && slot != RESULT_SLOT) {
 				if (itemListPos.containsKey(inSlot)) {
 					trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
-					System.out.println("add " + viewingItem + "," + recipeNumber + " to trail - " + trail.size());
 					viewingItem = itemListPos.get(inSlot);
 					recipeNumber = 0;
 					drawRecipePage();
@@ -321,7 +321,6 @@ public class RecipeBook extends BaseSTBItem {
 		for (ItemStack ingredient : ingredients) {
 			ItemCost cost = new ItemCost(ingredient);
 			if (!cost.isAffordable(player)) {
-				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
 				MiscUtil.errorMessage(player, "Missing: &f" + ItemNames.lookup(ingredient));
 				ok = false;
 			}
@@ -336,6 +335,8 @@ public class RecipeBook extends BaseSTBItem {
 			player.updateInventory();
 			player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
 			MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(recipe.getResult()));
+		} else {
+			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
 		}
 	}
 
@@ -345,7 +346,6 @@ public class RecipeBook extends BaseSTBItem {
 		for (int slot : RECIPE_SLOTS) {
 			ItemStack stack = gui.getInventory().getItem(slot);
 			if (stack != null) {
-				System.out.println("merge stack " + stack);
 				Integer existing = amounts.get(stack);
 				if (existing == null) {
 					amounts.put(stack, 1);
@@ -363,28 +363,6 @@ public class RecipeBook extends BaseSTBItem {
 		return res;
 	}
 
-//	private List<ItemStack> mergeIngredients(Map<Character, ItemStack> ingredientMap) {
-//		Map<ItemStack,Integer> amounts = new HashMap<ItemStack, Integer>();
-//		for (ItemStack stack : ingredientMap.values()) {
-//			if (stack != null) {
-//				System.out.println("merge stack " + stack);
-//				Integer existing = amounts.get(stack);
-//				if (existing == null) {
-//					amounts.put(stack, 1);
-//				} else {
-//					amounts.put(stack, existing + 1);
-//				}
-//			}
-//		}
-//		List<ItemStack> res = new ArrayList<ItemStack>();
-//		for (Map.Entry<ItemStack,Integer> e : amounts.entrySet()) {
-//			ItemStack stack = e.getKey().clone();
-//			stack.setAmount(e.getValue());
-//			res.add(stack);
-//		}
-//		return res;
-//	}
-
 	private void drawRecipePage() {
 		final ItemStack result = fullItemList.get(viewingItem);
 		final List<Recipe> recipes = new ArrayList<Recipe>();
@@ -398,7 +376,6 @@ public class RecipeBook extends BaseSTBItem {
 		}
 		for (CustomRecipe customRecipe : CustomRecipeManager.getManager().getRecipesFor(result)) {
 			if (customRecipe.getResult().isSimilar(result) && CustomRecipeManager.validateCustomSmelt(customRecipe.getIngredient())) {
-				System.out.println("found custom recipe: " + customRecipe);
 				recipes.add(customRecipe);
 			}
 		}

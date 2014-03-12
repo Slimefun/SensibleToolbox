@@ -26,10 +26,12 @@ public class EnderLeash extends BaseSTBItem {
 	private YamlConfiguration capturedConf;
 
 	public EnderLeash() {
+		super();
 		capturedConf = null;
 	}
 
 	public EnderLeash(ConfigurationSection conf) {
+		super(conf);
 		if (!conf.getKeys(false).isEmpty()) {
 			capturedConf = new YamlConfiguration();
 			for (String k : conf.getKeys(false)) {

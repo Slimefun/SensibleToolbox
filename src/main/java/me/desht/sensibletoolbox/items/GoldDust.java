@@ -10,9 +10,11 @@ public class GoldDust extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.GLOWSTONE_DUST);
 
 	public GoldDust() {
+		super();
 	}
 
 	public GoldDust(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override

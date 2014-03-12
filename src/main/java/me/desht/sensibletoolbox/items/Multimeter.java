@@ -28,9 +28,11 @@ public class Multimeter extends BaseSTBItem {
 	private static final MaterialData md = new MaterialData(Material.WATCH);
 
 	public Multimeter() {
+		super();
 	}
 
 	public Multimeter(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override

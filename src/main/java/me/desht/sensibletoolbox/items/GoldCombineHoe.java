@@ -11,11 +11,13 @@ import java.util.Map;
 
 public class GoldCombineHoe extends CombineHoe {
 	private static final MaterialData md = new MaterialData(Material.GOLD_HOE);
-	public GoldCombineHoe(ConfigurationSection conf) {
-		super(conf);
-	}
 
 	public GoldCombineHoe() {
+		super();
+	}
+
+	public GoldCombineHoe(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override

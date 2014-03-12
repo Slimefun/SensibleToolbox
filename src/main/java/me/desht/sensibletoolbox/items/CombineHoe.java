@@ -32,14 +32,16 @@ public abstract class CombineHoe extends BaseSTBItem {
 		return ChatColor.DARK_GREEN + "Seed Bag";
 	}
 
-	public CombineHoe(ConfigurationSection conf) {
-		setSeedAmount(conf.getInt("amount"));
-		setSeedType(Material.getMaterial(conf.getString("seeds")));
-	}
-
-	protected CombineHoe() {
+	public CombineHoe() {
+		super();
 		seedType = null;
 		seedAmount = 0;
+	}
+
+	public CombineHoe(ConfigurationSection conf) {
+		super(conf);
+		setSeedAmount(conf.getInt("amount"));
+		setSeedType(Material.getMaterial(conf.getString("seeds")));
 	}
 
 	@Override

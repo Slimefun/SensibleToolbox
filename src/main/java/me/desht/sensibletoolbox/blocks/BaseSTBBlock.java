@@ -4,9 +4,11 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.dhutils.PersistableLocation;
-import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.*;
+import me.desht.sensibletoolbox.api.AccessControl;
+import me.desht.sensibletoolbox.api.ChargeableBlock;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.STBGUIHolder;
@@ -52,6 +54,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 	private UUID owner;
 
 	protected BaseSTBBlock() {
+		super();
 		setFacing(BlockFace.SELF);
 		redstoneBehaviour = RedstoneBehaviour.IGNORE;
 		accessControl = AccessControl.PUBLIC;
@@ -59,6 +62,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 	}
 
 	public BaseSTBBlock(ConfigurationSection conf) {
+		super(conf);
 		setFacing(BlockFace.valueOf(conf.getString("facing", "SELF")));
 		if (conf.contains("owner")) {
 			setOwner(UUID.fromString(conf.getString("owner")));

@@ -21,11 +21,13 @@ public class TapeMeasure extends BaseSTBItem {
 	private int x, y, z;
 
 	public TapeMeasure() {
+		super();
 		world = null;
 		x = y = z = 0;
 	}
 
 	public TapeMeasure(ConfigurationSection conf) {
+		super(conf);
 		world = conf.getString("world");
 		x = conf.getInt("x");
 		y = conf.getInt("y");

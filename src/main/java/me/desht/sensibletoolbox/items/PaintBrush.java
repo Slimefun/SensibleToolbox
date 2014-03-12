@@ -34,11 +34,13 @@ public class PaintBrush extends BaseSTBItem {
 	private DyeColor colour;
 
 	public PaintBrush() {
+		super();
 		colour = DyeColor.WHITE;
 		paintLevel = 0;
 	}
 
 	public PaintBrush(ConfigurationSection conf) {
+		super(conf);
 		setPaintLevel(conf.getInt("paintLevel"));
 		setColour(DyeColor.valueOf(conf.getString("colour")));
 	}

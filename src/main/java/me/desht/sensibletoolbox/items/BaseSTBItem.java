@@ -60,6 +60,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 	private static final Map<String, Class<? extends STBItem>> customIngredients = new HashMap<String, Class<? extends STBItem>>();
 	public static final int MAX_ITEM_ID_LENGTH = 32;
 
+	private final String typeID;
 	private Map<Enchantment,Integer> enchants;
 
 	public static void registerItems(SensibleToolboxPlugin plugin) {
@@ -310,6 +311,14 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		}
 	}
 
+	protected BaseSTBItem() {
+		typeID = getClass().getSimpleName().toLowerCase();
+	}
+
+	protected BaseSTBItem(ConfigurationSection conf) {
+		typeID = getClass().getSimpleName().toLowerCase();
+	}
+
 	private void storeEnchants(ItemStack stack) {
 		enchants = stack.getEnchantments();
 	}
@@ -473,7 +482,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 
 	@Override
 	public String getItemTypeID() {
-		return getClass().getSimpleName().toLowerCase();
+		return typeID; // getClass().getSimpleName().toLowerCase();
 	}
 
 	@Override

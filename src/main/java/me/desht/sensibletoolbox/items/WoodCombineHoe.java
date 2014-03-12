@@ -12,11 +12,12 @@ import java.util.Map;
 public class WoodCombineHoe extends CombineHoe {
 	private static final MaterialData md = new MaterialData(Material.WOOD_HOE);
 
-	public WoodCombineHoe(ConfigurationSection conf) {
-		super(conf);
+	public WoodCombineHoe() {
+		super();
 	}
 
-	public WoodCombineHoe() {
+	public WoodCombineHoe(ConfigurationSection conf) {
+		super(conf);
 	}
 
 	@Override

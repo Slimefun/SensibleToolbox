@@ -188,7 +188,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
 	@Override
 	public String[] getExtraLore() {
-		return new String[] { STBUtil.getChargeString(this) };
+		return getMaxCharge() > 0 ? new String[] { STBUtil.getChargeString(this) } : new String[0];
 	}
 
 	protected void playStartupSound() {

@@ -33,10 +33,12 @@ public class WateringCan extends BaseSTBItem {
 	private boolean floodWarning;
 
 	public WateringCan() {
+		super();
 		waterLevel = 0;
 	}
 
 	public WateringCan(ConfigurationSection conf) {
+		super(conf);
 		setWaterLevel(conf.getInt("level"));
 	}
 

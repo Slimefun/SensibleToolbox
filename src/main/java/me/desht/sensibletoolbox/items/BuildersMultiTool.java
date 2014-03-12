@@ -41,11 +41,13 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 	private MaterialWithData mat;
 
 	public BuildersMultiTool() {
+		super();
 		mode = Mode.BUILD;
 		charge = 0;
 	}
 
 	public BuildersMultiTool(ConfigurationSection conf) {
+		super(conf);
 		mode = Mode.valueOf(conf.getString("mode"));
 		charge = conf.getDouble("charge");
 		String s = conf.getString("material");
