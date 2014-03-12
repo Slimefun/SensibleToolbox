@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.energynet;
 
 import com.google.common.base.Joiner;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
@@ -38,7 +38,7 @@ public class EnergyNetManager {
 	 */
 	public static void onCablePlaced(Block cable) {
 		Set<Integer> netIds = getAdjacentNets(cable);
-		System.out.println("new cable " + cable + " has " + netIds.size() + " adjacent nets [" + Joiner.on(",").join(netIds) + "]");
+//		Debugger.getInstance().debug("new cable " + cable + " has " + netIds.size() + " adjacent nets [" + Joiner.on(",").join(netIds) + "]");
 		List<AdjacentMachine> adjacentMachines;
 		switch (netIds.size()) {
 			case 0:
@@ -132,14 +132,14 @@ public class EnergyNetManager {
 			if (isCable(cable)) {
 				EnergyNet net = EnergyNetManager.getEnergyNet(cable);
 				if (net == null) {
-					System.out.println("found cable with no enet " + face + " from " + machine);
+//					System.out.println("found cable with no enet " + face + " from " + machine);
 					// cable with no net - create one!
 					EnergyNet newNet = EnergyNet.buildNet(cable);
 					newNet.addMachine(machine, face);
 					allNets.put(newNet.getNetID(), newNet);
 				} else {
 					// cable on a net - add machine to it
-					System.out.println("found cable on enet #" + net.getNetID() + ", " + face + " from " + machine);
+//					System.out.println("found cable on enet #" + net.getNetID() + ", " + face + " from " + machine);
 					net.addMachine(machine, face);
 				}
 			}
@@ -202,7 +202,7 @@ public class EnergyNetManager {
 	}
 
 	public static void deleteEnergyNet(int netID) {
-		System.out.println("deleting energy net #" + netID);
+//		System.out.println("deleting energy net #" + netID);
 		EnergyNet enet = allNets.get(netID);
 		if (enet != null) {
 			enet.shutdown();

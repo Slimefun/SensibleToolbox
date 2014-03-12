@@ -55,7 +55,7 @@ public class EnergyNet {
 			}
 		}
 		enet.findSourcesAndSinks();
-		System.out.println("built new net #" + enet.getNetID() + " with " + enet.cables.size() + " cables & " + enet.machines.size() + " machines");
+		Debugger.getInstance().debug("built new net #" + enet.getNetID() + " with " + enet.cables.size() + " cables & " + enet.machines.size() + " machines");
 		return enet;
 	}
 
@@ -74,11 +74,9 @@ public class EnergyNet {
 		if (!EnergyNetManager.isCable(b)) {
 			BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
 			if (machine != null) {
-				System.out.println("*** found machine " + b);
 				discovered.add(new AdjacentMachine(machine, fromDir));
 			}
 		} else {
-			System.out.println("*** found cable " + b);
 			discovered.add(b);
 			for (BlockFace face : STBUtil.directFaces) {
 				recursiveScan(b.getRelative(face), discovered, face.getOppositeFace());
@@ -114,26 +112,26 @@ public class EnergyNet {
 		machine.attachToEnergyNet(this, face);
 		machines.add(machine);
 		findSourcesAndSinks();
-		System.out.println("added machine " + machine + " to enet #" + getNetID() + " on face " + face);
+		Debugger.getInstance().debug("Enet #" + getNetID() + ": added machine " + machine + " on face " + face);
 	}
 
-	public void removeMachine(ChargeableBlock machine) {
+	void removeMachine(ChargeableBlock machine) {
 		machine.detachFromEnergyNet(this);
 		machines.remove(machine);
 		findSourcesAndSinks();
-		System.out.println("removed machine " + machine + " from enet #" + getNetID());
+		Debugger.getInstance().debug("Enet #" + getNetID() + ": removed machine " + machine);
 	}
 
 	void addCable(Block cable) {
 		cable.setMetadata(STB_ENET_ID, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), getNetID()));
 		cables.add(new BlockPosition(cable.getLocation()));
-		System.out.println("added cable @ " + cable + " to enet #" + getNetID());
+		Debugger.getInstance().debug("Enet #" + getNetID() + ": added cable @ " + cable);
 	}
 
-	public void removeCable(Block cable) {
+	void removeCable(Block cable) {
 		cable.removeMetadata(STB_ENET_ID, SensibleToolboxPlugin.getInstance());
 		cables.remove(new BlockPosition(cable.getLocation()));
-		System.out.println("removed cable @ " + cable + " from enet #" + getNetID());
+		Debugger.getInstance().debug("Enet #" + getNetID() + ": removed cable @ " + cable);
 	}
 
 	public void shutdown() {
@@ -149,7 +147,7 @@ public class EnergyNet {
 			machine.detachFromEnergyNet(this);
 		}
 		machines.clear();
-		System.out.println("enet #" + getNetID() + " shutdown complete");
+		Debugger.getInstance().debug("Enet #" + getNetID() + " shutdown complete");
 	}
 
 	public int getCableCount() {
@@ -171,9 +169,7 @@ public class EnergyNet {
 
 		EnergyNet energyNet = (EnergyNet) o;
 
-		if (netID != energyNet.netID) return false;
-
-		return true;
+		return netID == energyNet.netID;
 	}
 
 	@Override

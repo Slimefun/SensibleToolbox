@@ -5,7 +5,6 @@ import org.bukkit.block.BlockFace;
 
 public class AdjacentMachine {
 	private final BaseSTBMachine machine;
-
 	private final BlockFace direction;
 
 	AdjacentMachine(BaseSTBMachine machine, BlockFace direction) {
