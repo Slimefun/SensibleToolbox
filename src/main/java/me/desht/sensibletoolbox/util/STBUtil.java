@@ -410,6 +410,16 @@ public class STBUtil {
 	}
 
 	/**
+	 * Convenience method to get a plank of the right species
+	 *
+	 * @param species the tree species
+	 * @return a MaterialData object representing the right plank type
+	 */
+	public static MaterialData makePlank(TreeSpecies species) {
+		return 	new MaterialData(Material.WOOD, species.getData());
+	}
+
+	/**
 	 * Convenience method to get leaves of the right species
 	 *
 	 * @param species the tree species
