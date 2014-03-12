@@ -10,6 +10,7 @@ import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.TreeSpecies;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -28,9 +29,8 @@ public class Sawmill extends AbstractIOMachine {
 
 	@Override
 	public void addCustomRecipes(CustomRecipeManager crm) {
-		for (short i = 0; i < 6; i++) {
-			ItemStack in = i < 4 ? new ItemStack(Material.LOG, 1, i) : new ItemStack(Material.LOG_2, 1, (short) (i - 4));
-			crm.addCustomRecipe(new CustomRecipe(this, in, new ItemStack(Material.WOOD, 6, i), 60));
+		for (TreeSpecies species : TreeSpecies.values()) {
+			crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeLog(species).toItemStack(), STBUtil.makePlank(species).toItemStack(6), 60));
 		}
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
 		crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));
