@@ -21,7 +21,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
 
 	private static final int ENERGY_INTERVAL = 20;  // how often to recalculate light & energy levels
-	private static final double SCU_PER_TICK = 1.0;
+	private static final double SCU_PER_TICK = 0.5;
 	private static final int LIGHT_SLOT = 13;
 
 	private byte effectiveLightLevel;
@@ -106,12 +106,12 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
 	@Override
 	public int getMaxCharge() {
-		return 500;
+		return 100;
 	}
 
 	@Override
 	public int getChargeRate() {
-		return 10;
+		return 5;
 	}
 
 	@Override
