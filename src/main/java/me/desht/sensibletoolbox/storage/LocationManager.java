@@ -316,7 +316,6 @@ public class LocationManager {
 			int z = rs.getInt(4);
 			String data = rs.getString(6);
 			try {
-				System.out.println(String.format("loading STB block %s at %s,%d,%d,%d", type, world.getName(), x, y, z));
 				YamlConfiguration conf = new YamlConfiguration();
 				conf.loadFromString(data);
 				STBItem stbItem = BaseSTBItem.getItemById(type, conf);

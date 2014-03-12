@@ -3,7 +3,10 @@ package me.desht.sensibletoolbox.util;
 import me.desht.dhutils.Debugger;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Material;
-import org.bukkit.block.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.*;
 
 import java.util.HashMap;
@@ -32,7 +35,7 @@ public class VanillaInventoryUtils {
 			case DISPENSER: case HOPPER: case DROPPER: case FURNACE: case BREWING_STAND:
 			case BURNING_FURNACE:
 				return ((InventoryHolder) target.getState()).getInventory();
-			// TODO other vanilla inventory types
+			// any other vanilla inventory types ?
 			default:
 				return null;
 		}

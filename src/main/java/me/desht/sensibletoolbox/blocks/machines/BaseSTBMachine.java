@@ -237,7 +237,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 			gui.addLabel("Upgrades", getUpgradeLabelSlot(), null);
 		}
 		for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
-			System.out.println(this + " add upgrade " + upgrades.get(i) + " amount = " + upgrades.get(i).getAmount());
 			gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
 		}
 
@@ -313,7 +312,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 	 * same kind of item as the candidate item.  It will NOT check item amounts (see #insertItem() for that)
 	 *
 	 * @param item the candidate item to insert
-	 * @param side the side being inserted from (SELF is valid option here too)
+	 * @param side the side being inserted from (SELF is a valid option here too)
 	 * @return the slot number if a slot is available, or -1 otherwise
 	 */
 	protected int findAvailableInputSlot(ItemStack item, BlockFace side) {

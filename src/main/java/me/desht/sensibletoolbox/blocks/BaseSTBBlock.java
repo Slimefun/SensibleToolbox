@@ -139,13 +139,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 		return ticksLived;
 	}
 
-	/**
-	 * Check if this block may be interacted with by the given player, based on its
-	 * security settings.
-	 *
-	 * @param player the player to check
-	 * @return true if the block may be accessed
-	 */
+	@Override
 	public boolean hasAccessRights(Player player) {
 		switch (getAccessControl()) {
 			case PUBLIC: return true;
@@ -154,6 +148,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 		}
 	}
 
+	@Override
 	public boolean hasAccessRights(UUID uuid) {
 		switch (getAccessControl()) {
 			case PUBLIC: return true;
@@ -270,12 +265,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 		return false;
 	}
 
-	/**
-	 * Get the location of the base block of this STB block.  This could be null if called
-	 * on an STB Block object which has not yet been placed in the world (i.e. in item form).
-	 *
-	 * @return the base block location
-	 */
 	@Override
 	public Location getLocation() {
 		return persistableLocation == null ? null : persistableLocation.getLocation();
@@ -570,12 +559,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 		return null;
 	}
 
-	/**
-	 * Check if this STB block can be pushed or pulled by a piston, and if doing so would break it.
-	 * Default is to allow movement; override this in subclasses to modify the behaviour.
-	 *
-	 * @return the move reaction: MOVE, BLOCK, or BREAK
-	 */
 	@Override
 	public PistonMoveReaction getPistonMoveReaction() {
 		return PistonMoveReaction.MOVE;

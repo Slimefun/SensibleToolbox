@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.api;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.MaterialData;
@@ -126,4 +125,12 @@ public interface STBItem {
 	 * @return the item's type ID
 	 */
 	String getItemTypeID();
+
+	/**
+	 * Check if this item is wearable.  By default, any armour item will be wearable, but if you wish to use
+	 * an armour material for a non-wearable item, then override this method.
+	 *
+	 * @return true if the item is wearable
+	 */
+	boolean isWearable();
 }

@@ -481,9 +481,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			}
 		}
 
-		setCharge(getCharge() - chargeNeeded);
+		if (getTotalAmount() == 0) {
+			setStored(null);
+		}
 
-		System.out.println(this + "pulling " + fromStorage + " from storage & " + fromOutput + " from output stack");
+		setCharge(getCharge() - chargeNeeded);
 
 		if (receiver == null) {
 			ItemStack returned = stored.clone();

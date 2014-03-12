@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.LightMeter;
@@ -139,7 +138,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		super.onBlockPlace(event);
 		if (!event.isCancelled()) {
-		// put a carpet on top of the main block to represent the PV cell
+			// put a carpet on top of the main block to represent the PV cell
 			Block above = event.getBlock().getRelative(BlockFace.UP);
 			MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, getCapColour());
 			above.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
@@ -160,7 +159,6 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 		// ensure carpet layer doesn't get popped off (and thus not cleared) when block is broken
 		if (event.getBlock().getType() == Material.CARPET) {
 			event.setCancelled(true);
-			System.out.println(this + " cancel physics for solar cell carpet");
 		}
 	}
 
