@@ -24,6 +24,7 @@ public class HeatEngine extends Generator {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
 	private static final FuelItems fuelItems = new FuelItems();
 	private static final int TICK_FREQUENCY = 10;
+	private final double slowBurnThreshold;
 
 	static {
 		fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
@@ -42,6 +43,7 @@ public class HeatEngine extends Generator {
 	public HeatEngine() {
 		super();
 		currentFuel = null;
+		slowBurnThreshold = getMaxCharge() * 0.75;
 	}
 
 	public HeatEngine(ConfigurationSection conf) {
@@ -49,6 +51,7 @@ public class HeatEngine extends Generator {
 		if (getProgress() > 0) {
 			currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
 		}
+		slowBurnThreshold = getMaxCharge() * 0.75;
 	}
 
 	@Override
@@ -168,9 +171,10 @@ public class HeatEngine extends Generator {
 				}
 			} else if (getProgress() > 0) {
 				// currently processing....
-				double ticksToGo = Math.min(getProgress(), TICK_FREQUENCY);
-				setProgress(getProgress() - ticksToGo);
-				setCharge(getCharge() + currentFuel.getCharge() * ticksToGo);
+				// if charge is > 75%, burn rate reduces to conserve fuel
+				double burnRate = Math.max(getBurnRate() * Math.min(getProgress(), TICK_FREQUENCY), 1.0);
+				setProgress(getProgress() - burnRate);
+				setCharge(getCharge() + currentFuel.getCharge() * burnRate);
 				playActiveParticleEffect();
 				if (getProgress() <= 0) {
 					// fuel burnt
@@ -182,21 +186,23 @@ public class HeatEngine extends Generator {
 		super.onServerTick();
 	}
 
+	private double getBurnRate() {
+		if (getCharge() < slowBurnThreshold) {
+			return 1.0;
+		} else {
+			return 1.15 - (getCharge() / getMaxCharge());
+		}
+	}
+
 	private void pullItemIntoProcessing(int inputSlot) {
 		ItemStack stack = getInventoryItem(inputSlot);
-		FuelItems.FuelValues fv = fuelItems.get(stack);
-		// generator is smart and will attempt to avoid wasting fuel
-		// only burn fuel if the total value won't take us over the max charge limit
-		if (getCharge() + fv.getTotalFuelValue() <= getMaxCharge()) {
-			currentFuel = fv;
-			ItemStack toProcess = makeProcessingItem(currentFuel, stack);
-			setProcessing(toProcess);
-			getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
-			setProgress(currentFuel.getBurnTime());
-			stack.setAmount(stack.getAmount() - 1);
-			setInventoryItem(inputSlot, stack.getAmount() > 0 ? stack : null);
-			updateBlock(false);
-		}
+		currentFuel = fuelItems.get(stack);
+		setProcessing(makeProcessingItem(currentFuel, stack));
+		getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
+		setProgress(currentFuel.getBurnTime());
+		stack.setAmount(stack.getAmount() - 1);
+		setInventoryItem(inputSlot, stack);
+		updateBlock(false);
 	}
 
 	private ItemStack makeProcessingItem(FuelItems.FuelValues fuel, ItemStack input) {
@@ -207,4 +213,6 @@ public class HeatEngine extends Generator {
 		toProcess.setItemMeta(meta);
 		return toProcess;
 	}
+
+
 }
