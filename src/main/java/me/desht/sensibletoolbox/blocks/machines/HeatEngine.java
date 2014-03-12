@@ -23,6 +23,7 @@ import java.util.Arrays;
 public class HeatEngine extends Generator {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
 	private static final FuelItems fuelItems = new FuelItems();
+	private static final int TICK_FREQUENCY = 10;
 
 	static {
 		fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
@@ -157,7 +158,7 @@ public class HeatEngine extends Generator {
 
 	@Override
 	public void onServerTick() {
-		if (isRedstoneActive()) {
+		if (getTicksLived() % TICK_FREQUENCY == 0 && isRedstoneActive()) {
 			if (getProcessing() == null && getCharge() < getMaxCharge()) {
 				for (int slot : getInputSlots()) {
 					if (getInventoryItem(slot) != null) {
@@ -167,8 +168,9 @@ public class HeatEngine extends Generator {
 				}
 			} else if (getProgress() > 0) {
 				// currently processing....
-				setProgress(getProgress() - 1);
-				setCharge(getCharge() + currentFuel.getCharge());
+				double ticksToGo = Math.min(getProgress(), TICK_FREQUENCY);
+				setProgress(getProgress() - ticksToGo);
+				setCharge(getCharge() + currentFuel.getCharge() * ticksToGo);
 				playActiveParticleEffect();
 				if (getProgress() <= 0) {
 					// fuel burnt
