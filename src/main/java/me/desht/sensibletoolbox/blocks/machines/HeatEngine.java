@@ -20,7 +20,7 @@ import org.bukkit.material.MaterialData;
 
 import java.util.Arrays;
 
-public class StirlingGenerator extends Generator {
+public class HeatEngine extends Generator {
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
 	private static final FuelItems fuelItems = new FuelItems();
 
@@ -38,12 +38,12 @@ public class StirlingGenerator extends Generator {
 	}
 	private FuelItems.FuelValues currentFuel;
 
-	public StirlingGenerator() {
+	public HeatEngine() {
 		super();
 		currentFuel = null;
 	}
 
-	public StirlingGenerator(ConfigurationSection conf) {
+	public HeatEngine(ConfigurationSection conf) {
 		super(conf);
 		if (getProgress() > 0) {
 			currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
@@ -73,7 +73,7 @@ public class StirlingGenerator extends Generator {
 	@Override
 	protected void playActiveParticleEffect() {
 		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-			ParticleEffect.FLAME.play(getLocation().add(0.5, 1.0, 0.5), 0.3f, 0.6f, 0.3f, 0.001f, 15);
+			ParticleEffect.FLAME.play(getLocation().add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 0.001f, 15);
 		}
 	}
 
@@ -99,14 +99,13 @@ public class StirlingGenerator extends Generator {
 
 	@Override
 	public String getItemName() {
-		return "Stirling Generator";
+		return "Heat Engine";
 	}
 
 	@Override
 	public String[] getLore() {
 		return new String[] {
 				"Converts burnable items to power",
-				"Generates ⌁ 15 SCU / tick"
 		};
 	}
 
