@@ -137,4 +137,12 @@ public interface STBBlock {
 	 * @return true if the block may be accessed
 	 */
 	public boolean hasAccessRights(UUID uuid);
+
+	/**
+	 * Get the location relative to this block in the given direction.
+	 *
+	 * @param face the direction
+	 * @return the relative location
+	 */
+	public Location getRelativeLocation(BlockFace face);
 }
