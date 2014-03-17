@@ -15,6 +15,7 @@ permissions:
     description: Grants all permissions for Sensible Toolbox
     default: op
     children:
+      stb.recipebook.freefab: true
       stb.commands.save: true
       stb.angelic_block.place: true
       stb.angelic_block.break: true
@@ -24,6 +25,9 @@ permissions:
   stb.commands.rename:
     description: Allow animal captured in the Ender Leash to be renamed
     default: op
+  stb.commands.recipe:
+    description: Allows recipes to be searched for by name
+    default: true
   stb.commands.rename.free:
     description: Allow animal renaming for no experience cost
     default: op
@@ -32,4 +36,7 @@ permissions:
     default: op
   stb.angelic_block.break:
     description: Allow the Angelic Block to be broken
+    default: op
+  stb.recipebook.freefab:
+    description: Allow any item in the Recipe Book to be fabricated freely
     default: op

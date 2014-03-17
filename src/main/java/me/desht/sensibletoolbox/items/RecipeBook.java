@@ -47,6 +47,7 @@ public class RecipeBook extends BaseSTBItem {
 	public static final int PREV_RECIPE_SLOT = 26;
 	public static final int TRAIL_BACK_SLOT = 52;
 	public static final int ITEM_LIST_SLOT = 53;
+	public static final String FREEFAB_PERMISSION = "stb.recipebook.freefab";
 	private int page;
 	private int viewingItem;
 	private int recipeNumber;
@@ -54,6 +55,7 @@ public class RecipeBook extends BaseSTBItem {
 	private List<ItemStack> filteredItems;
 	private InventoryGUI gui;
 	private boolean fabricationAvailable;
+	private boolean fabricationFree;
 	private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
 	private Player player;
 
@@ -71,7 +73,7 @@ public class RecipeBook extends BaseSTBItem {
 
 	public RecipeBook() {
 		super();
-		fabricationAvailable = false;
+		fabricationAvailable = fabricationFree = false;
 		page = 0;
 		viewingItem = -1;
 		recipeNumber = 0;
@@ -81,7 +83,7 @@ public class RecipeBook extends BaseSTBItem {
 
 	public RecipeBook(ConfigurationSection conf) {
 		super(conf);
-		fabricationAvailable = false;
+		fabricationAvailable = fabricationFree = false;
 		page = conf.getInt("page");
 		viewingItem = conf.getInt("viewingItem");
 		recipeNumber = conf.getInt("recipeNumber");
@@ -175,7 +177,9 @@ public class RecipeBook extends BaseSTBItem {
 	@Override
 	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			setFabricationAvailable(event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.WORKBENCH);
+			fabricationFree = event.getPlayer().hasPermission(FREEFAB_PERMISSION);
+			setFabricationAvailable(fabricationFree ||
+					(event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.WORKBENCH));
 			openBook(event.getPlayer());
 			event.setCancelled(true);
 		}
@@ -186,6 +190,7 @@ public class RecipeBook extends BaseSTBItem {
 	}
 
 	public void openBook(Player player) {
+		this.player = player;
 		gui = new InventoryGUI(player, this, 54, "Recipe Book");
 		buildFilteredList();
 		if (viewingItem < 0) {
@@ -193,7 +198,6 @@ public class RecipeBook extends BaseSTBItem {
 		} else {
 			drawRecipePage();
 		}
-		this.player = player;
 		gui.show(player);
 	}
 
@@ -311,6 +315,11 @@ public class RecipeBook extends BaseSTBItem {
 	private void tryFabrication(Recipe recipe) {
 		Debugger.getInstance().debug("STUB: attempt to fabricate " + recipe.getResult() + " for " + player.getName());
 
+		if (fabricationFree) {
+			fabricate(recipe.getResult(), true);
+			return;
+		}
+
 		if (!(recipe instanceof ShapedRecipe) && !(recipe instanceof ShapelessRecipe)) {
 			return;
 		}
@@ -331,15 +340,19 @@ public class RecipeBook extends BaseSTBItem {
 				Debugger.getInstance().debug(2, this + ": apply cost " + cost.getDescription() + " to player");
 				cost.apply(player);
 			}
-			player.getInventory().addItem(recipe.getResult());
-			player.updateInventory();
-			player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
-			MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(recipe.getResult()));
+			fabricate(recipe.getResult(), false);
 		} else {
 			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
 		}
 	}
 
+	private void fabricate(ItemStack stack, boolean free) {
+		player.getInventory().addItem(stack);
+		player.updateInventory();
+		player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
+		String s = free ? " (free)" : "";
+		MiscUtil.statusMessage(player, "Fabricated" + s + ": &f" + ItemNames.lookup(stack));
+	}
 
 	private List<ItemStack> mergeIngredients() {
 		Map<ItemStack,Integer> amounts = new HashMap<ItemStack, Integer>();
@@ -447,8 +460,9 @@ public class RecipeBook extends BaseSTBItem {
 				}
 			}), TRAIL_BACK_SLOT);
 		}
-		if (fabricationAvailable && (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe)) {
-			gui.addGadget(new ButtonGadget(gui, "Fabricate", new String[0], SHAPED_ICON, new Runnable() {
+		if (fabricationFree || (fabricationAvailable && (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe))) {
+			String fabLabel = fabricationFree ? "Fabricate (free)" : "Fabricate";
+			gui.addGadget(new ButtonGadget(gui, fabLabel, new String[0], SHAPED_ICON, new Runnable() {
 				@Override
 				public void run() {
 					tryFabrication(recipe);
