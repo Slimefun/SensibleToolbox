@@ -44,6 +44,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
@@ -51,79 +52,82 @@ import java.util.*;
 
 public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, InventoryGUI.InventoryGUIListener, STBItem {
 	public static final ChatColor LORE_COLOR = ChatColor.GRAY;
-	private static final String STB_LORE_LINE = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Sensible Toolbox item";
 	protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
+	private static final String STB_LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
 	public static final String SUFFIX_SEPARATOR = " \uff1a ";
 
 	private static final Map<String, Class<? extends BaseSTBItem>> id2class = new HashMap<String, Class<? extends BaseSTBItem>>();
 	private static final Map<Material,Class<? extends STBItem>> customSmelts = new HashMap<Material, Class<? extends STBItem>>();
 	private static final Map<String, Class<? extends STBItem>> customIngredients = new HashMap<String, Class<? extends STBItem>>();
+	private static final Map<String,String> id2plugin = new HashMap<String, String>();
 	public static final int MAX_ITEM_ID_LENGTH = 32;
 
 	private final String typeID;
+	private final String providerName;
 	private Map<Enchantment,Integer> enchants;
 
 	public static void registerItems(SensibleToolboxPlugin plugin) {
-		registerItem(new AngelicBlock());
-		registerItem(new EnderLeash());
-		registerItem(new RedstoneClock());
-		registerItem(new BlockUpdateDetector());
-		registerItem(new BagOfHolding());
-		registerItem(new WateringCan());
-		registerItem(new MoistureChecker());
-		registerItem(new AdvancedMoistureChecker());
-		registerItem(new WoodCombineHoe());
-		registerItem(new IronCombineHoe());
-		registerItem(new GoldCombineHoe());
-		registerItem(new DiamondCombineHoe());
-		registerItem(new TrashCan());
-		registerItem(new PaintBrush());
-		registerItem(new PaintRoller());
-		registerItem(new PaintCan());
-		registerItem(new Elevator());
-		registerItem(new TapeMeasure());
-		registerItem(new CircuitBoard());
-		registerItem(new SimpleCircuit());
-		registerItem(new BuildersMultiTool());
-		registerItem(new Floodlight());
-		registerItem(new MachineFrame());
-		registerItem(new Smelter());
-		registerItem(new Masher());
-		registerItem(new Sawmill());
-		registerItem(new IronDust());
-		registerItem(new GoldDust());
-		registerItem(new ItemRouter());
-		registerItem(new BlankModule());
-		registerItem(new PullerModule());
-		registerItem(new DropperModule());
-		registerItem(new SenderModule());
-		registerItem(new DistributorModule());
-		registerItem(new AdvancedSenderModule());
-		registerItem(new ReceiverModule());
-		registerItem(new SorterModule());
-		registerItem(new VacuumModule());
-		registerItem(new StackModule());
-		registerItem(new SpeedModule());
-		registerItem(new TenKEnergyCell());
-		registerItem(new FiftyKEnergyCell());
-		registerItem(new FiftyKBatteryBox());
-		registerItem(new SpeedUpgrade());
-		registerItem(new EjectorUpgrade());
-		registerItem(new HeatEngine());
-		registerItem(new BasicSolarCell());
-		registerItem(new RecipeBook());
-		registerItem(new Multimeter());
-		registerItem(new BigStorageUnit());
-		registerItem(new HyperStorageUnit());
+		registerItem(new AngelicBlock(), plugin);
+		registerItem(new EnderLeash(), plugin);
+		registerItem(new RedstoneClock(), plugin);
+		registerItem(new BlockUpdateDetector(), plugin);
+		registerItem(new BagOfHolding(), plugin);
+		registerItem(new WateringCan(), plugin);
+		registerItem(new MoistureChecker(), plugin);
+		registerItem(new AdvancedMoistureChecker(), plugin);
+		registerItem(new WoodCombineHoe(), plugin);
+		registerItem(new IronCombineHoe(), plugin);
+		registerItem(new GoldCombineHoe(), plugin);
+		registerItem(new DiamondCombineHoe(), plugin);
+		registerItem(new TrashCan(), plugin);
+		registerItem(new PaintBrush(), plugin);
+		registerItem(new PaintRoller(), plugin);
+		registerItem(new PaintCan(), plugin);
+		registerItem(new Elevator(), plugin);
+		registerItem(new TapeMeasure(), plugin);
+		registerItem(new CircuitBoard(), plugin);
+		registerItem(new SimpleCircuit(), plugin);
+		registerItem(new BuildersMultiTool(), plugin);
+		registerItem(new Floodlight(), plugin);
+		registerItem(new MachineFrame(), plugin);
+		registerItem(new Smelter(), plugin);
+		registerItem(new Masher(), plugin);
+		registerItem(new Sawmill(), plugin);
+		registerItem(new IronDust(), plugin);
+		registerItem(new GoldDust(), plugin);
+		registerItem(new ItemRouter(), plugin);
+		registerItem(new BlankModule(), plugin);
+		registerItem(new PullerModule(), plugin);
+		registerItem(new DropperModule(), plugin);
+		registerItem(new SenderModule(), plugin);
+		registerItem(new DistributorModule(), plugin);
+		registerItem(new AdvancedSenderModule(), plugin);
+		registerItem(new ReceiverModule(), plugin);
+		registerItem(new SorterModule(), plugin);
+		registerItem(new VacuumModule(), plugin);
+		registerItem(new StackModule(), plugin);
+		registerItem(new SpeedModule(), plugin);
+		registerItem(new TenKEnergyCell(), plugin);
+		registerItem(new FiftyKEnergyCell(), plugin);
+		registerItem(new FiftyKBatteryBox(), plugin);
+		registerItem(new SpeedUpgrade(), plugin);
+		registerItem(new EjectorUpgrade(), plugin);
+		registerItem(new HeatEngine(), plugin);
+		registerItem(new BasicSolarCell(), plugin);
+		registerItem(new RecipeBook(), plugin);
+		registerItem(new Multimeter(), plugin);
+		registerItem(new BigStorageUnit(), plugin);
+		registerItem(new HyperStorageUnit(), plugin);
 		if (plugin.isProtocolLibEnabled()) {
-			registerItem(new SoundMuffler());
+			registerItem(new SoundMuffler(), plugin);
 		}
 	}
 
-	public static void registerItem(BaseSTBItem item) {
+	public static void registerItem(BaseSTBItem item, Plugin plugin) {
 		String id = item.getItemTypeID();
 		Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 		id2class.put(id, item.getClass());
+		id2plugin.put(id, plugin.getDescription().getName());
 		if (item instanceof STBBlock) {
 			try {
 				LocationManager.getManager().loadDeferredBlocks(id);
@@ -277,7 +281,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		ItemMeta im = stack.getItemMeta();
 		if (im.hasLore()) {
 			List<String> lore = im.getLore();
-			if (!lore.isEmpty() && lore.get(0).equals(STB_LORE_LINE)) {
+			if (!lore.isEmpty() && lore.get(0).startsWith(STB_LORE_PREFIX)) {
 				if (c != null) {
 					Configuration conf = BaseSTBItem.getItemAttributes(stack);
 					Class<? extends STBItem> c2 = id2class.get(conf.getString("*TYPE"));
@@ -313,10 +317,12 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 
 	protected BaseSTBItem() {
 		typeID = getClass().getSimpleName().toLowerCase();
+		providerName = id2plugin.get(typeID);
 	}
 
 	protected BaseSTBItem(ConfigurationSection conf) {
 		typeID = getClass().getSimpleName().toLowerCase();
+		providerName = id2plugin.get(typeID);
 	}
 
 	private void storeEnchants(ItemStack stack) {
@@ -457,7 +463,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 		String[] lore = getLore();
 		String[] lore2 = getExtraLore();
 		List<String> res = new ArrayList<String>(lore.length + lore2.length + 1);
-		res.add(STB_LORE_LINE);
+		res.add(STB_LORE_PREFIX + getProviderName() + " (STB) item");
 		for (String l : lore) {
 			res.add(LORE_COLOR + l);
 		}
@@ -517,5 +523,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 
 	@Override
 	public void onGUIClosed(HumanEntity player) {
+	}
+
+	public String getProviderName() {
+		return providerName;
 	}
 }

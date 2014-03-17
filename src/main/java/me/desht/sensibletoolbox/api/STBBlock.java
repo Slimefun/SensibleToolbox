@@ -1,10 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
 import me.desht.dhutils.PersistableLocation;
-import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.STBGUIHolder;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;

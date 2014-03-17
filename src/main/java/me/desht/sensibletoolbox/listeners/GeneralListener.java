@@ -109,6 +109,7 @@ public class GeneralListener extends STBBaseListener {
 		} else if (item != null) {
 			// prevent placing of non-block STB items, even if they use a block material (e.g. bag of holding)
 			event.setCancelled(true);
+			event.getPlayer().updateInventory();
 		}
 	}
 

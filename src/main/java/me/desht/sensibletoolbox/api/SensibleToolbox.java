@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.api;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 
@@ -26,8 +27,8 @@ public class SensibleToolbox {
 	 *
 	 * @param item the new item to register
 	 */
-	public static void registerItem(BaseSTBItem item) {
-		BaseSTBItem.registerItem(item);
+	public static void registerItem(BaseSTBItem item, Plugin plugin) {
+		BaseSTBItem.registerItem(item, plugin);
 	}
 
 	/**

@@ -449,7 +449,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 		}
 
 		// ok, player is allowed to put a sign here
-		signBlock.setType(event.getBlockFace() == BlockFace.UP ? Material.SIGN_POST : Material.WALL_SIGN);
+		// using setTypeIdAndData() here because we don't want to cause a physics update
+		signBlock.setTypeIdAndData(event.getBlockFace() == BlockFace.UP ? Material.SIGN_POST.getId() : Material.WALL_SIGN.getId(), (byte)0, false);
 		Sign sign = (Sign) signBlock.getState();
 		org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
 		if (event.getBlockFace() == BlockFace.UP) {

@@ -97,7 +97,7 @@ public class LocationManager {
 		tickers.get(w.getName()).add(stb);
 	}
 
-	private void removeTicker(STBBlock stb) {
+	private void removeTicker(BaseSTBBlock stb) {
 		Location l = stb.getLocation();
 		World w = l.getWorld();
 		if (!tickers.containsKey(w.getName())) {
