@@ -260,9 +260,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 
 	public void harvestLayer(Player player, Block b) {
 		for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-			System.out.println("harvest layer: check " + b1);
 			if (STBUtil.isPlant(b1.getType()) || b1.getType() == Material.LEAVES || b1.getType() == Material.LEAVES_2) {
-				System.out.println("break the block!");
 				b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
 				b1.breakNaturally();
 			}
@@ -290,6 +288,9 @@ public abstract class CombineHoe extends BaseSTBItem {
 			if (player.isSneaking()) {
 				break;
 			}
+		}
+		if (count > 0) {
+			player.playSound(b.getLocation(), Sound.DIG_GRASS, 1.0f, 1.0f);
 		}
 		damageHeldItem(player, count);
 	}
