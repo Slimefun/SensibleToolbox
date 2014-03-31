@@ -200,7 +200,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 				// set the target material
 				mat = MaterialWithData.get(event.getClickedBlock());
 				done = true;
-			} else if (getCharge() > 0) {
+			} else if (getCharge() > 0 && mat != null) {
 				// replace multiple blocks
 				int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
 				int max = (int) (MAX_REPLACED * Math.pow(1.2, sharpness));
@@ -209,7 +209,7 @@ public class BuildersMultiTool extends BaseSTBItem implements Chargeable {
 				done = doExchange(player, blocks) > 0;
 			}
 			event.setCancelled(true);
-		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && getCharge() > 0) {
+		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && getCharge() > 0 && mat != null) {
 			// replace one block
 			Block[] blocks = getReplacementCandidates(player, event.getClickedBlock(), 1);
 			done = doExchange(player, blocks) > 0;
