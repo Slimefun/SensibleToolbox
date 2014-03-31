@@ -177,10 +177,7 @@ public class RecipeBook extends BaseSTBItem {
 	@Override
 	public void onInteractItem(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			fabricationFree = event.getPlayer().hasPermission(FREEFAB_PERMISSION);
-			setFabricationAvailable(fabricationFree ||
-					(event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.WORKBENCH));
-			openBook(event.getPlayer());
+			openBook(event.getPlayer(), event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.WORKBENCH);
 			event.setCancelled(true);
 		}
 	}
@@ -189,8 +186,10 @@ public class RecipeBook extends BaseSTBItem {
 		viewingItem = -1;
 	}
 
-	public void openBook(Player player) {
+	public void openBook(Player player, boolean allowFab) {
 		this.player = player;
+		fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
+		setFabricationAvailable(fabricationFree || allowFab);
 		gui = new InventoryGUI(player, this, 54, "Recipe Book");
 		buildFilteredList();
 		if (viewingItem < 0) {
@@ -315,6 +314,7 @@ public class RecipeBook extends BaseSTBItem {
 	private void tryFabrication(Recipe recipe) {
 		Debugger.getInstance().debug("STUB: attempt to fabricate " + recipe.getResult() + " for " + player.getName());
 
+		fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
 		if (fabricationFree) {
 			fabricate(recipe.getResult(), true);
 			return;

@@ -24,11 +24,11 @@ public class RecipeCommand extends AbstractCommand {
 		RecipeBook book = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), RecipeBook.class);
 		DHValidate.notNull(book, "You must be holding a Recipe Book to search for recipes!");
 		String filter = args.length > 0 ? args[0] : "";
-		Block b = player.getTargetBlock(null, 4);
-		book.setFabricationAvailable(b != null && b.getType() == Material.WORKBENCH);
+//		book.setFabricationAvailable(b != null && b.getType() == Material.WORKBENCH);
 		book.setFilter(filter);
 		book.goToItemList();
-		book.openBook(player);
+		Block b = player.getTargetBlock(null, 4);
+		book.openBook(player, b != null && b.getType() == Material.WORKBENCH);
 		return true;
 	}
 }
