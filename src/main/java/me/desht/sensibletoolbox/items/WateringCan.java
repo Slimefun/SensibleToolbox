@@ -26,9 +26,11 @@ import org.bukkit.material.MaterialData;
 import java.util.Random;
 
 public class WateringCan extends BaseSTBItem {
+	private static final MaterialData md = new MaterialData(Material.POTION);
 	private static final int GROW_CHANCE = 10;
-	private static final int MAX_LEVEL = 100;
+	private static final int MAX_LEVEL = 200;
 	private static final int FIRE_EXTINGUISH_AMOUNT = 50;
+	public static final int SATURATION_RATE = 5;
 	private int waterLevel;
 	private boolean floodWarning;
 
@@ -57,14 +59,9 @@ public class WateringCan extends BaseSTBItem {
 		return res;
 	}
 
-//	@Override
-//	public Material getBaseMaterial() {
-//		return Material.POTION;
-//	}
-
 	@Override
 	public MaterialData getMaterialData() {
-		return new MaterialData(Material.POTION);
+		return md;
 	}
 
 	@Override
@@ -74,7 +71,7 @@ public class WateringCan extends BaseSTBItem {
 
 	@Override
 	public String getDisplaySuffix() {
-		return getWaterLevel() + "%";
+		return getWaterLevel() / 2 + "%";
 	}
 
 	@Override
@@ -111,14 +108,17 @@ public class WateringCan extends BaseSTBItem {
 			} else if (STBUtil.isCrop(b.getType())) {
 				// attempt to grow the crops in a 3x3 area, and use some water from the can
 				waterCrops(player, b);
+				irrigateSoil(player, b.getRelative(BlockFace.DOWN));
 				newStack = toItemStack();
 			} else if (b.getType() == Material.SOIL) {
 				if (STBUtil.isCrop(b.getRelative(BlockFace.UP).getType())) {
 					waterCrops(player, b.getRelative(BlockFace.UP));
+					irrigateSoil(player, b);
 					newStack = toItemStack();
 				} else {
 					// make the soil wetter if possible
 					waterSoil(player, b);
+					irrigateSoil(player, b);
 					newStack = toItemStack();
 				}
 			} else if (b.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
@@ -133,6 +133,11 @@ public class WateringCan extends BaseSTBItem {
 				}
 				useSomeWater(player, b, 10);
 				newStack = toItemStack();
+			} else if (b.getType() == Material.DIRT) {
+				if (maybeGrowGrass(b)) {
+					useSomeWater(player, b, 1);
+					newStack = toItemStack();
+				}
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			Block b = player.getEyeLocation().getBlock();
@@ -144,10 +149,10 @@ public class WateringCan extends BaseSTBItem {
 				newStack = toItemStack();
 			}
 		}
+		event.setCancelled(true);
 		if (newStack != null) {
-			event.setCancelled(true);
 			player.setItemInHand(newStack);
-			player.updateInventory();
+//			player.updateInventory();
 		}
 		if (floodWarning) {
 			MiscUtil.alertMessage(player, "This soil is getting very wet!");
@@ -155,10 +160,25 @@ public class WateringCan extends BaseSTBItem {
 		}
 	}
 
+	private boolean maybeGrowGrass(Block b) {
+		for (BlockFace face : STBUtil.horizontalFaces) {
+			Block b1 = b.getRelative(face);
+			if (b1.getType() == Material.GRASS) {
+				b.setType(Material.GRASS);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void irrigateSoil(Player player, Block b) {
+		b.setData((byte) 8);
+	}
+
 	@Override
 	public void onItemConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
-		if (player.getFireTicks() > 0 && getWaterLevel() > FIRE_EXTINGUISH_AMOUNT) {
+		if (player.getFireTicks() > 0 && getWaterLevel() >= FIRE_EXTINGUISH_AMOUNT) {
 			player.setFireTicks(0);
 			setWaterLevel(getWaterLevel() - FIRE_EXTINGUISH_AMOUNT);
 			MiscUtil.alertMessage(player, "The fire is out!");
@@ -217,7 +237,7 @@ public class WateringCan extends BaseSTBItem {
 		int saturation = SoilSaturation.getSaturationLevel(soil);
 		long now = System.currentTimeMillis();
 		long delta = (now - SoilSaturation.getLastWatered(soil)) / 1000;
-		saturation = Math.max(0, saturation + 7 - (int) delta);
+		saturation = Math.max(0, saturation + SATURATION_RATE - (int) delta);
 		if (saturation > SoilSaturation.MAX_SATURATION && new Random().nextBoolean()) {
 			soil.setTypeIdAndData(Material.WATER.getId(), (byte) 0, true);
 			SoilSaturation.clear(soil);
