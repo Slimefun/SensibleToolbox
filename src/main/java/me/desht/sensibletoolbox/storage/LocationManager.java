@@ -185,25 +185,23 @@ public class LocationManager {
 		switch (op) {
 			case INSERT:
 				if (existingRec == null) {
-					System.out.println("add pending insertion " + locStr + " = " + stb);
+					// brand new insertion
 					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc, stb.getItemTypeID(), stb));
 				} else if (existingRec.getOp() == UpdateRecord.Operation.DELETE) {
-					System.out.println("add (re-insert) update following deletion " + locStr + " = " + stb);
+					// re-inserting where a block was just deleted
 					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
 				}
 				break;
 			case UPDATE:
 				if (existingRec == null || existingRec.getOp() != UpdateRecord.Operation.INSERT) {
-					System.out.println("add pending update " + locStr + " = " + stb);
 					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
 				}
 				break;
 			case DELETE:
 				if (existingRec != null && existingRec.getOp() == UpdateRecord.Operation.INSERT) {
-					System.out.println("remove pending insertion " + locStr + " = " + stb);
+					// remove a recent insertion
 					pendingUpdates.remove(locStr);
 				} else {
-					System.out.println("add pending deletion " + locStr + " = " + stb);
 					pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc, stb.getItemTypeID(), stb));
 				}
 				break;
