@@ -12,7 +12,7 @@ If you want to build Sensible Toolbox yourself, you will need Maven.
 
 1) ```git clone https://github.com/desht/sensibletoolbox.git```
 
-2) ``cd sensibletoolbox```
+2) ```cd sensibletoolbox```
 
 3) ```mvn clean install```
 
