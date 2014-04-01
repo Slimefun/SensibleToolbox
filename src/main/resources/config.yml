@@ -1,4 +1,3 @@
-log_level: fine
 coloured_console: true
 rename_level_cost: 5
 particle_effects: 2
@@ -6,23 +5,54 @@ debug_level: 0
 save_interval: 30
 database:
   table_prefix: "stb_"
-enable:
-  angelicblock: true
-  blockupdatedetector: true
-  elevator: true
-  paintcan: true
-  redstoneclock: true
-  soundmuffler: true
-  trashcan: true
+items_enabled:
   advancedmoisturechecker: true
+  advancedsendermodule: true
+  angelicblock: true
   bagofholding: true
+  basicsolarcell: true
+  bigstorageunit: true
+  blankmodule: true
+  blockupdatedetector: true
   buildersmultitool: true
+  circuitboard: true
   diamondcombinehoe: true
+  distributormodule: true
+  droppermodule: true
+  ejectorupgrade: true
+  elevator: true
+  enderleash: true
+  fiftykbatterybox: true
+  fiftykenergycell: true
+  floodlight: true
   goldcombinehoe: true
+  golddust: true
+  heatengine: true
+  hyperstorageunit: true
   ironcombinehoe: true
-  woodcombinehoe: true
+  irondust: true
+  itemrouter: true
+  machineframe: true
+  masher: true
   moisturechecker: true
+  multimeter: true
   paintbrush: true
+  paintcan: true
   paintroller: true
+  pullermodule: true
+  receivermodule: true
+  recipebook: true
+  redstoneclock: true
+  sawmill: true
+  sendermodule: true
+  simplecircuit: true
+  smelter: true
+  sortermodule: true
+  soundmuffler: true
+  speedmodule: true
+  speedupgrade: true
+  stackmodule: true
   tapemeasure: true
-  wateringcan: true
+  tenkenergycell: true
+  trashcan: true
+  vacuummodule: true

@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
-import com.google.common.base.Joiner;
 import me.desht.dhutils.Debugger;
+import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
@@ -48,7 +48,9 @@ public class GeneralListener extends STBBaseListener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
 		if (item != null) {
-			item.onInteractItem(event);
+			if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.interact." + item.getItemTypeID())) {
+				item.onInteractItem(event);
+			}
 		}
 		Block clicked = event.getClickedBlock();
 		if (!event.isCancelled() && clicked != null) {
@@ -58,7 +60,9 @@ public class GeneralListener extends STBBaseListener {
 			}
 			BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation());
 			if (stb != null) {
-				stb.onInteractBlock(event);
+				if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.interact_block." + stb.getItemTypeID())) {
+					stb.onInteractBlock(event);
+				}
 			}
 		}
 	}
@@ -97,14 +101,18 @@ public class GeneralListener extends STBBaseListener {
 	public void onBlockDamage(BlockDamageEvent event) {
 		BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
 		if (stb != null) {
-			stb.onBlockDamage(event);
+			if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.break." + stb.getItemTypeID())) {
+				stb.onBlockDamage(event);
+			} else {
+				event.setCancelled(true);
+			}
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		STBItem item =  BaseSTBItem.getItemFromItemStack(event.getItemInHand());
-		if (item instanceof STBBlock) {
+		if (item instanceof STBBlock && PermissionUtils.isAllowedTo(event.getPlayer(), "stb.place." + item.getItemTypeID())) {
 			((BaseSTBBlock) item).onBlockPlace(event);
 		} else if (item != null) {
 			// prevent placing of non-block STB items, even if they use a block material (e.g. bag of holding)

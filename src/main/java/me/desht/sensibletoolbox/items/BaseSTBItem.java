@@ -44,6 +44,8 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
@@ -125,10 +127,19 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 
 	public static void registerItem(BaseSTBItem item, Plugin plugin) {
 		String id = item.getItemTypeID();
+		if (!plugin.getConfig().getBoolean("items_enabled." + id)) {
+			return;
+		}
 		Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 		id2class.put(id, item.getClass());
 		id2plugin.put(id, plugin.getDescription().getName());
+
+		Bukkit.getPluginManager().addPermission(new Permission("stb.interact." + id, PermissionDefault.TRUE));
+
 		if (item instanceof STBBlock) {
+			Bukkit.getPluginManager().addPermission(new Permission("stb.place." + id, PermissionDefault.TRUE));
+			Bukkit.getPluginManager().addPermission(new Permission("stb.break." + id, PermissionDefault.TRUE));
+			Bukkit.getPluginManager().addPermission(new Permission("stb.interact_block." + id, PermissionDefault.TRUE));
 			try {
 				LocationManager.getManager().loadDeferredBlocks(id);
 			} catch (SQLException e) {

@@ -72,6 +72,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 				ItemRouterModule mod = (ItemRouterModule) BaseSTBItem.getItemById(f[0], modConf);
 				insertModule(mod);
 			} catch (Exception e) {
+				e.printStackTrace();
 				LogUtils.warning("can't restore saved module " + f[0] + " for " + this + ": " + e.getMessage());
 			}
 		}

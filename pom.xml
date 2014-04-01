@@ -82,16 +82,16 @@
 
 	<build>
         <finalName>${project.name}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
+	  <plugins>
+	    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.3.2</version>
+			<configuration>
+				<source>1.6</source>
+				<target>1.6</target>
+			</configuration>
+	    </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -104,20 +104,6 @@
                         </goals>
                         <configuration>
                             <minimizeJar>true</minimizeJar>
-			    <!--<filters>
-                                <filters>
-                                    <artifact>me.desht:dhutils-lib</artifact>
-                                    <excludes>
-                                        <exclude>me/desht/dhutils/ExperienceManager*</exclude>
-                                        <exclude>me/desht/dhutils/I18N*</exclude>
-                                        <exclude>me/desht/dhutils/ItemMessage*</exclude>
-                                        <exclude>me/desht/dhutils/repo/*</exclude>
-                                        <exclude>me/desht/dhutils/MapUtil*</exclude>
-                                        <exclude>me/desht/dhutils/TextMarkup*</exclude>
-                                    </excludes>
-                                </filters>
-                            </filters>-->
-
                             <relocations>
                                 <relocation>
                                     <pattern>me.desht.dhutils</pattern>

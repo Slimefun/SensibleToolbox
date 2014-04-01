@@ -21,6 +21,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
@@ -94,7 +95,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 		if (!isNMSenabled) {
 			LogUtils.warning("Unable to initialize NMS abstraction API - looks like this version of CraftBukkit isn't supported.");
 			LogUtils.warning("Sensible Toolbox will continue to run with reduced functionality:");
-			LogUtils.warning("  Floodlight, Interdiction Lamp items disabled");
+			LogUtils.warning("  Floodlight will not cast light (but will still prevent mob spawns");
 		}
 
 		LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
@@ -104,7 +105,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			ItemGlow.init(this);
 		} else {
 			LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
-			LogUtils.warning("  No glowing items, reduced particle effects, Sound Muffler item disabled");
+			LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
 		}
 
 		BaseSTBItem.registerItems(this);

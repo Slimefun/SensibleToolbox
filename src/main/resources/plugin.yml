@@ -12,30 +12,50 @@ commands:
 
 permissions:
   stb.admin:
-    description: Grants all permissions for Sensible Toolbox
+    description: Grants all admin permissions for Sensible Toolbox
     default: op
     children:
-      stb.recipebook.freefab: true
+      stb.access.any: true
+      stb.commands.charge: true
+      stb.commands.debug: true
+      stb.commands.getcfg: true
+      stb.commands.rename.free: true
       stb.commands.save: true
-      stb.angelic_block.place: true
-      stb.angelic_block.break: true
-  stb.commands.save:
-    description: Allow the plugin data to be force-saved
+      stb.commands.setcfg: true
+      stb.commands.show: true
+      stb.recipebook.freefab: true
+  stb.access.any:
+    description: Allow a block's access control setting to be overridden
     default: op
-  stb.commands.rename:
-    description: Allow animal captured in the Ender Leash to be renamed
+  stb.commands.charge:
+    description: Allow the SCU values for blocks/items to be modified with /stb charge
+    default: op
+  stb.commands.debug:
+    description: Allow plugin debugging to be toggled with /stb debug
+    default: op
+  stb.commands.getcfg:
+    description: Allows the plugin configuration to be inspected with /stb getcfg
+    default: op
+  stb.commands.getcfg:
+    description: Allows STB items & blocks to be obtained with /stb give
     default: op
   stb.commands.recipe:
-    description: Allows recipes to be searched for by name
+    description: Allows recipes to be searched for by name with /stb recipe
+    default: true
+  stb.commands.rename:
+    description: Allow animal captured in the Ender Leash to be renamed with /stb rename
     default: true
   stb.commands.rename.free:
-    description: Allow animal renaming for no experience cost
+    description: Allow animal renaming for no experience cost with /stb rename
     default: op
-  stb.angelic_block.place:
-    description: Allow the Angelic Block to be placed
+  stb.commands.save:
+    description: Allow the plugin data to be force-saved with /stb save
     default: op
-  stb.angelic_block.break:
-    description: Allow the Angelic Block to be broken
+  stb.commands.setcfg:
+    description: Allows the plugin configuration to be modified with /stb setcfg
+    default: op
+  stb.commands.show:
+    description: Allows existing STB blocks to be listed and inspected with /stb show
     default: op
   stb.recipebook.freefab:
     description: Allow any item in the Recipe Book to be fabricated freely

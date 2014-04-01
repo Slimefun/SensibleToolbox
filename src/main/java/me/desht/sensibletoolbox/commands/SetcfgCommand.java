@@ -38,6 +38,9 @@ public class SetcfgCommand extends AbstractCommand {
 			}
 			Object res = configManager.get(key);
 			MiscUtil.statusMessage(sender, key + " is now set to '&e" + res + "&-'");
+			if (key.startsWith("items_enabled.")) {
+				MiscUtil.statusMessage(sender, "Changes will take effect when server is reloaded/restarted");
+			}
 		} catch (DHUtilsException e) {
 			MiscUtil.errorMessage(sender, e.getMessage());
 			MiscUtil.errorMessage(sender, "Use /stb getcfg to list all valid keys");
