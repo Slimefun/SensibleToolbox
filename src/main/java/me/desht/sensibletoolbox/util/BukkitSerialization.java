@@ -1,21 +1,18 @@
 package me.desht.sensibletoolbox.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.UUID;
-
+import com.comphenix.attribute.Attributes;
 import com.google.common.base.Joiner;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.attributes.AttributeStorage;
-import me.desht.sensibletoolbox.attributes.Attributes;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Serialize a Bukkit inventory to/from a string.

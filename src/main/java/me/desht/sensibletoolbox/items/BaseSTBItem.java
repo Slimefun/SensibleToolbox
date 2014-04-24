@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import com.comphenix.attribute.AttributeStorage;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.LogUtils;
@@ -8,7 +9,6 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.attributes.AttributeStorage;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.*;
 import me.desht.sensibletoolbox.gui.InventoryGUI;

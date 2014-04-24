@@ -74,6 +74,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.comphenix.attribute</groupId>
+            <artifactId>AttributeStorage</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics-lite</artifactId>
             <version>R7</version>
@@ -111,7 +117,11 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
-                                    <shadedPattern>me.desht.mcstats</shadedPattern>
+                                    <shadedPattern>me.desht.sensibletoolbox.mcstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.comphenix.attribute</pattern>
+                                    <shadedPattern>me.desht.sensibletoolbox.attribute</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
