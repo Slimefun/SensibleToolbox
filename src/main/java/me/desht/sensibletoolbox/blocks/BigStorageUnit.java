@@ -481,6 +481,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 			}
 		}
 
+		ItemStack tmpStored = getStored();
 		if (getTotalAmount() == 0) {
 			setStored(null);
 		}
@@ -488,7 +489,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 		setCharge(getCharge() - chargeNeeded);
 
 		if (receiver == null) {
-			ItemStack returned = stored.clone();
+			ItemStack returned = tmpStored.clone();
 			returned.setAmount(fromStorage + fromOutput);
 			return returned;
 		} else {
