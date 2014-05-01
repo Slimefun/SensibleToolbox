@@ -56,3 +56,4 @@ items_enabled:
   tenkenergycell: true
   trashcan: true
   vacuummodule: true
+  wateringcan: true
