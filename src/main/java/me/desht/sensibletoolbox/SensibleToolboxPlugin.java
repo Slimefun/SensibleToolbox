@@ -53,8 +53,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 	private FloodlightListener floodlightListener;
 	private PlayerUUIDTracker uuidTracker;
 	private boolean inited = false;
+    private LandslideListener landslideListener;
 
-	public static SensibleToolboxPlugin getInstance() {
+    public static SensibleToolboxPlugin getInstance() {
 		return instance;
 	}
 
@@ -107,6 +108,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 			LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
 			LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
 		}
+
+        setupLandslide();
 
 		BaseSTBItem.registerItems(this);
 		registerEventListeners();
@@ -203,13 +206,23 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
 	private void setupProtocolLib() {
 		Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
-		if (pLib != null && pLib instanceof ProtocolLibrary && pLib.isEnabled()) {
+		if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
 			protocolLibEnabled = true;
 			LogUtils.fine("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
 		}
 	}
 
-	public boolean isProtocolLibEnabled() {
+    private void setupLandslide() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("Landslide");
+        if (plugin != null && plugin.isEnabled()) {
+            landslideListener = new LandslideListener(this);
+            LogUtils.fine("Hooked Landslide v" + plugin.getDescription().getVersion());
+        }
+    }
+
+
+
+    public boolean isProtocolLibEnabled() {
 		return protocolLibEnabled;
 	}
 

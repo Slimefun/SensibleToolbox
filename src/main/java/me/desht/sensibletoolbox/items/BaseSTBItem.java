@@ -69,77 +69,94 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 	private Map<Enchantment,Integer> enchants;
 
 	public static void registerItems(SensibleToolboxPlugin plugin) {
-		registerItem(new AngelicBlock(), plugin);
-		registerItem(new EnderLeash(), plugin);
-		registerItem(new RedstoneClock(), plugin);
-		registerItem(new BlockUpdateDetector(), plugin);
-		registerItem(new BagOfHolding(), plugin);
-		registerItem(new WateringCan(), plugin);
-		registerItem(new MoistureChecker(), plugin);
-		registerItem(new AdvancedMoistureChecker(), plugin);
-		registerItem(new WoodCombineHoe(), plugin);
-		registerItem(new IronCombineHoe(), plugin);
-		registerItem(new GoldCombineHoe(), plugin);
-		registerItem(new DiamondCombineHoe(), plugin);
-		registerItem(new TrashCan(), plugin);
-		registerItem(new PaintBrush(), plugin);
-		registerItem(new PaintRoller(), plugin);
-		registerItem(new PaintCan(), plugin);
-		registerItem(new Elevator(), plugin);
-		registerItem(new TapeMeasure(), plugin);
-		registerItem(new CircuitBoard(), plugin);
-		registerItem(new SimpleCircuit(), plugin);
-		registerItem(new BuildersMultiTool(), plugin);
-		registerItem(new Floodlight(), plugin);
-		registerItem(new MachineFrame(), plugin);
-		registerItem(new Smelter(), plugin);
-		registerItem(new Masher(), plugin);
-		registerItem(new Sawmill(), plugin);
-		registerItem(new IronDust(), plugin);
-		registerItem(new GoldDust(), plugin);
-		registerItem(new ItemRouter(), plugin);
-		registerItem(new BlankModule(), plugin);
-		registerItem(new PullerModule(), plugin);
-		registerItem(new DropperModule(), plugin);
-		registerItem(new SenderModule(), plugin);
-		registerItem(new DistributorModule(), plugin);
-		registerItem(new AdvancedSenderModule(), plugin);
-		registerItem(new ReceiverModule(), plugin);
-		registerItem(new SorterModule(), plugin);
-		registerItem(new VacuumModule(), plugin);
-		registerItem(new StackModule(), plugin);
-		registerItem(new SpeedModule(), plugin);
-		registerItem(new TenKEnergyCell(), plugin);
-		registerItem(new FiftyKEnergyCell(), plugin);
-		registerItem(new FiftyKBatteryBox(), plugin);
-		registerItem(new SpeedUpgrade(), plugin);
-		registerItem(new EjectorUpgrade(), plugin);
-		registerItem(new HeatEngine(), plugin);
-		registerItem(new BasicSolarCell(), plugin);
-		registerItem(new RecipeBook(), plugin);
-		registerItem(new Multimeter(), plugin);
-		registerItem(new BigStorageUnit(), plugin);
-		registerItem(new HyperStorageUnit(), plugin);
+        final String CONFIG_NODE = "items_enabled";
+        final String PERMISSION_NODE = "stb";
+
+		registerItem(new AngelicBlock(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new EnderLeash(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new RedstoneClock(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new BlockUpdateDetector(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new BagOfHolding(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new WateringCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new MoistureChecker(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new AdvancedMoistureChecker(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new WoodCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new IronCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new GoldCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new DiamondCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new TrashCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new PaintBrush(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new PaintRoller(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new PaintCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new Elevator(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new TapeMeasure(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new CircuitBoard(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new SimpleCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new BuildersMultiTool(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new Floodlight(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new MachineFrame(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new Smelter(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new Masher(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new Sawmill(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new IronDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new GoldDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new ItemRouter(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new BlankModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new PullerModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new DropperModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new SenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new DistributorModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new AdvancedSenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new ReceiverModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new SorterModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new VacuumModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new StackModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new SpeedModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new TenKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new FiftyKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new FiftyKBatteryBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new SpeedUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new EjectorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new HeatEngine(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new BasicSolarCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new RecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new Multimeter(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new BigStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
+		registerItem(new HyperStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
 		if (plugin.isProtocolLibEnabled()) {
-			registerItem(new SoundMuffler(), plugin);
+			registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
 		}
 	}
 
-	public static void registerItem(BaseSTBItem item, Plugin plugin) {
+    public static void registerItem(BaseSTBItem item, Plugin plugin) {
+        registerItem(item, plugin, null, null);
+    }
+
+    public static void registerItem(BaseSTBItem item, Plugin plugin, String configNode) {
+        registerItem(item, plugin, configNode, null);
+    }
+
+	public static void registerItem(BaseSTBItem item, Plugin plugin, String configNode, String permissionNode) {
 		String id = item.getItemTypeID();
-		if (!plugin.getConfig().getBoolean("items_enabled." + id)) {
-			return;
-		}
+
+        if (configNode != null && !plugin.getConfig().getBoolean(configNode + "." + item.getItemTypeID())) {
+            return;
+        }
+
 		Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 		id2class.put(id, item.getClass());
 		id2plugin.put(id, plugin.getDescription().getName());
 
-		Bukkit.getPluginManager().addPermission(new Permission("stb.interact." + id, PermissionDefault.TRUE));
+        if (permissionNode == null) {
+            permissionNode = "stb";
+        }
 
-		if (item instanceof STBBlock) {
-			Bukkit.getPluginManager().addPermission(new Permission("stb.place." + id, PermissionDefault.TRUE));
-			Bukkit.getPluginManager().addPermission(new Permission("stb.break." + id, PermissionDefault.TRUE));
-			Bukkit.getPluginManager().addPermission(new Permission("stb.interact_block." + id, PermissionDefault.TRUE));
+        Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".interact." + id, PermissionDefault.TRUE));
+
+        if (item instanceof STBBlock) {
+            Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".place." + id, PermissionDefault.TRUE));
+            Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".break." + id, PermissionDefault.TRUE));
+            Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".interact_block." + id, PermissionDefault.TRUE));
 			try {
 				LocationManager.getManager().loadDeferredBlocks(id);
 			} catch (SQLException e) {
