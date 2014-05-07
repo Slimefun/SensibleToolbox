@@ -32,7 +32,7 @@ public class ShowCommand extends AbstractCommand {
 	public ShowCommand() {
 		super("stb show");
 		setPermissionNode("stb.commands.show");
-		setUsage("/<command> show [-w <world>] [-id <itemid>] [-perf]");
+		setUsage("/<command> show [-w <world>] [-type <itemid>] [-perf]");
 		setOptions("w:s", "type:s", "perf");
 	}
 
@@ -88,7 +88,7 @@ public class ShowCommand extends AbstractCommand {
 		DHValidate.notNull(item, "No valid STB item/block found");
 
 		YamlConfiguration conf = item.freeze();
-		pager.add(ChatColor.YELLOW.toString() + item + ":");
+		pager.add(ChatColor.AQUA.toString() + item + ":");
 		for (String k : conf.getKeys(true)) {
 			if (!conf.isConfigurationSection(k)) {
 				Object o = conf.get(k);
