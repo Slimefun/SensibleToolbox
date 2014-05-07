@@ -6,15 +6,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ToggleButton extends ClickableGadget {
-    private final ItemStack texture1;
-    private final ItemStack texture2;
+    private final ItemStack trueTexture;
+    private final ItemStack falseTexture;
     private final ToggleListener callback;
     boolean value;
 
-    public ToggleButton(InventoryGUI gui, boolean value, ItemStack texture1, ItemStack texture2, ToggleListener callback) {
+    public ToggleButton(InventoryGUI gui, boolean value, ItemStack trueTexture, ItemStack falseTexture, ToggleListener callback) {
         super(gui);
-        this.texture1 = texture1;
-        this.texture2 = texture2;
+        this.trueTexture = trueTexture;
+        this.falseTexture = falseTexture;
         this.callback = callback;
         this.value = value;
     }
@@ -36,7 +36,7 @@ public class ToggleButton extends ClickableGadget {
 
     @Override
     public ItemStack getTexture() {
-        return value ? texture1 : texture2;
+        return value ? trueTexture : falseTexture;
     }
 
     public interface ToggleListener {

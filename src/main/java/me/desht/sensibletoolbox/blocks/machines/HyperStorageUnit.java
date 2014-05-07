@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.blocks;
+package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
@@ -97,7 +97,7 @@ public class HyperStorageUnit extends BigStorageUnit {
     @Override
     public String[] getExtraLore() {
         if (getTotalAmount() > 0) {
-            return new String[]{ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStored())};
+            return new String[]{ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStoredItemType())};
         } else {
             return new String[0];
         }
