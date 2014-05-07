@@ -111,7 +111,7 @@ public class PaintBrush extends BaseSTBItem {
 
     @Override
     public String getDisplaySuffix() {
-        return getPaintLevel() > 0 ? getPaintLevel() + " " + STBUtil.toChatColor(getColour()) + getColour() : null;
+        return getPaintLevel() > 0 ? getPaintLevel() + " " + STBUtil.dyeColorToChatColor(getColour()) + getColour() : null;
     }
 
     @Override

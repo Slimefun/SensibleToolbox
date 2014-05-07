@@ -132,6 +132,13 @@ public class STBUtil {
         }
     }
 
+    /**
+     * Convenience wrapper to get the metadata value set by STB.
+     *
+     * @param m the metadatable object
+     * @param key the metadata key
+     * @return the metadata value, or null if there is none
+     */
     public static Object getMetadataValue(Metadatable m, String key) {
         for (MetadataValue mv : m.getMetadata(key)) {
             if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
@@ -141,8 +148,14 @@ public class STBUtil {
         return null;
     }
 
-    public static ChatColor toChatColor(DyeColor c) {
-        switch (c) {
+    /**
+     * Convert a dye colour to the nearest matching chat colour.
+     *
+     * @param dyeColor the dye colour
+     * @return the nearest matching chat colour
+     */
+    public static ChatColor dyeColorToChatColor(DyeColor dyeColor) {
+        switch (dyeColor) {
             case BLACK:
                 return ChatColor.DARK_GRAY;
             case BLUE:
@@ -176,10 +189,17 @@ public class STBUtil {
             case YELLOW:
                 return ChatColor.YELLOW;
             default:
-                throw new IllegalArgumentException("unknown dye color" + c);
+                throw new IllegalArgumentException("unknown dye color" + dyeColor);
         }
     }
 
+    /**
+     * Check if the given material is "interactive", i.e. a default action occurs
+     * when a block of that material is right-clicked.
+     *
+     * @param mat the material to check
+     * @return true if the material is interactive; false otherwise
+     */
     public static boolean isInteractive(Material mat) {
         if (!mat.isBlock()) {
             return false;
@@ -221,6 +241,13 @@ public class STBUtil {
         }
     }
 
+    /**
+     * Check if the given material is colourable.  Ideally the relevant MaterialData
+     * should implement the Colorable interface, but Bukkit doesn't have that yet...
+     *
+     * @param mat the material to check
+     * @return true if the material is colourable; false otherwise
+     */
     public static boolean isColorable(Material mat) {
         switch (mat) {
             case STAINED_GLASS:
@@ -264,6 +291,13 @@ public class STBUtil {
         return true;
     }
 
+    /**
+     * Check if the given material can be used as a potion ingredient in vanilla
+     * potion brewing.
+     *
+     * @param type the material (including data) to check
+     * @return true if the material can be used as a potion ingredient; false otherwise
+     */
     public static boolean isPotionIngredient(MaterialData type) {
         switch (type.getItemType()) {
             case NETHER_STALK:
@@ -303,24 +337,31 @@ public class STBUtil {
         sk.setFacingDirection(BlockFace.SELF);
         skull.setData(sk);
         if (player != null) {
-            skull.setRotation(getRotation(player.getLocation()));
+            skull.setRotation(getFaceFromYaw(player.getLocation().getYaw()).getOppositeFace());
         }
         return skull;
     }
 
-    private static BlockFace getRotation(Location loc) {
-        double rot = loc.getYaw() % 360;
+    /**
+     * Given a yaw value, get the closest block face for the given yaw.  The yaw value
+     * is usually obtained via {@link org.bukkit.Location#getYaw()}
+     *
+     * @param yaw the yaw to convert
+     * @return the nearest block face
+     */
+    public static BlockFace getFaceFromYaw(float yaw) {
+        double rot = yaw % 360;
         if (rot < 0) {
             rot += 360;
         }
         if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
-            return BlockFace.NORTH;
-        } else if (45 <= rot && rot < 135) {
-            return BlockFace.EAST;
-        } else if (135 <= rot && rot < 225) {
             return BlockFace.SOUTH;
-        } else if (225 <= rot && rot < 315) {
+        } else if (45 <= rot && rot < 135) {
             return BlockFace.WEST;
+        } else if (135 <= rot && rot < 225) {
+            return BlockFace.NORTH;
+        } else if (225 <= rot && rot < 315) {
+            return BlockFace.EAST;
         } else {
             throw new IllegalArgumentException("impossible rotation: " + rot);
         }
@@ -393,37 +434,41 @@ public class STBUtil {
         return res;
     }
 
-    public static boolean isExposed(Block b, BlockFace face) {
-        return !b.getRelative(face).getType().isOccluding();
+    /**
+     * Check if the given block is exposed to the world on the given face.
+     * {@link org.bukkit.Material#isOccluding()} is used to check if a face is exposed.
+     *
+     * @param block the block to check
+     * @param face the face to check
+     * @return true if the given block face is exposed
+     */
+    public static boolean isExposed(Block block, BlockFace face) {
+        return !block.getRelative(face).getType().isOccluding();
     }
 
-    public static boolean isExposed(Block b) {
+    /**
+     * Check if the given block is exposed on <i>any</i> face.
+     * {@link org.bukkit.Material#isOccluding()} is used to check if a face is exposed.
+     *
+     * @param block the block to check
+     * @return true if any face of the block is exposed
+     */
+    public static boolean isExposed(Block block) {
         for (BlockFace face : directFaces) {
-            if (isExposed(b, face)) {
+            if (isExposed(block, face)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static BlockFace getFaceFromYaw(float yaw) {
-        double rot = yaw % 360;
-        if (rot < 0) {
-            rot += 360;
-        }
-        if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
-            return BlockFace.SOUTH;
-        } else if (45 <= rot && rot < 135) {
-            return BlockFace.WEST;
-        } else if (135 <= rot && rot < 225) {
-            return BlockFace.NORTH;
-        } else if (225 <= rot && rot < 315) {
-            return BlockFace.EAST;
-        } else {
-            throw new IllegalArgumentException("impossible rotation: " + rot);
-        }
-    }
-
+    /**
+     * Get a display-formatted string for the given chargeable item or block's current
+     * charge level.
+     *
+     * @param ch the chargeable item or block
+     * @return a formatted string showing the chargeable's charge
+     */
     public static String getChargeString(Chargeable ch) {
         double d = ch.getCharge() / ch.getMaxCharge();
         ChatColor cc;
@@ -437,10 +482,24 @@ public class STBUtil {
         return ChatColor.WHITE + "\u2301 " + cc + Math.round(ch.getCharge()) + "/" + ch.getMaxCharge() + " SCU";
     }
 
+    /**
+     * Round up the given value to given nearest multiple.
+     *
+     * @param n the value to round up
+     * @param nearestMultiple the nearest multiple to round to
+     * @return the rounded value
+     */
     public static int roundUp(int n, int nearestMultiple) {
         return n + nearestMultiple - 1 - (n - 1) % nearestMultiple;
     }
 
+    /**
+     * Get a display-formatted string for the given ItemStack.  The item stack's metadata is
+     * taken into account, as it the size of the stack.
+     *
+     * @param stack the item stack
+     * @return a formatted description of the item stack
+     */
     public static String describeItemStack(ItemStack stack) {
         if (stack == null) {
             return "nothing";
@@ -529,6 +588,14 @@ public class STBUtil {
         }
     }
 
+    /**
+     * Convenience method to create an item stack with defined title and lore data
+     *
+     * @param materialData the material data to create the stack from
+     * @param title the item's title, may be null
+     * @param lore the item's lore, may be empty
+     * @return a new ItemStack with the given title and lore
+     */
     public static ItemStack makeStack(MaterialData materialData, String title, String... lore) {
         ItemStack stack = materialData.toItemStack();
         if (title != null) {

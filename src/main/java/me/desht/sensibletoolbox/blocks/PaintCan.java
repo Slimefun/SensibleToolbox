@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.gui.*;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
@@ -183,7 +182,7 @@ public class PaintCan extends BaseSTBBlock {
 
             @Override
             public String getMessage() {
-                ChatColor cc = STBUtil.toChatColor(getColour());
+                ChatColor cc = STBUtil.dyeColorToChatColor(getColour());
                 return ChatColor.WHITE + "Paint Level: " + getPaintLevel() + "/" + MAX_PAINT_LEVEL + " " + cc + getColour();
             }
         }));
@@ -258,7 +257,7 @@ public class PaintCan extends BaseSTBBlock {
 
     @Override
     public String getDisplaySuffix() {
-        return getPaintLevel() + " " + STBUtil.toChatColor(getColour()) + getColour();
+        return getPaintLevel() + " " + STBUtil.dyeColorToChatColor(getColour()) + getColour();
     }
 
     @Override
@@ -279,7 +278,7 @@ public class PaintCan extends BaseSTBBlock {
     @Override
     protected String[] getSignLabel() {
         String res[] = new String[4];
-        ChatColor cc = STBUtil.toChatColor(getColour());
+        ChatColor cc = STBUtil.dyeColorToChatColor(getColour());
         res[0] = getItemName();
         res[1] = cc.toString() + getColour();
         res[2] = getPaintLevel() + "/" + getMaxPaintLevel();
