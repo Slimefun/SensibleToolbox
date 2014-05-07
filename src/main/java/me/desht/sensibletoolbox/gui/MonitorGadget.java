@@ -3,29 +3,30 @@ package me.desht.sensibletoolbox.gui;
 import me.desht.sensibletoolbox.api.STBBlock;
 
 public abstract class MonitorGadget extends Gadget {
-	private final STBBlock owner;
-	private boolean repaintNeeded = true;
+    private final STBBlock owner;
+    private boolean repaintNeeded = true;
 
-	public abstract void repaint();
-	public abstract int[] getSlots();
+    public abstract void repaint();
 
-	protected MonitorGadget(InventoryGUI gui) {
-		super(gui);
-		this.owner = gui.getOwningBlock();
-	}
+    public abstract int[] getSlots();
 
-	public STBBlock getOwner() {
-		return owner;
-	}
+    protected MonitorGadget(InventoryGUI gui) {
+        super(gui);
+        this.owner = gui.getOwningBlock();
+    }
 
-	public void repaintNeeded() {
-		repaintNeeded = true;
-	}
+    public STBBlock getOwner() {
+        return owner;
+    }
 
-	public void doRepaint() {
-		if (repaintNeeded) {
-			repaint();
-			repaintNeeded = false;
-		}
-	}
+    public void repaintNeeded() {
+        repaintNeeded = true;
+    }
+
+    public void doRepaint() {
+        if (repaintNeeded) {
+            repaint();
+            repaintNeeded = false;
+        }
+    }
 }

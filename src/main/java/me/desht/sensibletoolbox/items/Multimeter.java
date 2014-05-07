@@ -25,90 +25,90 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Multimeter extends BaseSTBItem {
-	private static final MaterialData md = new MaterialData(Material.WATCH);
+    private static final MaterialData md = new MaterialData(Material.WATCH);
 
-	public Multimeter() {
-		super();
-	}
+    public Multimeter() {
+        super();
+    }
 
-	public Multimeter(ConfigurationSection conf) {
-		super(conf);
-	}
+    public Multimeter(ConfigurationSection conf) {
+        super(conf);
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public String getItemName() {
-		return "Multimeter";
-	}
+    @Override
+    public String getItemName() {
+        return "Multimeter";
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] {
-				"Use on cabling and machines",
-				"to check energy net connections",
-				"and power usage",
-				"R-Click: " + ChatColor.RESET + "use"
-		};
-	}
+    @Override
+    public String[] getLore() {
+        return new String[]{
+                "Use on cabling and machines",
+                "to check energy net connections",
+                "and power usage",
+                "R-Click: " + ChatColor.RESET + "use"
+        };
+    }
 
-	@Override
-	public boolean hasGlow() {
-		return true;
-	}
+    @Override
+    public boolean hasGlow() {
+        return true;
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		SimpleCircuit sc = new SimpleCircuit();
-		registerCustomIngredients(sc);
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("IGI", "CSC", " T ");
-		recipe.setIngredient('I', Material.IRON_INGOT);
-		recipe.setIngredient('G', Material.GLOWSTONE_DUST);
-		recipe.setIngredient('C', sc.getMaterialData());
-		recipe.setIngredient('S', Material.SIGN);
-		recipe.setIngredient('T' ,Material.STICK);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        SimpleCircuit sc = new SimpleCircuit();
+        registerCustomIngredients(sc);
+        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        recipe.shape("IGI", "CSC", " T ");
+        recipe.setIngredient('I', Material.IRON_INGOT);
+        recipe.setIngredient('G', Material.GLOWSTONE_DUST);
+        recipe.setIngredient('C', sc.getMaterialData());
+        recipe.setIngredient('S', Material.SIGN);
+        recipe.setIngredient('T', Material.STICK);
+        return recipe;
+    }
 
-	@Override
-	public void onInteractItem(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			EnergyNet net = EnergyNetManager.getEnergyNet(event.getClickedBlock());
-			Player player = event.getPlayer();
-			if (net != null) {
-				showNetInfo(player, net, event.getClickedBlock());
-			} else {
-				Block b;
-				if (event.getClickedBlock().getType() == Material.WALL_SIGN) {
-					Sign sign = (Sign)event.getClickedBlock().getState().getData();
-					b = event.getClickedBlock().getRelative(sign.getAttachedFace());
-				} else {
-					b = event.getClickedBlock();
-				}
-				BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
-				if (machine != null && machine.getMaxCharge() > 0) {
-					showMachineInfo(player, machine);
-				} else {
-					// nothing to examine here
-					player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-				}
-			}
-			event.setCancelled(true);
-		}
-	}
+    @Override
+    public void onInteractItem(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            EnergyNet net = EnergyNetManager.getEnergyNet(event.getClickedBlock());
+            Player player = event.getPlayer();
+            if (net != null) {
+                showNetInfo(player, net, event.getClickedBlock());
+            } else {
+                Block b;
+                if (event.getClickedBlock().getType() == Material.WALL_SIGN) {
+                    Sign sign = (Sign) event.getClickedBlock().getState().getData();
+                    b = event.getClickedBlock().getRelative(sign.getAttachedFace());
+                } else {
+                    b = event.getClickedBlock();
+                }
+                BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
+                if (machine != null && machine.getMaxCharge() > 0) {
+                    showMachineInfo(player, machine);
+                } else {
+                    // nothing to examine here
+                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+                }
+            }
+            event.setCancelled(true);
+        }
+    }
 
-	private void showNetInfo(final Player player, EnergyNet net, Block clicked) {
-		String s1 = net.getCableCount() == 1 ? "" : "s";
-		String s2 = net.getSourceCount() == 1 ? "" : "s";
-		String s3 = net.getSinkCount() == 1 ? "" : "s";
-		String line1 = String.format("&6Net &f#%d&-, &f%d&- cable" + s1 + ", &f%d&- source" + s2 + ", &f%d&- sink" + s3,
-				net.getNetID(), net.getCableCount(), net.getSourceCount(), net.getSinkCount());
-		String line2 = String.format("▶ Demand: &e%5.2f SCU/t&-, Supply: &e%5.2f SCU/t&-",
-				net.getDemand(), net.getSupply());
+    private void showNetInfo(final Player player, EnergyNet net, Block clicked) {
+        String s1 = net.getCableCount() == 1 ? "" : "s";
+        String s2 = net.getSourceCount() == 1 ? "" : "s";
+        String s3 = net.getSinkCount() == 1 ? "" : "s";
+        String line1 = String.format("&6Net &f#%d&-, &f%d&- cable" + s1 + ", &f%d&- source" + s2 + ", &f%d&- sink" + s3,
+                net.getNetID(), net.getCableCount(), net.getSourceCount(), net.getSinkCount());
+        String line2 = String.format("▶ Demand: &e%5.2f SCU/t&-, Supply: &e%5.2f SCU/t&-",
+                net.getDemand(), net.getSupply());
 //		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
 //			final NameTagSpawner spawner = new NameTagSpawner(2);
 //			Location loc = clicked.getLocation();
@@ -121,27 +121,27 @@ public class Multimeter extends BaseSTBItem {
 //				}
 //			}, 50L);
 //		} else {
-			MiscUtil.statusMessage(player, line1);
-			MiscUtil.statusMessage(player, line2);
+        MiscUtil.statusMessage(player, line1);
+        MiscUtil.statusMessage(player, line2);
 //		}
-		player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
-	}
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
+    }
 
-	private void showMachineInfo(Player player, BaseSTBMachine machine) {
-		List<Integer> ids = new ArrayList<Integer>();
-		for (EnergyNet net2 : machine.getAttachedEnergyNets()) {
-			ids.add(net2.getNetID());
-		}
-		if (ids.isEmpty()) {
-			MiscUtil.statusMessage(player,
-					ChatColor.GOLD + machine.getItemName() + ChatColor.AQUA + " is not attached to any energy net.");
-		} else {
-			String s = ids.size() == 1 ? "" : "s";
-			String nets = "[#" + Joiner.on(" #").join(ids) + "]";
-			MiscUtil.statusMessage(player, String.format("&6%s&- is attached to %d energy net%s: &f%s",
-					machine.getItemName(), ids.size(), s, nets));
-		}
-		MiscUtil.statusMessage(player, "▶ Charge: " + STBUtil.getChargeString(machine) + "&-, max charge rate: &e" + machine.getChargeRate() + " SCU/t");
-		player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
-	}
+    private void showMachineInfo(Player player, BaseSTBMachine machine) {
+        List<Integer> ids = new ArrayList<Integer>();
+        for (EnergyNet net2 : machine.getAttachedEnergyNets()) {
+            ids.add(net2.getNetID());
+        }
+        if (ids.isEmpty()) {
+            MiscUtil.statusMessage(player,
+                    ChatColor.GOLD + machine.getItemName() + ChatColor.AQUA + " is not attached to any energy net.");
+        } else {
+            String s = ids.size() == 1 ? "" : "s";
+            String nets = "[#" + Joiner.on(" #").join(ids) + "]";
+            MiscUtil.statusMessage(player, String.format("&6%s&- is attached to %d energy net%s: &f%s",
+                    machine.getItemName(), ids.size(), s, nets));
+        }
+        MiscUtil.statusMessage(player, "▶ Charge: " + STBUtil.getChargeString(machine) + "&-, max charge rate: &e" + machine.getChargeRate() + " SCU/t");
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
+    }
 }

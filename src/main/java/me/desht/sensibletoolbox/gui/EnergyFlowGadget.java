@@ -7,26 +7,26 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class EnergyFlowGadget extends ClickableGadget {
-	private final BlockFace face;
-	private BatteryBox.EnergyFlow flow;
+    private final BlockFace face;
+    private BatteryBox.EnergyFlow flow;
 
-	public EnergyFlowGadget(InventoryGUI gui, BlockFace face) {
-		super(gui);
-		this.face = face;
-		Validate.isTrue(gui.getOwningItem() instanceof BatteryBox, "Energy flow gadget can only be used on a battery box!");
-		flow = ((BatteryBox)gui.getOwningItem()).getEnergyFlow(face);
-	}
+    public EnergyFlowGadget(InventoryGUI gui, BlockFace face) {
+        super(gui);
+        this.face = face;
+        Validate.isTrue(gui.getOwningItem() instanceof BatteryBox, "Energy flow gadget can only be used on a battery box!");
+        flow = ((BatteryBox) gui.getOwningItem()).getEnergyFlow(face);
+    }
 
-	@Override
-	public void onClicked(InventoryClickEvent event) {
-		int n = (flow.ordinal() + 1) % BatteryBox.EnergyFlow.values().length;
-		flow = BatteryBox.EnergyFlow.values()[n];
-		event.setCurrentItem(flow.getTexture(face));
-		((BatteryBox)getGUI().getOwningItem()).setFlow(face, flow);
-	}
+    @Override
+    public void onClicked(InventoryClickEvent event) {
+        int n = (flow.ordinal() + 1) % BatteryBox.EnergyFlow.values().length;
+        flow = BatteryBox.EnergyFlow.values()[n];
+        event.setCurrentItem(flow.getTexture(face));
+        ((BatteryBox) getGUI().getOwningItem()).setFlow(face, flow);
+    }
 
-	@Override
-	public ItemStack getTexture() {
-		return flow.getTexture(face);
-	}
+    @Override
+    public ItemStack getTexture() {
+        return flow.getTexture(face);
+    }
 }

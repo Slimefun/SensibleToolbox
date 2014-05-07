@@ -12,35 +12,35 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 public class RenameCommand extends AbstractCommand {
-	public RenameCommand() {
-		super("stb rename", 1, 1);
-		setPermissionNode("stb.commands.rename");
-		setUsage("/<command> rename <new-name>");
-		setQuotedArgs(true);
-	}
+    public RenameCommand() {
+        super("stb rename", 1, 1);
+        setPermissionNode("stb.commands.rename");
+        setUsage("/<command> rename <new-name>");
+        setQuotedArgs(true);
+    }
 
-	@Override
-	public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
-		notFromConsole(sender);
+    @Override
+    public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
+        notFromConsole(sender);
 
-		Player player = (Player) sender;
-		ItemStack stack = player.getItemInHand();
-		EnderLeash el = BaseSTBItem.getItemFromItemStack(stack, EnderLeash.class);
+        Player player = (Player) sender;
+        ItemStack stack = player.getItemInHand();
+        EnderLeash el = BaseSTBItem.getItemFromItemStack(stack, EnderLeash.class);
 
-		DHValidate.isTrue(el != null, "You are not holding an Ender Leash.");
-		DHValidate.isTrue(el.getCapturedEntityType() != null, "You don't have a captured animal to rename.");
+        DHValidate.isTrue(el != null, "You are not holding an Ender Leash.");
+        DHValidate.isTrue(el.getCapturedEntityType() != null, "You don't have a captured animal to rename.");
 
-		if (!player.hasPermission("stb.commands.rename.free")) {
-			int needed = plugin.getConfig().getInt("rename_level_cost");
-			DHValidate.isTrue(player.getLevel() >= needed, "You need " + needed + " levels to rename an animal.");
-			player.setLevel(player.getLevel() - needed);
-		}
+        if (!player.hasPermission("stb.commands.rename.free")) {
+            int needed = plugin.getConfig().getInt("rename_level_cost");
+            DHValidate.isTrue(player.getLevel() >= needed, "You need " + needed + " levels to rename an animal.");
+            player.setLevel(player.getLevel() - needed);
+        }
 
-		el.setAnimalName(args[0]);
-		player.setItemInHand(el.toItemStack());
+        el.setAnimalName(args[0]);
+        player.setItemInHand(el.toItemStack());
 
-		MiscUtil.statusMessage(player, "Ender Leash animal renamed: " + ChatColor.GOLD + args[0]);
+        MiscUtil.statusMessage(player, "Ender Leash animal renamed: " + ChatColor.GOLD + args[0]);
 
-		return true;
-	}
+        return true;
+    }
 }

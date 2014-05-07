@@ -18,75 +18,76 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class SorterModule extends DirectionalItemRouterModule {
-	private static final Dye md = makeDye(DyeColor.PURPLE);
+    private static final Dye md = makeDye(DyeColor.PURPLE);
 
-	public SorterModule() {}
+    public SorterModule() {
+    }
 
-	public SorterModule(ConfigurationSection conf) {
-		super(conf);
-	}
+    public SorterModule(ConfigurationSection conf) {
+        super(conf);
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public String getItemName() {
-		return "I.R. Mod: Sorter";
-	}
+    @Override
+    public String getItemName() {
+        return "I.R. Mod: Sorter";
+    }
 
-	@Override
-	public String[] getLore() {
-		return makeDirectionalLore(
-				"Insert into an Item Router",
-				"Places items into inventory IF",
-				"- inventory is empty OR",
-				"- inventory already contains that item"
-		);
-	}
+    @Override
+    public String[] getLore() {
+        return makeDirectionalLore(
+                "Insert into an Item Router",
+                "Places items into inventory IF",
+                "- inventory is empty OR",
+                "- inventory already contains that item"
+        );
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		registerCustomIngredients(new BlankModule());
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(Material.PAPER);
-		recipe.addIngredient(Material.SPIDER_EYE);
-		recipe.addIngredient(Material.ARROW);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        registerCustomIngredients(new BlankModule());
+        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+        recipe.addIngredient(Material.PAPER);
+        recipe.addIngredient(Material.SPIDER_EYE);
+        recipe.addIngredient(Material.ARROW);
+        return recipe;
+    }
 
-	@Override
-	public boolean execute(Location loc) {
-		if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
-			if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
-				return false;
-			}
-			Debugger.getInstance().debug(2, "sorter in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
-			Location targetLoc = getTargetLocation(loc);
-			int nToInsert = getItemRouter().getStackSize();
-			STBBlock stb = LocationManager.getManager().get(targetLoc);
-			int nInserted;
-			if (stb instanceof STBInventoryHolder) {
-				ItemStack toInsert = getItemRouter().getBufferItem().clone();
-				toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
-				nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), true, getItemRouter().getOwner());
-			} else {
-				// vanilla inventory holder?
-				nInserted = vanillaSortInsertion(targetLoc.getBlock(), nToInsert, getDirection().getOppositeFace());
-			}
-			getItemRouter().reduceBuffer(nInserted);
-			return nInserted > 0;
-		}
-		return false;
-	}
+    @Override
+    public boolean execute(Location loc) {
+        if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
+            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
+                return false;
+            }
+            Debugger.getInstance().debug(2, "sorter in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
+            Location targetLoc = getTargetLocation(loc);
+            int nToInsert = getItemRouter().getStackSize();
+            STBBlock stb = LocationManager.getManager().get(targetLoc);
+            int nInserted;
+            if (stb instanceof STBInventoryHolder) {
+                ItemStack toInsert = getItemRouter().getBufferItem().clone();
+                toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
+                nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), true, getItemRouter().getOwner());
+            } else {
+                // vanilla inventory holder?
+                nInserted = vanillaSortInsertion(targetLoc.getBlock(), nToInsert, getDirection().getOppositeFace());
+            }
+            getItemRouter().reduceBuffer(nInserted);
+            return nInserted > 0;
+        }
+        return false;
+    }
 
-	private int vanillaSortInsertion(Block target, int amount, BlockFace side) {
-		ItemStack buffer = getItemRouter().getBufferItem();
-		int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, true);
-		if (nInserted > 0) {
-			getItemRouter().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
-		}
-		return nInserted;
-	}
+    private int vanillaSortInsertion(Block target, int amount, BlockFace side) {
+        ItemStack buffer = getItemRouter().getBufferItem();
+        int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, true);
+        if (nInserted > 0) {
+            getItemRouter().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
+        }
+        return nInserted;
+    }
 }

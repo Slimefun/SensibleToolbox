@@ -4,22 +4,22 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class Generator extends AbstractProcessingMachine {
-	public Generator(ConfigurationSection conf) {
-		super(conf);
-	}
+    public Generator(ConfigurationSection conf) {
+        super(conf);
+    }
 
-	public Generator() {
-		super();
-		setChargeDirection(ChargeDirection.CELL);
-	}
+    public Generator() {
+        super();
+        setChargeDirection(ChargeDirection.CELL);
+    }
 
-	@Override
-	public boolean acceptsEnergy(BlockFace face) {
-		return false;
-	}
+    @Override
+    public boolean acceptsEnergy(BlockFace face) {
+        return false;
+    }
 
-	@Override
-	public boolean suppliesEnergy(BlockFace face) {
-		return true;
-	}
+    @Override
+    public boolean suppliesEnergy(BlockFace face) {
+        return true;
+    }
 }

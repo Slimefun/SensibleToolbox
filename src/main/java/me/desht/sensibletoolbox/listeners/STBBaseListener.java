@@ -13,11 +13,11 @@ import org.bukkit.inventory.Inventory;
 import java.util.Set;
 
 public abstract class STBBaseListener implements Listener {
-	protected SensibleToolboxPlugin plugin;
+    protected SensibleToolboxPlugin plugin;
 
-	public STBBaseListener(SensibleToolboxPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public STBBaseListener(SensibleToolboxPlugin plugin) {
+        this.plugin = plugin;
+    }
 
 //	protected void filterItemsAllowed(InventoryClickEvent event, Class<? extends BaseSTBItem> c) {
 //		Inventory topInv = event.getView().getTopInventory();

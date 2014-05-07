@@ -7,43 +7,43 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class SpeedUpgrade extends MachineUpgrade {
-	private static final MaterialData md = new MaterialData(Material.SUGAR);
+    private static final MaterialData md = new MaterialData(Material.SUGAR);
 
-	public SpeedUpgrade() {
-	}
+    public SpeedUpgrade() {
+    }
 
-	public SpeedUpgrade(ConfigurationSection conf) {
-		super(conf);
-	}
+    public SpeedUpgrade(ConfigurationSection conf) {
+        super(conf);
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public boolean hasGlow() {
-		return true;
-	}
+    @Override
+    public boolean hasGlow() {
+        return true;
+    }
 
-	@Override
-	public String getItemName() {
-		return "Speed Upgrade";
-	}
+    @Override
+    public String getItemName() {
+        return "Speed Upgrade";
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] { "Place in a machine block" , "Increases speed by 40%", "Increases power usage by 60%" };
-	}
+    @Override
+    public String[] getLore() {
+        return new String[]{"Place in a machine block", "Increases speed by 40%", "Increases power usage by 60%"};
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("IRI", "IBI", "IGI");
-		recipe.setIngredient('I', Material.IRON_FENCE);
-		recipe.setIngredient('R', Material.REDSTONE);
-		recipe.setIngredient('B', Material.BLAZE_ROD);
-		recipe.setIngredient('G', Material.GOLD_INGOT);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        recipe.shape("IRI", "IBI", "IGI");
+        recipe.setIngredient('I', Material.IRON_FENCE);
+        recipe.setIngredient('R', Material.REDSTONE);
+        recipe.setIngredient('B', Material.BLAZE_ROD);
+        recipe.setIngredient('G', Material.GOLD_INGOT);
+        return recipe;
+    }
 }

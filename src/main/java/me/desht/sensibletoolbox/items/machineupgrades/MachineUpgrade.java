@@ -5,19 +5,19 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public abstract class MachineUpgrade extends BaseSTBItem {
-	private int amount;
+    private int amount;
 
-	protected MachineUpgrade() {
-	}
+    protected MachineUpgrade() {
+    }
 
-	public MachineUpgrade(ConfigurationSection conf) {
-	}
+    public MachineUpgrade(ConfigurationSection conf) {
+    }
 
-	public int getAmount() {
-		return amount;
-	}
+    public int getAmount() {
+        return amount;
+    }
 
-	public void setAmount(int amount) {
-		this.amount = amount;
-	}
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }

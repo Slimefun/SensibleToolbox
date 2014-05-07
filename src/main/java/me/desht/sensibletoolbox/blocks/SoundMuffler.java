@@ -21,135 +21,135 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 
 public class SoundMuffler extends BaseSTBBlock {
-	private static final MaterialData md = new Wool(DyeColor.WHITE);
-	public static final int DISTANCE = 8;
-	private int volume; // 0-100
+    private static final MaterialData md = new Wool(DyeColor.WHITE);
+    public static final int DISTANCE = 8;
+    private int volume; // 0-100
 
-	public SoundMuffler() {
-		volume = 10;
-		createGUI();
-	}
+    public SoundMuffler() {
+        volume = 10;
+        createGUI();
+    }
 
-	public SoundMuffler(ConfigurationSection conf) {
-		super(conf);
-		volume = conf.getInt("volume");
-		createGUI();
-	}
+    public SoundMuffler(ConfigurationSection conf) {
+        super(conf);
+        volume = conf.getInt("volume");
+        createGUI();
+    }
 
-	@Override
-	protected InventoryGUI createGUI() {
-		InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
-		gui.addGadget(new NumericGadget(gui, "Volume", new IntRange(0, 100), getVolume(), 10, 1,new NumericGadget.UpdateListener() {
-			@Override
-			public boolean run(int value) {
-				setVolume(value);
-				return true;
-			}
-		}), 0);
-		return gui;
-	}
+    @Override
+    protected InventoryGUI createGUI() {
+        InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
+        gui.addGadget(new NumericGadget(gui, "Volume", new IntRange(0, 100), getVolume(), 10, 1, new NumericGadget.UpdateListener() {
+            @Override
+            public boolean run(int value) {
+                setVolume(value);
+                return true;
+            }
+        }), 0);
+        return gui;
+    }
 
-	public YamlConfiguration freeze() {
-		YamlConfiguration conf = super.freeze();
-		conf.set("volume", volume);
-		return conf;
-	}
+    public YamlConfiguration freeze() {
+        YamlConfiguration conf = super.freeze();
+        conf.set("volume", volume);
+        return conf;
+    }
 
-	@Override
-	public void setLocation(Location loc) {
-		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-			if (loc == null && getLocation() != null) {
-				SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
-			}
-			super.setLocation(loc);
-			if (loc != null) {
-				SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
-			}
-		} else {
-			super.setLocation(loc);
-		}
-	}
+    @Override
+    public void setLocation(Location loc) {
+        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+            if (loc == null && getLocation() != null) {
+                SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
+            }
+            super.setLocation(loc);
+            if (loc != null) {
+                SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+            }
+        } else {
+            super.setLocation(loc);
+        }
+    }
 
-	public int getVolume() {
-		return volume;
-	}
+    public int getVolume() {
+        return volume;
+    }
 
-	public void setVolume(int volume) {
-		this.volume = volume;
-		updateBlock(false);
-	}
+    public void setVolume(int volume) {
+        this.volume = volume;
+        updateBlock(false);
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public String getItemName() {
-		return "Sound Muffler";
-	}
+    @Override
+    public String getItemName() {
+        return "Sound Muffler";
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] {
-				"Reduces the volume of all sounds",
-				"within a " + DISTANCE + "-block radius",
-				"R-click: " + ChatColor.RESET + " open configuration"
-		};
-	}
+    @Override
+    public String[] getLore() {
+        return new String[]{
+                "Reduces the volume of all sounds",
+                "within a " + DISTANCE + "-block radius",
+                "R-click: " + ChatColor.RESET + " open configuration"
+        };
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("WWW", "WNW", "WWW");
-		recipe.setIngredient('W', Material.WOOL);
-		recipe.setIngredient('N', Material.NOTE_BLOCK);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        recipe.shape("WWW", "WNW", "WWW");
+        recipe.setIngredient('W', Material.WOOL);
+        recipe.setIngredient('N', Material.NOTE_BLOCK);
+        return recipe;
+    }
 
-	@Override
-	public void onBlockPlace(BlockPlaceEvent event) {
-		super.onBlockPlace(event);
-		SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
-	}
+    @Override
+    public void onBlockPlace(BlockPlaceEvent event) {
+        super.onBlockPlace(event);
+        SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+    }
 
-	@Override
-	public void onBlockBreak(BlockBreakEvent event) {
-		super.onBlockBreak(event);
-		SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
-	}
+    @Override
+    public void onBlockBreak(BlockBreakEvent event) {
+        super.onBlockBreak(event);
+        SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
+    }
 
-	@Override
-	public void onInteractBlock(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
-			getGUI().show(event.getPlayer());
-		}
-		super.onInteractBlock(event);
-	}
+    @Override
+    public void onInteractBlock(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
+            getGUI().show(event.getPlayer());
+        }
+        super.onInteractBlock(event);
+    }
 
-	@Override
-	public boolean shouldTick() {
-		return true;
-	}
+    @Override
+    public boolean shouldTick() {
+        return true;
+    }
 
-	@Override
-	public void onServerTick() {
-		Location loc = getLocation();
-		if (getTicksLived() % 40 == 0) {
-			if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-				ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
-			}
-		}
-		super.onServerTick();
-	}
+    @Override
+    public void onServerTick() {
+        Location loc = getLocation();
+        if (getTicksLived() % 40 == 0) {
+            if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+                ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
+            }
+        }
+        super.onServerTick();
+    }
 
-	@Override
-	public String[] getSignLabel() {
-		return new String[] {
-				getItemName(),
-				ChatColor.DARK_RED + "Volume " + ChatColor.RESET + getVolume(),
-				"",
-				""
-		};
-	}
+    @Override
+    public String[] getSignLabel() {
+        return new String[]{
+                getItemName(),
+                ChatColor.DARK_RED + "Volume " + ChatColor.RESET + getVolume(),
+                "",
+                ""
+        };
+    }
 }

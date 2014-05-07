@@ -11,36 +11,36 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class CircuitBoard extends BaseSTBItem {
-	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.CARPET, DyeColor.GREEN);
+    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.CARPET, DyeColor.GREEN);
 
-	public CircuitBoard() {
-	}
+    public CircuitBoard() {
+    }
 
-	public CircuitBoard(ConfigurationSection conf) {
-	}
+    public CircuitBoard(ConfigurationSection conf) {
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public String getItemName() {
-		return "Circuit Board";
-	}
+    @Override
+    public String getItemName() {
+        return "Circuit Board";
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] { "Used in the construction", "of electronic circuits" };
-	}
+    @Override
+    public String[] getLore() {
+        return new String[]{"Used in the construction", "of electronic circuits"};
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		Dye greenDye = new Dye();
-		greenDye.setColor(DyeColor.GREEN);
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(2));
-		recipe.addIngredient(Material.STONE_PLATE);
-		recipe.addIngredient(greenDye);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        Dye greenDye = new Dye();
+        greenDye.setColor(DyeColor.GREEN);
+        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(2));
+        recipe.addIngredient(Material.STONE_PLATE);
+        recipe.addIngredient(greenDye);
+        return recipe;
+    }
 }

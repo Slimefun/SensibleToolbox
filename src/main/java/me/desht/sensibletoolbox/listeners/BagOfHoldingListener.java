@@ -16,23 +16,23 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class BagOfHoldingListener extends STBBaseListener {
-	public BagOfHoldingListener(SensibleToolboxPlugin plugin) {
-		super(plugin);
-	}
+    public BagOfHoldingListener(SensibleToolboxPlugin plugin) {
+        super(plugin);
+    }
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void bagOfHoldingClosed(InventoryCloseEvent event) {
-		if (event.getPlayer() instanceof Player && event.getInventory().getTitle().equals(new BagOfHolding().getInventoryTitle())) {
-			Player player = (Player) event.getPlayer();
-			String encoded = BukkitSerialization.toBase64(event.getInventory());
-			File file = BagOfHolding.getSaveFile(player);
-			try {
-				Files.write(encoded, file, Charset.forName("UTF-8"));
-				Debugger.getInstance().debug("saved bag of holding to " + file);
-			} catch (IOException e) {
-				MiscUtil.errorMessage(player, "Can't save bag contents! " + e.getMessage());
-			}
-		}
-	}
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void bagOfHoldingClosed(InventoryCloseEvent event) {
+        if (event.getPlayer() instanceof Player && event.getInventory().getTitle().equals(new BagOfHolding().getInventoryTitle())) {
+            Player player = (Player) event.getPlayer();
+            String encoded = BukkitSerialization.toBase64(event.getInventory());
+            File file = BagOfHolding.getSaveFile(player);
+            try {
+                Files.write(encoded, file, Charset.forName("UTF-8"));
+                Debugger.getInstance().debug("saved bag of holding to " + file);
+            } catch (IOException e) {
+                MiscUtil.errorMessage(player, "Can't save bag contents! " + e.getMessage());
+            }
+        }
+    }
 
 }

@@ -15,149 +15,149 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class AdvancedSenderModule extends DirectionalItemRouterModule {
-	private static final int RANGE = 24;
-	private static final Dye md = makeDye(DyeColor.LIGHT_BLUE);
-	private Location linkedLoc;
+    private static final int RANGE = 24;
+    private static final Dye md = makeDye(DyeColor.LIGHT_BLUE);
+    private Location linkedLoc;
 
-	public AdvancedSenderModule() {
-		linkedLoc = null;
-	}
+    public AdvancedSenderModule() {
+        linkedLoc = null;
+    }
 
-	public AdvancedSenderModule(ConfigurationSection conf) {
-		super(conf);
-		if (conf.contains("linkedLoc")) {
-			try {
-				linkedLoc = MiscUtil.parseLocation(conf.getString("linkedLoc"));
-			} catch (IllegalArgumentException e) {
-				linkedLoc = null;
-			}
-		}
-	}
+    public AdvancedSenderModule(ConfigurationSection conf) {
+        super(conf);
+        if (conf.contains("linkedLoc")) {
+            try {
+                linkedLoc = MiscUtil.parseLocation(conf.getString("linkedLoc"));
+            } catch (IllegalArgumentException e) {
+                linkedLoc = null;
+            }
+        }
+    }
 
-	@Override
-	public YamlConfiguration freeze() {
-		YamlConfiguration conf = super.freeze();
-		if (linkedLoc != null) {
-			conf.set("linkedLoc", MiscUtil.formatLocation(linkedLoc));
-		}
-		return conf;
-	}
+    @Override
+    public YamlConfiguration freeze() {
+        YamlConfiguration conf = super.freeze();
+        if (linkedLoc != null) {
+            conf.set("linkedLoc", MiscUtil.formatLocation(linkedLoc));
+        }
+        return conf;
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public String getItemName() {
-		return "I.R. Mod: Adv. Sender";
-	}
+    @Override
+    public String getItemName() {
+        return "I.R. Mod: Adv. Sender";
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] {
-				"Insert into an Item Router",
-				"Sends items to a linked Receiver Module",
-				" anywhere within a " + RANGE + "-block radius",
-				" (line of sight is not needed)",
-				"L-Click item router with installed",
-				" Receiver Module: " + ChatColor.RESET + " Link Adv. Sender",
-				"⇧ + L-Click anywhere: " + ChatColor.RESET + " Unlink Adv. Sender"
-		};
-	}
+    @Override
+    public String[] getLore() {
+        return new String[]{
+                "Insert into an Item Router",
+                "Sends items to a linked Receiver Module",
+                " anywhere within a " + RANGE + "-block radius",
+                " (line of sight is not needed)",
+                "L-Click item router with installed",
+                " Receiver Module: " + ChatColor.RESET + " Link Adv. Sender",
+                "⇧ + L-Click anywhere: " + ChatColor.RESET + " Unlink Adv. Sender"
+        };
+    }
 
-	@Override
-	public String getDisplaySuffix() {
-		if (linkedLoc == null) {
-			return "[Not Linked]";
-		} else {
-			String prefix = "";
-			if (getItemRouter() != null) {
-				Location loc = getItemRouter().getLocation();
-				if (loc.getWorld() != linkedLoc.getWorld() || loc.distanceSquared(linkedLoc) > RANGE * RANGE) {
-					prefix = ChatColor.RED.toString() + ChatColor.ITALIC;
-				}
-			} else if (LocationManager.getManager().get(linkedLoc, ItemRouter.class) == null) {
-				prefix = ChatColor.RED.toString() + ChatColor.STRIKETHROUGH;
-			}
-			return prefix + "[" + MiscUtil.formatLocation(linkedLoc) + "]";
-		}
-	}
+    @Override
+    public String getDisplaySuffix() {
+        if (linkedLoc == null) {
+            return "[Not Linked]";
+        } else {
+            String prefix = "";
+            if (getItemRouter() != null) {
+                Location loc = getItemRouter().getLocation();
+                if (loc.getWorld() != linkedLoc.getWorld() || loc.distanceSquared(linkedLoc) > RANGE * RANGE) {
+                    prefix = ChatColor.RED.toString() + ChatColor.ITALIC;
+                }
+            } else if (LocationManager.getManager().get(linkedLoc, ItemRouter.class) == null) {
+                prefix = ChatColor.RED.toString() + ChatColor.STRIKETHROUGH;
+            }
+            return prefix + "[" + MiscUtil.formatLocation(linkedLoc) + "]";
+        }
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		SenderModule sm = new SenderModule();
-		registerCustomIngredients(sm);
-		ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-		recipe.addIngredient(sm.getMaterialData());
-		recipe.addIngredient(Material.EYE_OF_ENDER);
-		recipe.addIngredient(Material.DIAMOND);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        SenderModule sm = new SenderModule();
+        registerCustomIngredients(sm);
+        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+        recipe.addIngredient(sm.getMaterialData());
+        recipe.addIngredient(Material.EYE_OF_ENDER);
+        recipe.addIngredient(Material.DIAMOND);
+        return recipe;
+    }
 
-	@Override
-	public void onInteractItem(PlayerInteractEvent event) {
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
-			// try to link up with a receiver module
-			boolean linked = false;
-			ItemRouter rtr = LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
-			if (rtr != null) {
-				for (ItemRouterModule mod : rtr.getInstalledModules()) {
-					if (mod instanceof ReceiverModule) {
-						linkToRouter(rtr);
-						event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
-						linked = true;
-						break;
-					}
-				}
-			}
-			event.getPlayer().playSound(event.getPlayer().getLocation(), linked ? Sound.ORB_PICKUP : Sound.NOTE_BASS, 1.0f, 1.0f);
-			event.setCancelled(true);
-		} else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
-			linkToRouter(null);
-			event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-			event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
-			event.setCancelled(true);
-		} else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
-				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			super.onInteractItem(event);
-		}
-	}
+    @Override
+    public void onInteractItem(PlayerInteractEvent event) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
+            // try to link up with a receiver module
+            boolean linked = false;
+            ItemRouter rtr = LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
+            if (rtr != null) {
+                for (ItemRouterModule mod : rtr.getInstalledModules()) {
+                    if (mod instanceof ReceiverModule) {
+                        linkToRouter(rtr);
+                        event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+                        linked = true;
+                        break;
+                    }
+                }
+            }
+            event.getPlayer().playSound(event.getPlayer().getLocation(), linked ? Sound.ORB_PICKUP : Sound.NOTE_BASS, 1.0f, 1.0f);
+            event.setCancelled(true);
+        } else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+            linkToRouter(null);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+            event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+            event.setCancelled(true);
+        } else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
+                (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            super.onInteractItem(event);
+        }
+    }
 
-	public void linkToRouter(ItemRouter rtr) {
-		linkedLoc = rtr == null ? null : rtr.getLocation();
-	}
+    public void linkToRouter(ItemRouter rtr) {
+        linkedLoc = rtr == null ? null : rtr.getLocation();
+    }
 
-	@Override
-	public boolean execute(Location loc) {
-		if (getItemRouter() != null && getItemRouter().getBufferItem() != null && linkedLoc != null) {
-			if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
-				return false;
-			}
-			ItemRouter rtr = LocationManager.getManager().get(linkedLoc, ItemRouter.class);
-			if (rtr != null) {
-				Location loc2 = rtr.getLocation();
-				if (loc.getWorld() != loc2.getWorld() || loc.distanceSquared(loc2) > RANGE * RANGE) {
-					return false;
-				}
-				for (ItemRouterModule mod : rtr.getInstalledModules()) {
-					if (mod instanceof ReceiverModule) {
-						int sent = sendItems((ReceiverModule) mod);
-						return sent > 0;
-					}
-				}
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean execute(Location loc) {
+        if (getItemRouter() != null && getItemRouter().getBufferItem() != null && linkedLoc != null) {
+            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
+                return false;
+            }
+            ItemRouter rtr = LocationManager.getManager().get(linkedLoc, ItemRouter.class);
+            if (rtr != null) {
+                Location loc2 = rtr.getLocation();
+                if (loc.getWorld() != loc2.getWorld() || loc.distanceSquared(loc2) > RANGE * RANGE) {
+                    return false;
+                }
+                for (ItemRouterModule mod : rtr.getInstalledModules()) {
+                    if (mod instanceof ReceiverModule) {
+                        int sent = sendItems((ReceiverModule) mod);
+                        return sent > 0;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
-	private int sendItems(ReceiverModule receiver) {
-		System.out.println(this.getItemRouter() + ": adv.sender sending items to receiver module in " + receiver.getItemRouter());
-		int nToSend = getItemRouter().getStackSize();
-		ItemStack toSend = getItemRouter().getBufferItem().clone();
-		toSend.setAmount(Math.min(nToSend, toSend.getAmount()));
-		int received = receiver.receiveItem(toSend, getItemRouter().getOwner());
-		getItemRouter().reduceBuffer(received);
-		return received;
-	}
+    private int sendItems(ReceiverModule receiver) {
+        System.out.println(this.getItemRouter() + ": adv.sender sending items to receiver module in " + receiver.getItemRouter());
+        int nToSend = getItemRouter().getStackSize();
+        ItemStack toSend = getItemRouter().getBufferItem().clone();
+        toSend.setAmount(Math.min(nToSend, toSend.getAmount()));
+        int received = receiver.receiveItem(toSend, getItemRouter().getOwner());
+        getItemRouter().reduceBuffer(received);
+        return received;
+    }
 }

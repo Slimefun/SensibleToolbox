@@ -15,47 +15,47 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SoundMufflerListener extends PacketAdapter implements Listener {
-	private final Set<SoundMuffler> mufflers = new HashSet<SoundMuffler>();
+    private final Set<SoundMuffler> mufflers = new HashSet<SoundMuffler>();
 
-	public SoundMufflerListener(Plugin plugin) {
-		super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.NAMED_SOUND_EFFECT);
-	}
+    public SoundMufflerListener(Plugin plugin) {
+        super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.NAMED_SOUND_EFFECT);
+    }
 
-	@Override
-	public void onPacketSending(PacketEvent event) {
-		int distance = SoundMuffler.DISTANCE * SoundMuffler.DISTANCE;
-		if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-			int x = event.getPacket().getIntegers().read(0) >> 3;
-			int y = event.getPacket().getIntegers().read(1) >> 3;
-			int z = event.getPacket().getIntegers().read(2) >> 3;
-			Location loc = new Location(event.getPlayer().getWorld(), x, y, z);
-			for (SoundMuffler sm : mufflers) {
-				if (loc.getWorld().equals(sm.getLocation().getWorld()) && loc.distanceSquared(sm.getLocation()) < distance) {
-					if (sm.getVolume() == 0) {
-						event.setCancelled(true);
-					} else {
-						event.getPacket().getFloat().write(0, (float) sm.getVolume() / 100.0f);
-					}
-				}
-			}
-		}
-	}
+    @Override
+    public void onPacketSending(PacketEvent event) {
+        int distance = SoundMuffler.DISTANCE * SoundMuffler.DISTANCE;
+        if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+            int x = event.getPacket().getIntegers().read(0) >> 3;
+            int y = event.getPacket().getIntegers().read(1) >> 3;
+            int z = event.getPacket().getIntegers().read(2) >> 3;
+            Location loc = new Location(event.getPlayer().getWorld(), x, y, z);
+            for (SoundMuffler sm : mufflers) {
+                if (loc.getWorld().equals(sm.getLocation().getWorld()) && loc.distanceSquared(sm.getLocation()) < distance) {
+                    if (sm.getVolume() == 0) {
+                        event.setCancelled(true);
+                    } else {
+                        event.getPacket().getFloat().write(0, (float) sm.getVolume() / 100.0f);
+                    }
+                }
+            }
+        }
+    }
 
-	public void registerMuffler(SoundMuffler m) {
-		Debugger.getInstance().debug("register sound muffler @ " + m.getLocation());
-		mufflers.add(m);
-	}
+    public void registerMuffler(SoundMuffler m) {
+        Debugger.getInstance().debug("register sound muffler @ " + m.getLocation());
+        mufflers.add(m);
+    }
 
-	public void unregisterMuffler(SoundMuffler m) {
-		Debugger.getInstance().debug("unregister sound muffler @ " + m.getLocation());
-		mufflers.remove(m);
-	}
+    public void unregisterMuffler(SoundMuffler m) {
+        Debugger.getInstance().debug("unregister sound muffler @ " + m.getLocation());
+        mufflers.remove(m);
+    }
 
-	public void clear() {
-		mufflers.clear();
-	}
+    public void clear() {
+        mufflers.clear();
+    }
 
-	public void start() {
-		ProtocolLibrary.getProtocolManager().addPacketListener(this);
-	}
+    public void start() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(this);
+    }
 }

@@ -11,19 +11,19 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 public class WorldListener extends STBBaseListener {
-	public WorldListener(SensibleToolboxPlugin plugin) {
-		super(plugin);
-	}
+    public WorldListener(SensibleToolboxPlugin plugin) {
+        super(plugin);
+    }
 
-	@EventHandler
-	public void onWorldLoad(WorldLoadEvent event) {
-		LocationManager.getManager().worldLoaded(event.getWorld());
-	}
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        LocationManager.getManager().worldLoaded(event.getWorld());
+    }
 
-	@EventHandler
-	public void onWorldUnLoad(WorldUnloadEvent event) {
-		LocationManager.getManager().worldUnloaded(event.getWorld());
-	}
+    @EventHandler
+    public void onWorldUnLoad(WorldUnloadEvent event) {
+        LocationManager.getManager().worldUnloaded(event.getWorld());
+    }
 
 //	@EventHandler(priority = EventPriority.MONITOR)
 //	public void onChunkUnload(ChunkUnloadEvent event) {

@@ -20,57 +20,57 @@ import org.bukkit.material.Attachable;
 import org.bukkit.plugin.Plugin;
 
 public class ChargeCommand extends AbstractCommand {
-	public ChargeCommand() {
-		super("stb charge", 0, 1);
-		setPermissionNode("stb.commands.charge");
-		setUsage("/<command> charge <amount>");
-	}
+    public ChargeCommand() {
+        super("stb charge", 0, 1);
+        setPermissionNode("stb.commands.charge");
+        setUsage("/<command> charge <amount>");
+    }
 
-	@Override
-	public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
-		notFromConsole(sender);
+    @Override
+    public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
+        notFromConsole(sender);
 
-		Player player = (Player) sender;
-		STBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
-		BaseSTBBlock stb = null;
-		Chargeable c = null;
-		if (item != null && item instanceof Chargeable) {
-			c = (Chargeable) item;
-		} else {
-			// maybe there's a chargeable block targeted
-			Block b = player.getTargetBlock(null, 10);
-			if (b != null) {
-				if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
-					Sign s = (Sign) b.getState();
-					b = b.getRelative(((Attachable) s.getData()).getAttachedFace());
-				}
-				stb = LocationManager.getManager().get(b.getLocation());
-				if (stb != null && stb instanceof Chargeable) {
-					c = (Chargeable) stb;
-				}
-			}
-		}
-		DHValidate.notNull(c, "Nothing suitable to charge.");
-		int max = c.getMaxCharge();
-		int amount;
-		if (args.length > 0) {
-			try {
-				amount = Integer.parseInt(args[0]);
-				Validate.isTrue(amount >= 0 && amount <= max, "Must be in range 0-" + max);
-			} catch (IllegalArgumentException e) {
-				throw new DHUtilsException("Invalid value: " + args[0] + " - " + e.getMessage());
-			}
-		} else {
-			amount = max;
-		}
+        Player player = (Player) sender;
+        STBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
+        BaseSTBBlock stb = null;
+        Chargeable c = null;
+        if (item != null && item instanceof Chargeable) {
+            c = (Chargeable) item;
+        } else {
+            // maybe there's a chargeable block targeted
+            Block b = player.getTargetBlock(null, 10);
+            if (b != null) {
+                if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
+                    Sign s = (Sign) b.getState();
+                    b = b.getRelative(((Attachable) s.getData()).getAttachedFace());
+                }
+                stb = LocationManager.getManager().get(b.getLocation());
+                if (stb != null && stb instanceof Chargeable) {
+                    c = (Chargeable) stb;
+                }
+            }
+        }
+        DHValidate.notNull(c, "Nothing suitable to charge.");
+        int max = c.getMaxCharge();
+        int amount;
+        if (args.length > 0) {
+            try {
+                amount = Integer.parseInt(args[0]);
+                Validate.isTrue(amount >= 0 && amount <= max, "Must be in range 0-" + max);
+            } catch (IllegalArgumentException e) {
+                throw new DHUtilsException("Invalid value: " + args[0] + " - " + e.getMessage());
+            }
+        } else {
+            amount = max;
+        }
 
-		c.setCharge(amount);
-		if (item != null) {
-			player.setItemInHand(item.toItemStack());
-		} else if (stb != null) {
-			stb.updateBlock(true);
-			MiscUtil.statusMessage(player, "&6" + stb.getItemName() + "&- charged to " + STBUtil.getChargeString(c));
-		}
-		return true;
-	}
+        c.setCharge(amount);
+        if (item != null) {
+            player.setItemInHand(item.toItemStack());
+        } else if (stb != null) {
+            stb.updateBlock(true);
+            MiscUtil.statusMessage(player, "&6" + stb.getItemName() + "&- charged to " + STBUtil.getChargeString(c));
+        }
+        return true;
+    }
 }

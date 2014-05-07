@@ -43,174 +43,174 @@ import java.util.UUID;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
-	public static final UUID UNIQUE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
-	private static SensibleToolboxPlugin instance = null;
-	private final CommandManager cmds = new CommandManager(this);
-	private ConfigurationManager configManager;
-	private boolean protocolLibEnabled = false;
-	private boolean isNMSenabled = false;
-	private SoundMufflerListener soundMufflerListener;
-	private FloodlightListener floodlightListener;
-	private PlayerUUIDTracker uuidTracker;
-	private boolean inited = false;
+    public static final UUID UNIQUE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
+    private static SensibleToolboxPlugin instance = null;
+    private final CommandManager cmds = new CommandManager(this);
+    private ConfigurationManager configManager;
+    private boolean protocolLibEnabled = false;
+    private boolean isNMSenabled = false;
+    private SoundMufflerListener soundMufflerListener;
+    private FloodlightListener floodlightListener;
+    private PlayerUUIDTracker uuidTracker;
+    private boolean inited = false;
     private LandslideListener landslideListener;
 
     public static SensibleToolboxPlugin getInstance() {
-		return instance;
-	}
+        return instance;
+    }
 
-	public boolean isNMSenabled() {
-		return isNMSenabled;
-	}
+    public boolean isNMSenabled() {
+        return isNMSenabled;
+    }
 
-	public SoundMufflerListener getSoundMufflerListener() {
-		return soundMufflerListener;
-	}
+    public SoundMufflerListener getSoundMufflerListener() {
+        return soundMufflerListener;
+    }
 
-	public FloodlightListener getFloodlightListener() {
-		return floodlightListener;
-	}
+    public FloodlightListener getFloodlightListener() {
+        return floodlightListener;
+    }
 
-	public PlayerUUIDTracker getUuidTracker() {
-		return uuidTracker;
-	}
+    public PlayerUUIDTracker getUuidTracker() {
+        return uuidTracker;
+    }
 
-	@Override
-	public void onEnable() {
-		instance = this;
+    @Override
+    public void onEnable() {
+        instance = this;
 
-		LogUtils.init(this);
+        LogUtils.init(this);
 
-		configManager = new ConfigurationManager(this, this);
+        configManager = new ConfigurationManager(this, this);
 
-		MiscUtil.init(this);
-		MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
+        MiscUtil.init(this);
+        MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
-		Debugger.getInstance().setPrefix("[STB] ");
-		Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
-		if (getConfig().getInt("debug_level") > 0) {
-			Debugger.getInstance().setTarget(getServer().getConsoleSender());
-		}
+        Debugger.getInstance().setPrefix("[STB] ");
+        Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
+        if (getConfig().getInt("debug_level") > 0) {
+            Debugger.getInstance().setTarget(getServer().getConsoleSender());
+        }
 
-		setupNMS();
-		if (!isNMSenabled) {
-			LogUtils.warning("Unable to initialize NMS abstraction API - looks like this version of CraftBukkit isn't supported.");
-			LogUtils.warning("Sensible Toolbox will continue to run with reduced functionality:");
-			LogUtils.warning("  Floodlight will not cast light (but will still prevent mob spawns");
-		}
+        setupNMS();
+        if (!isNMSenabled) {
+            LogUtils.warning("Unable to initialize NMS abstraction API - looks like this version of CraftBukkit isn't supported.");
+            LogUtils.warning("Sensible Toolbox will continue to run with reduced functionality:");
+            LogUtils.warning("  Floodlight will not cast light (but will still prevent mob spawns");
+        }
 
-		LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
+        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 
-		setupProtocolLib();
-		if (protocolLibEnabled) {
-			ItemGlow.init(this);
-		} else {
-			LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
-			LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
-		}
+        setupProtocolLib();
+        if (protocolLibEnabled) {
+            ItemGlow.init(this);
+        } else {
+            LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
+            LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
+        }
 
         setupLandslide();
 
-		BaseSTBItem.registerItems(this);
-		registerEventListeners();
-		registerCommands();
+        BaseSTBItem.registerItems(this);
+        registerEventListeners();
+        registerCommands();
 
-		try {
-			LocationManager.getManager().load();
-		} catch (Exception e) {
-			e.printStackTrace();
-			setEnabled(false);
-			return;
-		}
+        try {
+            LocationManager.getManager().load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            setEnabled(false);
+            return;
+        }
 
-		MessagePager.setPageCmd("/stb page [#|n|p]");
-		MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
+        MessagePager.setPageCmd("/stb page [#|n|p]");
+        MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
-		BagOfHolding.createSaveDirectory(this);
+        BagOfHolding.createSaveDirectory(this);
 
-		Bukkit.getScheduler().runTask(this, new Runnable() {
-			@Override
-			public void run() {
-				BaseSTBItem.setupRecipes();
-				RecipeBook.buildRecipes();
-			}
-		});
-		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-			@Override
-			public void run() {
-				LocationManager.getManager().tick();
-			}
-		}, 1L, 1L);
-		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-			@Override
-			public void run() {
-				EnergyNetManager.tick();
-			}
-		}, 1L, EnergyNetManager.ENERGY_TICK_RATE);
+        Bukkit.getScheduler().runTask(this, new Runnable() {
+            @Override
+            public void run() {
+                BaseSTBItem.setupRecipes();
+                RecipeBook.buildRecipes();
+            }
+        });
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                LocationManager.getManager().tick();
+            }
+        }, 1L, 1L);
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                EnergyNetManager.tick();
+            }
+        }, 1L, EnergyNetManager.ENERGY_TICK_RATE);
 
-		inited = true;
-	}
+        inited = true;
+    }
 
-	public void onDisable() {
-		if (!inited) {
-			return;
-		}
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			// Any open inventory GUI's must be closed -
-			// if they stay open after server reload, event dispatch will probably not work,
-			// allowing fake items to be removed from them - not a good thing
-			InventoryGUI gui = InventoryGUI.getOpenGUI(p);
-			if (gui != null) {
-				gui.hide(p);
-				p.closeInventory();
-			}
-		}
-		if (soundMufflerListener != null) {
-			soundMufflerListener.clear();
-		}
-		LocationManager.getManager().save();
-		LocationManager.getManager().shutdown();
+    public void onDisable() {
+        if (!inited) {
+            return;
+        }
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            // Any open inventory GUI's must be closed -
+            // if they stay open after server reload, event dispatch will probably not work,
+            // allowing fake items to be removed from them - not a good thing
+            InventoryGUI gui = InventoryGUI.getOpenGUI(p);
+            if (gui != null) {
+                gui.hide(p);
+                p.closeInventory();
+            }
+        }
+        if (soundMufflerListener != null) {
+            soundMufflerListener.clear();
+        }
+        LocationManager.getManager().save();
+        LocationManager.getManager().shutdown();
 
-		Bukkit.getScheduler().cancelTasks(this);
+        Bukkit.getScheduler().cancelTasks(this);
 
-		instance = null;
-	}
+        instance = null;
+    }
 
-	private void setupNMS() {
-		try {
-			NMSHelper.init(this);
-			isNMSenabled = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			// do nothing
-		}
-	}
+    private void setupNMS() {
+        try {
+            NMSHelper.init(this);
+            isNMSenabled = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // do nothing
+        }
+    }
 
-	private void registerEventListeners() {
-		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvents(new GeneralListener(this), this);
-		pm.registerEvents(new WorldListener(this), this);
-		pm.registerEvents(new BagOfHoldingListener(this), this);
-		pm.registerEvents(new TrashCanListener(this), this);
-		pm.registerEvents(new ElevatorListener(this), this);
-		pm.registerEvents(new AnvilListener(this), this);
-		uuidTracker = new PlayerUUIDTracker(this);
-		pm.registerEvents(uuidTracker, this);
-		if (isProtocolLibEnabled()) {
-			soundMufflerListener = new SoundMufflerListener(this);
-			soundMufflerListener.start();
-		}
-		floodlightListener = new FloodlightListener(this);
-		pm.registerEvents(floodlightListener, this);
-	}
+    private void registerEventListeners() {
+        PluginManager pm = this.getServer().getPluginManager();
+        pm.registerEvents(new GeneralListener(this), this);
+        pm.registerEvents(new WorldListener(this), this);
+        pm.registerEvents(new BagOfHoldingListener(this), this);
+        pm.registerEvents(new TrashCanListener(this), this);
+        pm.registerEvents(new ElevatorListener(this), this);
+        pm.registerEvents(new AnvilListener(this), this);
+        uuidTracker = new PlayerUUIDTracker(this);
+        pm.registerEvents(uuidTracker, this);
+        if (isProtocolLibEnabled()) {
+            soundMufflerListener = new SoundMufflerListener(this);
+            soundMufflerListener.start();
+        }
+        floodlightListener = new FloodlightListener(this);
+        pm.registerEvents(floodlightListener, this);
+    }
 
-	private void setupProtocolLib() {
-		Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
-		if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
-			protocolLibEnabled = true;
-			LogUtils.fine("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
-		}
-	}
+    private void setupProtocolLib() {
+        Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
+        if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
+            protocolLibEnabled = true;
+            LogUtils.fine("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
+        }
+    }
 
     private void setupLandslide() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Landslide");
@@ -221,63 +221,62 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
 
-
     public boolean isProtocolLibEnabled() {
-		return protocolLibEnabled;
-	}
+        return protocolLibEnabled;
+    }
 
-	private void registerCommands() {
-		cmds.registerCommand(new SaveCommand());
-		cmds.registerCommand(new RenameCommand());
-		cmds.registerCommand(new GiveCommand());
-		cmds.registerCommand(new ShowCommand());
-		cmds.registerCommand(new ChargeCommand());
-		cmds.registerCommand(new GetcfgCommand());
-		cmds.registerCommand(new SetcfgCommand());
-		cmds.registerCommand(new DebugCommand());
-		cmds.registerCommand(new ParticleCommand());
-		cmds.registerCommand(new SoundCommand());
-		cmds.registerCommand(new RecipeCommand());
-	}
+    private void registerCommands() {
+        cmds.registerCommand(new SaveCommand());
+        cmds.registerCommand(new RenameCommand());
+        cmds.registerCommand(new GiveCommand());
+        cmds.registerCommand(new ShowCommand());
+        cmds.registerCommand(new ChargeCommand());
+        cmds.registerCommand(new GetcfgCommand());
+        cmds.registerCommand(new SetcfgCommand());
+        cmds.registerCommand(new DebugCommand());
+        cmds.registerCommand(new ParticleCommand());
+        cmds.registerCommand(new SoundCommand());
+        cmds.registerCommand(new RecipeCommand());
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		try {
-			return cmds.dispatch(sender, command, label, args);
-		} catch (DHUtilsException e) {
-			MiscUtil.errorMessage(sender, e.getMessage());
-			return true;
-		}
-	}
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        try {
+            return cmds.dispatch(sender, command, label, args);
+        } catch (DHUtilsException e) {
+            MiscUtil.errorMessage(sender, e.getMessage());
+            return true;
+        }
+    }
 
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		return cmds.onTabComplete(sender, command, label, args);
-	}
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        return cmds.onTabComplete(sender, command, label, args);
+    }
 
-	@Override
-	public void onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
-		if (key.equals("save_interval")) {
-			DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
-		}
-	}
+    @Override
+    public void onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+        if (key.equals("save_interval")) {
+            DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
+        }
+    }
 
-	@Override
-	public void onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
-		if (key.equals("debug_level")) {
-			Debugger dbg = Debugger.getInstance();
-			dbg.setLevel((Integer) newVal);
-			if (dbg.getLevel() > 0) {
-				dbg.setTarget(getServer().getConsoleSender());
-			} else {
-				dbg.setTarget(null);
-			}
-		} else if (key.equals("save_interval")) {
-			LocationManager.getManager().setSaveInterval((Integer) newVal);
-		}
-	}
+    @Override
+    public void onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+        if (key.equals("debug_level")) {
+            Debugger dbg = Debugger.getInstance();
+            dbg.setLevel((Integer) newVal);
+            if (dbg.getLevel() > 0) {
+                dbg.setTarget(getServer().getConsoleSender());
+            } else {
+                dbg.setTarget(null);
+            }
+        } else if (key.equals("save_interval")) {
+            LocationManager.getManager().setSaveInterval((Integer) newVal);
+        }
+    }
 
-	public ConfigurationManager getConfigManager() {
-		return configManager;
-	}
+    public ConfigurationManager getConfigManager() {
+        return configManager;
+    }
 }

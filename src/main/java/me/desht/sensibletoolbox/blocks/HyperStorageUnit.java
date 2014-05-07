@@ -15,110 +15,110 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class HyperStorageUnit extends BigStorageUnit {
-	private static final MaterialData md = STBUtil.makeLog(TreeSpecies.ACACIA);
+    private static final MaterialData md = STBUtil.makeLog(TreeSpecies.ACACIA);
 
-	public HyperStorageUnit() {
-		super();
-	}
+    public HyperStorageUnit() {
+        super();
+    }
 
-	public HyperStorageUnit(ConfigurationSection conf) {
-		super(conf);
-	}
+    public HyperStorageUnit(ConfigurationSection conf) {
+        super(conf);
+    }
 
-	@Override
-	public MaterialData getMaterialData() {
-		return md;
-	}
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
+    }
 
-	@Override
-	public String getItemName() {
-		return "HSU";
-	}
+    @Override
+    public String getItemName() {
+        return "HSU";
+    }
 
-	@Override
-	public Recipe getRecipe() {
-		SimpleCircuit sc = new SimpleCircuit();
-		BigStorageUnit bsu = new BigStorageUnit();
-		registerCustomIngredients(sc, bsu);
-		ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-		recipe.shape("OEO", "SBS", "RGR");
-		recipe.setIngredient('O', Material.OBSIDIAN);
-		recipe.setIngredient('S', sc.getMaterialData());
-		recipe.setIngredient('B', bsu.getMaterialData());
-		recipe.setIngredient('E', Material.ENDER_PEARL);
-		recipe.setIngredient('R', Material.REDSTONE);
-		recipe.setIngredient('G', Material.GOLD_INGOT);
-		return recipe;
-	}
+    @Override
+    public Recipe getRecipe() {
+        SimpleCircuit sc = new SimpleCircuit();
+        BigStorageUnit bsu = new BigStorageUnit();
+        registerCustomIngredients(sc, bsu);
+        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        recipe.shape("OEO", "SBS", "RGR");
+        recipe.setIngredient('O', Material.OBSIDIAN);
+        recipe.setIngredient('S', sc.getMaterialData());
+        recipe.setIngredient('B', bsu.getMaterialData());
+        recipe.setIngredient('E', Material.ENDER_PEARL);
+        recipe.setIngredient('R', Material.REDSTONE);
+        recipe.setIngredient('G', Material.GOLD_INGOT);
+        return recipe;
+    }
 
-	@Override
-	public int getMaxCharge() {
-		return 1000;
-	}
+    @Override
+    public int getMaxCharge() {
+        return 1000;
+    }
 
-	@Override
-	public int getChargeRate() {
-		return 10;
-	}
+    @Override
+    public int getChargeRate() {
+        return 10;
+    }
 
-	public int getStackCapacity() {
-		return 33554431;  // 2^31 items for a 64-item stack
-	}
+    public int getStackCapacity() {
+        return 33554431;  // 2^31 items for a 64-item stack
+    }
 
-	public int getEnergyCellSlot() {
-		return 36;
-	}
+    public int getEnergyCellSlot() {
+        return 36;
+    }
 
-	public int getChargeDirectionSlot() {
-		return 37;
-	}
+    public int getChargeDirectionSlot() {
+        return 37;
+    }
 
-	@Override
-	public boolean acceptsEnergy(BlockFace face) {
-		return true;
-	}
+    @Override
+    public boolean acceptsEnergy(BlockFace face) {
+        return true;
+    }
 
-	@Override
-	protected boolean dropsItemsOnBreak() {
-		return false;
-	}
+    @Override
+    protected boolean dropsItemsOnBreak() {
+        return false;
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] {
-				"Hyper Storage Unit",
-				"Stores up to " + getStackCapacity() + " stacks",
-				"of a single item type",
-				"Keeps storage when broken",
-				"Needs power to function"
-		};
-	}
+    @Override
+    public String[] getLore() {
+        return new String[]{
+                "Hyper Storage Unit",
+                "Stores up to " + getStackCapacity() + " stacks",
+                "of a single item type",
+                "Keeps storage when broken",
+                "Needs power to function"
+        };
+    }
 
-	@Override
-	public String[] getExtraLore() {
-		if (getTotalAmount() > 0) {
-			return new String[] { ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStored()) };
-		} else {
-			return new String[0];
-		}
-	}
+    @Override
+    public String[] getExtraLore() {
+        if (getTotalAmount() > 0) {
+            return new String[]{ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStored())};
+        } else {
+            return new String[0];
+        }
+    }
 
-	@Override
-	public double getChargePerOperation(int nItems) {
-		return 0.05 * nItems;
-	}
+    @Override
+    public double getChargePerOperation(int nItems) {
+        return 0.05 * nItems;
+    }
 
-	@Override
-	public void setLocation(Location loc) {
-		if (loc == null) {
-			// move all output items into storage so they don't get dropped
-			ItemStack output = getOutputItem();
-			if (output != null) {
-				setStorageAmount(getStorageAmount() + output.getAmount());
-				setOutputAmount(0);
-				setOutputItem(null);
-			}
-		}
-		super.setLocation(loc);
-	}
+    @Override
+    public void setLocation(Location loc) {
+        if (loc == null) {
+            // move all output items into storage so they don't get dropped
+            ItemStack output = getOutputItem();
+            if (output != null) {
+                setStorageAmount(getStorageAmount() + output.getAmount());
+                setOutputAmount(0);
+                setOutputItem(null);
+            }
+        }
+        super.setLocation(loc);
+    }
 }
