@@ -14,6 +14,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
+import java.util.Arrays;
+
 public class HyperStorageUnit extends BigStorageUnit {
     private static final MaterialData md = STBUtil.makeLog(TreeSpecies.ACACIA);
 
@@ -61,6 +63,11 @@ public class HyperStorageUnit extends BigStorageUnit {
         return 10;
     }
 
+    @Override
+    public int getChargeMeterSlot() {
+        return 35;
+    }
+
     public int getStackCapacity() {
         return 33554431;  // 2^31 items for a 64-item stack
     }
@@ -71,6 +78,11 @@ public class HyperStorageUnit extends BigStorageUnit {
 
     public int getChargeDirectionSlot() {
         return 37;
+    }
+
+    @Override
+    public int getInventoryGUISize() {
+        return 45;
     }
 
     @Override
@@ -96,10 +108,13 @@ public class HyperStorageUnit extends BigStorageUnit {
 
     @Override
     public String[] getExtraLore() {
+        String[] l = super.getExtraLore();
         if (getTotalAmount() > 0) {
-            return new String[]{ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStoredItemType())};
+            String[] l2 = Arrays.copyOf(l, l.length + 1);
+            l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStoredItemType());
+            return l2;
         } else {
-            return new String[0];
+            return l;
         }
     }
 
