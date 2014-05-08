@@ -23,7 +23,11 @@ public class STBUtil {
     public static final BlockFace[] directFaces = {
             BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST
     };
-    public static final BlockFace[] horizontalFaces = new BlockFace[]{
+    public static final BlockFace[] mainHorizontalFaces = new BlockFace[]{
+            BlockFace.EAST, BlockFace.SOUTH,
+            BlockFace.WEST, BlockFace.NORTH
+    };
+    public static final BlockFace[] allHorizontalFaces = new BlockFace[]{
             BlockFace.SELF,
             BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,
             BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH
@@ -108,9 +112,9 @@ public class STBUtil {
      * @return array of all blocks around the given block, including the given block as the first element
      */
     public static Block[] getSurroundingBlocks(Block b) {
-        Block[] result = new Block[horizontalFaces.length];
-        for (int i = 0; i < horizontalFaces.length; i++) {
-            result[i] = b.getRelative(horizontalFaces[i]);
+        Block[] result = new Block[allHorizontalFaces.length];
+        for (int i = 0; i < allHorizontalFaces.length; i++) {
+            result[i] = b.getRelative(allHorizontalFaces[i]);
         }
         return result;
     }
@@ -609,5 +613,37 @@ public class STBUtil {
             stack.setItemMeta(meta);
         }
         return stack;
+    }
+
+    /**
+     * Check if the given block is a water source block.
+     *
+     * @param block the block to check
+     * @return true if the block is a water source block
+     */
+    public static boolean isLiquidSourceBlock(Block block) {
+        return block.isLiquid() && block.getData() == 0;
+    }
+
+    /**
+     * Check if the given block is an infinite water source.  It must be a non-flowing
+     * source water block with at least 2 non-flowing source water block neighbours.
+     *
+     * @param block the block to check
+     * @return true if the block is an infinite water source
+     */
+    public static boolean isInfiniteWaterSource(Block block) {
+        if (isLiquidSourceBlock(block)) {
+            int n = 0;
+            for (BlockFace face : mainHorizontalFaces) {
+                Block neighbour = block.getRelative(face);
+                if (isLiquidSourceBlock(neighbour)) {
+                    if (++n >= 2) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

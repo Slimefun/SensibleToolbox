@@ -161,7 +161,7 @@ public class WateringCan extends BaseSTBItem {
     }
 
     private boolean maybeGrowGrass(Block b) {
-        for (BlockFace face : STBUtil.horizontalFaces) {
+        for (BlockFace face : STBUtil.allHorizontalFaces) {
             Block b1 = b.getRelative(face);
             if (b1.getType() == Material.GRASS) {
                 b.setType(Material.GRASS);
