@@ -1,10 +1,16 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.api.ProcessingMachine;
+import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ProgressMeter;
+import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -84,5 +90,45 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
     @Override
     public String getProgressMessage() {
         return "Progress: " + getProgressMeter().getProgressPercent() + "%";
+    }
+
+    protected void handleAutoEjection() {
+        if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
+            for (int slot : getOutputSlots()) {
+                ItemStack stack = getInventoryItem(slot);
+                if (stack != null) {
+                    if (autoEject(stack)) {
+                        stack.setAmount(stack.getAmount() - 1);
+                        setInventoryItem(slot, stack);
+                        setJammed(false);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Attempt to auto-eject one item from an output slot.
+     *
+     * @param result the item to eject
+     * @return true if an item was ejected, false otherwise
+     */
+    private boolean autoEject(ItemStack result) {
+        Location loc = getRelativeLocation(getAutoEjectDirection());
+        Block target = loc.getBlock();
+        ItemStack item = result.clone();
+        item.setAmount(1);
+        if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
+            // no block there - just drop the item
+            loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), result);
+            return true;
+        } else {
+            STBBlock stb = LocationManager.getManager().get(loc);
+            int nInserted = stb instanceof STBInventoryHolder ?
+                    ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) :
+                    VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false);
+            return nInserted > 0;
+        }
     }
 }
