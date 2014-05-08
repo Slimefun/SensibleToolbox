@@ -40,6 +40,7 @@ items_enabled:
   paintcan: true
   paintroller: true
   pullermodule: true
+  pump: true
   receivermodule: true
   recipebook: true
   redstoneclock: true

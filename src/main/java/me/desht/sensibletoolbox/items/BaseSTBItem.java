@@ -123,6 +123,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new Multimeter(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BigStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new HyperStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new Pump(), plugin, CONFIG_NODE, PERMISSION_NODE);
         if (plugin.isProtocolLibEnabled()) {
             registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
         }
