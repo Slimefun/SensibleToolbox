@@ -32,7 +32,6 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     private static final ItemStack UNLOCKED_BUTTON = InventoryGUI.makeTexture(new MaterialData(Material.ENDER_PEARL),
             ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
     private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
-    private static final int TICK_RATE = 5;
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
     private static final long DOUBLE_CLICK_TIME = 200L;
     private ItemStack stored;
@@ -244,8 +243,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 5;
     }
 
     @Override
@@ -264,64 +263,62 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public void onServerTick() {
-        if (getTicksLived() % TICK_RATE == 0) {
-            // 1. move items from input to storage
-            int inputSlot = getInputSlots()[0];
-            ItemStack stackIn = getInventoryItem(inputSlot);
-            if (stackIn != null && (stored == null || stackIn.isSimilar(stored) && !isFull())) {
-                double chargeNeeded = getChargePerOperation(stackIn.getAmount());
-                if (getCharge() >= chargeNeeded) {
-                    if (stored == null) {
-                        setStoredItemType(stackIn);
-                    }
-                    int toPull = Math.min(stackIn.getAmount(), maxCapacity - getStorageAmount());
-                    setStorageAmount(getStorageAmount() + toPull);
-                    stackIn.setAmount(stackIn.getAmount() - toPull);
-                    setInventoryItem(inputSlot, stackIn);
-                    setCharge(getCharge() - chargeNeeded);
-                    if (stackIn.getAmount() == 0) {
-                        // workaround to avoid leaving ghost items in the input slot
-                        STBUtil.forceInventoryRefresh(getInventory());
-                    }
+        // 1. move items from input to storage
+        int inputSlot = getInputSlots()[0];
+        ItemStack stackIn = getInventoryItem(inputSlot);
+        if (stackIn != null && (stored == null || stackIn.isSimilar(stored) && !isFull())) {
+            double chargeNeeded = getChargePerOperation(stackIn.getAmount());
+            if (getCharge() >= chargeNeeded) {
+                if (stored == null) {
+                    setStoredItemType(stackIn);
+                }
+                int toPull = Math.min(stackIn.getAmount(), maxCapacity - getStorageAmount());
+                setStorageAmount(getStorageAmount() + toPull);
+                stackIn.setAmount(stackIn.getAmount() - toPull);
+                setInventoryItem(inputSlot, stackIn);
+                setCharge(getCharge() - chargeNeeded);
+                if (stackIn.getAmount() == 0) {
+                    // workaround to avoid leaving ghost items in the input slot
+                    STBUtil.forceInventoryRefresh(getInventory());
                 }
             }
+        }
 
-            ItemStack stackOut = getOutputItem();
-            int newAmount = stackOut == null ? 0 : stackOut.getAmount();
-            if (getOutputAmount() != newAmount) {
-                setOutputAmount(newAmount);
-            }
+        ItemStack stackOut = getOutputItem();
+        int newAmount = stackOut == null ? 0 : stackOut.getAmount();
+        if (getOutputAmount() != newAmount) {
+            setOutputAmount(newAmount);
+        }
 
-            // 2. top up the output stack from storage
-            if (stored != null) {
-                int toPush = Math.min(getStorageAmount(), stored.getMaxStackSize() - getOutputAmount());
-                if (toPush > 0) {
-                    if (stackOut == null) {
-                        stackOut = stored.clone();
-                        stackOut.setAmount(toPush);
-                    } else {
-                        stackOut.setAmount(stackOut.getAmount() + toPush);
-                    }
-                    setOutputItem(stackOut);
-                    setOutputAmount(stackOut.getAmount());
-                    setStorageAmount(getStorageAmount() - toPush);
+        // 2. top up the output stack from storage
+        if (stored != null) {
+            int toPush = Math.min(getStorageAmount(), stored.getMaxStackSize() - getOutputAmount());
+            if (toPush > 0) {
+                if (stackOut == null) {
+                    stackOut = stored.clone();
+                    stackOut.setAmount(toPush);
+                } else {
+                    stackOut.setAmount(stackOut.getAmount() + toPush);
                 }
+                setOutputItem(stackOut);
+                setOutputAmount(stackOut.getAmount());
+                setStorageAmount(getStorageAmount() - toPush);
             }
+        }
 
-            // 3. perform any necessary updates if storage has changed
-            if (getTotalAmount() != oldTotalAmount) {
-                updateSignQuantityLine();
-                if (getTotalAmount() == 0) {
-                    setStoredItemType(null);
-                }
-                Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
-                getProgressMeter().setMaxProgress(maxCapacity);
-                setProcessing(stored);
-                setProgress(maxCapacity - getStorageAmount());
-                updateBlock(false);
-                updateAttachedLabelSigns();
-                oldTotalAmount = getTotalAmount();
+        // 3. perform any necessary updates if storage has changed
+        if (getTotalAmount() != oldTotalAmount) {
+            updateSignQuantityLine();
+            if (getTotalAmount() == 0) {
+                setStoredItemType(null);
             }
+            Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
+            getProgressMeter().setMaxProgress(maxCapacity);
+            setProcessing(stored);
+            setProgress(maxCapacity - getStorageAmount());
+            updateBlock(false);
+            updateAttachedLabelSigns();
+            oldTotalAmount = getTotalAmount();
         }
 
         super.onServerTick();

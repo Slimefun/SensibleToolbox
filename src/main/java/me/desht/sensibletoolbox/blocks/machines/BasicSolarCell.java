@@ -20,7 +20,6 @@ import org.bukkit.material.MaterialData;
 public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
 
-    private static final int ENERGY_INTERVAL = 20;  // how often to recalculate light & energy levels
     private static final double SCU_PER_TICK = 0.5;
     private static final int LIGHT_SLOT = 13;
 
@@ -130,8 +129,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 20;
     }
 
     @Override
@@ -164,16 +163,15 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     @Override
     public void onServerTick() {
-        if (getTicksLived() % ENERGY_INTERVAL == 0) {
-            calculateLightLevel();
+        calculateLightLevel();
 
-            if (getCharge() < getMaxCharge()) {
-                double toAdd = SCU_PER_TICK * ENERGY_INTERVAL * getChargeMultiplier(getLightLevel());
-                setCharge(getCharge() + toAdd);
-            }
-
-            getLightMeter().doRepaint();
+        if (getCharge() < getMaxCharge()) {
+            double toAdd = SCU_PER_TICK * getTickRate() * getChargeMultiplier(getLightLevel());
+            setCharge(getCharge() + toAdd);
         }
+
+        getLightMeter().doRepaint();
+
         super.onServerTick();
     }
 

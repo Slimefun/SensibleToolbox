@@ -16,7 +16,6 @@ import org.bukkit.material.MaterialData;
 public class Pump extends AbstractProcessingMachine {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.CYAN);
     private static final int PUMP_FILL_TIME = 40; // 40 ticks to fill a bucket
-    private static final int TICK_RATE = 5;
     private static final double CHARGE_PER_TICK = 0.1 / PUMP_FILL_TIME; // 0.1 SCU to fill a bucket
     private BlockFace pumpFace = BlockFace.DOWN;  // will be configurable later
 
@@ -29,8 +28,8 @@ public class Pump extends AbstractProcessingMachine {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 5;
     }
 
     @Override
@@ -143,49 +142,51 @@ public class Pump extends AbstractProcessingMachine {
 
     @Override
     public void onServerTick() {
-        if (isRedstoneActive() && getTicksLived() % TICK_RATE == 0) {
-            int inputSlot = getInputSlots()[0];
-            ItemStack stackIn = getInventoryItem(inputSlot);
-
-            // TODO: for lava pumping, we need to seek the available lava source block
-            Block toPump = findNextBlockToPump();
-
-            if (getProcessing() == null && stackIn != null) {
-                // pull a bucket from the input stack into processing
-                ItemStack toProcess = makeProcessingItem(toPump, stackIn.getType());
-                setProcessing(toProcess);
-                if (toProcess != null) {
-                    getProgressMeter().setMaxProgress(PUMP_FILL_TIME);
-                    setProgress(PUMP_FILL_TIME);
-                    stackIn.setAmount(stackIn.getAmount() - 1);
-                    setInventoryItem(inputSlot, stackIn);
-                }
-            }
-
-            if (getProgress() > 0 && getCharge() > 0 && STBUtil.isLiquidSourceBlock(toPump)) {
-                // currently processing....
-                setProgress(getProgress() - getSpeedMultiplier() * TICK_RATE);
-                setCharge(getCharge() - getPowerMultiplier() * CHARGE_PER_TICK * TICK_RATE);
-                playActiveParticleEffect();
-            }
-
-
-            if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
-                // done processing - try to move filled container into output
-                ItemStack result = getProcessing();
-                int slot = findOutputSlot(result);
-                if (slot >= 0) {
-                    setInventoryItem(slot, result);
-                    setProcessing(null);
-                    updateBlock(false);
-                    replacePumpedBlock(toPump);
-                } else {
-                    setJammed(true);
-                }
-            }
-
-            handleAutoEjection();
+        if (!isRedstoneActive()) {
+            return;
         }
+
+        int inputSlot = getInputSlots()[0];
+        ItemStack stackIn = getInventoryItem(inputSlot);
+
+        // TODO: for lava pumping, we need to seek the available lava source block
+        Block toPump = findNextBlockToPump();
+
+        if (getProcessing() == null && stackIn != null) {
+            // pull a bucket from the input stack into processing
+            ItemStack toProcess = makeProcessingItem(toPump, stackIn.getType());
+            setProcessing(toProcess);
+            if (toProcess != null) {
+                getProgressMeter().setMaxProgress(PUMP_FILL_TIME);
+                setProgress(PUMP_FILL_TIME);
+                stackIn.setAmount(stackIn.getAmount() - 1);
+                setInventoryItem(inputSlot, stackIn);
+            }
+        }
+
+        if (getProgress() > 0 && getCharge() > 0 && STBUtil.isLiquidSourceBlock(toPump)) {
+            // currently processing....
+            setProgress(getProgress() - getSpeedMultiplier() * getTickRate());
+            setCharge(getCharge() - getPowerMultiplier() * CHARGE_PER_TICK * getTickRate());
+            playActiveParticleEffect();
+        }
+
+
+        if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
+            // done processing - try to move filled container into output
+            ItemStack result = getProcessing();
+            int slot = findOutputSlot(result);
+            if (slot >= 0) {
+                setInventoryItem(slot, result);
+                setProcessing(null);
+                updateBlock(false);
+                replacePumpedBlock(toPump);
+            } else {
+                setJammed(true);
+            }
+        }
+
+        handleAutoEjection();
 
         super.onServerTick();
     }

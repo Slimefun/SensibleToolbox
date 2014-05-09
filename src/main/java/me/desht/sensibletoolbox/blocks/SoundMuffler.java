@@ -128,17 +128,15 @@ public class SoundMuffler extends BaseSTBBlock {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 40;
     }
 
     @Override
     public void onServerTick() {
-        Location loc = getLocation();
-        if (getTicksLived() % 40 == 0) {
-            if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-                ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
-            }
+        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+            Location loc = getLocation();
+            ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
         }
         super.onServerTick();
     }

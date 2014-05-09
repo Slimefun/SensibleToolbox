@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
  * an internal processing store, and places resulting items in its output slots.
  */
 public abstract class AbstractIOMachine extends AbstractProcessingMachine {
-    private static final int TICK_RATE = 10;
 
     protected AbstractIOMachine() {
         super();
@@ -24,42 +23,50 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
     }
 
     @Override
+    public int getTickRate() {
+        return 10;
+    }
+
+    @Override
     protected void playOutOfChargeSound() {
         getLocation().getWorld().playSound(getLocation(), Sound.ENDERDRAGON_HIT, 1.0f, 0.5f);
     }
 
     @Override
     public void onServerTick() {
-        if (isRedstoneActive() && getTicksLived() % TICK_RATE == 0) {
-            if (getProcessing() == null) {
-                // not doing any processing - anything in input to take?
-                for (int slot : getInputSlots()) {
-                    if (getInventoryItem(slot) != null) {
-                        pullItemIntoProcessing(slot);
-                        playStartupSound();
-                        break;
-                    }
-                }
-            }
-
-            if (getProgress() > 0 && getCharge() > 0) {
-                // currently processing....
-                setProgress(getProgress() - getSpeedMultiplier() * TICK_RATE);
-                setCharge(getCharge() - getPowerMultiplier() * TICK_RATE);
-                playActiveParticleEffect();
-            }
-
-            if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
-                // done processing - try to move item into output
-                ProcessingResult recipe = getCustomRecipeFor(getProcessing());
-                if (recipe != null) {
-                    // shouldn't ever be null, but let's be paranoid here
-                    pushItemIntoOutput(recipe.getResult());
-                }
-            }
-
-            handleAutoEjection();
+        if (!isRedstoneActive()) {
+            return;
         }
+
+        if (getProcessing() == null) {
+            // not doing any processing - anything in input to take?
+            for (int slot : getInputSlots()) {
+                if (getInventoryItem(slot) != null) {
+                    pullItemIntoProcessing(slot);
+                    playStartupSound();
+                    break;
+                }
+            }
+        }
+
+        if (getProgress() > 0 && getCharge() > 0) {
+            // currently processing....
+            setProgress(getProgress() - getSpeedMultiplier() * getTickRate());
+            setCharge(getCharge() - getPowerMultiplier() * getTickRate());
+            playActiveParticleEffect();
+        }
+
+        if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
+            // done processing - try to move item into output
+            ProcessingResult recipe = getCustomRecipeFor(getProcessing());
+            if (recipe != null) {
+                // shouldn't ever be null, but let's be paranoid here
+                pushItemIntoOutput(recipe.getResult());
+            }
+        }
+
+        handleAutoEjection();
+
         super.onServerTick();
     }
 

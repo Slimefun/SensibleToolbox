@@ -85,66 +85,66 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     @Override
-    public RedstoneBehaviour getRedstoneBehaviour() {
+    public final RedstoneBehaviour getRedstoneBehaviour() {
         return redstoneBehaviour;
     }
 
     @Override
-    public void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
+    public final void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
         this.redstoneBehaviour = redstoneBehaviour;
         updateBlock(false);
     }
 
     @Override
-    public AccessControl getAccessControl() {
+    public final AccessControl getAccessControl() {
         return accessControl;
     }
 
     @Override
-    public void setAccessControl(AccessControl accessControl) {
+    public final void setAccessControl(AccessControl accessControl) {
         this.accessControl = accessControl;
         updateBlock(false);
     }
 
-    public STBGUIHolder getGuiHolder() {
+    public final STBGUIHolder getGuiHolder() {
         return guiHolder;
     }
 
     @Override
-    public InventoryGUI getGUI() {
+    public final InventoryGUI getGUI() {
         return inventoryGUI;
     }
 
-    protected void setGUI(InventoryGUI inventoryGUI) {
+    protected final void setGUI(InventoryGUI inventoryGUI) {
         this.inventoryGUI = inventoryGUI;
     }
 
     @Override
-    public BlockFace getFacing() {
+    public final BlockFace getFacing() {
         return facing;
     }
 
     @Override
-    public void setFacing(BlockFace facing) {
+    public final void setFacing(BlockFace facing) {
         this.facing = facing;
     }
 
     @Override
-    public UUID getOwner() {
+    public final UUID getOwner() {
         return owner;
     }
 
     @Override
-    public void setOwner(UUID owner) {
+    public final void setOwner(UUID owner) {
         this.owner = owner;
     }
 
-    protected long getTicksLived() {
+    public final long getTicksLived() {
         return ticksLived;
     }
 
     @Override
-    public boolean hasAccessRights(Player player) {
+    public final boolean hasAccessRights(Player player) {
         switch (getAccessControl()) {
             case PUBLIC:
                 return true;
@@ -156,7 +156,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     @Override
-    public boolean hasAccessRights(UUID uuid) {
+    public final boolean hasAccessRights(UUID uuid) {
         switch (getAccessControl()) {
             case PUBLIC:
                 return true;
@@ -173,7 +173,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
      *
      * @return true if the block is active, false otherwise
      */
-    protected boolean isRedstoneActive() {
+    protected final boolean isRedstoneActive() {
         switch (getRedstoneBehaviour()) {
             case IGNORE:
                 return true;
@@ -255,12 +255,29 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     /**
-     * Called every tick for each STB block that is placed in the world, for any STB block where
-     * shouldTick() returns true.  If you override this, you MUST call the superclass method in your
-     * overridden method!
+     * This method should not be called directly or overridden; it is automatically
+     * called every tick for every block.
+     */
+    public final void tick() {
+        ticksLived++;
+    }
+
+    /**
+     * Called every tick for each STB block that is placed in the world, for
+     * any STB block where {@link #getTickRate()} returns a non-zero value.
+     * Override this method to define any periodic behaviour of the block.
      */
     public void onServerTick() {
-        ticksLived++;
+    }
+
+    /**
+     * Defines the rate at which the block ticks. {@link #onServerTick()} will
+     * be called this frequently.  Override this method to have the block
+     * tick less frequently.  The default rate of 0 means that the block will
+     * not tick at all.
+     */
+    public int getTickRate() {
+        return 0;
     }
 
     /**
@@ -275,28 +292,18 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     public void onChunkUnload() {
     }
 
-    /**
-     * Check if this block needs to tick, i.e. have onServerTick() called every tick.  Only override
-     * this to return true for block which need to tick, for performance reasons.
-     *
-     * @return true if the block should tick
-     */
-    public boolean shouldTick() {
-        return false;
-    }
-
     @Override
-    public Location getLocation() {
+    public final Location getLocation() {
         return persistableLocation == null ? null : persistableLocation.getLocation();
     }
 
     @Override
-    public Location getRelativeLocation(BlockFace face) {
+    public final  Location getRelativeLocation(BlockFace face) {
         return getLocation().add(face.getModX(), face.getModY(), face.getModZ());
     }
 
     @Override
-    public PersistableLocation getPersistableLocation() {
+    public final PersistableLocation getPersistableLocation() {
         return persistableLocation;
     }
 
@@ -358,7 +365,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     @Override
-    public void moveTo(Location oldLoc, Location newLoc) {
+    public final void moveTo(Location oldLoc, Location newLoc) {
         for (RelativePosition pos : getBlockStructure()) {
             Block b1 = getMultiBlock(oldLoc, pos);
             b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
@@ -414,7 +421,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         LocationManager.getManager().registerLocation(b.getLocation(), this, true);
     }
 
-    public void breakBlock(Block b) {
+    public final void breakBlock(Block b) {
         Location baseLoc = this.getLocation();
         Block origin = baseLoc.getBlock();
         origin.setType(Material.AIR);
@@ -445,7 +452,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     @Override
-    public void updateBlock(boolean redraw) {
+    public final void updateBlock(boolean redraw) {
         Location loc = getLocation();
         if (loc != null) {
             if (redraw) {
@@ -601,5 +608,4 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     public PistonMoveReaction getPistonMoveReaction() {
         return PistonMoveReaction.MOVE;
     }
-
 }

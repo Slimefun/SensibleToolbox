@@ -589,8 +589,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 1;
     }
 
     @Override

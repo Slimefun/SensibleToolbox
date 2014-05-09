@@ -130,7 +130,7 @@ public class LocationManager {
             addPendingDBOperation(loc, locStr, stb, UpdateRecord.Operation.INSERT);
         }
 
-        if (stb.shouldTick()) {
+        if (stb.getTickRate() > 0) {
             addTicker(stb);
         }
 
@@ -143,7 +143,7 @@ public class LocationManager {
 
     public void unregisterLocation(Location loc, BaseSTBBlock stb) {
         if (stb != null) {
-            if (stb.shouldTick()) {
+            if (stb.getTickRate() > 0) {
                 removeTicker(stb);
             }
             stb.setLocation(null);
@@ -269,7 +269,10 @@ public class LocationManager {
                     PersistableLocation pLoc = stb.getPersistableLocation();
                     int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
                     if (w.isChunkLoaded(x >> 4, z >> 4)) {
-                        stb.onServerTick();
+                        stb.tick();
+                        if (stb.getTicksLived() % stb.getTickRate() == 0) {
+                            stb.onServerTick();
+                        }
                     }
                 }
             }

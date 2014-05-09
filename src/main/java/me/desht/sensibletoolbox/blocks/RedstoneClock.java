@@ -130,8 +130,8 @@ public class RedstoneClock extends BaseSTBBlock {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 1;
     }
 
     @Override

@@ -111,19 +111,17 @@ public class AngelicBlock extends BaseSTBBlock {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
+    public int getTickRate() {
+        return 40;
     }
 
     @Override
     public void onServerTick() {
         Location loc = getLocation();
-        if (getTicksLived() % 40 == 0) {
-            if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-                ParticleEffect.CLOUD.play(loc.add(0.5, 0.5, 0.5), 0f, 0f, 0f, 0.05f, 10);
-            } else {
-                loc.getWorld().playEffect(loc.add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
-            }
+        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+            ParticleEffect.CLOUD.play(loc.add(0.5, 0.5, 0.5), 0f, 0f, 0f, 0.05f, 10);
+        } else {
+            loc.getWorld().playEffect(loc.add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
         }
         super.onServerTick();
     }

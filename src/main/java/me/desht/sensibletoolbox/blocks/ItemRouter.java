@@ -157,6 +157,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         this.tickRate = Math.max(tickRate, 5);
     }
 
+    @Override
     public int getTickRate() {
         return tickRate;
     }
@@ -227,18 +228,13 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public boolean shouldTick() {
-        return true;
-    }
-
-    @Override
     public void onServerTick() {
         boolean didSomeWork = false;
         if (needToProcessModules) {
             processModules();
             needToProcessModules = false;
         }
-        if (isRedstoneActive() && getTicksLived() % getTickRate() == 0) {
+        if (isRedstoneActive()) {
             Location loc = getLocation();
             for (ItemRouterModule module : modules) {
                 if (module instanceof DirectionalItemRouterModule) {
@@ -252,10 +248,10 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 }
 
             }
-        }
-        if (didSomeWork) {
-            updateBlock(false);
-            playParticles();
+            if (didSomeWork) {
+                updateBlock(false);
+                playParticles();
+            }
         }
         super.onServerTick();
     }
