@@ -192,7 +192,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
     }
 
     /**
-     * Given an item (whose material has previously been registered as a Bukkit FurnaceRecipe ingrediet),
+     * Given an item (whose material has previously been registered as a Bukkit FurnaceRecipe ingredient),
      * return the STB item class which this item must be a type of.
      *
      * @param stack the item stack to check

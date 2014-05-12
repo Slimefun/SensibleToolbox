@@ -151,15 +151,8 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-        if (onCursor.getType() == Material.AIR) {
-            return true;
-        } else if (STBUtil.getCropType(onCursor.getType()) == null) {
-            return false;
-        } else if (!verifyUnique(gui.getInventory(), onCursor, slot)) {
-            return false;
-        } else {
-            return true;
-        }
+        return onCursor.getType() == Material.AIR ||
+                STBUtil.getCropType(onCursor.getType()) != null && verifyUnique(gui.getInventory(), onCursor, slot);
     }
 
     @Override

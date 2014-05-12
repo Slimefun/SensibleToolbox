@@ -1,7 +1,5 @@
 package me.desht.sensibletoolbox.energynet;
 
-import com.google.common.base.Joiner;
-import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
@@ -60,6 +58,7 @@ public class EnergyNetManager {
                 for (AdjacentMachine record : adjacentMachines) {
                     net.addMachine(record.getMachine(), record.getDirection().getOppositeFace());
                 }
+                // and any connected cable which isn't part of a net
                 addConnectedCables(cable, net);
                 break;
             default:
@@ -153,8 +152,8 @@ public class EnergyNetManager {
     }
 
     /**
-     * Scan for any cable which is not currently part of an energy net, and add it to the
-     * given net.
+     * Recursively scan for any cable which is not currently part of an energy net,
+     * and add it to the given net.
      *
      * @param start block to scan from
      * @param net   net to add cabling to
