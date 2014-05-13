@@ -21,7 +21,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
-import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
@@ -54,6 +53,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private PlayerUUIDTracker uuidTracker;
     private boolean inited = false;
     private LandslideListener landslideListener;
+    private boolean holoAPIenabled;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -100,6 +100,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
 
         LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
+
+        setupHoloAPI();
 
         setupProtocolLib();
         if (protocolLibEnabled) {
@@ -220,6 +222,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
     }
 
+    private void setupHoloAPI() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("HoloAPI");
+        if (plugin != null && plugin.isEnabled()) {
+            holoAPIenabled = true;
+            LogUtils.fine("Hooked HoloAPI v" + plugin.getDescription().getVersion());
+        }
+    }
 
     public boolean isProtocolLibEnabled() {
         return protocolLibEnabled;
@@ -278,5 +287,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public ConfigurationManager getConfigManager() {
         return configManager;
+    }
+
+    public LandslideListener getLandslideListener() {
+        return landslideListener;
+    }
+
+    public boolean isHoloAPIenabled() {
+        return holoAPIenabled;
     }
 }

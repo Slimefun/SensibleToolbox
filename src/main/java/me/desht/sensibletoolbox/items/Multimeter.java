@@ -1,12 +1,11 @@
 package me.desht.sensibletoolbox.items;
 
-import com.google.common.base.Joiner;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.PopupMessage;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,9 +19,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Sign;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Multimeter extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.WATCH);
@@ -91,7 +87,7 @@ public class Multimeter extends BaseSTBItem {
                 }
                 BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
                 if (machine != null && machine.getMaxCharge() > 0) {
-                    showMachineInfo(player, machine);
+                    showMachineInfo(player, machine, event.getClickedBlock());
                 } else {
                     // nothing to examine here
                     player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
@@ -105,43 +101,26 @@ public class Multimeter extends BaseSTBItem {
         String s1 = net.getCableCount() == 1 ? "" : "s";
         String s2 = net.getSourceCount() == 1 ? "" : "s";
         String s3 = net.getSinkCount() == 1 ? "" : "s";
-        String line1 = String.format("&6Net &f#%d&-, &f%d&- cable" + s1 + ", &f%d&- source" + s2 + ", &f%d&- sink" + s3,
-                net.getNetID(), net.getCableCount(), net.getSourceCount(), net.getSinkCount());
-        String line2 = String.format("▶ Demand: &e%5.2f SCU/t&-, Supply: &e%5.2f SCU/t&-",
-                net.getDemand(), net.getSupply());
-//		if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-//			final NameTagSpawner spawner = new NameTagSpawner(2);
-//			Location loc = clicked.getLocation();
-//			spawner.setNameTag(0, player, loc, 1.0, ChatColor.translateAlternateColorCodes('&', line1));
-//			spawner.setNameTag(1, player, loc, 0.75, ChatColor.translateAlternateColorCodes('&', line2));
-//			Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
-//				@Override
-//				public void run() {
-//					spawner.clearNameTags(player);
-//				}
-//			}, 50L);
-//		} else {
-        MiscUtil.statusMessage(player, line1);
-        MiscUtil.statusMessage(player, line2);
-//		}
+        String[] lines = new String[] {
+                net.getSourceCount() + ChatColor.GOLD.toString() + " source" + s2 + ChatColor.RESET + ", " +
+                        net.getSinkCount() + ChatColor.GOLD.toString() + " sink" + s3,
+                net.getCableCount() + ChatColor.GOLD.toString() + " cable" + s1,
+                String.format("Demand: " + ChatColor.GOLD + "%5.2f SCU/t", net.getDemand()),
+                String.format("Supply: " + ChatColor.GOLD + "%5.2f SCU/t", net.getSupply()),
+        };
+        PopupMessage.quickMessage(player, clicked.getLocation(), lines);
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
     }
 
-    private void showMachineInfo(Player player, BaseSTBMachine machine) {
-        List<Integer> ids = new ArrayList<Integer>();
-        for (EnergyNet net2 : machine.getAttachedEnergyNets()) {
-            ids.add(net2.getNetID());
-        }
-        if (ids.isEmpty()) {
-            MiscUtil.statusMessage(player,
-                    ChatColor.GOLD + machine.getItemName() + ChatColor.AQUA + " is not attached to any energy net.");
-        } else {
-            String s = ids.size() == 1 ? "" : "s";
-            String nets = "[#" + Joiner.on(" #").join(ids) + "]";
-            MiscUtil.statusMessage(player, String.format("&6%s&- is attached to %d energy net%s: &f%s",
-                    machine.getItemName(), ids.size(), s, nets));
-        }
-        MiscUtil.statusMessage(player, "▶ Charge: " + STBUtil.getChargeString(machine) + "&-, max charge rate: &e" + machine.getChargeRate() + " SCU/t");
+    private void showMachineInfo(Player player, BaseSTBMachine machine, Block clicked) {
+        int n = machine.getAttachedEnergyNets().length;
+        String s = n == 1 ? "" : "s";
+        String[] lines = new String[] {
+                ChatColor.GOLD + machine.getItemName() + ChatColor.RESET + ": on " + n + " energy net" + s,
+                "Charge: " + STBUtil.getChargeString(machine),
+                "Max Charge Rate: " + ChatColor.GOLD + machine.getChargeRate() + " SCU/t",
+        };
+        PopupMessage.quickMessage(player, clicked.getLocation(), lines);
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
     }
 }

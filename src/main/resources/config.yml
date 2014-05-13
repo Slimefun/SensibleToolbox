@@ -5,6 +5,9 @@ debug_level: 0
 save_interval: 30
 database:
   table_prefix: "stb_"
+holo_messages:
+   enabled: true
+   duration: 8
 items_enabled:
   advancedmoisturechecker: true
   advancedsendermodule: true
