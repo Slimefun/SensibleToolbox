@@ -13,9 +13,19 @@ import org.bukkit.block.BlockFace;
 import java.util.*;
 
 public class EnergyNetManager {
-    public static final long ENERGY_TICK_RATE = 10; // TODO make configurable
+    public static final long DEFAULT_TICK_RATE = 10;
+
+    private static long tickRate = DEFAULT_TICK_RATE;
 
     private static final Map<Integer, EnergyNet> allNets = new HashMap<Integer, EnergyNet>();
+
+    public static long getTickRate() {
+        return tickRate;
+    }
+
+    public static void setTickRate(long tickRate) {
+        EnergyNetManager.tickRate = tickRate;
+    }
 
     /**
      * Get the energy net this block is in, if any.

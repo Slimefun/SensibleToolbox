@@ -595,7 +595,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     @Override
     public void onServerTick() {
-        if (getTicksLived() % EnergyNetManager.ENERGY_TICK_RATE == 0) {
+        if (getTicksLived() % EnergyNetManager.getTickRate() == 0) {
             double transferred = 0.0;
             if (installedCell != null) {
                 switch (chargeDirection) {
@@ -630,8 +630,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         if (to.getCharge() >= to.getMaxCharge() || from.getCharge() == 0) {
             return 0;
         }
-        double toTransfer = Math.min(from.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE, to.getMaxCharge() - to.getCharge());
-        toTransfer = Math.min(to.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE, toTransfer);
+        double toTransfer = Math.min(from.getChargeRate() * EnergyNetManager.getTickRate(), to.getMaxCharge() - to.getCharge());
+        toTransfer = Math.min(to.getChargeRate() * EnergyNetManager.getTickRate(), toTransfer);
         toTransfer = Math.min(from.getCharge(), toTransfer);
         to.setCharge(to.getCharge() + toTransfer);
         from.setCharge(from.getCharge() - toTransfer);

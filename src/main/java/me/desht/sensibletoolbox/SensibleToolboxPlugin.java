@@ -36,6 +36,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +55,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private boolean inited = false;
     private LandslideListener landslideListener;
     private boolean holoAPIenabled;
+    private BukkitTask energyTask = null;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -143,12 +145,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
                 LocationManager.getManager().tick();
             }
         }, 1L, 1L);
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                EnergyNetManager.tick();
-            }
-        }, 1L, EnergyNetManager.ENERGY_TICK_RATE);
+
+        scheduleEnergyNetTicker();
 
         inited = true;
     }
@@ -267,6 +265,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public void onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
         if (key.equals("save_interval")) {
             DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
+        } else if (key.equals("energy.tick_rate")) {
+            DHValidate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
         }
     }
 
@@ -282,7 +282,22 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             }
         } else if (key.equals("save_interval")) {
             LocationManager.getManager().setSaveInterval((Integer) newVal);
+        } else if (key.equals("energy.tick_rate")) {
+            scheduleEnergyNetTicker();
         }
+    }
+
+    private void scheduleEnergyNetTicker() {
+        if (energyTask != null) {
+            energyTask.cancel();
+        }
+        EnergyNetManager.setTickRate(getConfig().getLong("energy.tick_rate", EnergyNetManager.DEFAULT_TICK_RATE));
+        energyTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                EnergyNetManager.tick();
+            }
+        }, 1L, EnergyNetManager.getTickRate());
     }
 
     public ConfigurationManager getConfigManager() {

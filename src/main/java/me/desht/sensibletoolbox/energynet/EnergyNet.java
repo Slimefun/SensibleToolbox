@@ -180,15 +180,17 @@ public class EnergyNet {
     public void tick() {
         totalDemand = totalSupply = 0;
 
+        long tickRate = EnergyNetManager.getTickRate();
+
         for (ChargeableBlock machine : energySources) {
             if (machine.getCharge() > 0) {
-                totalSupply += Math.min(machine.getCharge(), machine.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+                totalSupply += Math.min(machine.getCharge(), machine.getChargeRate() * tickRate);
             }
         }
         for (ChargeableBlock machine : energySinks) {
             if (machine.getCharge() < machine.getMaxCharge()) {
                 double needed = machine.getMaxCharge() - machine.getCharge();
-                needed = Math.min(needed, machine.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+                needed = Math.min(needed, machine.getChargeRate() * tickRate);
                 totalDemand += needed;
             }
         }
@@ -201,21 +203,21 @@ public class EnergyNet {
         if (ratio <= 1.0) {
             // there's enough power to supply all sinks
             for (ChargeableBlock source : energySources) {
-                double toTake = Math.min(source.getCharge(), source.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+                double toTake = Math.min(source.getCharge(), source.getChargeRate() * tickRate);
                 source.setCharge(source.getCharge() - toTake * ratio);
             }
             for (ChargeableBlock sink : energySinks) {
-                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * tickRate);
                 sink.setCharge(sink.getCharge() + toGive);
             }
         } else {
             // more demand than supply!
             for (ChargeableBlock source : energySources) {
-                double toTake = Math.min(source.getCharge(), source.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+                double toTake = Math.min(source.getCharge(), source.getChargeRate() * tickRate);
                 source.setCharge(source.getCharge() - toTake);
             }
             for (ChargeableBlock sink : energySinks) {
-                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * EnergyNetManager.ENERGY_TICK_RATE);
+                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * tickRate);
                 sink.setCharge(sink.getCharge() + toGive / ratio);
             }
         }
@@ -227,7 +229,7 @@ public class EnergyNet {
      * @return the demand
      */
     public double getDemand() {
-        return totalDemand / EnergyNetManager.ENERGY_TICK_RATE;
+        return totalDemand / EnergyNetManager.getTickRate();
     }
 
     /**
@@ -236,6 +238,6 @@ public class EnergyNet {
      * @return the demand
      */
     public double getSupply() {
-        return totalSupply / EnergyNetManager.ENERGY_TICK_RATE;
+        return totalSupply / EnergyNetManager.getTickRate();
     }
 }
