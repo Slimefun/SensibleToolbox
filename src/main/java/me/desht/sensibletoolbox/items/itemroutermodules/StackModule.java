@@ -25,10 +25,11 @@ public class StackModule extends ItemRouterModule {
     public String[] getLore() {
         return new String[]{
                 "Insert into an Item Router",
-                "Passive module; each stack module will",
-                "double the number of items moved per",
-                "operation, up to the item's max stack",
-                "size.  Any modules over 6 are ignored.",
+                "Passive module; each stack module",
+                "doubles the number of items moved",
+                "per operation, up to the item's max",
+                "stack size.",
+                "Any modules over 6 are ignored.",
         };
     }
 

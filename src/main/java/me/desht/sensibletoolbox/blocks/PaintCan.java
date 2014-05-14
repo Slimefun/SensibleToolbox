@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.gui.*;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
@@ -325,7 +326,8 @@ public class PaintCan extends BaseSTBBlock {
             Dye dye = (Dye) dyeStack.getData();
             DyeColor newColour = dye.getColor();
             int dyeAmount = dyeStack.getAmount();
-            int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / PAINT_PER_DYE, dyeAmount);
+            int paintPerDye = SensibleToolboxPlugin.getInstance().getConfig().getInt("paint_per_dye", PAINT_PER_DYE);
+            int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / paintPerDye, dyeAmount);
             if (toUse == 0) {
                 // not enough room for any mixing
                 return false;
@@ -335,18 +337,18 @@ public class PaintCan extends BaseSTBBlock {
                 DyeColor mixedColour = mixDyes(getColour(), newColour);
                 if (mixedColour == null) {
                     // no - just replace the can's contents with the new colour
-                    toUse = Math.min(getMaxPaintLevel() / PAINT_PER_DYE, dyeAmount);
+                    toUse = Math.min(getMaxPaintLevel() / paintPerDye, dyeAmount);
                     setColour(newColour);
-                    setPaintLevel(PAINT_PER_DYE * toUse);
+                    setPaintLevel(paintPerDye * toUse);
                 } else {
                     // yes, they mix
                     setColour(mixedColour);
-                    setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
+                    setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + paintPerDye * toUse));
                 }
             } else {
                 // either adding to an empty can, or adding more of the same colour
                 setColour(newColour);
-                setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + PAINT_PER_DYE * toUse));
+                setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + paintPerDye * toUse));
             }
             Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColour());
 

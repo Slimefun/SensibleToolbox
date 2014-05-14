@@ -198,6 +198,7 @@ public class PaintBrush extends BaseSTBItem {
             ((Colorable) e).setColor(getColour());
             painted = true;
         } else if (e instanceof Painting) {
+            // TODO: pop up a GUI allowing direct selection of artwork
             Painting painting = (Painting) e;
             Art art = findNextArtwork(painting);
             painting.setArt(art);
