@@ -92,7 +92,6 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
         Location l = getLocation();
         if (l != null && l.getBlock().getType() == getMaterial()) {
             Dropper d = (Dropper) l.getBlock().getState();
-            // TODO: handle item filters
             if (noisy) {
                 for (ItemStack stack : d.getInventory()) {
                     if (stack != null) {
