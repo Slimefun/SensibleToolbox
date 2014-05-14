@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.SoilSaturation;
 import org.bukkit.*;
@@ -49,10 +50,12 @@ public class MoistureChecker extends BaseSTBItem {
 
     @Override
     public Recipe getRecipe() {
+        SimpleCircuit sc = new SimpleCircuit();
+        registerCustomIngredients(sc);
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-        recipe.shape("S", "D", "I");
+        recipe.shape("S", "C", "I");
         recipe.setIngredient('S', Material.SIGN);
-        recipe.setIngredient('D', Material.DIODE);
+        recipe.setIngredient('C', sc.getMaterialData());
         recipe.setIngredient('I', Material.GOLD_SWORD);
         return recipe;
     }
