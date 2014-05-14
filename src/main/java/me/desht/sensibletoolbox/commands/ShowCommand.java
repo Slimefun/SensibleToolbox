@@ -1,12 +1,10 @@
 package me.desht.sensibletoolbox.commands;
 
 import com.google.common.base.Joiner;
-import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.DHValidate;
-import me.desht.dhutils.MessagePager;
-import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.*;
 import me.desht.dhutils.commands.AbstractCommand;
 import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -23,8 +21,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.FileUtil;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class ShowCommand extends AbstractCommand {
         super("stb show");
         setPermissionNode("stb.commands.show");
         setUsage("/<command> show [-w <world>] [-type <itemid>] [-perf]");
-        setOptions("w:s", "type:s", "perf");
+        setOptions("w:s", "type:s", "perf", "dump");
     }
 
     @Override
@@ -48,6 +47,8 @@ public class ShowCommand extends AbstractCommand {
             long avg = LocationManager.getManager().getAverageTimePerTick();
             double pct = avg / 200000.0;
             pager.add(avg + " ns/tick (" + pct + "%) spent in ticking STB blocks");
+        } else if (getBooleanOption("dump")) {
+            dumpItemData(plugin, sender);
         } else {
             String id = getStringOption("type");
             if (hasOption("w")) {
@@ -63,6 +64,26 @@ public class ShowCommand extends AbstractCommand {
 
         pager.showPage();
         return true;
+    }
+
+    private void dumpItemData(Plugin plugin, CommandSender sender) {
+        File out = new File(plugin.getDataFolder(), "item-dump.txt");
+        try {
+            PrintWriter writer = new PrintWriter(out, "UTF-8");
+            for (String itemId : BaseSTBItem.getItemIds()) {
+                STBItem item = BaseSTBItem.getItemById(itemId);
+                String lore = Joiner.on("\\\\").join(item.getLore());
+                String appearance = ItemNames.lookup(item.getMaterialData().toItemStack());
+                if (item.hasGlow()) {
+                    appearance += " (glowing)";
+                }
+                writer.println("|" + item.getItemName() + "|" + item.getItemTypeID() + "|" + appearance + "|" + lore);
+            }
+            writer.close();
+            MiscUtil.statusMessage(sender, "STB item data dumped to " + out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void showDetails(CommandSender sender, MessagePager pager, String locStr) {
@@ -108,7 +129,6 @@ public class ShowCommand extends AbstractCommand {
         try {
             Inventory inv = BukkitSerialization.fromBase64(o.toString());
             List<String> l = new ArrayList<String>(inv.getSize());
-            StringBuilder sb = new StringBuilder();
             for (ItemStack stack : inv) {
                 if (stack != null) {
                     l.add(STBUtil.describeItemStack(inv.getItem(0)));
