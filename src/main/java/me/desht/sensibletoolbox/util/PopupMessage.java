@@ -20,8 +20,8 @@ public class PopupMessage {
             Vector v = player.getLocation().getDirection();
             // this will place the message slightly in front of and above the location
             v.setY(0).multiply(-0.8).add(new Vector(0.5, 0.8, 0.5));
-            int duration = SensibleToolboxPlugin.getInstance().getConfig().getInt("holo_messages.duration");
-            Hologram h = HoloAPI.getManager().createSimpleHologram(loc.add(v), duration, message);
+            double duration = SensibleToolboxPlugin.getInstance().getConfig().getDouble("holo_messages.duration_per_line") * message.size();
+            Hologram h = HoloAPI.getManager().createSimpleHologram(loc.add(v), (int)duration, message);
             h.setVisibility(new PlayerVisibility(player));
         } else {
             for (String line : message) {

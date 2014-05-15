@@ -7,7 +7,7 @@ database:
   table_prefix: "stb_"
 holo_messages:
    enabled: true
-   duration: 8
+   duration_per_line: 2.0
 energy:
   tick_rate: 10
 paint_per_dye: 25
