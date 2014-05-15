@@ -44,6 +44,8 @@ public class Masher extends AbstractIOMachine {
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
+        ItemStack lapis = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE).toItemStack(8);
+        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.LAPIS_ORE), lapis, 80));
         ItemStack greenDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.GREEN).toItemStack(1);
         for (TreeSpecies species : TreeSpecies.values()) {
             crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeLeaves(species).toItemStack(), greenDye, 40));
