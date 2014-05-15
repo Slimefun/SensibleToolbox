@@ -1,14 +1,16 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.Debugger;
+import me.desht.dhutils.IconMenu;
+import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.blocks.PaintCan;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.PopupMessage;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Art;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.apache.commons.lang.Validate;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,13 +27,16 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class PaintBrush extends BaseSTBItem {
+public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEventHandler {
     private static final MaterialData md = new MaterialData(Material.GOLD_SPADE);
     private int paintLevel;
     private DyeColor colour;
+    private Painting editingPainting = null;
 
     public PaintBrush() {
         super();
@@ -192,36 +197,23 @@ public class PaintBrush extends BaseSTBItem {
         if (getPaintLevel() <= 0) {
             return;
         }
-        boolean painted = false;
         Entity e = event.getRightClicked();
         if (e instanceof Colorable) {
             ((Colorable) e).setColor(getColour());
-            painted = true;
-        } else if (e instanceof Painting) {
-            // TODO: pop up a GUI allowing direct selection of artwork
-            Painting painting = (Painting) e;
-            Art art = findNextArtwork(painting);
-            painting.setArt(art);
-            painted = true;
-        }
-        if (painted) {
             setPaintLevel(getPaintLevel() - 1);
             event.getPlayer().setItemInHand(toItemStack());
             event.getPlayer().playSound(e.getLocation(), Sound.WATER, 1.0f, 1.5f);
-        }
-    }
-
-    private Art findNextArtwork(Painting painting) {
-        Art current = painting.getArt();
-        int i = (current.ordinal() + 1) % Art.values().length;
-        while (i != current.ordinal()) {
-            Art a = Art.values()[i];
-            if (a.getBlockHeight() == current.getBlockHeight() && a.getBlockWidth() == current.getBlockWidth()) {
-                return a;
+        } else if (e instanceof Painting) {
+            Art a = ((Painting) e).getArt();
+            if (getPaintLevel() >= a.getBlockHeight() * a.getBlockWidth()) {
+                IconMenu menu = buildMenu((Painting) e);
+                menu.open(event.getPlayer());
+            } else {
+                Location loc = e.getLocation().add(0, -a.getBlockHeight() / 2.0, 0);
+                PopupMessage.quickMessage(event.getPlayer(), loc, ChatColor.RED + "Not enough paint!");
             }
-            i = (i + 1) % Art.values().length;
         }
-        return current;
+
     }
 
     private Block[] findBlocksAround(Block b) {
@@ -273,5 +265,44 @@ public class PaintBrush extends BaseSTBItem {
             }
         }
         return painted;
+    }
+
+    @Override
+    public void onOptionClick(IconMenu.OptionClickEvent event) {
+        Validate.notNull(editingPainting, "Editing painting should be non-null here!");
+        String artName = event.getName();
+        try {
+            Art art = Art.valueOf(artName);
+            editingPainting.setArt(art);
+            setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
+            event.getPlayer().setItemInHand(toItemStack());
+            event.getPlayer().playSound(editingPainting.getLocation(), Sound.WATER, 1.0f, 1.5f);
+        } catch (IllegalArgumentException e) {
+            MiscUtil.errorMessage(event.getPlayer(), "Invalid artwork: " + artName);
+        }
+        event.setWillClose(true);
+        event.setWillDestroy(true);
+        editingPainting = null;
+    }
+
+    private IconMenu buildMenu(Painting painting) {
+        editingPainting = painting;
+        Art[] other = getOtherArt(painting.getArt());
+        IconMenu menu = new IconMenu("Select Artwork", STBUtil.roundUp(other.length, 9), this, SensibleToolboxPlugin.getInstance());
+        int pos = 0;
+        for (Art a : other) {
+            menu.setOption(pos++, new ItemStack(Material.PAINTING), a.name(), "");
+        }
+        return menu;
+    }
+
+    private static Art[] getOtherArt(Art art) {
+        List<Art> l = new ArrayList<Art>();
+        for (Art a : Art.values()) {
+            if (a.getBlockWidth() == art.getBlockWidth() && a.getBlockHeight() == art.getBlockHeight() && a != art) {
+                l.add(a);
+            }
+        }
+        return l.toArray(new Art[l.size()]);
     }
 }
