@@ -265,7 +265,11 @@ public class GeneralListener extends STBBaseListener {
                     STBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem());
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
-                        // TODO: move it between hot bar and main inventory instead of just cancelling
+                        int newSlot = findNewSlot(event);
+                        if (newSlot >= 0) {
+                            event.getWhoClicked().getInventory().setItem(newSlot, event.getCurrentItem());
+                            event.setCurrentItem(null);
+                        }
                     }
                 }
             } else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
@@ -275,6 +279,20 @@ public class GeneralListener extends STBBaseListener {
                 }
             }
         }
+    }
+
+    private int findNewSlot(InventoryClickEvent event) {
+        int from = -1, to = -2;
+        switch (event.getSlotType()) {
+            case QUICKBAR: from = 9; to = 35; break;
+            case CONTAINER: from = 0; to = 8; break;
+        }
+        for (int i = from; i <= to; i++) {
+            if (event.getWhoClicked().getInventory().getItem(i) == null) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @EventHandler
