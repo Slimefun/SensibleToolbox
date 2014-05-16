@@ -26,8 +26,8 @@ public class FakeItem {
     public FakeItem(Plugin plugin, Location loc, Material mat) {
         itemWatcher = getDefaultWatcher(loc.getWorld(), mat);
 
-        for (WrappedWatchableObject object : itemWatcher)
-            System.out.println(object);
+//        for (WrappedWatchableObject object : itemWatcher)
+//            System.out.println(object);
     }
 
     public void sendPacket(Player p) {

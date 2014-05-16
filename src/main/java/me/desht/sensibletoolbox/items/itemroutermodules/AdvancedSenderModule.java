@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -152,7 +153,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     }
 
     private int sendItems(ReceiverModule receiver) {
-        System.out.println(this.getItemRouter() + ": adv.sender sending items to receiver module in " + receiver.getItemRouter());
+        Debugger.getInstance().debug(this.getItemRouter() + ": adv.sender sending items to receiver module in " + receiver.getItemRouter());
         int nToSend = getItemRouter().getStackSize();
         ItemStack toSend = getItemRouter().getBufferItem().clone();
         toSend.setAmount(Math.min(nToSend, toSend.getAmount()));

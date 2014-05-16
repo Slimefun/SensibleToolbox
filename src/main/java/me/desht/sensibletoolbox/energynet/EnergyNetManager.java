@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.energynet;
 
+import com.google.common.base.Joiner;
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.blocks.machines.BaseSTBMachine;
@@ -46,7 +48,10 @@ public class EnergyNetManager {
      */
     public static void onCablePlaced(Block cable) {
         Set<Integer> netIds = getAdjacentNets(cable);
-//		Debugger.getInstance().debug("new cable " + cable + " has " + netIds.size() + " adjacent nets [" + Joiner.on(",").join(netIds) + "]");
+        if (Debugger.getInstance().getLevel() > 1) {
+            Debugger.getInstance().debug(2,
+                    "new cable " + cable + " has " + netIds.size() + " adjacent nets [" + Joiner.on(",").join(netIds) + "]");
+        }
         List<AdjacentMachine> adjacentMachines;
         switch (netIds.size()) {
             case 0:
@@ -89,7 +94,7 @@ public class EnergyNetManager {
             return;
         }
 
-        System.out.println("removing cable " + cable + " from enet #" + thisNet.getNetID());
+        Debugger.getInstance().debug(2, "removing cable " + cable + " from enet #" + thisNet.getNetID());
 
         // scan this cable's neighbours to see what it was attached to
         final List<Block> attachedCables = new ArrayList<Block>();
@@ -211,7 +216,6 @@ public class EnergyNetManager {
     }
 
     public static void deleteEnergyNet(int netID) {
-//		System.out.println("deleting energy net #" + netID);
         EnergyNet enet = allNets.get(netID);
         if (enet != null) {
             enet.shutdown();

@@ -344,7 +344,6 @@ public class InventoryGUI {
         for (int slot : slots) {
             ItemStack stack = inventory.getItem(slot);
             if (stack != null) {
-                System.out.println("eject " + stack + " @ " + loc);
                 loc.getWorld().dropItemNaturally(loc, stack);
                 inventory.setItem(slot, null);
             }
