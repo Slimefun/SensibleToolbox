@@ -37,7 +37,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.mcstats.MetricsLite;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -148,6 +150,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         scheduleEnergyNetTicker();
 
+        setupMetrics();
+
         inited = true;
     }
 
@@ -174,6 +178,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         Bukkit.getScheduler().cancelTasks(this);
 
         instance = null;
+    }
+
+    private void setupMetrics() {
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException e) {
+            LogUtils.warning("Couldn't submit metrics stats: " + e.getMessage());
+        }
     }
 
     private void setupNMS() {
