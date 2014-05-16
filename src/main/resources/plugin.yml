@@ -3,7 +3,7 @@ description: A collection of generally useful tools and utilites
 author: desht
 main: me.desht.sensibletoolbox.SensibleToolboxPlugin
 version: ${project.version}
-softdepend: [ ProtocolLib, Landslide ]
+softdepend: [ ProtocolLib, Landslide, HoloAPI ]
 
 commands:
   stb:

@@ -53,8 +53,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private FloodlightListener floodlightListener;
     private PlayerUUIDTracker uuidTracker;
     private boolean inited = false;
-    private LandslideListener landslideListener;
-    private boolean holoAPIenabled;
+    private LandslideListener landslideListener = null;
+    private boolean holoAPIenabled = false;
     private BukkitTask energyTask = null;
 
     public static SensibleToolboxPlugin getInstance() {
@@ -232,6 +232,14 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return protocolLibEnabled;
     }
 
+    public LandslideListener getLandslideListener() {
+        return landslideListener;
+    }
+
+    public boolean isHoloAPIenabled() {
+        return holoAPIenabled;
+    }
+
     private void registerCommands() {
         cmds.registerCommand(new SaveCommand());
         cmds.registerCommand(new RenameCommand());
@@ -304,11 +312,4 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return configManager;
     }
 
-    public LandslideListener getLandslideListener() {
-        return landslideListener;
-    }
-
-    public boolean isHoloAPIenabled() {
-        return holoAPIenabled;
-    }
 }
