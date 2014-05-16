@@ -11,6 +11,8 @@ holo_messages:
 energy:
   tick_rate: 10
 paint_per_dye: 25
+multibuilder:
+  charge_per_op: 40
 items_enabled:
   advancedmoisturechecker: true
   advancedsendermodule: true
@@ -20,7 +22,6 @@ items_enabled:
   bigstorageunit: true
   blankmodule: true
   blockupdatedetector: true
-  buildersmultitool: true
   circuitboard: true
   diamondcombinehoe: true
   distributormodule: true
@@ -41,6 +42,7 @@ items_enabled:
   machineframe: true
   masher: true
   moisturechecker: true
+  multibuilder: true
   multimeter: true
   paintbrush: true
   paintcan: true

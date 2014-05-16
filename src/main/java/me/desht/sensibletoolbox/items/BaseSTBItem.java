@@ -92,7 +92,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new TapeMeasure(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new CircuitBoard(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new SimpleCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BuildersMultiTool(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new MultiBuilder(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new Floodlight(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new MachineFrame(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new Smelter(), plugin, CONFIG_NODE, PERMISSION_NODE);
