@@ -22,6 +22,7 @@ public abstract class ItemRouterModule extends BaseSTBItem {
     }
 
     public ItemRouterModule(ConfigurationSection conf) {
+        super(conf);
         amount = conf.getInt("amount", 1);
     }
 

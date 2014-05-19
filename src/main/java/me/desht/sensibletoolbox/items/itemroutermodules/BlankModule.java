@@ -5,10 +5,8 @@ import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class BlankModule extends BaseSTBItem {
@@ -18,6 +16,7 @@ public class BlankModule extends BaseSTBItem {
     }
 
     public BlankModule(ConfigurationSection conf) {
+        super(conf);
     }
 
     @Override

@@ -2,7 +2,10 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.gui.*;
+import me.desht.sensibletoolbox.gui.AccessControlGadget;
+import me.desht.sensibletoolbox.gui.ButtonGadget;
+import me.desht.sensibletoolbox.gui.InventoryGUI;
+import me.desht.sensibletoolbox.gui.LevelMonitor;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.PaintBrush;
 import me.desht.sensibletoolbox.util.RelativePosition;

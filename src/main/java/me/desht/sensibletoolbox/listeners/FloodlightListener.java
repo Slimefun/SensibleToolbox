@@ -4,12 +4,9 @@ import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.Floodlight;
 import org.bukkit.Location;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.ItemDespawnEvent;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.HashSet;
 import java.util.Set;

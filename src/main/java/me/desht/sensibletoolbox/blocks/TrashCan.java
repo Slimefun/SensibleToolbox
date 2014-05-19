@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;

@@ -1,16 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import org.bukkit.Material;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.Inventory;
-
-import java.util.Set;
 
 public abstract class STBBaseListener implements Listener {
     protected SensibleToolboxPlugin plugin;

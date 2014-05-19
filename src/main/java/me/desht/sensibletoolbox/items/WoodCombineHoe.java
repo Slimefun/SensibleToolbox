@@ -1,13 +1,10 @@
 package me.desht.sensibletoolbox.items;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
-
-import java.util.Map;
 
 public class WoodCombineHoe extends CombineHoe {
     private static final MaterialData md = new MaterialData(Material.WOOD_HOE);

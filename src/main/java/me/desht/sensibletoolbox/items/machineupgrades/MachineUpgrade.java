@@ -2,7 +2,6 @@ package me.desht.sensibletoolbox.items.machineupgrades;
 
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public abstract class MachineUpgrade extends BaseSTBItem {
     private int amount;
@@ -11,6 +10,7 @@ public abstract class MachineUpgrade extends BaseSTBItem {
     }
 
     public MachineUpgrade(ConfigurationSection conf) {
+        super(conf);
     }
 
     public int getAmount() {

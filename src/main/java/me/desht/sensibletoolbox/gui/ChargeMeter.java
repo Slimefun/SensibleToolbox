@@ -1,13 +1,10 @@
 package me.desht.sensibletoolbox.gui;
 
-import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;

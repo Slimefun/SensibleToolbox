@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.storage;
 
-import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
