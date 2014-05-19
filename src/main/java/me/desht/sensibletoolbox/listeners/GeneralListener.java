@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.listeners;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
@@ -117,7 +118,6 @@ public class GeneralListener extends STBBaseListener {
         } else if (item != null) {
             // prevent placing of non-block STB items, even if they use a block material (e.g. bag of holding)
             event.setCancelled(true);
-            event.getPlayer().updateInventory();
         }
     }
 
@@ -214,20 +214,34 @@ public class GeneralListener extends STBBaseListener {
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
 
+        STBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
+        int finalSCU = 0;
+
         // prevent STB items being used where the vanilla material is expected
         // (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)
         for (ItemStack ingredient : event.getInventory().getMatrix()) {
             STBItem item = BaseSTBItem.getItemFromItemStack(ingredient);
-            if (item != null && !item.isIngredientFor(event.getRecipe().getResult())) {
-                Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
-                event.getInventory().setResult(null);
-                break;
+            if (item != null) {
+                if (!item.isIngredientFor(event.getRecipe().getResult())) {
+                    Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
+                    event.getInventory().setResult(null);
+                    break;
+                } else if (item instanceof Chargeable && result instanceof Chargeable) {
+                    // add the ingredient's charge to the final item's charge
+                    finalSCU += ((Chargeable) item).getCharge();
+                    System.out.println("chargeable ingredient! SCU now = " + finalSCU);
+                }
             }
+        }
+
+        if (finalSCU > 0) {
+            Chargeable c = (Chargeable) result;
+            c.setCharge(Math.min(c.getMaxCharge(), finalSCU));
+            event.getInventory().setResult(result.toItemStack());
         }
 
         // and ensure vanilla items can't be used in place of custom STB ingredients
         // (e.g. paper can't be used to craft item router modules, even though a blank module uses paper for its material)
-        STBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
         if (result != null) {
             for (ItemStack ingredient : event.getInventory().getMatrix()) {
                 if (ingredient != null) {
@@ -366,7 +380,6 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-
         // work around CB bug where event is called multiple times for a block
         Long when = (Long) STBUtil.getMetadataValue(event.getBlock(), LAST_PISTON_EXTEND);
         long now = System.currentTimeMillis();
