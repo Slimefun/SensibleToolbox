@@ -4,6 +4,7 @@ import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.commands.AbstractCommand;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.RecipeBook;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -24,11 +25,10 @@ public class RecipeCommand extends AbstractCommand {
         RecipeBook book = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), RecipeBook.class);
         DHValidate.notNull(book, "You must be holding a Recipe Book to search for recipes!");
         String filter = args.length > 0 ? args[0] : "";
-//		book.setFabricationAvailable(b != null && b.getType() == Material.WORKBENCH);
         book.setFilter(filter);
         book.goToItemList();
         Block b = player.getTargetBlock(null, 4);
-        book.openBook(player, b != null && b.getType() == Material.WORKBENCH);
+        book.openBook(player, STBUtil.canFabricateWith(b) ? b : null);
         return true;
     }
 }

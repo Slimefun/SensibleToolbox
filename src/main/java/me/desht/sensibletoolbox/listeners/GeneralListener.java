@@ -215,7 +215,7 @@ public class GeneralListener extends STBBaseListener {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
 
         STBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
-        int finalSCU = 0;
+        double finalSCU = 0.0;
 
         // prevent STB items being used where the vanilla material is expected
         // (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)

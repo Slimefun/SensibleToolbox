@@ -5,24 +5,27 @@ import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
+import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.gui.ButtonGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.*;
@@ -32,9 +35,9 @@ public class RecipeBook extends BaseSTBItem {
     private static final int ITEMS_PER_PAGE = 45;
     private static final List<ItemStack> fullItemList = new ArrayList<ItemStack>();
     private static final Map<ItemStack, Integer> itemListPos = new HashMap<ItemStack, Integer>();
-    private static final ItemStack SHAPED_ICON = new ItemStack(Material.WORKBENCH);
-    private static final ItemStack SHAPELESS_ICON = new ItemStack(Material.WORKBENCH);
-    private static final ItemStack FURNACE_ICON = new ItemStack(Material.BURNING_FURNACE);
+    private static final ItemStack SHAPED_ICON = STBUtil.makeStack(Material.WORKBENCH, ChatColor.YELLOW + "Shaped Recipe");
+    private static final ItemStack SHAPELESS_ICON = STBUtil.makeStack(Material.WORKBENCH, ChatColor.YELLOW + "Shapeless Recipe");
+    private static final ItemStack FURNACE_ICON = STBUtil.makeStack(Material.BURNING_FURNACE, ChatColor.YELLOW + "Furnace Recipe");
     private static final ItemStack GO_BACK_TEXTURE = new ItemStack(Material.IRON_DOOR);
     private static final ItemStack GO_BACK_TEXTURE_2 = new ItemStack(Material.WOOD_DOOR);
     private static final ItemStack WEB_TEXTURE = new ItemStack(Material.WEB);
@@ -48,6 +51,7 @@ public class RecipeBook extends BaseSTBItem {
     public static final int TRAIL_BACK_SLOT = 52;
     public static final int ITEM_LIST_SLOT = 53;
     public static final String FREEFAB_PERMISSION = "stb.recipebook.freefab";
+    public static final String FABRICATION_TITLE = ChatColor.BLUE + "Fabrication";
     private int page;
     private int viewingItem;
     private int recipeNumber;
@@ -58,18 +62,6 @@ public class RecipeBook extends BaseSTBItem {
     private boolean fabricationFree;
     private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
     private Player player;
-
-    static {
-        setLabel(SHAPED_ICON, "Shaped Recipe");
-        setLabel(SHAPELESS_ICON, "Shapeless Recipe");
-        setLabel(FURNACE_ICON, "Smelting Recipe");
-    }
-
-    private static void setLabel(ItemStack stack, String label) {
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.YELLOW + label);
-        stack.setItemMeta(meta);
-    }
 
     public RecipeBook() {
         super();
@@ -177,7 +169,12 @@ public class RecipeBook extends BaseSTBItem {
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            openBook(event.getPlayer(), event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.WORKBENCH);
+            Block clicked = event.getClickedBlock();
+            boolean isWorkbench = STBUtil.canFabricateWith(clicked);
+            if (clicked != null && STBUtil.isInteractive(clicked.getType()) && !isWorkbench && !event.getPlayer().isSneaking()) {
+                return;
+            }
+            openBook(event.getPlayer(), isWorkbench ? clicked : null);
             event.setCancelled(true);
         }
     }
@@ -186,10 +183,10 @@ public class RecipeBook extends BaseSTBItem {
         viewingItem = -1;
     }
 
-    public void openBook(Player player, boolean allowFab) {
+    public void openBook(Player player, Block fabricationBlock) {
         this.player = player;
         fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
-        setFabricationAvailable(fabricationFree || allowFab);
+        setFabricationAvailable(fabricationFree || fabricationBlock != null);
         gui = new InventoryGUI(player, this, 54, "Recipe Book");
         buildFilteredList();
         if (viewingItem < 0) {
@@ -272,19 +269,22 @@ public class RecipeBook extends BaseSTBItem {
             if (c != null) {
                 try {
                     STBItem item2 = c.getDeclaredConstructor().newInstance();
-                    return item2.toItemStack();
+                    ItemStack stack2 = item2.toItemStack();
+                    stack2.setDurability(stack.getDurability());
+                    return stack2;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        if (stack.getDurability() == 32767) {
-            ItemStack stack2 = stack.clone();
-            stack2.setDurability((short) 0);
-            return stack2;
-        } else {
-            return stack;
-        }
+        return stack;
+//        if (stack.getDurability() == 32767) {
+//            ItemStack stack2 = stack.clone();
+//            stack2.setDurability((short) 0);
+//            return stack2;
+//        } else {
+//            return stack;
+//        }
     }
 
     private ItemStack getSmeltingIngredient(ItemStack stack) {
@@ -316,7 +316,7 @@ public class RecipeBook extends BaseSTBItem {
 
         fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
         if (fabricationFree) {
-            fabricate(recipe.getResult(), true);
+            fabricateFree(recipe.getResult());
             return;
         }
 
@@ -336,22 +336,49 @@ public class RecipeBook extends BaseSTBItem {
             costs.add(cost);
         }
         if (ok) {
+            List<ItemStack> taken = new ArrayList<ItemStack>();
             for (ItemCost cost : costs) {
                 Debugger.getInstance().debug(2, this + ": apply cost " + cost.getDescription() + " to player");
                 cost.apply(player);
+                taken.addAll(cost.getActualItemsTaken());
             }
-            fabricate(recipe.getResult(), false);
+            fabricateNormal(taken, recipe.getResult());
         } else {
             player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
         }
     }
 
-    private void fabricate(ItemStack stack, boolean free) {
-        player.getInventory().addItem(stack);
-        player.updateInventory();
+    private void fabricateFree(ItemStack result) {
+        BaseSTBItem stb = BaseSTBItem.getItemFromItemStack(result);
+        if (stb instanceof Chargeable) {
+            Chargeable c = (Chargeable) stb;
+            c.setCharge(c.getMaxCharge());
+            result = stb.toItemStack();
+        }
+        player.getInventory().addItem(result);
         player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
-        String s = free ? " (free)" : "";
-        MiscUtil.statusMessage(player, "Fabricated" + s + ": &f" + ItemNames.lookup(stack));
+        MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemNames.lookup(result));
+    }
+
+    private void fabricateNormal(List<ItemStack> taken, ItemStack result) {
+        double totalCharge = 0.0;
+        for (ItemStack stack : taken) {
+            // the SCU level of any chargeable ingredient will contribute
+            // to the charge on the resulting item
+            BaseSTBItem stb = BaseSTBItem.getItemFromItemStack(stack);
+            if (stb instanceof Chargeable) {
+                totalCharge += ((Chargeable) stb).getCharge();
+            }
+        }
+        BaseSTBItem stb = BaseSTBItem.getItemFromItemStack(result);
+        if (stb instanceof Chargeable) {
+            Chargeable c = (Chargeable) stb;
+            c.setCharge(Math.min(totalCharge, c.getMaxCharge()));
+            result = stb.toItemStack();
+        }
+        player.getInventory().addItem(result);
+        player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
+        MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(result));
     }
 
     private List<ItemStack> mergeIngredients() {

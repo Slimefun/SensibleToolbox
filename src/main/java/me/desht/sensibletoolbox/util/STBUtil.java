@@ -4,6 +4,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -599,6 +600,18 @@ public class STBUtil {
     /**
      * Convenience method to create an item stack with defined title and lore data
      *
+     * @param material the material to create the stack from
+     * @param title the item's title, may be null
+     * @param lore the item's lore, may be empty
+     * @return a new ItemStack with the given title and lore
+     */
+    public static ItemStack makeStack(Material material, String title, String... lore) {
+        return makeStack(new MaterialData(material), title, lore);
+    }
+
+    /**
+     * Convenience method to create an item stack with defined title and lore data
+     *
      * @param materialData the material data to create the stack from
      * @param title the item's title, may be null
      * @param lore the item's lore, may be empty
@@ -649,5 +662,29 @@ public class STBUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Get a special material data for the item with the data set to -1.  This
+     * is useful when using the item in recipes, as a "don't care" data value.
+     *
+     * @param item the item to convert
+     * @return a MaterialData for the item with the data byte = -1
+     */
+    public static MaterialData getDontCareMaterialData(STBItem item) {
+        MaterialData md = item.getMaterialData().clone();
+        md.setData((byte) -1);
+        return md;
+    }
+
+    /**
+     * Check if the given block can be used to fabricate items via vanilla
+     * recipes.
+     *
+     * @param block the block to check
+     * @return true if the block can be used to fabricate with, false otherwise
+     */
+    public static boolean canFabricateWith(Block block) {
+        return block != null && block.getType() == Material.WORKBENCH;
     }
 }

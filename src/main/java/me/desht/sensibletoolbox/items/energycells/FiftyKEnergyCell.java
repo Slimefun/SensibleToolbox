@@ -1,10 +1,12 @@
 package me.desht.sensibletoolbox.items.energycells;
 
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 public class FiftyKEnergyCell extends EnergyCell {
     public FiftyKEnergyCell() {
@@ -43,7 +45,7 @@ public class FiftyKEnergyCell extends EnergyCell {
         registerCustomIngredients(cell);
         recipe.shape("III", "CCC", "GRG");
         recipe.setIngredient('I', Material.IRON_INGOT);
-        recipe.setIngredient('C', cell.toItemStack().getData());
+        recipe.setIngredient('C', STBUtil.getDontCareMaterialData(cell));
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
