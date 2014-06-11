@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -43,7 +44,9 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             for (int slot : getInputSlots()) {
                 if (getInventoryItem(slot) != null) {
                     pullItemIntoProcessing(slot);
-                    playStartupSound();
+                    if (SensibleToolboxPlugin.getInstance().getConfig().getBoolean("noisy_machines")) {
+                        playStartupSound();
+                    }
                     break;
                 }
             }

@@ -13,6 +13,7 @@ energy:
 paint_per_dye: 25
 multibuilder:
   charge_per_op: 40
+noisy_machines: true
 items_enabled:
   advancedmoisturechecker: true
   advancedsendermodule: true
