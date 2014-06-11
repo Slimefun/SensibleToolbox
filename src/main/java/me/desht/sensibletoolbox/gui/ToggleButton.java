@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.gui;
 
-import org.bukkit.Sound;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +29,7 @@ public class ToggleButton extends ClickableGadget {
         } else {
             // vetoed!
             if (event.getWhoClicked() instanceof Player) {
-                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+                STBUtil.complain((Player) event.getWhoClicked());
             }
         }
     }

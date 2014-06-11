@@ -191,7 +191,7 @@ public class WateringCan extends BaseSTBItem {
     private void waterSoil(Player player, Block b) {
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             if (getWaterLevel() <= 0) {
-                player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+                STBUtil.complain(player);
                 break;
             }
             if (b1.getType() == Material.SOIL) {
@@ -210,7 +210,7 @@ public class WateringCan extends BaseSTBItem {
     private void waterCrops(Player player, Block b) {
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             if (getWaterLevel() <= 0) {
-                player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+                STBUtil.complain(player);
                 break;
             }
             maybeGrowCrop(player, b1);

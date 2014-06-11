@@ -90,7 +90,7 @@ public class Multimeter extends BaseSTBItem {
                     showMachineInfo(player, machine, event.getClickedBlock());
                 } else {
                     // nothing to examine here
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+                    STBUtil.complain(player);
                 }
             }
             event.setCancelled(true);

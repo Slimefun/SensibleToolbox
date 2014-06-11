@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.util;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBItem;
@@ -686,5 +687,26 @@ public class STBUtil {
      */
     public static boolean canFabricateWith(Block block) {
         return block != null && block.getType() == Material.WORKBENCH;
+    }
+
+    /**
+     * Send an audible alert to the given player indicating something could
+     * not be done.
+     *
+     * @param player the player
+     */
+    public static void complain(Player player) {
+        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+    }
+
+    /**
+     * Send an error message to the given player, along with an audible alert.
+     *
+     * @param player the player
+     * @param message the message text
+     */
+    public static void complain(Player player, String message) {
+        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+        MiscUtil.errorMessage(player, message);
     }
 }

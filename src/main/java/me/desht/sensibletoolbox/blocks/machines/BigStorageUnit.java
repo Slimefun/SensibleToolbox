@@ -418,8 +418,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         ItemStack stack = player.getInventory().getItem(slot);
         int toInsert = Math.min(stack.getAmount(), maxCapacity - getStorageAmount());
         if (toInsert == 0) {
-            player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-            MiscUtil.errorMessage(player, getItemName() + " is full.");
+            STBUtil.complain(player, getItemName() + " is full.");
             return 0;
         }
         double chargeNeeded = getChargePerOperation(toInsert);
@@ -435,8 +434,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
                     new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), System.currentTimeMillis()));
             return toInsert;
         } else {
-            player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-            MiscUtil.errorMessage(player, getItemName() + " has insufficient charge to accept items.");
+            STBUtil.complain(player, getItemName() + " has insufficient charge to accept items.");
             return 0;
         }
     }

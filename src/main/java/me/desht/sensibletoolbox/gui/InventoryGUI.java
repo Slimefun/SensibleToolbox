@@ -163,8 +163,7 @@ public class InventoryGUI {
 
     public void show(Player player) {
         if (getOwningItem() instanceof BaseSTBBlock && !getOwningBlock().hasAccessRights(player)) {
-            player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-            MiscUtil.errorMessage(player, "That " + getOwningItem().getItemName() + " is private!");
+            STBUtil.complain(player, "That " + getOwningItem().getItemName() + " is private!");
             return;
         }
         if (inventory.getViewers().isEmpty()) {

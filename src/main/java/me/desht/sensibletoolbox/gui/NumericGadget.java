@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.gui;
 
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -42,7 +43,7 @@ public class NumericGadget extends ClickableGadget {
         } else {
             // vetoed by the block!
             if (event.getWhoClicked() instanceof Player) {
-                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+               STBUtil.complain((Player) event.getWhoClicked());
             }
         }
     }

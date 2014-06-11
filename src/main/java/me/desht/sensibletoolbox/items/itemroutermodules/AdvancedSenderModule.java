@@ -4,6 +4,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -112,11 +113,11 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
                     }
                 }
             }
-            event.getPlayer().playSound(event.getPlayer().getLocation(), linked ? Sound.ORB_PICKUP : Sound.NOTE_BASS, 1.0f, 1.0f);
+            STBUtil.complain(event.getPlayer());
             event.setCancelled(true);
         } else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+            STBUtil.complain(event.getPlayer());
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
         } else if (event.getPlayer().getItemInHand().getAmount() == 1 &&

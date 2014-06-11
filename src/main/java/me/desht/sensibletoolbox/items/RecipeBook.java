@@ -374,7 +374,7 @@ public class RecipeBook extends BaseSTBItem {
             }
             fabricateNormal(taken, recipe.getResult());
         } else {
-            player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+            STBUtil.complain(player);
         }
     }
 

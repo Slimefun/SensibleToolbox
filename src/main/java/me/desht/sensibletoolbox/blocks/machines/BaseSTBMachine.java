@@ -522,8 +522,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         if (upgrade == null) {
             return false;
         } else if (upgrade instanceof EjectorUpgrade && ((EjectorUpgrade) upgrade).getDirection() == BlockFace.SELF) {
-            ((Player) player).playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
-            MiscUtil.errorMessage((Player) player, "Ejector upgrade must have a direction configured.");
+            STBUtil.complain((Player) player, "Ejector upgrade must have a direction configured.");
             return false;
         } else {
             return true;
