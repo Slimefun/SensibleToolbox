@@ -283,12 +283,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     @Override
-    public void onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+    public Object onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
         if (key.equals("save_interval")) {
             DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
         } else if (key.equals("energy.tick_rate")) {
             DHValidate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
         }
+        return newVal;
     }
 
     @Override
