@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 public class RecipeCommand extends AbstractCommand {
@@ -22,9 +23,18 @@ public class RecipeCommand extends AbstractCommand {
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         notFromConsole(sender);
         Player player = (Player) sender;
-        RecipeBook book = BaseSTBItem.getItemFromItemStack(player.getItemInHand(), RecipeBook.class);
-        DHValidate.notNull(book, "You must be holding a Recipe Book to search for recipes!");
+        Inventory inv = player.getInventory();
+        RecipeBook book = null;
+        int slot;
+        for (slot = 0; slot < 35; slot++) {
+            book = BaseSTBItem.getItemFromItemStack(inv.getItem(slot), RecipeBook.class);
+            if (book != null) {
+                break;
+            }
+        }
+        DHValidate.notNull(book, "You must have a Recipe Book in your inventory to search for recipes!");
         String filter = args.length > 0 ? args[0] : "";
+        book.setInventorySlot(slot);
         book.setFilter(filter);
         book.goToItemList();
         Block b = player.getTargetBlock(null, 4);

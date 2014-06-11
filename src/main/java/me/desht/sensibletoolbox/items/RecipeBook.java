@@ -62,6 +62,7 @@ public class RecipeBook extends BaseSTBItem {
     private boolean fabricationFree;
     private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
     private Player player;
+    private int inventorySlot;
 
     public RecipeBook() {
         super();
@@ -158,6 +159,14 @@ public class RecipeBook extends BaseSTBItem {
         return new String[]{"Allows browsing of all", "known recipes"};
     }
 
+    public void setInventorySlot(int inventorySlot) {
+        this.inventorySlot = inventorySlot;
+    }
+
+    public int getInventorySlot() {
+        return inventorySlot;
+    }
+
     @Override
     public Recipe getRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
@@ -175,6 +184,7 @@ public class RecipeBook extends BaseSTBItem {
                 return;
             }
             openBook(event.getPlayer(), isWorkbench ? clicked : null);
+            setInventorySlot(event.getPlayer().getInventory().getHeldItemSlot());
             event.setCancelled(true);
         }
     }
@@ -291,7 +301,7 @@ public class RecipeBook extends BaseSTBItem {
             }
         }
         return stack;
-//        if (stack.getDurability() == 32767) {
+    //        if (stack.getDurability() == 32767) {
 //            ItemStack stack2 = stack.clone();
 //            stack2.setDurability((short) 0);
 //            return stack2;
@@ -321,7 +331,14 @@ public class RecipeBook extends BaseSTBItem {
 
     @Override
     public void onGUIClosed(HumanEntity player) {
-        player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
+        int slot = getInventorySlot();
+        PlayerInventory inventory = player.getInventory();
+        RecipeBook book = BaseSTBItem.getItemFromItemStack(inventory.getItem(slot), RecipeBook.class);
+        if (book != null) {
+            // If the player moved his recipe book to a different slot, we don't want to
+            // overwrite the old slot with the updated book
+            inventory.setItem(slot, toItemStack(inventory.getItem(slot).getAmount()));
+        }
     }
 
     private void tryFabrication(Recipe recipe) {
