@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
@@ -19,10 +20,12 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -454,7 +457,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             }
         } else if (isUpgradeSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
-                if (!BaseSTBItem.isSTBItem(onCursor, MachineUpgrade.class)) {
+                if (!isValidUpgrade(player, onCursor)) {
                     return false;
                 }
             }
@@ -499,22 +502,32 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
                 return 1;
             }
         }
-        if (getUpgradeSlots().length > 0) {
-            if (BaseSTBItem.isSTBItem(toInsert, MachineUpgrade.class)) {
-                int upgradeSlot = findAvailableUpgradeSlot(toInsert);
-                if (upgradeSlot >= 0) {
-                    if (getInventoryItem(upgradeSlot) != null) {
-                        toInsert.setAmount(toInsert.getAmount() + getInventoryItem(upgradeSlot).getAmount());
-                    }
-                    setInventoryItem(upgradeSlot, toInsert);
-                    needToProcessUpgrades = true;
-                    return toInsert.getAmount();
+        if (getUpgradeSlots().length > 0 && isValidUpgrade(player, toInsert)) {
+            int upgradeSlot = findAvailableUpgradeSlot(toInsert);
+            if (upgradeSlot >= 0) {
+                if (getInventoryItem(upgradeSlot) != null) {
+                    toInsert.setAmount(toInsert.getAmount() + getInventoryItem(upgradeSlot).getAmount());
                 }
+                setInventoryItem(upgradeSlot, toInsert);
+                needToProcessUpgrades = true;
+                return toInsert.getAmount();
             }
-        } else {
-            return 0;
         }
+
         return 0;
+    }
+
+    private boolean isValidUpgrade(HumanEntity player, ItemStack stack) {
+        MachineUpgrade upgrade = BaseSTBItem.getItemFromItemStack(stack, MachineUpgrade.class);
+        if (upgrade == null) {
+            return false;
+        } else if (upgrade instanceof EjectorUpgrade && ((EjectorUpgrade) upgrade).getDirection() == BlockFace.SELF) {
+            ((Player) player).playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+            MiscUtil.errorMessage((Player) player, "Ejector upgrade must have a direction configured.");
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override

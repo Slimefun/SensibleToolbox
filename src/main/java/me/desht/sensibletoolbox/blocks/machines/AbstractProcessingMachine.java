@@ -120,7 +120,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
         ItemStack item = result.clone();
         item.setAmount(1);
         if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
-            // no block there - just drop the item
+            // no (solid) block there - just drop the item
             loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), result);
             return true;
         } else {
