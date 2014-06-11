@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.ItemNames;
-import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
@@ -75,11 +75,13 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
+        int n = getWorkRadius() * 2 + 1;
+        String s = n + "x" + n;
         return new String[]{
                 "Right-click dirt/grass:" + ChatColor.RESET + " till 3x3 area",
                 "Right-click soil:" + ChatColor.RESET + " sow 3x3 area",
                 "Right-click other:" + ChatColor.RESET + " open seed bag",
-                "Left-click plants:" + ChatColor.RESET + " harvest 3x3 area",
+                "Left-click plants:" + ChatColor.RESET + " harvest " + s + " area",
                 "Left-click leaves:" + ChatColor.RESET + " break 3x3x3 area",
         };
     }
@@ -88,7 +90,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     public String[] getExtraLore() {
         if (getSeedType() != null && getSeedAmount() > 0) {
             String s = ItemNames.lookup(new ItemStack(getSeedType()));
-            return new String[]{ChatColor.WHITE + "Seeds: " + ChatColor.GOLD + getSeedAmount() + " x " + s};
+            return new String[]{ChatColor.WHITE + "Seed bag: " + ChatColor.GOLD + getSeedAmount() + " x " + s};
         } else {
             return new String[0];
         }
@@ -114,28 +116,33 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            gui = new InventoryGUI(event.getPlayer(), this, 9, getInventoryTitle());
-            for (int i = 0; i < gui.getInventory().getSize(); i++) {
-                gui.setSlotType(i, InventoryGUI.SlotType.ITEM);
+            if (event.getClickedBlock() == null || !STBUtil.isInteractive(event.getClickedBlock().getType())) {
+                gui = new InventoryGUI(event.getPlayer(), this, 9, getInventoryTitle());
+                for (int i = 0; i < gui.getInventory().getSize(); i++) {
+                    gui.setSlotType(i, InventoryGUI.SlotType.ITEM);
+                }
+                populateSeedBag(gui);
+                gui.show(event.getPlayer());
             }
-            populateSeedBag(gui);
-            gui.show(event.getPlayer());
         }
     }
 
     @Override
     public void onBreakBlockWithItem(BlockBreakEvent event) {
-        Block b = event.getBlock();
         Player player = event.getPlayer();
+        if (player.isSneaking()) {
+            return;
+        }
+        Block b = event.getBlock();
         if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
-            harvestLayer(player, b);
+            harvestLayer(b);
             if (!player.isSneaking()) {
-                harvestLayer(player, b.getRelative(BlockFace.UP));
-                harvestLayer(player, b.getRelative(BlockFace.DOWN));
+                harvestLayer(b.getRelative(BlockFace.UP));
+                harvestLayer(b.getRelative(BlockFace.DOWN));
             }
             damageHeldItem(player, (short) 1);
         } else if (STBUtil.isPlant(b.getType())) {
-            harvestLayer(player, b);
+            harvestLayer(b);
             damageHeldItem(player, (short) 1);
         }
     }
@@ -207,7 +214,7 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
         }
         if (err != null) {
-            MiscUtil.errorMessage((Player) player, err);
+            STBUtil.complain((Player) player, err);
         }
         setSeedAmount(count);
         setSeedType(seedType);
@@ -246,19 +253,23 @@ public abstract class CombineHoe extends BaseSTBItem {
                 }
             }
         }
-        setSeedAmount(amountLeft);
+        if (amountLeft < getSeedAmount()) {
+            setSeedAmount(amountLeft);
+            player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
+        }
         player.setItemInHand(toItemStack());
-        player.updateInventory();
     }
 
-    public void harvestLayer(Player player, Block b) {
-        for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-            if (STBUtil.isPlant(b1.getType()) || b1.getType() == Material.LEAVES || b1.getType() == Material.LEAVES_2) {
-                b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
-                b1.breakNaturally();
-            }
-            if (player.isSneaking()) {
-                break;
+    private void harvestLayer(Block b) {
+        Cuboid c = new Cuboid(b.getLocation());
+        c = c.outset(Cuboid.CuboidDirection.Horizontal, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
+
+        for (Block b1 : c) {
+            if (!b1.equals(b)) {
+                if (STBUtil.isPlant(b1.getType()) || b1.getType() == Material.LEAVES || b1.getType() == Material.LEAVES_2) {
+                    b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
+                    b1.breakNaturally();
+                }
             }
         }
     }
@@ -297,5 +308,9 @@ public abstract class CombineHoe extends BaseSTBItem {
         } else {
             player.setItemInHand(stack);
         }
+    }
+
+    public int getWorkRadius() {
+        return 1;
     }
 }

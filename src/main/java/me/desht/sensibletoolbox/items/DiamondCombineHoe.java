@@ -37,4 +37,9 @@ public class DiamondCombineHoe extends CombineHoe {
         recipe.setIngredient('W', Material.DIAMOND_SWORD);
         return recipe;
     }
+
+    @Override
+    public int getWorkRadius() {
+        return 2;
+    }
 }

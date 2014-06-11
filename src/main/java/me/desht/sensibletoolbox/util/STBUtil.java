@@ -72,6 +72,7 @@ public class STBUtil {
             case RED_MUSHROOM:
             case DEAD_BUSH:
             case SAPLING:
+            case CACTUS:
                 return true;
         }
         return false;
@@ -708,5 +709,15 @@ public class STBUtil {
     public static void complain(Player player, String message) {
         player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
         MiscUtil.errorMessage(player, message);
+    }
+
+    /**
+     * Check if the given material is leaves.
+     *
+     * @param type the material to check
+     * @return true if the material is any kind of tree leaf; false otherwise
+     */
+    public static boolean isLeaves(Material type) {
+        return type == Material.LEAVES || type == Material.LEAVES_2;
     }
 }
