@@ -222,6 +222,11 @@ public class RecipeBook extends BaseSTBItem {
         return false;
     }
 
+    @Override
+    public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
+        return false;
+    }
+
     private void showShapedRecipe(ShapedRecipe recipe) {
         STBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
         String[] shape = recipe.getShape();
