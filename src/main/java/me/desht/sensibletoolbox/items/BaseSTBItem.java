@@ -172,9 +172,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
             STBItem item = getItemById(key);
             Recipe r = item.getRecipe();
             if (r != null) {
+                System.out.println("add recipe " + r + " for " + item);
                 Bukkit.addRecipe(r);
             }
             for (Recipe r2 : item.getExtraRecipes()) {
+                System.out.println("add extra recipe " + r2 + " for " + item);
                 Bukkit.addRecipe(r2);
             }
             ItemStack stack = item.getSmeltingResult();

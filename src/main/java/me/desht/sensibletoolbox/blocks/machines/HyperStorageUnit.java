@@ -54,6 +54,11 @@ public class HyperStorageUnit extends BigStorageUnit {
     }
 
     @Override
+    public Recipe[] getExtraRecipes() {
+        return new Recipe[0];
+    }
+
+    @Override
     public int getMaxCharge() {
         return 1000;
     }

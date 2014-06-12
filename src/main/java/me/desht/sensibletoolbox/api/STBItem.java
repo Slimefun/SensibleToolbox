@@ -53,14 +53,14 @@ public interface STBItem {
     String[] getExtraLore();
 
     /**
-     * Get the recipe used to create the item.
+     * Get the vanilla crafting recipe used to create the item.
      *
      * @return the recipe, or null if the item does not have a vanilla crafting recipe
      */
     Recipe getRecipe();
 
     /**
-     * Get any alternative recipes used to create the item.
+     * Get any alternative vanilla crafting recipes used to create the item.
      *
      * @return an array of recipes
      */
