@@ -5,6 +5,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
@@ -457,7 +458,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             }
         } else if (isUpgradeSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
-                if (!isValidUpgrade(player, onCursor)) {
+                if (!isValidUpgrade(player, BaseSTBItem.getItemFromItemStack(onCursor))) {
                     return false;
                 }
             }
@@ -479,6 +480,26 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
+        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(toInsert);
+
+        if (getUpgradeSlots().length > 0 && isValidUpgrade(player, item)) {
+            int upgradeSlot = findAvailableUpgradeSlot(toInsert);
+            if (upgradeSlot >= 0) {
+                if (getInventoryItem(upgradeSlot) != null) {
+                    toInsert.setAmount(toInsert.getAmount() + getInventoryItem(upgradeSlot).getAmount());
+                }
+                setInventoryItem(upgradeSlot, toInsert);
+                needToProcessUpgrades = true;
+                return toInsert.getAmount();
+            }
+        }
+
+        if (item instanceof EnergyCell && getEnergyCellSlot() >= 0 && installedCell == null) {
+            installEnergyCell((EnergyCell) item);
+            setInventoryItem(getEnergyCellSlot(), installedCell.toItemStack());
+            return 1;
+        }
+
         int insertionSlot = findAvailableInputSlot(toInsert, BlockFace.SELF);
         if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
             ItemStack inMachine = getInventoryItem(insertionSlot);
@@ -494,34 +515,15 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
                 return nToInsert;
             }
         }
-        if (getEnergyCellSlot() >= 0 && installedCell == null) {
-            EnergyCell cell = BaseSTBItem.getItemFromItemStack(toInsert, EnergyCell.class);
-            if (cell != null) {
-                installEnergyCell(cell);
-                setInventoryItem(getEnergyCellSlot(), installedCell.toItemStack());
-                return 1;
-            }
-        }
-        if (getUpgradeSlots().length > 0 && isValidUpgrade(player, toInsert)) {
-            int upgradeSlot = findAvailableUpgradeSlot(toInsert);
-            if (upgradeSlot >= 0) {
-                if (getInventoryItem(upgradeSlot) != null) {
-                    toInsert.setAmount(toInsert.getAmount() + getInventoryItem(upgradeSlot).getAmount());
-                }
-                setInventoryItem(upgradeSlot, toInsert);
-                needToProcessUpgrades = true;
-                return toInsert.getAmount();
-            }
-        }
 
         return 0;
     }
 
-    private boolean isValidUpgrade(HumanEntity player, ItemStack stack) {
-        MachineUpgrade upgrade = BaseSTBItem.getItemFromItemStack(stack, MachineUpgrade.class);
-        if (upgrade == null) {
+    private boolean isValidUpgrade(HumanEntity player, BaseSTBItem item) {
+        if (!(item instanceof MachineUpgrade)) {
             return false;
-        } else if (upgrade instanceof EjectorUpgrade && ((EjectorUpgrade) upgrade).getDirection() == BlockFace.SELF) {
+        }
+        if (item instanceof EjectorUpgrade && ((EjectorUpgrade) item).getDirection() == BlockFace.SELF) {
             STBUtil.complain((Player) player, "Ejector upgrade must have a direction configured.");
             return false;
         } else {

@@ -123,7 +123,7 @@ public class HeatEngine extends Generator {
         recipe.shape("III", "SCE", "RGR");
         recipe.setIngredient('I', Material.IRON_INGOT);
         recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('E', STBUtil.getDontCareMaterialData(cell));
+        recipe.setIngredient('E', STBUtil.makeWildCardMaterialData(cell));
         recipe.setIngredient('C', Material.CAULDRON_ITEM);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('R', Material.REDSTONE);

@@ -229,7 +229,7 @@ public class GeneralListener extends STBBaseListener {
                 } else if (item instanceof Chargeable && result instanceof Chargeable) {
                     // add the ingredient's charge to the final item's charge
                     finalSCU += ((Chargeable) item).getCharge();
-                    System.out.println("chargeable ingredient! SCU now = " + finalSCU);
+                    System.out.println("chargeable ingredient " + item + " ! SCU now = " + finalSCU);
                 }
             }
         }

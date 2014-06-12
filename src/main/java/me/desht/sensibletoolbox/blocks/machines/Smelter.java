@@ -43,19 +43,8 @@ public class Smelter extends AbstractIOMachine {
             Recipe r = iter.next();
             if (r instanceof FurnaceRecipe) {
                 FurnaceRecipe fr = (FurnaceRecipe) r;
-                ItemStack input = fr.getInput();
-                // why does the input item for a furnace recipe always have 32767 durability ?
-                if (input.getDurability() == 32767)
-                    input.setDurability((short) 0);
-                crm.addCustomRecipe(new CustomRecipe(this, input, fr.getResult(), getProcessingTime(input)));
+                crm.addCustomRecipe(new CustomRecipe(this, fr.getInput(), fr.getResult(), getProcessingTime(fr.getInput())));
             }
-        }
-
-        // different log types need to be handled explicitly
-        ItemStack charcoal = new ItemStack(Material.COAL, 1, (byte) 1);
-        for (TreeSpecies species : TreeSpecies.values()) {
-            ItemStack input = STBUtil.makeLog(species).toItemStack();
-            crm.addCustomRecipe(new CustomRecipe(this, input, charcoal, getProcessingTime(input)));
         }
 
         // custom STB items

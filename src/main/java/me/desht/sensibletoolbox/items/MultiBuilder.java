@@ -143,7 +143,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         recipe.setIngredient('D', Material.DIAMOND);
         recipe.setIngredient('P', Material.DIAMOND_AXE);
         recipe.setIngredient('I', Material.IRON_INGOT);
-        recipe.setIngredient('E', STBUtil.getDontCareMaterialData(cell));
+        recipe.setIngredient('E', STBUtil.makeWildCardMaterialData(cell));
         recipe.setIngredient('C', sc.toItemStack().getData());
         return recipe;
     }

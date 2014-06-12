@@ -2,7 +2,6 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ToggleButton;
@@ -204,8 +203,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
         recipe.shape("LSL", "L L", "LLL");
-        recipe.setIngredient('L', Material.LOG);
-        recipe.setIngredient('S', Material.WOOD_STEP);
+        recipe.setIngredient('L', STBUtil.makeWildCardMaterialData(Material.LOG));
+        recipe.setIngredient('S', STBUtil.makeWildCardMaterialData(Material.WOOD_STEP));
         return recipe;
     }
 
@@ -213,8 +212,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public Recipe[] getExtraRecipes() {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
         recipe.shape("LSL", "L L", "LLL");
-        recipe.setIngredient('L', Material.LOG_2);
-        recipe.setIngredient('S', Material.WOOD_STEP);
+        recipe.setIngredient('L', STBUtil.makeWildCardMaterialData(Material.LOG_2));
+        recipe.setIngredient('S', STBUtil.makeWildCardMaterialData(Material.WOOD_STEP));
         return new Recipe[]{recipe};
     }
 

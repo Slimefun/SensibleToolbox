@@ -61,13 +61,9 @@ public class CustomRecipeManager {
     }
 
     public static ItemStack makeSingle(ItemStack stack) {
-        if (stack.getAmount() == 1) {
-            return stack;
-        } else {
-            ItemStack stack2 = stack.clone();
-            stack2.setAmount(1);
-            return stack2;
-        }
+        ItemStack stack2 = stack.clone();
+        stack2.setAmount(1);
+        return stack2;
     }
 
     /**

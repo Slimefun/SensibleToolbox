@@ -671,12 +671,36 @@ public class STBUtil {
      * is useful when using the item in recipes, as a "don't care" data value.
      *
      * @param item the item to convert
-     * @return a MaterialData for the item with the data byte = -1
+     * @return a MaterialData for the item with wildcarded data
      */
-    public static MaterialData getDontCareMaterialData(STBItem item) {
+    public static MaterialData makeWildCardMaterialData(STBItem item) {
         MaterialData md = item.getMaterialData().clone();
         md.setData((byte) -1);
         return md;
+    }
+
+    /**
+     * Get a special material data for the material with the data set to -1.
+     * This is useful when using the item in recipes, as a "don't care" data
+     * value.
+     *
+     * @param mat the base material
+     * @return a MaterialData for the material with wildcarded data
+     */
+    public static MaterialData makeWildCardMaterialData(Material mat) {
+        return new MaterialData(mat, (byte) -1);
+    }
+
+    /**
+     * Get a special item stack for the material with the data set to 32767.
+     * This is useful when using the item in recipes, as a "don't care" data
+     * value.
+     *
+     * @param mat the base material
+     * @return an item stack for the material with wildcarded data
+     */
+    public static ItemStack makeWildCardItemStack(Material mat) {
+        return new ItemStack(mat, 1, (short) 32767);
     }
 
     /**
@@ -691,8 +715,8 @@ public class STBUtil {
     }
 
     /**
-     * Send an audible alert to the given player indicating something could
-     * not be done.
+     * Send an audible alert to the given player indicating a problem of some
+     * kind.
      *
      * @param player the player
      */

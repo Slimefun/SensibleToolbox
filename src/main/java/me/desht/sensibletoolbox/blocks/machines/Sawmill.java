@@ -30,7 +30,7 @@ public class Sawmill extends AbstractIOMachine {
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
         for (TreeSpecies species : TreeSpecies.values()) {
-            crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeLog(species).toItemStack(), STBUtil.makePlank(species).toItemStack(6), 60));
+            crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeLog(species).toItemStack(1), STBUtil.makePlank(species).toItemStack(6), 60));
         }
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));

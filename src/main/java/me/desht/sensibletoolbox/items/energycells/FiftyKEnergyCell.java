@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 public class FiftyKEnergyCell extends EnergyCell {
     public FiftyKEnergyCell() {
@@ -45,7 +44,7 @@ public class FiftyKEnergyCell extends EnergyCell {
         registerCustomIngredients(cell);
         recipe.shape("III", "CCC", "GRG");
         recipe.setIngredient('I', Material.IRON_INGOT);
-        recipe.setIngredient('C', STBUtil.getDontCareMaterialData(cell));
+        recipe.setIngredient('C', STBUtil.makeWildCardMaterialData(cell));
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
