@@ -6,15 +6,20 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.STBItem;
+import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.gui.ButtonGadget;
 import me.desht.sensibletoolbox.gui.ClickableGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -65,6 +70,7 @@ public class RecipeBook extends BaseSTBItem {
     private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
     private Player player;
     private int inventorySlot;
+    private final List<InventoryHolder> resourceInventories = new ArrayList<InventoryHolder>();
 
     public RecipeBook() {
         super();
@@ -176,7 +182,7 @@ public class RecipeBook extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Allows browsing of all", "known recipes"};
+        return new String[]{"Allows browsing/fabrication","of all known recipes"};
     }
 
     public void setInventorySlot(int inventorySlot) {
@@ -185,6 +191,15 @@ public class RecipeBook extends BaseSTBItem {
 
     public int getInventorySlot() {
         return inventorySlot;
+    }
+
+    public boolean isAdvanced() {
+        return false;
+    }
+
+    @Override
+    public boolean hasGlow() {
+        return isAdvanced();
     }
 
     @Override
@@ -201,6 +216,7 @@ public class RecipeBook extends BaseSTBItem {
             Block clicked = event.getClickedBlock();
             boolean isWorkbench = STBUtil.canFabricateWith(clicked);
             if (clicked != null && STBUtil.isInteractive(clicked.getType()) && !isWorkbench && !event.getPlayer().isSneaking()) {
+                // allow opening doors, throwing levers etc. with a recipe book in hand
                 return;
             }
             openBook(event.getPlayer(), isWorkbench ? clicked : null);
@@ -216,7 +232,8 @@ public class RecipeBook extends BaseSTBItem {
     public void openBook(Player player, Block fabricationBlock) {
         this.player = player;
         fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
-        setFabricationAvailable(fabricationFree || fabricationBlock != null);
+        setFabricationAvailable(fabricationFree || fabricationBlock != null || hasFabricatorInInventory(player));
+        findResourceInventories(fabricationBlock);
         gui = new InventoryGUI(player, this, 54, "Recipe Book");
         buildFilteredList();
         if (viewingItem < 0) {
@@ -225,6 +242,36 @@ public class RecipeBook extends BaseSTBItem {
             drawRecipePage();
         }
         gui.show(player);
+    }
+
+    private void findResourceInventories(Block fabricationBlock) {
+        resourceInventories.clear();
+        if (fabricationBlock == null || !isAdvanced()) {
+            return;
+        }
+        for (BlockFace face : STBUtil.directFaces) {
+            Block b = fabricationBlock.getRelative(face);
+            if (VanillaInventoryUtils.isVanillaInventory(b)) {
+                resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
+            } else {
+                BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+                if (stb instanceof STBInventoryHolder) {
+                    resourceInventories.add((STBInventoryHolder) stb);
+                }
+            }
+        }
+        Debugger.getInstance().debug("recipebook: found " + resourceInventories.size()
+                + " resource inventories adjacent to " + fabricationBlock + " for " + player.getName());
+    }
+
+    private boolean hasFabricatorInInventory(Player player) {
+        PlayerInventory inv = player.getInventory();
+        for (int slot = 0; slot < 36; slot++) {
+            if (STBUtil.canFabricateWith(inv.getItem(slot))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -362,7 +409,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void tryFabrication(Recipe recipe) {
-        Debugger.getInstance().debug("STUB: attempt to fabricate " + recipe.getResult() + " for " + player.getName());
+        Debugger.getInstance().debug("recipe book: attempt to fabricate " + recipe.getResult() + " for " + player.getName());
 
         fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
         if (fabricationFree) {
@@ -374,12 +421,21 @@ public class RecipeBook extends BaseSTBItem {
             return;
         }
 
+        Inventory[] inventories = new Inventory[resourceInventories.size()];
+        for (int i = 0; i < inventories.length; i++) {
+            if (resourceInventories.get(i) instanceof STBInventoryHolder) {
+                // TODO: how to get items from an STB inventory?
+            } else {
+                inventories[i] = resourceInventories.get(i).getInventory();
+            }
+        }
+
         List<ItemStack> ingredients = mergeIngredients();
         List<ItemCost> costs = new ArrayList<ItemCost>(ingredients.size());
         boolean ok = true;
         for (ItemStack ingredient : ingredients) {
             ItemCost cost = new ItemCost(ingredient);
-            if (!cost.isAffordable(player)) {
+            if (!cost.isAffordable(player, false, inventories)) {
                 MiscUtil.errorMessage(player, "Missing: &f" + ItemNames.lookup(ingredient));
                 ok = false;
             }
@@ -389,7 +445,7 @@ public class RecipeBook extends BaseSTBItem {
             List<ItemStack> taken = new ArrayList<ItemStack>();
             for (ItemCost cost : costs) {
                 Debugger.getInstance().debug(2, this + ": apply cost " + cost.getDescription() + " to player");
-                cost.apply(player);
+                cost.apply(player, false, inventories);
                 taken.addAll(cost.getActualItemsTaken());
             }
             fabricateNormal(taken, recipe.getResult());

@@ -16,6 +16,7 @@ multibuilder:
 noisy_machines: true
 items_enabled:
   advancedmoisturechecker: true
+  advancedrecipebook: true
   advancedsendermodule: true
   angelicblock: true
   bagofholding: true

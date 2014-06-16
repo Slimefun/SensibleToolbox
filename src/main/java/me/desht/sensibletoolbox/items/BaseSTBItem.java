@@ -122,6 +122,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new HeatEngine(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BasicSolarCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new RecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new AdvancedRecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new Multimeter(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BigStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new HyperStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
@@ -174,11 +175,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
             STBItem item = getItemById(key);
             Recipe r = item.getRecipe();
             if (r != null) {
-                System.out.println("add recipe " + r + " for " + item);
                 Bukkit.addRecipe(r);
             }
             for (Recipe r2 : item.getExtraRecipes()) {
-                System.out.println("add extra recipe " + r2 + " for " + item);
                 Bukkit.addRecipe(r2);
             }
             ItemStack stack = item.getSmeltingResult();

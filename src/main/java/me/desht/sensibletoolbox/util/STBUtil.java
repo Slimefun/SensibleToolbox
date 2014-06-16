@@ -715,6 +715,17 @@ public class STBUtil {
     }
 
     /**
+     * Check if the given item can be used to fabricate items via vanilla
+     * recipes.
+     *
+     * @param stack the item stack to check
+     * @return true if the item can be used to fabricate with, false otherwise
+     */
+    public static boolean canFabricateWith(ItemStack stack) {
+        return stack != null && stack.getType() == Material.WORKBENCH;
+    }
+
+    /**
      * Send an audible alert to the given player indicating a problem of some
      * kind.
      *
