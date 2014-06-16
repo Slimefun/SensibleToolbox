@@ -5,7 +5,6 @@ import me.desht.dhutils.commands.AbstractCommand;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,7 +34,7 @@ public class RecipeCommand extends AbstractCommand {
         DHValidate.notNull(book, "You must have a Recipe Book in your inventory to search for recipes!");
         String filter = args.length > 0 ? args[0] : "";
         book.setInventorySlot(slot);
-        book.setFilter(filter);
+        book.setRecipeNameFilter(filter);
         book.goToItemList();
         Block b = player.getTargetBlock(null, 4);
         book.openBook(player, STBUtil.canFabricateWith(b) ? b : null);

@@ -8,14 +8,12 @@ import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.gui.ButtonGadget;
+import me.desht.sensibletoolbox.gui.ClickableGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,8 +21,10 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.*;
@@ -44,7 +44,8 @@ public class RecipeBook extends BaseSTBItem {
     public static final int TYPE_SLOT = 23;
     public static final int RESULT_SLOT = 25;
     public static final int PAGE_LABEL_SLOT = 45;
-    public static final int FILTER_BUTTON_SLOT = 46;
+    public static final int FILTER_TYPE_BUTTON_SLOT = 46;
+    public static final int FILTER_STRING_BUTTON_SLOT = 47;
     public static final int NEXT_RECIPE_SLOT = 18;
     public static final int PREV_RECIPE_SLOT = 26;
     public static final int TRAIL_BACK_SLOT = 52;
@@ -55,7 +56,8 @@ public class RecipeBook extends BaseSTBItem {
     private int viewingItem;
     private Recipe viewingRecipe;
     private int recipeNumber;
-    private String filter;
+    private String recipeNameFilter;
+    private RecipeType recipeTypeFilter;
     private List<ItemStack> filteredItems;
     private InventoryGUI gui;
     private boolean fabricationAvailable;
@@ -70,7 +72,8 @@ public class RecipeBook extends BaseSTBItem {
         page = 0;
         viewingItem = -1;
         recipeNumber = 0;
-        filter = "";
+        recipeNameFilter = "";
+        recipeTypeFilter = RecipeType.ALL;
         filteredItems = fullItemList;
     }
 
@@ -80,7 +83,8 @@ public class RecipeBook extends BaseSTBItem {
         page = conf.getInt("page");
         viewingItem = conf.getInt("viewingItem");
         recipeNumber = conf.getInt("recipeNumber");
-        filter = conf.getString("filter", "");
+        recipeNameFilter = conf.getString("filter", "");
+        recipeTypeFilter = RecipeType.valueOf(conf.getString("typeFilter", "ALL"));
         buildFilteredList();
     }
 
@@ -90,7 +94,8 @@ public class RecipeBook extends BaseSTBItem {
         conf.set("page", page);
         conf.set("viewingItem", viewingItem);
         conf.set("recipeNumber", recipeNumber);
-        conf.set("filter", filter);
+        conf.set("filter", recipeNameFilter);
+        conf.set("typeFilter", recipeTypeFilter.toString());
         return conf;
     }
 
@@ -115,16 +120,23 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     public void buildFilteredList() {
-        if (filter != null && !filter.isEmpty()) {
-            String f = filter.toLowerCase();
+        String f = recipeNameFilter.toLowerCase();
+        if (f.isEmpty() && recipeTypeFilter == RecipeType.ALL) {
+            filteredItems = fullItemList;
+        } else {
             filteredItems = new ArrayList<ItemStack>();
             for (ItemStack stack : fullItemList) {
-                if (ItemNames.lookup(stack).toLowerCase().contains(f)) {
-                    filteredItems.add(stack);
+                if (f.isEmpty() || ItemNames.lookup(stack).toLowerCase().contains(f)) {
+                    if (recipeTypeFilter == RecipeType.ALL) {
+                        filteredItems.add(stack);
+                    } else {
+                        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+                        if (item == null && recipeTypeFilter == RecipeType.VANILLA || item != null && recipeTypeFilter == RecipeType.STB) {
+                            filteredItems.add(stack);
+                        }
+                    }
                 }
             }
-        } else {
-            filteredItems = fullItemList;
         }
     }
 
@@ -136,12 +148,20 @@ public class RecipeBook extends BaseSTBItem {
         this.fabricationAvailable = fabricationAvailable;
     }
 
-    public String getFilter() {
-        return filter;
+    public String getRecipeNameFilter() {
+        return recipeNameFilter;
     }
 
-    public void setFilter(String filter) {
-        this.filter = filter;
+    public void setRecipeNameFilter(String recipeNameFilter) {
+        this.recipeNameFilter = recipeNameFilter;
+    }
+
+    public RecipeType getRecipeTypeFilter() {
+        return recipeTypeFilter;
+    }
+
+    public void setRecipeTypeFilter(RecipeType filter) {
+        this.recipeTypeFilter = filter;
     }
 
     @Override
@@ -547,31 +567,30 @@ public class RecipeBook extends BaseSTBItem {
         gui.addGadget(new ButtonGadget(gui, "< Prev Page", new String[0], null, new Runnable() {
             @Override
             public void run() {
-                page--;
-                if (page < 0) page = totalPages - 1;
+                if (--page < 0) page = totalPages - 1;
                 drawItemsPage();
             }
         }), 52);
         gui.addGadget(new ButtonGadget(gui, "Next Page >", new String[0], null, new Runnable() {
             @Override
             public void run() {
-                page++;
-                if (page >= totalPages) page = 0;
+                if (++page >= totalPages) page = 0;
                 drawItemsPage();
             }
         }), 53);
-        if (filter != null && !filter.isEmpty()) {
-            gui.addGadget(new ButtonGadget(gui, "Filter:" + ChatColor.YELLOW + " " + filter,
+        gui.addGadget(new RecipeTypeFilter(gui), FILTER_TYPE_BUTTON_SLOT);
+        if (recipeNameFilter != null && !recipeNameFilter.isEmpty()) {
+            gui.addGadget(new ButtonGadget(gui, "Filter:" + ChatColor.YELLOW + " " + recipeNameFilter,
                     new String[]{"Click to clear filter "}, WEB_TEXTURE, new Runnable() {
                 @Override
                 public void run() {
-                    filter = "";
-                    filteredItems = fullItemList;
+                    setRecipeNameFilter("");
+                    buildFilteredList();
                     drawItemsPage();
                 }
-            }), FILTER_BUTTON_SLOT);
+            }), FILTER_STRING_BUTTON_SLOT);
         } else {
-            gui.setSlotType(FILTER_BUTTON_SLOT, InventoryGUI.SlotType.BACKGROUND);
+            gui.setSlotType(FILTER_STRING_BUTTON_SLOT, InventoryGUI.SlotType.BACKGROUND);
         }
         ItemStack pageStack = new ItemStack(Material.PAPER, page + 1);
         gui.addLabel("Page " + (page + 1) + "/" + totalPages, PAGE_LABEL_SLOT, pageStack);
@@ -593,4 +612,52 @@ public class RecipeBook extends BaseSTBItem {
             this.recipe = recipe;
         }
     }
+
+    public enum RecipeType {
+        ALL(STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.BLACK), "All Recipes"),
+        VANILLA(STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE), "Vanilla Recipes"),
+        STB(STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.RED), "STB Recipes");
+
+        private final MaterialData mat;
+        private final String label;
+
+        RecipeType(MaterialData mat, String label) {
+            this.mat = mat;
+            this.label = label;
+        }
+
+        public ItemStack getTexture() {
+            ItemStack res = mat.toItemStack(1);
+            ItemMeta meta = res.getItemMeta();
+            meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label);
+            res.setItemMeta(meta);
+            return res;
+        }
+    }
+
+    private class RecipeTypeFilter extends ClickableGadget {
+        private RecipeType recipeType;
+
+        protected RecipeTypeFilter(InventoryGUI gui) {
+            super(gui);
+            recipeType = ((RecipeBook) getGUI().getOwningItem()).getRecipeTypeFilter();
+        }
+
+        @Override
+        public void onClicked(InventoryClickEvent event) {
+            int n = (recipeType.ordinal() + 1) % RecipeType.values().length;
+            recipeType = RecipeType.values()[n];
+            event.setCurrentItem(recipeType.getTexture());
+            RecipeBook book = (RecipeBook) getGUI().getOwningItem();
+            book.setRecipeTypeFilter(recipeType);
+            book.buildFilteredList();
+            book.drawItemsPage();
+        }
+
+        @Override
+        public ItemStack getTexture() {
+            return recipeType.getTexture();
+        }
+    }
+
 }
