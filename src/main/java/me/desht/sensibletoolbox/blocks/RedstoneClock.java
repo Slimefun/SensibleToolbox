@@ -22,28 +22,28 @@ import org.bukkit.material.MaterialData;
 
 public class RedstoneClock extends BaseSTBBlock {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
-    private int frequency;
+    private int interval;
     private int onDuration;
 
     public RedstoneClock() {
-        frequency = 20;
+        interval = 20;
         onDuration = 5;
     }
 
     public RedstoneClock(ConfigurationSection conf) {
         super(conf);
-        setFrequency(conf.getInt("frequency"));
+        setInterval(conf.contains("interval") ? conf.getInt("interval") : conf.getInt("frequency"));
         setOnDuration(conf.getInt("onDuration"));
     }
 
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
-        gui.addGadget(new NumericGadget(gui, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getFrequency(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.UpdateListener() {
             @Override
             public boolean run(int value) {
                 if (value > getOnDuration()) {
-                    setFrequency(value);
+                    setInterval(value);
                     return true;
                 } else {
                     return false;
@@ -53,7 +53,7 @@ public class RedstoneClock extends BaseSTBBlock {
         gui.addGadget(new NumericGadget(gui, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getOnDuration(), 10, 1, new NumericGadget.UpdateListener() {
             @Override
             public boolean run(int value) {
-                if (value < getFrequency()) {
+                if (value < getInterval()) {
                     setOnDuration(value);
                     return true;
                 } else {
@@ -66,12 +66,12 @@ public class RedstoneClock extends BaseSTBBlock {
         return gui;
     }
 
-    public int getFrequency() {
-        return frequency;
+    public int getInterval() {
+        return interval;
     }
 
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
+    public void setInterval(int interval) {
+        this.interval = interval;
         updateBlock(false);
     }
 
@@ -87,7 +87,7 @@ public class RedstoneClock extends BaseSTBBlock {
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
-        conf.set("frequency", frequency);
+        conf.set("interval", interval);
         conf.set("onDuration", onDuration);
         return conf;
     }
@@ -124,7 +124,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
     @Override
     public String[] getExtraLore() {
-        String l = BaseSTBItem.LORE_COLOR + "Frequency: " + ChatColor.GOLD + getFrequency() +
+        String l = BaseSTBItem.LORE_COLOR + "Interval: " + ChatColor.GOLD + getInterval() +
                 LORE_COLOR + "t, Duration: " + ChatColor.GOLD + getOnDuration() + LORE_COLOR + "t";
         return new String[]{l};
     }
@@ -139,10 +139,10 @@ public class RedstoneClock extends BaseSTBBlock {
         Location loc = getLocation();
         Block b = loc.getBlock();
         long time = getTicksLived();
-        if (time % getFrequency() == 0 && isRedstoneActive()) {
+        if (time % getInterval() == 0 && isRedstoneActive()) {
             // power up
             b.setType(Material.REDSTONE_BLOCK);
-        } else if (time % getFrequency() == getOnDuration()) {
+        } else if (time % getInterval() == getOnDuration()) {
             // power down
             b.setTypeIdAndData(getMaterialData().getItemTypeId(), getMaterialData().getData(), true);
         } else if (time % 50 == 10) {
