@@ -2,10 +2,8 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBMachine;
-import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.energynet.EnergyNet;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
@@ -21,7 +19,6 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

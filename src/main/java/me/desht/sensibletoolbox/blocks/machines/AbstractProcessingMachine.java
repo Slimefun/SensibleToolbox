@@ -12,7 +12,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 /**
  * Represents a machine with a progress bar to indicate how much of this work cycle is done.
@@ -121,7 +123,8 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
         item.setAmount(1);
         if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
             // no (solid) block there - just drop the item
-            loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), result);
+            Item i = loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), item);
+            i.setVelocity(new Vector(0, 0, 0));
             return true;
         } else {
             STBBlock stb = LocationManager.getManager().get(loc);
