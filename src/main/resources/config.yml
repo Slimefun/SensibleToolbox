@@ -53,6 +53,7 @@ items_enabled:
   receivermodule: true
   recipebook: true
   redstoneclock: true
+  regulatorupgrade: true
   sawmill: true
   sendermodule: true
   simplecircuit: true

@@ -19,6 +19,7 @@ import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.items.itemroutermodules.*;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
+import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
@@ -117,6 +118,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new FiftyKBatteryBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new SpeedUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new EjectorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new RegulatorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new HeatEngine(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BasicSolarCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new RecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);

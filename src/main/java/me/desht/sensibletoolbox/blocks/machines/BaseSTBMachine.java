@@ -12,6 +12,7 @@ import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.MachineUpgrade;
+import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -46,6 +47,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     private final String frozenOutput;
     private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
     private final Map<BlockFace, EnergyNet> energyNets = new HashMap<BlockFace, EnergyNet>();
+    private int regulatorAmount;
 
     protected BaseSTBMachine() {
         super();
@@ -283,6 +285,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         return 54;
     }
 
+    public void setRegulatorAmount(int regulatorAmount) {
+        this.regulatorAmount = regulatorAmount;
+    }
+
+    public int getRegulatorAmount() {
+        return regulatorAmount;
+    }
+
     @Override
     public void onInteractBlock(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
@@ -312,6 +322,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         }
     }
 
+
     /**
      * Find a candidate slot for item insertion; this will look for an empty slot, or a slot containing the
      * same kind of item as the candidate item.  It will NOT check item amounts (see #insertItem() for that)
@@ -331,7 +342,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         }
         return -1;
     }
-
 
     protected int findOutputSlot(ItemStack item) {
         for (int slot : getOutputSlots()) {
@@ -579,15 +589,20 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     private void processUpgrades() {
         int nSpeed = 0;
         BlockFace ejectDirection = null;
+        int nRegulator = 0;
         for (MachineUpgrade upgrade : upgrades) {
             if (upgrade instanceof SpeedUpgrade) {
                 nSpeed += upgrade.getAmount();
             } else if (upgrade instanceof EjectorUpgrade) {
                 ejectDirection = ((EjectorUpgrade) upgrade).getDirection();
+            } else if (upgrade instanceof RegulatorUpgrade) {
+                nRegulator += upgrade.getAmount();
             }
         }
+        setRegulatorAmount(nRegulator);
         setSpeedMultiplier(Math.pow(1.4, nSpeed));
         setPowerMultiplier(Math.pow(1.6, nSpeed));
+        setPowerMultiplier(Math.max(getPowerMultiplier() - nRegulator * 0.1, 1.0));
         setAutoEjectDirection(ejectDirection);
         Debugger.getInstance().debug("upgrades for " + this + " speed=" + getSpeedMultiplier() +
                 " power=" + getPowerMultiplier() + " eject=" + getAutoEjectDirection());

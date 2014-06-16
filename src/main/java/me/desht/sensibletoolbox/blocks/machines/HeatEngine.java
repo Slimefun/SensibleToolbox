@@ -29,7 +29,8 @@ public class HeatEngine extends Generator {
     static {
         fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
         fuelItems.addFuel(new ItemStack(Material.COAL), false, 15, 120);
-        fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), true, 15, 1440);
+        // 1 coal block is slightly more efficient than 9 coal
+        fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), true, 15, 1120);
         fuelItems.addFuel(new ItemStack(Material.BLAZE_ROD), true, 15, 180);
         fuelItems.addFuel(new ItemStack(Material.BLAZE_POWDER), true, 22.5, 30);
         fuelItems.addFuel(new ItemStack(Material.LOG), true, 10, 40);
@@ -67,7 +68,7 @@ public class HeatEngine extends Generator {
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[0]; // maybe in future
+        return new int[] {43, 44};
     }
 
     @Override
@@ -198,6 +199,11 @@ public class HeatEngine extends Generator {
     private void pullItemIntoProcessing(int inputSlot) {
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
+        if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
+            // Regulator prevents pulling fuel in unless there's definitely
+            // enough room to store the charge that would be generated
+            return;
+        }
         setProcessing(makeProcessingItem(currentFuel, stack));
         getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
         setProgress(currentFuel.getBurnTime());
