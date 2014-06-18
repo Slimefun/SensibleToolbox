@@ -96,6 +96,13 @@
             <artifactId>metrics-lite</artifactId>
             <version>R7</version>
         </dependency>
+        <dependency>
+            <groupId>com.griefcraft.lwc</groupId>
+            <artifactId>LWC</artifactId>
+            <version>4.5.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/plugins/LWC.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

@@ -15,11 +15,13 @@ import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.BlockProtection;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -251,11 +253,11 @@ public class RecipeBook extends BaseSTBItem {
         }
         for (BlockFace face : STBUtil.directFaces) {
             Block b = fabricationBlock.getRelative(face);
-            if (VanillaInventoryUtils.isVanillaInventory(b)) {
+            if (VanillaInventoryUtils.isVanillaInventory(b) && BlockProtection.isBlockAccessible(player, b)) {
                 resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
             } else {
                 BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
-                if (stb instanceof STBInventoryHolder) {
+                if (stb instanceof STBInventoryHolder && stb.hasAccessRights(player)) {
                     resourceInventories.add((STBInventoryHolder) stb);
                 }
             }
@@ -421,14 +423,17 @@ public class RecipeBook extends BaseSTBItem {
             return;
         }
 
-        Inventory[] inventories = new Inventory[resourceInventories.size()];
-        for (int i = 0; i < inventories.length; i++) {
-            if (resourceInventories.get(i) instanceof STBInventoryHolder) {
+        List<Inventory> l = new ArrayList<Inventory>();
+        for (InventoryHolder h : resourceInventories) {
+            if (h instanceof STBInventoryHolder) {
                 // TODO: how to get items from an STB inventory?
             } else {
-                inventories[i] = resourceInventories.get(i).getInventory();
+                if (h instanceof BlockState && BlockProtection.isBlockAccessible(player, ((BlockState) h).getBlock())) {
+                    l.add(h.getInventory());
+                }
             }
         }
+        Inventory[] inventories = l.toArray(new Inventory[l.size()]);
 
         List<ItemStack> ingredients = mergeIngredients();
         List<ItemCost> costs = new ArrayList<ItemCost>(ingredients.size());

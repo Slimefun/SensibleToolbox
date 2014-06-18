@@ -18,6 +18,8 @@ package me.desht.sensibletoolbox;
  */
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.LWCPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
@@ -58,25 +60,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private LandslideListener landslideListener = null;
     private boolean holoAPIenabled = false;
     private BukkitTask energyTask = null;
+    private LWC lwc = null;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
-    }
-
-    public boolean isNMSenabled() {
-        return isNMSenabled;
-    }
-
-    public SoundMufflerListener getSoundMufflerListener() {
-        return soundMufflerListener;
-    }
-
-    public FloodlightListener getFloodlightListener() {
-        return floodlightListener;
-    }
-
-    public PlayerUUIDTracker getUuidTracker() {
-        return uuidTracker;
     }
 
     @Override
@@ -116,6 +103,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
 
         setupLandslide();
+        setupLWC();
 
         BaseSTBItem.registerItems(this);
         registerEventListeners();
@@ -180,6 +168,26 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         instance = null;
     }
 
+    public LWC getLWC() {
+        return lwc;
+    }
+
+    public boolean isNMSenabled() {
+        return isNMSenabled;
+    }
+
+    public SoundMufflerListener getSoundMufflerListener() {
+        return soundMufflerListener;
+    }
+
+    public FloodlightListener getFloodlightListener() {
+        return floodlightListener;
+    }
+
+    public PlayerUUIDTracker getUuidTracker() {
+        return uuidTracker;
+    }
+
     private void setupMetrics() {
         try {
             MetricsLite metrics = new MetricsLite(this);
@@ -221,7 +229,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
         if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
             protocolLibEnabled = true;
-            LogUtils.fine("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
+            Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
+        }
+    }
+
+    private void setupLWC() {
+        Plugin lwcPlugin = getServer().getPluginManager().getPlugin("LWC");
+        if (lwcPlugin != null && lwcPlugin.isEnabled() && lwcPlugin instanceof LWCPlugin) {
+            lwc = ((LWCPlugin) lwcPlugin).getLWC();
+            Debugger.getInstance().debug("Hooked LWC v" + lwcPlugin.getDescription().getVersion());
         }
     }
 
@@ -229,7 +245,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         Plugin plugin = getServer().getPluginManager().getPlugin("Landslide");
         if (plugin != null && plugin.isEnabled()) {
             landslideListener = new LandslideListener(this);
-            LogUtils.fine("Hooked Landslide v" + plugin.getDescription().getVersion());
+            Debugger.getInstance().debug("Hooked Landslide v" + plugin.getDescription().getVersion());
         }
     }
 
@@ -237,7 +253,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         Plugin plugin = getServer().getPluginManager().getPlugin("HoloAPI");
         if (plugin != null && plugin.isEnabled()) {
             holoAPIenabled = true;
-            LogUtils.fine("Hooked HoloAPI v" + plugin.getDescription().getVersion());
+            Debugger.getInstance().debug("Hooked HoloAPI v" + plugin.getDescription().getVersion());
         }
     }
 
