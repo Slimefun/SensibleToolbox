@@ -10,6 +10,7 @@ import me.desht.sensibletoolbox.gui.FilterTypeGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ToggleButton;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.BlockProtection;
 import me.desht.sensibletoolbox.util.Filter;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
@@ -269,7 +270,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             pulled = ((STBInventoryHolder) stb).extractItems(from.getOppositeFace(), inBuffer, nToPull, getItemRouter().getOwner());
         } else {
             // possible vanilla inventory holder
-            pulled = VanillaInventoryUtils.pullFromInventory(targetLoc.getBlock(), nToPull, inBuffer, getFilter());
+            pulled = VanillaInventoryUtils.pullFromInventory(targetLoc.getBlock(), nToPull, inBuffer, getFilter(), getItemRouter().getOwner());
         }
         if (pulled != null) {
             if (stb != null) {
@@ -283,7 +284,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
     protected boolean vanillaInsertion(Block target, int amount, BlockFace side) {
         ItemStack buffer = getItemRouter().getBufferItem();
-        int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false);
+        int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, false, getItemRouter().getOwner());
         if (nInserted == 0) {
             // no insertion happened
             return false;

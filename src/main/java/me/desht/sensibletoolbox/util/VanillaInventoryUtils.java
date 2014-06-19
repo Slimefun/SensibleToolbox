@@ -10,6 +10,7 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.*;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class VanillaInventoryUtils {
     public static boolean isVanillaInventory(Block target) {
@@ -59,10 +60,14 @@ public class VanillaInventoryUtils {
      * @param source the item stack to take items from
      * @param amount the number of items from the buffer to insert
      * @param side   the side on which insertion is occurring (some blocks care about this, e.g. furnace)
+     * @param inserterId UUID of the player doing the insertion (may be null or the UUID of an offline player)
      * @return the number of items actually inserted
      */
-    public static int vanillaInsertion(Block target, ItemStack source, int amount, BlockFace side, boolean sorting) {
+    public static int vanillaInsertion(Block target, ItemStack source, int amount, BlockFace side, boolean sorting, UUID inserterId) {
         if (source == null || source.getAmount() == 0) {
+            return 0;
+        }
+        if (!BlockProtection.isBlockAccessible(inserterId, target)) {
             return 0;
         }
         Inventory targetInv = getVanillaInventoryFor(target);
@@ -118,9 +123,13 @@ public class VanillaInventoryUtils {
      * @param amount the desired number of items
      * @param buffer an array of item stacks into which to insert the transferred items
      * @param filter a filter to whitelist/blacklist items
+     * @param pullerId UUID of the player doing the pulling (may be null or the UUID of an offline player)
      * @return the items pulled, or null if nothing was pulled
      */
-    public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter) {
+    public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, UUID pullerId) {
+        if (!BlockProtection.isBlockAccessible(pullerId, target)) {
+            return null;
+        }
         Inventory targetInv = getVanillaInventoryFor(target);
         if (targetInv == null) {
             return null;

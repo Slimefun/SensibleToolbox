@@ -130,7 +130,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
             STBBlock stb = LocationManager.getManager().get(loc);
             int nInserted = stb instanceof STBInventoryHolder ?
                     ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) :
-                    VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false);
+                    VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false, getOwner());
             return nInserted > 0;
         }
     }

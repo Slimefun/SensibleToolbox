@@ -84,7 +84,7 @@ public class SorterModule extends DirectionalItemRouterModule {
 
     private int vanillaSortInsertion(Block target, int amount, BlockFace side) {
         ItemStack buffer = getItemRouter().getBufferItem();
-        int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, true);
+        int nInserted = VanillaInventoryUtils.vanillaInsertion(target, buffer, amount, side, true, getItemRouter().getOwner());
         if (nInserted > 0) {
             getItemRouter().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
         }

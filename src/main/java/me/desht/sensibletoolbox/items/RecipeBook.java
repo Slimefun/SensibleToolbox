@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items;
 
+import com.google.common.collect.Lists;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
@@ -423,17 +424,18 @@ public class RecipeBook extends BaseSTBItem {
             return;
         }
 
-        List<Inventory> l = new ArrayList<Inventory>();
+        List<Inventory> vanillaInventories = Lists.newArrayList();
+        List<STBInventoryHolder> stbInventories = Lists.newArrayList();
+
         for (InventoryHolder h : resourceInventories) {
             if (h instanceof STBInventoryHolder) {
                 // TODO: how to get items from an STB inventory?
-            } else {
-                if (h instanceof BlockState && BlockProtection.isBlockAccessible(player, ((BlockState) h).getBlock())) {
-                    l.add(h.getInventory());
-                }
+                stbInventories.add((STBInventoryHolder) h);
+            } else if (h instanceof BlockState && BlockProtection.isBlockAccessible(player, ((BlockState) h).getBlock())) {
+                vanillaInventories.add(h.getInventory());
             }
         }
-        Inventory[] inventories = l.toArray(new Inventory[l.size()]);
+        Inventory[] inventories = vanillaInventories.toArray(new Inventory[vanillaInventories.size()]);
 
         List<ItemStack> ingredients = mergeIngredients();
         List<ItemCost> costs = new ArrayList<ItemCost>(ingredients.size());
