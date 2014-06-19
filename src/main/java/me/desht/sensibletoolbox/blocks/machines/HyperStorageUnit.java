@@ -113,13 +113,13 @@ public class HyperStorageUnit extends BigStorageUnit {
 
     @Override
     public String[] getExtraLore() {
-        String[] l = super.getExtraLore();
         if (getTotalAmount() > 0) {
+            String[] l = super.getExtraLore();
             String[] l2 = Arrays.copyOf(l, l.length + 1);
             l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStoredItemType());
             return l2;
         } else {
-            return l;
+            return super.getExtraLore();
         }
     }
 

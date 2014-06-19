@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
 import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,4 +41,19 @@ public interface STBInventoryHolder extends InventoryHolder {
      */
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid);
 
+    /**
+     * Get a view of the items which can be extracted from this inventory.  Note that
+     * the returned inventory is a copied view, and modifying it will not change the
+     * inventory holder's actual contents (but see {@link #updateOutputItems(org.bukkit.inventory.Inventory)})
+     *
+     * @return an inventory containing a copy of the items which can be extracted
+     */
+    public Inventory showOutputItems();
+
+    /**
+     * Update (overwite) the STB output inventory with the contents of the supplied inventory.
+     *
+     * @param inventory the inventory to update items from
+     */
+    void updateOutputItems(Inventory inventory);
 }

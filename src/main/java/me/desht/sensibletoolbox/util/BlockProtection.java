@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.util;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.util.UUIDRegistry;
+import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,10 +23,9 @@ public class BlockProtection {
         if (lwc != null) {
             Protection prot = lwc.findProtection(block);
             if (prot != null) {
-                System.out.println("prot = " + prot);
-                System.out.println("prot owner = " + prot.getOwner());
-                System.out.println("lwc: can access " + block + " = " + lwc.canAccessProtection(player, prot));
-                return lwc.canAccessProtection(player, prot);
+                boolean ok = lwc.canAccessProtection(player, prot);
+                Debugger.getInstance().debug("LWC check: can " + player.getName() + " access " + block + "? " + lwc.canAccessProtection(player, prot));
+                return ok;
             } else {
                 return true;
             }
@@ -49,9 +49,9 @@ public class BlockProtection {
         if (lwc != null) {
             Protection prot = lwc.findProtection(block);
             if (prot != null) {
-                System.out.println("prot = " + prot);
-                System.out.println("prot uuid = " + UUIDRegistry.getUUID(prot.getOwner()));
-                return uuid.equals(UUIDRegistry.getUUID(prot.getOwner()));
+                boolean ok = uuid.equals(UUIDRegistry.getUUID(prot.getOwner()));
+                Debugger.getInstance().debug("LWC check: can UUID " + uuid + " access " + block + "? " + ok);
+                return ok;
             } else {
                 return true;
             }

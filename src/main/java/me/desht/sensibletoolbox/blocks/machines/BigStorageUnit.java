@@ -556,6 +556,26 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
     }
 
+    @Override
+    public Inventory showOutputItems() {
+        Inventory inv = Bukkit.createInventory(this, 9);
+        inv.setItem(0, getOutputItem());
+        return inv;
+    }
+
+    @Override
+    public void updateOutputItems(Inventory inventory) {
+        setOutputItem(inventory.getItem(0));
+        setOutputAmount(getOutputItem() == null ? 0 : getOutputItem().getAmount());
+    }
+
+    /**
+     * Return the SCU cost for processing some items; either inserting or
+     * extracting them.
+     *
+     * @param nItems the number of items to check for
+     * @return the SCU cost
+     */
     public double getChargePerOperation(int nItems) {
         return 0.0;
     }

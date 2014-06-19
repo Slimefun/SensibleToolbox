@@ -5,10 +5,7 @@ import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
@@ -106,12 +103,25 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
+        // just swallow whatever is offered
         return item.getAmount();
     }
 
     @Override
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+        // can't ever extract anything from a trash can
         return null;
+    }
+
+    @Override
+    public Inventory showOutputItems() {
+        // a trash can always appears to have an empty inventory
+        return Bukkit.createInventory(this, 9);
+    }
+
+    @Override
+    public void updateOutputItems(Inventory inventory) {
+        // do nothing
     }
 
     @Override

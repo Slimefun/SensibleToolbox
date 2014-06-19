@@ -425,12 +425,10 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         List<Inventory> vanillaInventories = Lists.newArrayList();
-        List<STBInventoryHolder> stbInventories = Lists.newArrayList();
-
         for (InventoryHolder h : resourceInventories) {
             if (h instanceof STBInventoryHolder) {
                 // TODO: how to get items from an STB inventory?
-                stbInventories.add((STBInventoryHolder) h);
+                vanillaInventories.add(((STBInventoryHolder) h).showOutputItems());
             } else if (h instanceof BlockState && BlockProtection.isBlockAccessible(player, ((BlockState) h).getBlock())) {
                 vanillaInventories.add(h.getInventory());
             }
@@ -456,6 +454,11 @@ public class RecipeBook extends BaseSTBItem {
                 taken.addAll(cost.getActualItemsTaken());
             }
             fabricateNormal(taken, recipe.getResult());
+            for (Inventory inv : vanillaInventories) {
+                if (inv.getHolder() instanceof STBInventoryHolder) {
+                    ((STBInventoryHolder) inv.getHolder()).updateOutputItems(inv);
+                }
+            }
         } else {
             STBUtil.complain(player);
         }
