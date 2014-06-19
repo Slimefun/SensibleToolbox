@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
+import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
@@ -37,6 +38,7 @@ import org.bukkit.material.Sign;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class GeneralListener extends STBBaseListener {
     private static final String LAST_PISTON_EXTEND = "STB_Last_Piston_Extend";
@@ -47,6 +49,15 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+//        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+//            List<ItemStack> res = STBUtil.calculateDrops(event.getClickedBlock(), event.getItem());
+//            System.out.println(res.size() + " drops:");
+//            for (ItemStack s : res) {
+//                System.out.println("  drop: " + s.getAmount() + " x " + ItemNames.lookup(s));
+//            }
+//            event.setCancelled(true);
+//        }
+
         BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
         if (item != null) {
             if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.interact." + item.getItemTypeID())) {

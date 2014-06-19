@@ -22,6 +22,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -379,60 +380,94 @@ public class STBUtil {
     }
 
     /**
-     * Get the drops which the given block would produce, given the tool used to break it,
-     * taking into account any silk touch or looting enchantment on the tool (but not caring
-     * about the type of tool).
+     * Get the drops which the given block could produce, given the tool used to break it,
+     * taking into account any silk touch or looting enchantment on the tool as well as the
+     * type of tool.  For blocks which can drop a random number of items, this method
+     * may return a different result each time it's called.
      *
      * @param b    the block
-     * @param tool the tool
+     * @param tool the tool, may be null for an empty hand
      * @return a list of items which would drop from the block, if broken
      */
     public static List<ItemStack> calculateDrops(Block b, ItemStack tool) {
         List<ItemStack> res = new ArrayList<ItemStack>();
-        if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1 && isObtainable(b.getType())) {
+        if (tool != null && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1 && isObtainable(b.getType())) {
             res.add(b.getState().getData().toItemStack());
-        } else if (tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) > 0) {
+        } else {
             Random r = new Random();
-            res.addAll(b.getDrops());
-            int fortune = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+            System.out.println("found " + b.getType());
+            Collection<ItemStack> res2 = tool == null ? b.getDrops() : b.getDrops(tool);
+            // b.getDrops() appears bugged for nether wart
+            if (b.getType() != Material.NETHER_WARTS && res2.isEmpty()) {
+                if (tool != null) {
+                    res2 = b.getDrops();
+                    if (res2.isEmpty()) {
+                        return res;
+                    }
+                } else {
+                    return res;
+                }
+            }
+            int fortune = tool == null ? 0 : tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
             switch (b.getType()) {
                 case DIAMOND_ORE:
+                    res.add(new ItemStack(Material.DIAMOND, getOreMultiplier(fortune, r))); break;
                 case COAL_ORE:
+                    res.add(new ItemStack(Material.COAL, getOreMultiplier(fortune, r))); break;
                 case EMERALD_ORE:
+                    res.add(new ItemStack(Material.EMERALD, getOreMultiplier(fortune, r))); break;
                 case QUARTZ_ORE:
+                    res.add(new ItemStack(Material.QUARTZ, getOreMultiplier(fortune, r))); break;
                 case LAPIS_ORE:
-                    int n = r.nextInt(fortune + 2);
-                    res.get(0).setAmount(Math.max(1, n));
+                    res.add(makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE).toItemStack((r.nextInt(4) + 5) * getOreMultiplier(fortune, r)));
                     break;
                 case REDSTONE_ORE:
+                    res.add(new ItemStack(Material.REDSTONE, (r.nextInt(2 + fortune) + 4)));
+                    break;
                 case NETHER_WARTS:
+                    if (b.getData() >= 3) {
+                        res.add(new ItemStack(Material.NETHER_STALK, r.nextInt(3 + fortune) + 2));
+                    } else {
+                        res.add(new ItemStack(Material.NETHER_STALK, 1));
+                    }
+                    break;
                 case POTATO:
+                    if (b.getData() >= 7) {
+                        res.add(new ItemStack(Material.POTATO_ITEM, r.nextInt(4 + fortune) + 1));
+                    } else {
+                        res.add(new ItemStack(Material.POTATO_ITEM, 1));
+                    }
+                    break;
                 case CARROT:
-                    res.get(0).setAmount(res.get(0).getAmount() + fortune);
+                    if (b.getData() >= 7) {
+                        res.add(new ItemStack(Material.CARROT_ITEM, r.nextInt(4 + fortune) + 1));
+                    } else {
+                        res.add(new ItemStack(Material.CARROT_ITEM, 1));
+                    }
                     break;
                 case GLOWSTONE:
-                    res.get(0).setAmount(Math.min(4, res.get(0).getAmount() + fortune));
+                    res.add(new ItemStack(Material.GLOWSTONE_DUST, Math.min(4, r.nextInt(3 + fortune) + 2)));
                     break;
                 case MELON_BLOCK:
-                    res.get(0).setAmount(Math.min(9, res.get(0).getAmount() + fortune));
+                    res.add(new ItemStack(Material.MELON, Math.min(9, r.nextInt(5 + fortune) + 3)));
                     break;
                 case CROPS:
-                    for (ItemStack drop : res) {
-                        if (drop.getType() == Material.SEEDS) {
-                            drop.setAmount(drop.getAmount() + fortune);
-                        }
+                    if (b.getData() >= 7) {
+                        res.add(new ItemStack(Material.WHEAT));
+                        res.add(new ItemStack(Material.SEEDS, r.nextInt(4 + fortune)));
+                    } else {
+                        res.add(new ItemStack(Material.SEEDS, 1));
                     }
                     break;
                 case GRAVEL:
-                    if (res.get(0).getType() == Material.GRAVEL) {
-                        if (r.nextInt(100) < gravelChance[Math.min(fortune, gravelChance.length)]) {
-                            res.set(0, new ItemStack(Material.FLINT));
-                        }
+                    res.add(new ItemStack(Material.GRAVEL));
+                    if (r.nextInt(100) < gravelChance[Math.min(fortune, gravelChance.length)]) {
+                        res.add(new ItemStack(Material.FLINT));
                     }
                     break;
+                default:
+                    res.addAll(tool == null ? b.getDrops() : b.getDrops(tool));
             }
-        } else {
-            res.addAll(b.getDrops());
         }
 
         if (Debugger.getInstance().getLevel() >= 2) {
@@ -443,6 +478,25 @@ public class STBUtil {
         }
 
         return res;
+    }
+
+    private static int getOreMultiplier(int fortune, Random r) {
+        switch (fortune) {
+            case 1: return r.nextInt(3) == 0 ? 2 : 1;
+            case 2: switch (r.nextInt(4)) {
+                case 0: return 2;
+                case 1: return 3;
+                default: return 1;
+            }
+            case 3: switch (r.nextInt(4)) {
+                case 0: return 2;
+                case 1: return 3;
+                case 2: return 4;
+                default: return 1;
+
+            }
+            default: return 1;
+        }
     }
 
     /**

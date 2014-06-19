@@ -24,6 +24,7 @@ items_enabled:
   bigstorageunit: true
   blankmodule: true
   blockupdatedetector: true
+  breakermodule: true
   circuitboard: true
   diamondcombinehoe: true
   distributormodule: true

@@ -111,6 +111,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new ReceiverModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new SorterModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new VacuumModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new BreakerModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new StackModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new SpeedModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new TenKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
