@@ -72,7 +72,7 @@ public class ShowCommand extends AbstractCommand {
             PrintWriter writer = new PrintWriter(out, "UTF-8");
             for (String itemId : BaseSTBItem.getItemIds()) {
                 STBItem item = BaseSTBItem.getItemById(itemId);
-                String lore = Joiner.on("\\\\").join(item.getLore());
+                String lore = Joiner.on("\\\\").join(item.getLore()).replace("\u00a7r", "");
                 String appearance = ItemNames.lookup(item.getMaterialData().toItemStack());
                 if (item.hasGlow()) {
                     appearance += " (glowing)";
