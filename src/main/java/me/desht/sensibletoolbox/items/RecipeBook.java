@@ -568,24 +568,24 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         if (nRecipes > 1) {
-            gui.addGadget(new ButtonGadget(gui, "< Prev Recipe", new String[0], null, new Runnable() {
+            gui.addGadget(new ButtonGadget(gui, NEXT_RECIPE_SLOT, "< Prev Recipe", new String[0], null, new Runnable() {
                 @Override
                 public void run() {
                     recipeNumber--;
                     if (recipeNumber < 0) recipeNumber = nRecipes - 1;
                     drawRecipePage();
                 }
-            }), NEXT_RECIPE_SLOT);
-            gui.addGadget(new ButtonGadget(gui, "Next Recipe >", new String[0], null, new Runnable() {
+            }));
+            gui.addGadget(new ButtonGadget(gui, PREV_RECIPE_SLOT, "Next Recipe >", new String[0], null, new Runnable() {
                 @Override
                 public void run() {
                     recipeNumber++;
                     if (recipeNumber >= nRecipes) recipeNumber = 0;
                     drawRecipePage();
                 }
-            }), PREV_RECIPE_SLOT);
+            }));
         }
-        gui.addGadget(new ButtonGadget(gui, "< Back to Item List", new String[0], GO_BACK_TEXTURE, new Runnable() {
+        gui.addGadget(new ButtonGadget(gui, ITEM_LIST_SLOT, "< Back to Item List", new String[0], GO_BACK_TEXTURE, new Runnable() {
             @Override
             public void run() {
                 trail.clear();
@@ -593,9 +593,9 @@ public class RecipeBook extends BaseSTBItem {
                 viewingRecipe = null;
                 drawItemsPage();
             }
-        }), ITEM_LIST_SLOT);
+        }));
         if (!trail.isEmpty()) {
-            gui.addGadget(new ButtonGadget(gui, "< Back to Last Recipe", new String[0], GO_BACK_TEXTURE_2, new Runnable() {
+            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, "< Back to Last Recipe", new String[0], GO_BACK_TEXTURE_2, new Runnable() {
                 @Override
                 public void run() {
                     ItemAndRecipeNumber ir = trail.pop();
@@ -603,16 +603,16 @@ public class RecipeBook extends BaseSTBItem {
                     recipeNumber = ir.recipe;
                     drawRecipePage();
                 }
-            }), TRAIL_BACK_SLOT);
+            }));
         }
         if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {
             String fabLabel = fabricationFree ? "Fabricate (free)" : "Fabricate";
-            gui.addGadget(new ButtonGadget(gui, fabLabel, new String[0], SHAPED_ICON, new Runnable() {
+            gui.addGadget(new ButtonGadget(gui, 46, fabLabel, new String[0], SHAPED_ICON, new Runnable() {
                 @Override
                 public void run() {
                     tryFabrication(viewingRecipe);
                 }
-            }), 46);
+            }));
         }
         ItemStack pageStack = new ItemStack(Material.PAPER, recipeNumber + 1);
         gui.addLabel("Recipe " + (recipeNumber + 1) + "/" + nRecipes, 45, pageStack);
@@ -630,23 +630,23 @@ public class RecipeBook extends BaseSTBItem {
                 gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
             }
         }
-        gui.addGadget(new ButtonGadget(gui, "< Prev Page", new String[0], null, new Runnable() {
+        gui.addGadget(new ButtonGadget(gui, 52, "< Prev Page", new String[0], null, new Runnable() {
             @Override
             public void run() {
                 if (--page < 0) page = totalPages - 1;
                 drawItemsPage();
             }
-        }), 52);
-        gui.addGadget(new ButtonGadget(gui, "Next Page >", new String[0], null, new Runnable() {
+        }));
+        gui.addGadget(new ButtonGadget(gui, 53, "Next Page >", new String[0], null, new Runnable() {
             @Override
             public void run() {
                 if (++page >= totalPages) page = 0;
                 drawItemsPage();
             }
-        }), 53);
-        gui.addGadget(new RecipeTypeFilter(gui), FILTER_TYPE_BUTTON_SLOT);
+        }));
+        gui.addGadget(new RecipeTypeFilter(gui, FILTER_TYPE_BUTTON_SLOT));
         if (recipeNameFilter != null && !recipeNameFilter.isEmpty()) {
-            gui.addGadget(new ButtonGadget(gui, "Filter:" + ChatColor.YELLOW + " " + recipeNameFilter,
+            gui.addGadget(new ButtonGadget(gui, FILTER_STRING_BUTTON_SLOT, "Filter:" + ChatColor.YELLOW + " " + recipeNameFilter,
                     new String[]{"Click to clear filter "}, WEB_TEXTURE, new Runnable() {
                 @Override
                 public void run() {
@@ -654,7 +654,7 @@ public class RecipeBook extends BaseSTBItem {
                     buildFilteredList();
                     drawItemsPage();
                 }
-            }), FILTER_STRING_BUTTON_SLOT);
+            }));
         } else {
             gui.setSlotType(FILTER_STRING_BUTTON_SLOT, InventoryGUI.SlotType.BACKGROUND);
         }
@@ -704,8 +704,8 @@ public class RecipeBook extends BaseSTBItem {
     private class RecipeTypeFilter extends ClickableGadget {
         private RecipeType recipeType;
 
-        protected RecipeTypeFilter(InventoryGUI gui) {
-            super(gui);
+        protected RecipeTypeFilter(InventoryGUI gui, int slot) {
+            super(gui, slot);
             recipeType = ((RecipeBook) getGUI().getOwningItem()).getRecipeTypeFilter();
         }
 

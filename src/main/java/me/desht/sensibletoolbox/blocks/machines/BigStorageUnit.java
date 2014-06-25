@@ -250,13 +250,13 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = super.createGUI();
 
-        gui.addGadget(new ToggleButton(gui, isLocked(), LOCKED_BUTTON, UNLOCKED_BUTTON, new ToggleButton.ToggleListener() {
+        gui.addGadget(new ToggleButton(gui, 26, isLocked(), LOCKED_BUTTON, UNLOCKED_BUTTON, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(int slot, boolean newValue) {
                 setLocked(newValue);
                 return true;
             }
-        }), 26);
+        }));
         return gui;
     }
 

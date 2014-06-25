@@ -11,8 +11,8 @@ public class ToggleButton extends ClickableGadget {
     private final ToggleListener callback;
     boolean value;
 
-    public ToggleButton(InventoryGUI gui, boolean value, ItemStack trueTexture, ItemStack falseTexture, ToggleListener callback) {
-        super(gui);
+    public ToggleButton(InventoryGUI gui, int slot, boolean value, ItemStack trueTexture, ItemStack falseTexture, ToggleListener callback) {
+        super(gui, slot);
         this.trueTexture = trueTexture;
         this.falseTexture = falseTexture;
         this.callback = callback;

@@ -167,7 +167,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     private InventoryGUI createGUI(Player player) {
         InventoryGUI gui = new InventoryGUI(player, this, 27, ChatColor.DARK_RED + "Module Configuration");
 
-        gui.addGadget(new ToggleButton(gui, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
+        gui.addGadget(new ToggleButton(gui, 8, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(int slot, boolean newValue) {
                 if (getFilter() != null) {
@@ -177,15 +177,15 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
                     return false;
                 }
             }
-        }), 8);
-        gui.addGadget(new FilterTypeGadget(gui), 17);
-        gui.addGadget(new ToggleButton(gui, isTerminator(), ON_BUTTON, OFF_BUTTON, new ToggleButton.ToggleListener() {
+        }));
+        gui.addGadget(new FilterTypeGadget(gui, 17));
+        gui.addGadget(new ToggleButton(gui, 26, isTerminator(), ON_BUTTON, OFF_BUTTON, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(int slot, boolean newValue) {
                 setTerminator(newValue);
                 return true;
             }
-        }), 26);
+        }));
 
         gui.addLabel("Filtered Items", 0, null);
         for (int slot : filterSlots) {

@@ -248,13 +248,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
         }
 
-        gui.addGadget(new RedstoneBehaviourGadget(gui), getRedstoneBehaviourSlot());
-        gui.addGadget(new AccessControlGadget(gui), getAccessControlSlot());
+        gui.addGadget(new RedstoneBehaviourGadget(gui, getRedstoneBehaviourSlot()));
+        gui.addGadget(new AccessControlGadget(gui, getAccessControlSlot()));
 
         if (gui.containsSlot(getEnergyCellSlot())) {
             gui.setSlotType(getEnergyCellSlot(), InventoryGUI.SlotType.ITEM);
         }
-        gui.addGadget(new ChargeDirectionGadget(gui), getChargeDirectionSlot());
+        gui.addGadget(new ChargeDirectionGadget(gui, getChargeDirectionSlot()));
         chargeMeterId = getMaxCharge() > 0 ? gui.addMonitor(new ChargeMeter(gui)) : -1;
         if (installedCell != null) {
             gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(), true);

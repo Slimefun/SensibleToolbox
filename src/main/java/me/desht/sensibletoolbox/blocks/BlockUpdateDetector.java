@@ -135,22 +135,22 @@ public class BlockUpdateDetector extends BaseSTBBlock {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
-        gui.addGadget(new NumericGadget(gui, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.UpdateListener() {
             @Override
             public boolean run(int value) {
                 setDuration(value);
                 return true;
             }
-        }), 1);
-        gui.addGadget(new NumericGadget(gui, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.UpdateListener() {
+        }));
+        gui.addGadget(new NumericGadget(gui, 0, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.UpdateListener() {
             @Override
             public boolean run(int value) {
                 setQuiet(value);
                 return true;
             }
-        }), 0);
-        gui.addGadget(new RedstoneBehaviourGadget(gui), 8);
-        gui.addGadget(new AccessControlGadget(gui), 7);
+        }));
+        gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
+        gui.addGadget(new AccessControlGadget(gui, 7));
         return gui;
     }
 }

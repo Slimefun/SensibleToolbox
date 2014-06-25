@@ -97,12 +97,12 @@ public abstract class BatteryBox extends BaseSTBMachine {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = super.createGUI();
 
-        gui.addGadget(new EnergyFlowGadget(gui, BlockFace.NORTH), 4);
-        gui.addGadget(new EnergyFlowGadget(gui, BlockFace.SOUTH), 22);
-        gui.addGadget(new EnergyFlowGadget(gui, BlockFace.EAST), 14);
-        gui.addGadget(new EnergyFlowGadget(gui, BlockFace.WEST), 12);
-        gui.addGadget(new EnergyFlowGadget(gui, BlockFace.UP), 3);
-        gui.addGadget(new EnergyFlowGadget(gui, BlockFace.DOWN), 21);
+        gui.addGadget(new EnergyFlowGadget(gui, 4,  BlockFace.NORTH));
+        gui.addGadget(new EnergyFlowGadget(gui, 22, BlockFace.SOUTH));
+        gui.addGadget(new EnergyFlowGadget(gui, 14, BlockFace.EAST));
+        gui.addGadget(new EnergyFlowGadget(gui, 12, BlockFace.WEST));
+        gui.addGadget(new EnergyFlowGadget(gui, 3,  BlockFace.UP));
+        gui.addGadget(new EnergyFlowGadget(gui, 21, BlockFace.DOWN));
         gui.getInventory().setItem(5, null);
         gui.getInventory().setItem(23, null);
         gui.addLabel(" ", 13, getMaterialData().toItemStack());

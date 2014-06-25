@@ -10,8 +10,8 @@ public class ButtonGadget extends ClickableGadget {
     private final ItemStack labelTexture;
     private final Runnable callback;
 
-    public ButtonGadget(InventoryGUI owner, String text, String[] lore, ItemStack texture, Runnable callback) {
-        super(owner);
+    public ButtonGadget(InventoryGUI owner, int slot, String text, String[] lore, ItemStack texture, Runnable callback) {
+        super(owner, slot);
         this.callback = callback;
         labelTexture = texture == null ? new ItemStack(Material.ENDER_PORTAL) : texture.clone();
         ItemMeta meta = labelTexture.getItemMeta();

@@ -9,8 +9,8 @@ public class ChargeDirectionGadget extends ClickableGadget {
     private STBMachine.ChargeDirection chargeDirection;
     private final STBMachine machine;
 
-    public ChargeDirectionGadget(InventoryGUI gui) {
-        super(gui);
+    public ChargeDirectionGadget(InventoryGUI gui, int slot) {
+        super(gui, slot);
         Validate.isTrue(gui.getOwningItem() instanceof STBMachine, "Charge Direction gadget can only be added to machines!");
         machine = (STBMachine) gui.getOwningItem();
         chargeDirection = machine.getChargeDirection();

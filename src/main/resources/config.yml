@@ -19,7 +19,6 @@ items_enabled:
   advancedrecipebook: true
   advancedsendermodule: true
   angelicblock: true
-  bagofholding: true
   basicsolarcell: true
   bigstorageunit: true
   blankmodule: true
@@ -31,7 +30,10 @@ items_enabled:
   droppermodule: true
   ejectorupgrade: true
   elevator: true
+  enderbag: true
+  enderbox: true
   enderleash: true
+  endertuner: true
   fiftykbatterybox: true
   fiftykenergycell: true
   floodlight: true

@@ -2,7 +2,6 @@ package me.desht.sensibletoolbox.gui;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
@@ -11,7 +10,10 @@ import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.IntRange;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
@@ -81,7 +83,7 @@ public class InventoryGUI {
         return null;
     }
 
-    public static void setOpenGUI(Player player, InventoryGUI gui) {
+    private static void setOpenGUI(Player player, InventoryGUI gui) {
         if (gui != null) {
             player.setMetadata(STB_OPEN_GUI, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), gui));
         } else {
@@ -106,7 +108,8 @@ public class InventoryGUI {
         stack.setItemMeta(meta);
     }
 
-    public void addGadget(ClickableGadget gadget, int slot) {
+    public void addGadget(ClickableGadget gadget) {
+        int slot = gadget.getSlot();
         if (containsSlot(slot)) {
             inventory.setItem(slot, gadget.getTexture());
             gadgets[slot] = gadget;
@@ -133,6 +136,21 @@ public class InventoryGUI {
             setSlotType(slot, SlotType.GADGET);
         }
         return monitors.size() - 1;
+    }
+
+    public ItemStack getItem(int slot) {
+        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
+        return inventory.getItem(slot);
+    }
+
+    public void setItem(int slot, ItemStack stack) {
+        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
+        inventory.setItem(slot, stack);
+    }
+
+    public ClickableGadget getGadget(int slot) {
+        Validate.isTrue(getSlotType(slot) == SlotType.GADGET, "Slot " + slot + " is not a gadget slot");
+        return gadgets[slot];
     }
 
     public MonitorGadget getMonitor(int monitorId) {

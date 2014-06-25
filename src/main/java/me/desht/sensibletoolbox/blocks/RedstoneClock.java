@@ -39,7 +39,7 @@ public class RedstoneClock extends BaseSTBBlock {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
-        gui.addGadget(new NumericGadget(gui, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 0, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.UpdateListener() {
             @Override
             public boolean run(int value) {
                 if (value > getOnDuration()) {
@@ -49,8 +49,8 @@ public class RedstoneClock extends BaseSTBBlock {
                     return false;
                 }
             }
-        }), 0);
-        gui.addGadget(new NumericGadget(gui, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getOnDuration(), 10, 1, new NumericGadget.UpdateListener() {
+        }));
+        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getOnDuration(), 10, 1, new NumericGadget.UpdateListener() {
             @Override
             public boolean run(int value) {
                 if (value < getInterval()) {
@@ -60,9 +60,9 @@ public class RedstoneClock extends BaseSTBBlock {
                     return false;
                 }
             }
-        }), 1);
-        gui.addGadget(new RedstoneBehaviourGadget(gui), 8);
-        gui.addGadget(new AccessControlGadget(gui), 7);
+        }));
+        gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
+        gui.addGadget(new AccessControlGadget(gui, 7));
         return gui;
     }
 

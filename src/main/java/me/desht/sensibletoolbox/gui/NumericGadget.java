@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.gui;
 
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -13,19 +13,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class NumericGadget extends ClickableGadget {
     private final String title;
     private final IntRange range;
-    private final int largeIncr;
-    private final int smallIncr;
+    private final int incr;
+    private final int altIncr;
     private final UpdateListener callback;
     private final ItemStack icon = new ItemStack(Material.PAPER);
     private int value;
 
-    public NumericGadget(InventoryGUI gui, String title, IntRange range, int value, int largeIncr, int smallIncr, UpdateListener callback) {
-        super(gui);
+    public NumericGadget(InventoryGUI gui, int slot, String title, IntRange range, int value, int incr, int altIncr, UpdateListener callback) {
+        super(gui, slot);
         this.title = title;
         this.range = range;
         this.value = value;
-        this.largeIncr = largeIncr;
-        this.smallIncr = smallIncr;
+        this.incr = incr;
+        this.altIncr = altIncr;
         this.callback = callback;
     }
 
@@ -33,9 +33,9 @@ public class NumericGadget extends ClickableGadget {
     public void onClicked(InventoryClickEvent event) {
         int newValue = value;
         if (event.isLeftClick()) {
-            newValue -= event.isShiftClick() ? smallIncr : largeIncr;
+            newValue -= event.isShiftClick() ? altIncr : incr;
         } else if (event.isRightClick()) {
-            newValue += event.isShiftClick() ? smallIncr : largeIncr;
+            newValue += event.isShiftClick() ? altIncr : incr;
         }
         if (callback.run(newValue)) {
             value = Math.max(Math.min(newValue, range.getMaximumInteger()), range.getMinimumInteger());
@@ -48,6 +48,13 @@ public class NumericGadget extends ClickableGadget {
         }
     }
 
+    public void setValue(int value) {
+        Validate.isTrue(range.containsInteger(value), "Value " + value + " is out of range");
+        this.value = value;
+        System.out.println("update " + getSlot() + " with " + getTexture().getItemMeta().getDisplayName());
+        getGUI().getInventory().setItem(getSlot(), getTexture());
+    }
+
     @Override
     public ItemStack getTexture() {
         ItemMeta meta = icon.getItemMeta();
@@ -56,9 +63,9 @@ public class NumericGadget extends ClickableGadget {
         String min = range.getMaximumInteger() == Integer.MIN_VALUE ? "-\u221e" : Integer.toString(range.getMinimumInteger());
         String[] lore = {
                 "Valid value range: " + min + "-" + max,
-                "L-Click: -" + largeIncr,
-                "R-Click: +" + largeIncr,
-                "With Shift held, +/-" + smallIncr
+                "L-Click: -" + incr,
+                "R-Click: +" + incr,
+                "With Shift held, +/-" + altIncr
         };
         meta.setLore(InventoryGUI.makeLore(lore));
         icon.setItemMeta(meta);

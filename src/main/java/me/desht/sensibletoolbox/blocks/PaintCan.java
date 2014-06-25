@@ -148,7 +148,7 @@ public class PaintCan extends BaseSTBBlock {
         for (int slot : ITEM_SLOTS) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
-        gui.addGadget(new ButtonGadget(gui, "Mix/Dye", null, MIX_TEXTURE, new Runnable() {
+        gui.addGadget(new ButtonGadget(gui, 3, "Mix/Dye", null, MIX_TEXTURE, new Runnable() {
             @Override
             public void run() {
                 if (tryMix()) {
@@ -156,13 +156,13 @@ public class PaintCan extends BaseSTBBlock {
                     loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
                 }
             }
-        }), 3);
-        gui.addGadget(new ButtonGadget(gui, "! Empty Paint !", null, EMPTY_TEXTURE, new Runnable() {
+        }));
+        gui.addGadget(new ButtonGadget(gui, 4, "! Empty Paint !", null, EMPTY_TEXTURE, new Runnable() {
             @Override
             public void run() {
                 emptyPaintCan();
             }
-        }), 4);
+        }));
         levelMonitorId = gui.addMonitor(new LevelMonitor(gui, new LevelMonitor.LevelReporter() {
             @Override
             public int getLevel() {
@@ -190,7 +190,7 @@ public class PaintCan extends BaseSTBBlock {
                 return ChatColor.WHITE + "Paint Level: " + getPaintLevel() + "/" + MAX_PAINT_LEVEL + " " + cc + getColour();
             }
         }));
-        gui.addGadget(new AccessControlGadget(gui), 8);
+        gui.addGadget(new AccessControlGadget(gui, 8));
         return gui;
     }
 

@@ -185,8 +185,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 36, ChatColor.DARK_RED + getItemName());
-        gui.addGadget(new RedstoneBehaviourGadget(gui), 8);
-        gui.addGadget(new AccessControlGadget(gui), 17);
+        gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
+        gui.addGadget(new AccessControlGadget(gui, 17));
         for (int slot = MOD_SLOT_START; slot < MOD_SLOT_END; slot++) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }

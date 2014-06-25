@@ -77,7 +77,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new EnderLeash(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new RedstoneClock(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BlockUpdateDetector(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BagOfHolding(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnderBag(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new WateringCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new MoistureChecker(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new AdvancedMoistureChecker(), plugin, CONFIG_NODE, PERMISSION_NODE);
@@ -128,6 +128,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new BigStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new HyperStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new Pump(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnderTuner(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnderBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
         if (plugin.isProtocolLibEnabled()) {
             registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
         }

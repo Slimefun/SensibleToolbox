@@ -21,10 +21,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class STBUtil {
     public static final BlockFace[] directFaces = {
@@ -395,7 +392,6 @@ public class STBUtil {
             res.add(b.getState().getData().toItemStack());
         } else {
             Random r = new Random();
-            System.out.println("found " + b.getType());
             Collection<ItemStack> res2 = tool == null ? b.getDrops() : b.getDrops(tool);
             // b.getDrops() appears bugged for nether wart
             if (b.getType() != Material.NETHER_WARTS && res2.isEmpty()) {
@@ -808,5 +804,18 @@ public class STBUtil {
      */
     public static boolean isLeaves(Material type) {
         return type == Material.LEAVES || type == Material.LEAVES_2;
+    }
+
+    /**
+     * Give the items to a player, dropping any excess items on the ground.
+     *
+     * @param player the player
+     * @param stacks one or more item stacks
+     */
+    public static void giveItems(HumanEntity player, ItemStack stacks) {
+        HashMap<Integer,ItemStack> excess = player.getInventory().addItem(stacks);
+        for (ItemStack stack : excess.values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), stack);
+        }
     }
 }

@@ -9,8 +9,8 @@ import org.bukkit.inventory.ItemStack;
 public class FilterTypeGadget extends ClickableGadget {
     private FilterType filterType;
 
-    public FilterTypeGadget(InventoryGUI gui) {
-        super(gui);
+    public FilterTypeGadget(InventoryGUI gui, int slot) {
+        super(gui, slot);
         Validate.isTrue(gui.getOwningItem() instanceof Filtering, "Filter Type gadget can only be added to filtering items!");
         filterType = ((Filtering) getGUI().getOwningItem()).getFilter().getFilterType();
     }

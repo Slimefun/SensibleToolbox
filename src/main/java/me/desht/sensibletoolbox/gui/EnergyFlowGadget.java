@@ -10,8 +10,8 @@ public class EnergyFlowGadget extends ClickableGadget {
     private final BlockFace face;
     private BatteryBox.EnergyFlow flow;
 
-    public EnergyFlowGadget(InventoryGUI gui, BlockFace face) {
-        super(gui);
+    public EnergyFlowGadget(InventoryGUI gui, int slot, BlockFace face) {
+        super(gui, slot);
         this.face = face;
         Validate.isTrue(gui.getOwningItem() instanceof BatteryBox, "Energy flow gadget can only be used on a battery box!");
         flow = ((BatteryBox) gui.getOwningItem()).getEnergyFlow(face);

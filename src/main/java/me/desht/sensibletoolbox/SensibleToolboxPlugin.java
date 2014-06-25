@@ -24,9 +24,9 @@ import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
 import me.desht.sensibletoolbox.commands.*;
+import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.items.BagOfHolding;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
@@ -61,6 +61,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private boolean holoAPIenabled = false;
     private BukkitTask energyTask = null;
     private LWC lwc = null;
+    private EnderStorageManager enderStorageManager;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -120,7 +121,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         MessagePager.setPageCmd("/stb page [#|n|p]");
         MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
-        BagOfHolding.createSaveDirectory(this);
+//        EnderBag.createSaveDirectory(this);
 
         Bukkit.getScheduler().runTask(this, new Runnable() {
             @Override
@@ -211,7 +212,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new GeneralListener(this), this);
         pm.registerEvents(new WorldListener(this), this);
-        pm.registerEvents(new BagOfHoldingListener(this), this);
+//        pm.registerEvents(new BagOfHoldingListener(this), this);
         pm.registerEvents(new TrashCanListener(this), this);
         pm.registerEvents(new ElevatorListener(this), this);
         pm.registerEvents(new AnvilListener(this), this);
@@ -223,6 +224,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
         floodlightListener = new FloodlightListener(this);
         pm.registerEvents(floodlightListener, this);
+        enderStorageManager = new EnderStorageManager(this);
+        pm.registerEvents(enderStorageManager, this);
     }
 
     private void setupProtocolLib() {
@@ -342,4 +345,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return configManager;
     }
 
+    public EnderStorageManager getEnderStorageManager() {
+        return enderStorageManager;
+    }
 }

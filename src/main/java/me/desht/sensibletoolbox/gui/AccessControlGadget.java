@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 public class AccessControlGadget extends ClickableGadget {
     private AccessControl accessControl;
 
-    public AccessControlGadget(InventoryGUI owner) {
-        super(owner);
+    public AccessControlGadget(InventoryGUI owner, int slot) {
+        super(owner, slot);
         accessControl = owner.getOwningBlock().getAccessControl();
     }
 
