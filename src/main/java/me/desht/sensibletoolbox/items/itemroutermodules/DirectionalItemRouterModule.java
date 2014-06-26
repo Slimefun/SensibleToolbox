@@ -169,7 +169,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
         gui.addGadget(new ToggleButton(gui, 8, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
             @Override
-            public boolean run(int slot, boolean newValue) {
+            public boolean run(boolean newValue) {
                 if (getFilter() != null) {
                     getFilter().setWhiteList(newValue);
                     return true;
@@ -181,7 +181,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         gui.addGadget(new FilterTypeGadget(gui, 17));
         gui.addGadget(new ToggleButton(gui, 26, isTerminator(), ON_BUTTON, OFF_BUTTON, new ToggleButton.ToggleListener() {
             @Override
-            public boolean run(int slot, boolean newValue) {
+            public boolean run(boolean newValue) {
                 setTerminator(newValue);
                 return true;
             }

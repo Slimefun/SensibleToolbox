@@ -39,10 +39,10 @@ public class SoundMuffler extends BaseSTBBlock {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
-        gui.addGadget(new NumericGadget(gui, 0, "Volume", new IntRange(0, 100), getVolume(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 0, "Volume", new IntRange(0, 100), getVolume(), 10, 1, new NumericGadget.NumericListener() {
             @Override
-            public boolean run(int value) {
-                setVolume(value);
+            public boolean run(int newValue) {
+                setVolume(newValue);
                 return true;
             }
         }));

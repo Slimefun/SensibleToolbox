@@ -135,17 +135,17 @@ public class BlockUpdateDetector extends BaseSTBBlock {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
-        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.NumericListener() {
             @Override
-            public boolean run(int value) {
-                setDuration(value);
+            public boolean run(int newValue) {
+                setDuration(newValue);
                 return true;
             }
         }));
-        gui.addGadget(new NumericGadget(gui, 0, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 0, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.NumericListener() {
             @Override
-            public boolean run(int value) {
-                setQuiet(value);
+            public boolean run(int newValue) {
+                setQuiet(newValue);
                 return true;
             }
         }));

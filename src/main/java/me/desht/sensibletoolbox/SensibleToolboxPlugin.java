@@ -121,8 +121,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         MessagePager.setPageCmd("/stb page [#|n|p]");
         MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
-//        EnderBag.createSaveDirectory(this);
-
         Bukkit.getScheduler().runTask(this, new Runnable() {
             @Override
             public void run() {
@@ -212,7 +210,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new GeneralListener(this), this);
         pm.registerEvents(new WorldListener(this), this);
-//        pm.registerEvents(new BagOfHoldingListener(this), this);
         pm.registerEvents(new TrashCanListener(this), this);
         pm.registerEvents(new ElevatorListener(this), this);
         pm.registerEvents(new AnvilListener(this), this);

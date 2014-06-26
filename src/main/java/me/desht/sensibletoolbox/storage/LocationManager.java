@@ -10,10 +10,9 @@ import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.material.Sign;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -215,15 +214,33 @@ public class LocationManager {
      * Get the STB block at the given location.
      *
      * @param loc the location to check at
-     * @return the STB block item at the given location, or null if no matching item
+     * @return the STB block at the given location, or null if no matching item
      */
     public BaseSTBBlock get(Location loc) {
-        BaseSTBBlock stb = (BaseSTBBlock) STBUtil.getMetadataValue(loc.getBlock(), BaseSTBBlock.STB_BLOCK);
+        return get(loc, false);
+    }
+
+    /**
+     * Get the STB block at the given location, or if the location contains a
+     * sign, possibly at the location the sign is attached to.
+     *
+     * @param loc the location to check at
+     * @param checkSigns if true, and the location contains a sign, check at
+     *                   the location that the sign is attached to
+     * @return the STB block at the given location, or null if no matching item
+     */
+    public BaseSTBBlock get(Location loc, boolean checkSigns) {
+        Block b = loc.getBlock();
+        if (checkSigns && (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST)) {
+            Sign sign = (Sign) b.getState().getData();
+            b = b.getRelative(sign.getAttachedFace());
+        }
+        BaseSTBBlock stb = (BaseSTBBlock) STBUtil.getMetadataValue(b, BaseSTBBlock.STB_BLOCK);
         if (stb != null) {
             return stb;
         } else {
             // perhaps it's part of a multi-block structure
-            return (BaseSTBBlock) STBUtil.getMetadataValue(loc.getBlock(), BaseSTBBlock.STB_MULTI_BLOCK);
+            return (BaseSTBBlock) STBUtil.getMetadataValue(b, BaseSTBBlock.STB_MULTI_BLOCK);
         }
     }
 
@@ -233,10 +250,24 @@ public class LocationManager {
      * @param loc  the location to check at
      * @param type the type of STB block required
      * @param <T>  a subclass of BaseSTBBlock
-     * @return the STB block item at the given location, or null if no matching item
+     * @return the STB block at the given location, or null if no matching item
      */
     public <T extends BaseSTBBlock> T get(Location loc, Class<T> type) {
-        STBBlock stbBlock = get(loc);
+        return get(loc, type, false);
+    }
+
+    /**
+     * Get the STB block of the given type at the given location.
+     *
+     * @param loc  the location to check at
+     * @param type the type of STB block required
+     * @param <T>  a subclass of BaseSTBBlock
+     * @param checkSigns if true, and the location contains a sign, check at
+     *                   the location that the sign is attached to
+     * @return the STB block at the given location, or null if no matching item
+     */
+    public <T extends BaseSTBBlock> T get(Location loc, Class<T> type, boolean checkSigns) {
+        STBBlock stbBlock = get(loc, checkSigns);
         if (stbBlock != null && type.isAssignableFrom(stbBlock.getClass())) {
             return type.cast(stbBlock);
         } else {

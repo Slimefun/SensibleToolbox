@@ -39,22 +39,22 @@ public class RedstoneClock extends BaseSTBBlock {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
-        gui.addGadget(new NumericGadget(gui, 0, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 0, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.NumericListener() {
             @Override
-            public boolean run(int value) {
-                if (value > getOnDuration()) {
-                    setInterval(value);
+            public boolean run(int newValue) {
+                if (newValue > getOnDuration()) {
+                    setInterval(newValue);
                     return true;
                 } else {
                     return false;
                 }
             }
         }));
-        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getOnDuration(), 10, 1, new NumericGadget.UpdateListener() {
+        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getOnDuration(), 10, 1, new NumericGadget.NumericListener() {
             @Override
-            public boolean run(int value) {
-                if (value < getInterval()) {
-                    setOnDuration(value);
+            public boolean run(int newValue) {
+                if (newValue < getInterval()) {
+                    setOnDuration(newValue);
                     return true;
                 } else {
                     return false;

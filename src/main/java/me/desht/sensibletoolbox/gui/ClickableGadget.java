@@ -19,4 +19,7 @@ public abstract class ClickableGadget extends Gadget {
 
     public abstract ItemStack getTexture();
 
+    protected void updateGUI() {
+        getGUI().getInventory().setItem(getSlot(), getTexture());
+    }
 }

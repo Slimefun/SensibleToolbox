@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public interface STBBlock {
+public interface STBBlock extends STBItem {
     /**
      * Get this block's current redstone behaviour; whether it ignores the presence of a redstone signal,
      * or requires the signal to be low or high to operate.

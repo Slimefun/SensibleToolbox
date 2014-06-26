@@ -25,7 +25,7 @@ public class PlayerHolder extends EnderStorageHolder {
 
     @Override
     public String getInventoryTitle() {
-        return ChatColor.DARK_BLUE + "Ender Storage " + ChatColor.DARK_RED + "[P:ƒ " + getFrequency() + "]";
+        return ChatColor.DARK_PURPLE + "Ender " + ChatColor.DARK_RED + "[Personal ƒ" + getFrequency() + "]";
     }
 
     @Override

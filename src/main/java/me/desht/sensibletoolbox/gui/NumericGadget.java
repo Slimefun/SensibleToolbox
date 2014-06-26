@@ -15,11 +15,11 @@ public class NumericGadget extends ClickableGadget {
     private final IntRange range;
     private final int incr;
     private final int altIncr;
-    private final UpdateListener callback;
+    private final NumericListener callback;
     private final ItemStack icon = new ItemStack(Material.PAPER);
     private int value;
 
-    public NumericGadget(InventoryGUI gui, int slot, String title, IntRange range, int value, int incr, int altIncr, UpdateListener callback) {
+    public NumericGadget(InventoryGUI gui, int slot, String title, IntRange range, int value, int incr, int altIncr, NumericListener callback) {
         super(gui, slot);
         this.title = title;
         this.range = range;
@@ -37,8 +37,9 @@ public class NumericGadget extends ClickableGadget {
         } else if (event.isRightClick()) {
             newValue += event.isShiftClick() ? altIncr : incr;
         }
-        if (callback.run(newValue)) {
-            value = Math.max(Math.min(newValue, range.getMaximumInteger()), range.getMinimumInteger());
+        newValue = Math.max(Math.min(newValue, range.getMaximumInteger()), range.getMinimumInteger());
+        if (newValue != value && callback.run(newValue)) {
+            value = newValue;
             event.setCurrentItem(getTexture());
         } else {
             // vetoed by the block!
@@ -51,8 +52,7 @@ public class NumericGadget extends ClickableGadget {
     public void setValue(int value) {
         Validate.isTrue(range.containsInteger(value), "Value " + value + " is out of range");
         this.value = value;
-        System.out.println("update " + getSlot() + " with " + getTexture().getItemMeta().getDisplayName());
-        getGUI().getInventory().setItem(getSlot(), getTexture());
+        updateGUI();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class NumericGadget extends ClickableGadget {
         return icon;
     }
 
-    public interface UpdateListener {
-        public boolean run(int value);
+    public interface NumericListener {
+        public boolean run(int newValue);
     }
 }

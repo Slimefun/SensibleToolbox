@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.blocks;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -20,16 +21,19 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable {
     private static final MaterialData md = new MaterialData(Material.ENDER_CHEST);
 
     private int frequency;
+    private boolean global;
     private final String signLabel[] = new String[4];
 
     public EnderBox() {
         setEnderFrequency(1);
+        setGlobal(false);
         signLabel[0] = makeItemLabel();
     }
 
     public EnderBox(ConfigurationSection conf) {
         super(conf);
         setEnderFrequency(conf.getInt("frequency"));
+        setGlobal(conf.getBoolean("global"));
         signLabel[0] = makeItemLabel();
     }
 
@@ -37,6 +41,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable {
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("frequency", getEnderFrequency());
+        conf.set("global", isGlobal());
         return conf;
     }
 
@@ -49,6 +54,20 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable {
     public void setEnderFrequency(int frequency) {
         this.frequency = frequency;
         signLabel[2] = ChatColor.DARK_RED + getDisplaySuffix();
+        updateBlock(false);
+        updateAttachedLabelSigns();
+    }
+
+    @Override
+    public boolean isGlobal() {
+        return global;
+    }
+
+    @Override
+    public void setGlobal(boolean global) {
+        this.global = global;
+        signLabel[2] = ChatColor.DARK_RED + getDisplaySuffix();
+        updateBlock(false);
         updateAttachedLabelSigns();
     }
 
@@ -64,7 +83,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable {
 
     @Override
     public String getDisplaySuffix() {
-        return "ƒ " + getEnderFrequency();
+        return (isGlobal() ? "Global" : "Personal") + " ƒ" + getEnderFrequency();
     }
 
     @Override
@@ -93,10 +112,16 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
-            EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
-            Inventory inv = esm.getPlayerInventory(player, getEnderFrequency());
-            player.openInventory(inv);
-            player.playSound(getLocation(), Sound.CHEST_OPEN, 0.5f, 1.0f);
+            if (hasAccessRights(player)) {
+                EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
+                Inventory inv = isGlobal() ?
+                        esm.getGlobalInventory(getEnderFrequency()) :
+                        esm.getPlayerInventory(player, getEnderFrequency());
+                player.openInventory(inv);
+                player.playSound(getLocation(), Sound.CHEST_OPEN, 0.5f, 1.0f);
+            } else {
+                STBUtil.complain(player, "That " + getItemName() + " is private!");
+            }
             event.setCancelled(true);
         }
     }

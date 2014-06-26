@@ -95,7 +95,7 @@ public class ShowCommand extends AbstractCommand {
             item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
             if (item == null) {
                 Block b = player.getTargetBlock(null, 10);
-                item = LocationManager.getManager().get(b.getLocation());
+                item = LocationManager.getManager().get(b.getLocation(), true);
             }
         } else {
             try {

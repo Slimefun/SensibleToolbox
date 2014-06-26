@@ -11,7 +11,7 @@ public class GlobalHolder extends EnderStorageHolder {
 
     @Override
     public String getInventoryTitle() {
-        return ChatColor.DARK_BLUE + "Ender Storage " + ChatColor.DARK_RED + "[G:ƒ " + getFrequency() + "]";
+        return ChatColor.DARK_PURPLE + "Ender " + ChatColor.DARK_RED + "[Global ƒ" + getFrequency() + "]";
     }
 
     @Override

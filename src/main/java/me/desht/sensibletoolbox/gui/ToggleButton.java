@@ -23,7 +23,7 @@ public class ToggleButton extends ClickableGadget {
     public void onClicked(InventoryClickEvent event) {
         boolean newValue = !value;
 
-        if (callback.run(event.getRawSlot(), newValue)) {
+        if (callback.run(newValue)) {
             value = newValue;
             event.setCurrentItem(getTexture());
         } else {
@@ -39,7 +39,12 @@ public class ToggleButton extends ClickableGadget {
         return value ? trueTexture : falseTexture;
     }
 
+    public void setValue(boolean newValue) {
+        value = newValue;
+        updateGUI();
+    }
+
     public interface ToggleListener {
-        public boolean run(int slot, boolean newValue);
+        public boolean run(boolean newValue);
     }
 }

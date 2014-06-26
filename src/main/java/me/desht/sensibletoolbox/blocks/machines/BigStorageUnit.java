@@ -252,7 +252,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
         gui.addGadget(new ToggleButton(gui, 26, isLocked(), LOCKED_BUTTON, UNLOCKED_BUTTON, new ToggleButton.ToggleListener() {
             @Override
-            public boolean run(int slot, boolean newValue) {
+            public boolean run(boolean newValue) {
                 setLocked(newValue);
                 return true;
             }
