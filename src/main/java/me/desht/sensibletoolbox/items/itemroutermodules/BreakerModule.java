@@ -28,7 +28,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         Block b = getTargetLocation(loc).getBlock();
-        if (b.isEmpty() || b.isLiquid()) {
+        if (b.isEmpty() || b.isLiquid() || b.getType() == Material.BEDROCK) {
             return false;
         }
         List<ItemStack> d = STBUtil.calculateDrops(b, pick);
