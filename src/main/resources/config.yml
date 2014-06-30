@@ -19,6 +19,7 @@ items_enabled:
   advancedrecipebook: true
   advancedsendermodule: true
   angelicblock: true
+  bagofholding: true
   basicsolarcell: true
   bigstorageunit: true
   blankmodule: true

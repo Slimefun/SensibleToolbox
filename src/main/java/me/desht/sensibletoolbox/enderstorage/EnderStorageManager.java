@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.enderstorage;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
@@ -17,15 +18,18 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class EnderStorageManager implements Listener {
+    public static final int MAX_ENDER_FREQUENCY = 1000;
     public static final int BAG_SIZE = 54;
     private static final String ENDER_STORAGE_DIR = "enderstorage";
     private final File storageDir;
 
     private final Map<Integer,GlobalHolder> globalInvs = Maps.newHashMap();
     private final Map<UUID, Map<Integer, PlayerHolder>> playerInvs = Maps.newHashMap();
+    private final Set<EnderStorageHolder> updateNeeded = Sets.newHashSet();
 
     private static final FilenameFilter uuidFilter = new FilenameFilter() {
         @Override
@@ -87,7 +91,7 @@ public class EnderStorageManager implements Listener {
         File globalDir = new File(storageDir, "global");
         mkdir(globalDir);
 
-        // migrate any old data in the bagofholding folder
+        // migrate any old data in the bagofholding folder to personal ender channel "1"
         File oldDir = new File(plugin.getDataFolder(), EnderBag.BAG_SAVE_DIR);
         if (oldDir.exists()) {
             for (File f : oldDir.listFiles(uuidFilter)) {
@@ -96,6 +100,14 @@ public class EnderStorageManager implements Listener {
                 File newFile = new File(newDir, "1");
                 DHValidate.isTrue(f.renameTo(newFile), "can't move " + f + " to " + newFile);
             }
+            for (File f : oldDir.listFiles()) {
+                if (!f.delete()) {
+                    LogUtils.warning("can't delete unwanted file: " + f);
+                }
+            }
+            if (!oldDir.delete()) {
+                LogUtils.warning("can't delete old bagofholding directory");
+            }
         }
     }
 
@@ -103,13 +115,24 @@ public class EnderStorageManager implements Listener {
         DHValidate.isTrue(dir.mkdir(), "can't create directory: " + dir);
     }
 
+    public void setChanged(EnderStorageHolder holder) {
+        updateNeeded.add(holder);
+    }
+
+    public void tick() {
+        if (!updateNeeded.isEmpty()) {
+            for (EnderStorageHolder holder : updateNeeded) {
+                holder.saveInventory();
+            }
+            updateNeeded.clear();
+        }
+    }
+
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        // TODO need to make this more efficient
-        // - add holder to list of save-needed holders and save periodically
         if (event.getInventory().getHolder() instanceof EnderStorageHolder) {
             EnderStorageHolder h = (EnderStorageHolder) event.getInventory().getHolder();
-            h.saveInventory();
+            setChanged(h);
         }
     }
 }

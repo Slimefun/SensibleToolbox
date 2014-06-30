@@ -11,12 +11,13 @@ public class GlobalHolder extends EnderStorageHolder {
 
     @Override
     public String getInventoryTitle() {
-        return ChatColor.DARK_PURPLE + "Ender " + ChatColor.DARK_RED + "[Global ƒ" + getFrequency() + "]";
+        return ChatColor.DARK_PURPLE + "E-Storage " + ChatColor.DARK_RED + "[Global ƒ" + getFrequency() + "]";
     }
 
     @Override
     public File getSaveFile() {
-        return new File(getManager().getStorageDir(), Integer.toString(getFrequency()));
+        File global = new File(getManager().getStorageDir(), "global");
+        return new File(global, Integer.toString(getFrequency()));
     }
 
     @Override

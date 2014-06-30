@@ -121,6 +121,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         MessagePager.setPageCmd("/stb page [#|n|p]");
         MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
+        // do all the recipe setup on a delayed task to ensure we pick up
+        // custom recipes from any other plugins
         Bukkit.getScheduler().runTask(this, new Runnable() {
             @Override
             public void run() {
@@ -128,12 +130,20 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
                 RecipeBook.buildRecipes();
             }
         });
+
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
             public void run() {
                 LocationManager.getManager().tick();
             }
         }, 1L, 1L);
+
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                getEnderStorageManager().tick();
+            }
+        }, 1L, 300L);
 
         scheduleEnergyNetTicker();
 

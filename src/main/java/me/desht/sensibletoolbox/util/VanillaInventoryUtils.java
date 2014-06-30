@@ -71,14 +71,28 @@ public class VanillaInventoryUtils {
             return 0;
         }
         Inventory targetInv = getVanillaInventoryFor(target);
+        return vanillaInsertion(targetInv, source, amount, side, sorting);
+    }
 
+    /**
+     * Attempt to insert items from the given buffer into the given inventory.
+     * Items successfully inserted will be removed from the buffer stack.
+     * Any items which could not be inserted will be returned.
+     *
+     * @param targetInv the inventory to insert into
+     * @param source the item stack to take items from
+     * @param amount the number of items from the buffer to insert
+     * @param side   the side on which insertion is occurring (some blocks care about this, e.g. furnace)
+     * @return the number of items actually inserted
+     */
+    public static int vanillaInsertion(Inventory targetInv, ItemStack source, int amount, BlockFace side, boolean sorting) {
         if (targetInv != null) {
             if (sorting && !sortingOK(source, targetInv)) {
                 return 0;
             }
             ItemStack stack = source.clone();
             stack.setAmount(Math.min(amount, stack.getAmount()));
-            Debugger.getInstance().debug(2, "inserting " + stack + " into " + target);
+            Debugger.getInstance().debug(2, "inserting " + stack + " into " + targetInv.getHolder());
             HashMap<Integer, ItemStack> excess;
             switch (targetInv.getType()) {
                 case FURNACE:
@@ -115,7 +129,6 @@ public class VanillaInventoryUtils {
         return 0;
     }
 
-
     /**
      * Attempt to pull items from an inventory into a receiving buffer.
      *
@@ -131,6 +144,19 @@ public class VanillaInventoryUtils {
             return null;
         }
         Inventory targetInv = getVanillaInventoryFor(target);
+        return pullFromInventory(targetInv, amount, buffer, filter);
+    }
+
+    /**
+     * Attempt to pull items from an inventory into a receiving buffer.
+     *
+     * @param targetInv the target inventory
+     * @param amount the desired number of items
+     * @param buffer an array of item stacks into which to insert the transferred items
+     * @param filter a filter to whitelist/blacklist items
+     * @return the items pulled, or null if nothing was pulled
+     */
+    public static ItemStack pullFromInventory(Inventory targetInv, int amount, ItemStack buffer, Filter filter) {
         if (targetInv == null) {
             return null;
         }
@@ -139,7 +165,7 @@ public class VanillaInventoryUtils {
             ItemStack stack = targetInv.getItem(slot);
             if (stack != null) {
                 if ((filter == null || filter.shouldPass(stack)) && (buffer == null || stack.isSimilar(buffer))) {
-                    Debugger.getInstance().debug(2, "pulling " + stack + " from " + target);
+                    Debugger.getInstance().debug(2, "pulling " + stack + " from " + targetInv.getHolder());
                     int toTake = Math.min(amount, stack.getAmount());
                     if (buffer != null) {
                         toTake = Math.min(toTake, buffer.getType().getMaxStackSize() - buffer.getAmount());

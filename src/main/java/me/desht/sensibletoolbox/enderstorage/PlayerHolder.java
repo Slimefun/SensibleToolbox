@@ -24,8 +24,28 @@ public class PlayerHolder extends EnderStorageHolder {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        PlayerHolder that = (PlayerHolder) o;
+
+        if (!player.equals(that.player)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + player.hashCode();
+        return result;
+    }
+
+    @Override
     public String getInventoryTitle() {
-        return ChatColor.DARK_PURPLE + "Ender " + ChatColor.DARK_RED + "[Personal ƒ" + getFrequency() + "]";
+        return ChatColor.DARK_PURPLE + "E-Storage " + ChatColor.DARK_RED + "[Personal ƒ" + getFrequency() + "]";
     }
 
     @Override

@@ -2,22 +2,30 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.enderstorage.EnderStorageHolder;
 import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
-public class EnderBox extends BaseSTBBlock implements EnderTunable {
+import java.util.UUID;
+
+public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventoryHolder {
     private static final MaterialData md = new MaterialData(Material.ENDER_CHEST);
 
     private int frequency;
@@ -124,5 +132,63 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable {
             }
             event.setCancelled(true);
         }
+    }
+
+    @Override
+    public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
+        if (hasAccessRights(uuid)) {
+            Inventory inv = getInventoryFor(uuid);
+            int nInserted = VanillaInventoryUtils.vanillaInsertion(inv, item, item.getAmount(), face, sorting);
+            if (nInserted > 0) {
+                EnderStorageHolder holder = (EnderStorageHolder) inv.getHolder();
+                holder.setChanged();
+            }
+            return nInserted;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+        if (hasAccessRights(uuid)) {
+            Inventory inv = getInventoryFor(uuid);
+            ItemStack stack = VanillaInventoryUtils.pullFromInventory(inv, amount, receiver, null);
+            if (stack != null) {
+                EnderStorageHolder holder = (EnderStorageHolder) inv.getHolder();
+                holder.setChanged();
+            }
+            return stack;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Inventory showOutputItems() {
+        Inventory source = getInventory();
+        Inventory res = Bukkit.createInventory(source.getHolder(), source.getSize());
+        res.setContents(source.getContents());
+        return res;
+    }
+
+    @Override
+    public void updateOutputItems(Inventory inventory) {
+        Inventory target = getInventory();
+        target.setContents(inventory.getContents());
+        EnderStorageHolder holder = (EnderStorageHolder) inventory.getHolder();
+        holder.setChanged();
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return getInventoryFor(getOwner());
+    }
+
+    private Inventory getInventoryFor(UUID uuid) {
+        EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
+        return isGlobal() ?
+                esm.getGlobalInventory(getEnderFrequency()) :
+                esm.getPlayerInventory(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
     }
 }

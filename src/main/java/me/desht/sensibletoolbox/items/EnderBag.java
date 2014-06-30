@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 
 public class EnderBag extends BaseSTBItem implements EnderTunable {
@@ -77,6 +78,16 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('C', Material.ENDER_CHEST);
         return recipe;
+    }
+
+    @Override
+    public Recipe[] getExtraRecipes() {
+        BagOfHolding bag = new BagOfHolding();
+        registerCustomIngredients(bag);
+        ShapelessRecipe[] res = new ShapelessRecipe[1];
+        res[0] = new ShapelessRecipe(toItemStack(1));
+        res[0].addIngredient(bag.getMaterialData());
+        return res;
     }
 
     public int getEnderFrequency() {

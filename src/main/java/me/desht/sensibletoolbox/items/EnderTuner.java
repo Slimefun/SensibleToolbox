@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.items;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.gui.AccessControlGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.NumericGadget;
@@ -31,9 +32,11 @@ public class EnderTuner extends BaseSTBItem {
             STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.BLUE), "Global", "Common inventory for", "all players");
     private static final ItemStack PERSONAL_TEXTURE = InventoryGUI.makeTexture(
             STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.YELLOW), "Personal", "Separate inventory for", "each player");
-    public static final int TUNED_ITEM = 11;
+    public static final int TUNING_GUI_SIZE = 27;
+    public static final int TUNED_ITEM_SLOT = 11;
     public static final int FREQUENCY_BUTTON_SLOT = 13;
     public static final int GLOBAL_BUTTON_SLOT = 8;
+    public static final int ACCESS_CONTROL_SLOT = 17;
     private InventoryGUI gui;
     private EnderTunable tuningBlock = null;
 
@@ -59,7 +62,7 @@ public class EnderTuner extends BaseSTBItem {
         return new String[] {
                 "Vibrates in six dimensions",
                 "R-Click Ender Box: " + ChatColor.RESET + "tune box",
-                "R-Click Air: " + ChatColor.RESET + "open GUI",
+                "R-Click other: " + ChatColor.RESET + "open tuning GUI",
         };
     }
 
@@ -92,30 +95,30 @@ public class EnderTuner extends BaseSTBItem {
     }
 
     private InventoryGUI makeTuningInventory(Player player) {
-        final InventoryGUI gui = new InventoryGUI(player, this, 27, ChatColor.DARK_PURPLE + "Ender Tuner");
-        for (int slot = 0; slot < 27; slot++) {
+        final InventoryGUI gui = new InventoryGUI(player, this, TUNING_GUI_SIZE, ChatColor.DARK_PURPLE + "Ender Tuner");
+        for (int slot = 0; slot < gui.getInventory().getSize(); slot++) {
             gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
         }
-        gui.setSlotType(TUNED_ITEM, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(TUNED_ITEM_SLOT, InventoryGUI.SlotType.ITEM);
         int freq = 1;
         boolean global = false;
         if (tuningBlock != null) {
-            gui.setItem(TUNED_ITEM, ((STBBlock)tuningBlock).toItemStack());
-            gui.addLabel("Ender Box", 10, null);
+            gui.setItem(TUNED_ITEM_SLOT, ((STBBlock)tuningBlock).toItemStack());
+            gui.addLabel("Ender Box", TUNED_ITEM_SLOT - 1, null);
             freq = tuningBlock.getEnderFrequency();
             global = tuningBlock.isGlobal();
-            gui.addGadget(new AccessControlGadget(gui, 17, (STBBlock) tuningBlock));
+            gui.addGadget(new AccessControlGadget(gui, ACCESS_CONTROL_SLOT, (STBBlock) tuningBlock));
         } else {
-            gui.addLabel("Ender Bag", 10, null, "Place an Ender Bag", "here to tune its", "ender frequency");
+            gui.addLabel("Ender Bag", TUNED_ITEM_SLOT - 1, null, "Place an Ender Bag or", "Ender Box here to tune", "its Ender frequency");
         }
         gui.addGadget(new ToggleButton(gui, GLOBAL_BUTTON_SLOT, global, GLOBAL_TEXTURE, PERSONAL_TEXTURE, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(boolean newValue) {
-                ItemStack stack = gui.getItem(TUNED_ITEM);
+                ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
                 BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
                 if (item instanceof EnderTunable) {
                     ((EnderTunable) item).setGlobal(newValue);
-                    gui.setItem(TUNED_ITEM, item.toItemStack(stack.getAmount()));
+                    gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
                     if (tuningBlock != null) {
                         tuningBlock.setGlobal(newValue);
                     }
@@ -124,14 +127,14 @@ public class EnderTuner extends BaseSTBItem {
                 return false;
             }
         }));
-        gui.addGadget(new NumericGadget(gui, FREQUENCY_BUTTON_SLOT, "Frequency", new IntRange(1, 1000), freq, 1, 10, new NumericGadget.NumericListener() {
+        gui.addGadget(new NumericGadget(gui, FREQUENCY_BUTTON_SLOT, "Ender Frequency", new IntRange(1, EnderStorageManager.MAX_ENDER_FREQUENCY), freq, 1, 10, new NumericGadget.NumericListener() {
             @Override
             public boolean run(int newValue) {
-                ItemStack stack = gui.getItem(TUNED_ITEM);
+                ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
                 BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
                 if (item instanceof EnderTunable) {
                     ((EnderTunable) item).setEnderFrequency(newValue);
-                    gui.setItem(TUNED_ITEM, item.toItemStack(stack.getAmount()));
+                    gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
                     if (tuningBlock != null) {
                         tuningBlock.setEnderFrequency(newValue);
                     }
@@ -152,7 +155,7 @@ public class EnderTuner extends BaseSTBItem {
             }
             return false;
         }
-        if (slot == TUNED_ITEM) {
+        if (slot == TUNED_ITEM_SLOT) {
             if (onCursor.getType() == Material.AIR) {
                 ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(1);
                 return true;
@@ -195,8 +198,8 @@ public class EnderTuner extends BaseSTBItem {
             return 0;
         }
         BaseSTBItem item = BaseSTBItem.getItemFromItemStack(toInsert);
-        if (item instanceof EnderTunable && gui.getItem(TUNED_ITEM) == null) {
-            gui.setItem(TUNED_ITEM, toInsert);
+        if (item instanceof EnderTunable && gui.getItem(TUNED_ITEM_SLOT) == null) {
+            gui.setItem(TUNED_ITEM_SLOT, toInsert);
             ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());
             ((ToggleButton) gui.getGadget(GLOBAL_BUTTON_SLOT)).setValue(((EnderTunable) item).isGlobal());
             return toInsert.getAmount();
@@ -213,11 +216,11 @@ public class EnderTuner extends BaseSTBItem {
             }
             return false;
         }
-        if (slot == TUNED_ITEM && gui.getItem(slot) != null) {
+        if (slot == TUNED_ITEM_SLOT && gui.getItem(slot) != null) {
             ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(1);
             return true;
         }
-        return slot == TUNED_ITEM && gui.getItem(slot) != null;
+        return slot == TUNED_ITEM_SLOT && gui.getItem(slot) != null;
     }
 
     @Override
@@ -228,7 +231,7 @@ public class EnderTuner extends BaseSTBItem {
     @Override
     public void onGUIClosed(HumanEntity player) {
         if (tuningBlock == null) {
-            ItemStack stack = gui.getItem(TUNED_ITEM);
+            ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
             if (stack != null) {
                 STBUtil.giveItems(player, stack);
             }

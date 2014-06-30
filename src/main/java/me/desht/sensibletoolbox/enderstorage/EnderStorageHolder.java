@@ -70,6 +70,27 @@ public abstract class EnderStorageHolder implements InventoryHolder {
         return inventory;
     }
 
+    public void setChanged() {
+        getManager().setChanged(this);
+    }
+
     public abstract File getSaveFile();
     public abstract String getInventoryTitle();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EnderStorageHolder that = (EnderStorageHolder) o;
+
+        if (frequency != that.frequency) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return frequency;
+    }
 }
