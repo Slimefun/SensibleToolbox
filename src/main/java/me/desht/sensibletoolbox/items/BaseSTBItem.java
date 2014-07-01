@@ -54,6 +54,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, InventoryGUI.InventoryGUIListener, STBItem {
+    private static final UUID STB_ATTRIBUTE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
+
     public static final ChatColor LORE_COLOR = ChatColor.GRAY;
     protected static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
     private static final String STB_LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
@@ -331,7 +333,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
     }
 
     private static Configuration getItemAttributes(ItemStack stack) {
-        AttributeStorage storage = AttributeStorage.newTarget(stack, SensibleToolboxPlugin.UNIQUE_ID);
+        AttributeStorage storage = AttributeStorage.newTarget(stack, STB_ATTRIBUTE_ID);
         YamlConfiguration conf = new YamlConfiguration();
         try {
             String s = storage.getData("");
@@ -506,7 +508,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         // any serialized data from the object goes in the ItemStack attributes
         YamlConfiguration conf = freeze();
         conf.set("*TYPE", getItemTypeID());
-        AttributeStorage storage = AttributeStorage.newTarget(res, SensibleToolboxPlugin.UNIQUE_ID);
+        AttributeStorage storage = AttributeStorage.newTarget(res, STB_ATTRIBUTE_ID);
         String data = conf.saveToString();
         storage.setData(data);
         Debugger.getInstance().debug(3, "serialize " + this + " to itemstack:\n" + data);

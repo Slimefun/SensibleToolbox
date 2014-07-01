@@ -47,7 +47,6 @@ import java.util.UUID;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
-    public static final UUID UNIQUE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
     private static SensibleToolboxPlugin instance = null;
     private final CommandManager cmds = new CommandManager(this);
     private ConfigurationManager configManager;
