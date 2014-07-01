@@ -139,7 +139,7 @@ public class RecipeBook extends BaseSTBItem {
                     if (recipeTypeFilter == RecipeType.ALL) {
                         filteredItems.add(stack);
                     } else {
-                        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+                        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
                         if (item == null && recipeTypeFilter == RecipeType.VANILLA || item != null && recipeTypeFilter == RecipeType.STB) {
                             filteredItems.add(stack);
                         }
@@ -316,7 +316,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void showShapedRecipe(ShapedRecipe recipe) {
-        STBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
+        STBItem item = BaseSTBItem.fromItemStack(recipe.getResult());
         String[] shape = recipe.getShape();
         Map<Character, ItemStack> map = recipe.getIngredientMap();
         for (int i = 0; i < shape.length; i++) {
@@ -331,7 +331,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void showShapelessRecipe(ShapelessRecipe recipe) {
-        STBItem item = BaseSTBItem.getItemFromItemStack(recipe.getResult());
+        STBItem item = BaseSTBItem.fromItemStack(recipe.getResult());
         List<ItemStack> ingredients = recipe.getIngredientList();
         for (int i = 0; i < ingredients.size(); i++) {
             ItemStack ingredient = getIngredient(item, ingredients.get(i));
@@ -403,8 +403,7 @@ public class RecipeBook extends BaseSTBItem {
     public void onGUIClosed(HumanEntity player) {
         int slot = getInventorySlot();
         PlayerInventory inventory = player.getInventory();
-        RecipeBook book = BaseSTBItem.getItemFromItemStack(inventory.getItem(slot), RecipeBook.class);
-        if (book != null) {
+        if (BaseSTBItem.isSTBItem(inventory.getItem(slot), RecipeBook.class)) {
             // If the player moved his recipe book to a different slot, we don't want to
             // overwrite the old slot with the updated book
             inventory.setItem(slot, toItemStack(inventory.getItem(slot).getAmount()));
@@ -465,7 +464,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void fabricateFree(ItemStack result) {
-        BaseSTBItem stb = BaseSTBItem.getItemFromItemStack(result);
+        BaseSTBItem stb = BaseSTBItem.fromItemStack(result);
         if (stb instanceof Chargeable) {
             Chargeable c = (Chargeable) stb;
             c.setCharge(c.getMaxCharge());
@@ -481,12 +480,12 @@ public class RecipeBook extends BaseSTBItem {
         for (ItemStack stack : taken) {
             // the SCU level of any chargeable ingredient will contribute
             // to the charge on the resulting item
-            BaseSTBItem stb = BaseSTBItem.getItemFromItemStack(stack);
+            BaseSTBItem stb = BaseSTBItem.fromItemStack(stack);
             if (stb instanceof Chargeable) {
                 totalCharge += ((Chargeable) stb).getCharge();
             }
         }
-        BaseSTBItem stb = BaseSTBItem.getItemFromItemStack(result);
+        BaseSTBItem stb = BaseSTBItem.fromItemStack(result);
         if (stb instanceof Chargeable) {
             Chargeable c = (Chargeable) stb;
             c.setCharge(Math.min(totalCharge, c.getMaxCharge()));

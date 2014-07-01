@@ -25,7 +25,7 @@ public class RenameCommand extends AbstractCommand {
 
         Player player = (Player) sender;
         ItemStack stack = player.getItemInHand();
-        EnderLeash el = BaseSTBItem.getItemFromItemStack(stack, EnderLeash.class);
+        EnderLeash el = BaseSTBItem.fromItemStack(stack, EnderLeash.class);
 
         DHValidate.isTrue(el != null, "You are not holding an Ender Leash.");
         DHValidate.isTrue(el.getCapturedEntityType() != null, "You don't have a captured animal to rename.");

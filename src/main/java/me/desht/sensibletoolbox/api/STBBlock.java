@@ -104,9 +104,14 @@ public interface STBBlock extends STBItem {
      */
     public PersistableLocation getPersistableLocation();
 
-    void moveTo(Location oldLoc, Location newLoc);
-
-    void updateBlock(boolean redraw);
+    /**
+     * Mark this block as having been modified and thus in need of saving.  This
+     * should be called whenever a serializable field of a block is modified to
+     * ensure that the change is saved.
+     *
+     * @param redraw if true, also redraw the block in the world
+     */
+    public void updateBlock(boolean redraw);
 
     /**
      * Check if this STB block can be pushed or pulled by a piston, and if doing so would break it.

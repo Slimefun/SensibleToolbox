@@ -115,7 +115,7 @@ public class EnderTuner extends BaseSTBItem {
             @Override
             public boolean run(boolean newValue) {
                 ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
-                BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+                BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
                 if (item instanceof EnderTunable) {
                     ((EnderTunable) item).setGlobal(newValue);
                     gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
@@ -131,7 +131,7 @@ public class EnderTuner extends BaseSTBItem {
             @Override
             public boolean run(int newValue) {
                 ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
-                BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+                BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
                 if (item instanceof EnderTunable) {
                     ((EnderTunable) item).setEnderFrequency(newValue);
                     gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
@@ -160,7 +160,7 @@ public class EnderTuner extends BaseSTBItem {
                 ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(1);
                 return true;
             } else {
-                BaseSTBItem item = BaseSTBItem.getItemFromItemStack(onCursor);
+                BaseSTBItem item = BaseSTBItem.fromItemStack(onCursor);
                 if (item instanceof EnderTunable) {
                     ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());
                     ((ToggleButton) gui.getGadget(GLOBAL_BUTTON_SLOT)).setValue(((EnderTunable) item).isGlobal());
@@ -197,7 +197,7 @@ public class EnderTuner extends BaseSTBItem {
             }
             return 0;
         }
-        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(toInsert);
+        BaseSTBItem item = BaseSTBItem.fromItemStack(toInsert);
         if (item instanceof EnderTunable && gui.getItem(TUNED_ITEM_SLOT) == null) {
             gui.setItem(TUNED_ITEM_SLOT, toInsert);
             ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());

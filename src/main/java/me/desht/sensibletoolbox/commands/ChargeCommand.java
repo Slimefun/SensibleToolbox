@@ -31,7 +31,7 @@ public class ChargeCommand extends AbstractCommand {
         notFromConsole(sender);
 
         Player player = (Player) sender;
-        STBItem item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
+        STBItem item = BaseSTBItem.fromItemStack(player.getItemInHand());
         BaseSTBBlock stb = null;
         Chargeable c = null;
         if (item != null && item instanceof Chargeable) {

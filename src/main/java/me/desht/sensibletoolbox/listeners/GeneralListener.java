@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
@@ -38,7 +37,6 @@ import org.bukkit.material.Sign;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class GeneralListener extends STBBaseListener {
     private static final String LAST_PISTON_EXTEND = "STB_Last_Piston_Extend";
@@ -58,7 +56,7 @@ public class GeneralListener extends STBBaseListener {
 //            event.setCancelled(true);
 //        }
 
-        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+        BaseSTBItem item = BaseSTBItem.fromItemStack(event.getItem());
         if (item != null) {
             if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.interact." + item.getItemTypeID())) {
                 item.onInteractItem(event);
@@ -82,7 +80,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEntityEvent event) {
         ItemStack stack = event.getPlayer().getItemInHand();
-        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
         if (item != null) {
             item.onInteractEntity(event);
         }
@@ -91,7 +89,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         ItemStack stack = event.getPlayer().getItemInHand();
-        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
         if (item != null) {
             item.onItemConsume(event);
         }
@@ -101,7 +99,7 @@ public class GeneralListener extends STBBaseListener {
     public void onItemChanged(PlayerItemHeldEvent event) {
         if (event.getPlayer().isSneaking()) {
             ItemStack stack = event.getPlayer().getItemInHand();
-            BaseSTBItem item = BaseSTBItem.getItemFromItemStack(stack);
+            BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
             if (item != null) {
                 item.onItemHeld(event);
                 event.setCancelled(true);
@@ -123,7 +121,7 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        STBItem item = BaseSTBItem.getItemFromItemStack(event.getItemInHand());
+        STBItem item = BaseSTBItem.fromItemStack(event.getItemInHand());
         if (item instanceof STBBlock && PermissionUtils.isAllowedTo(event.getPlayer(), "stb.place." + item.getItemTypeID())) {
             ((BaseSTBBlock) item).onBlockPlace(event);
         } else if (item != null) {
@@ -145,7 +143,7 @@ public class GeneralListener extends STBBaseListener {
             EnergyNetManager.onCableRemoved(event.getBlock());
         } else {
             boolean isCancelled = event.isCancelled();
-            BaseSTBItem item = BaseSTBItem.getItemFromItemStack(event.getPlayer().getItemInHand());
+            BaseSTBItem item = BaseSTBItem.fromItemStack(event.getPlayer().getItemInHand());
             if (item != null) {
                 item.onBreakBlockWithItem(event);
             }
@@ -225,13 +223,13 @@ public class GeneralListener extends STBBaseListener {
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
 
-        STBItem result = BaseSTBItem.getItemFromItemStack(event.getRecipe().getResult());
+        STBItem result = BaseSTBItem.fromItemStack(event.getRecipe().getResult());
         double finalSCU = 0.0;
 
         // prevent STB items being used where the vanilla material is expected
         // (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)
         for (ItemStack ingredient : event.getInventory().getMatrix()) {
-            STBItem item = BaseSTBItem.getItemFromItemStack(ingredient);
+            STBItem item = BaseSTBItem.fromItemStack(ingredient);
             if (item != null) {
                 if (!item.isIngredientFor(event.getRecipe().getResult())) {
                     Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
@@ -287,7 +285,7 @@ public class GeneralListener extends STBBaseListener {
         if (event.getInventory().getType() == InventoryType.CRAFTING) {
             if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && STBUtil.isWearable(event.getCurrentItem().getType())) {
-                    STBItem item = BaseSTBItem.getItemFromItemStack(event.getCurrentItem());
+                    STBItem item = BaseSTBItem.fromItemStack(event.getCurrentItem());
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
                         int newSlot = findNewSlot(event);
@@ -298,7 +296,7 @@ public class GeneralListener extends STBBaseListener {
                     }
                 }
             } else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
-                STBItem item = BaseSTBItem.getItemFromItemStack(event.getCursor());
+                STBItem item = BaseSTBItem.fromItemStack(event.getCursor());
                 if (item != null && !item.isWearable()) {
                     event.setCancelled(true);
                 }
@@ -326,7 +324,7 @@ public class GeneralListener extends STBBaseListener {
             for (int slot : event.getRawSlots()) {
                 if (slot >= 5 && slot <= 8) {
                     // armour slots
-                    STBItem item = BaseSTBItem.getItemFromItemStack(event.getOldCursor());
+                    STBItem item = BaseSTBItem.fromItemStack(event.getOldCursor());
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
                     }
@@ -338,7 +336,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onArmourEquipCheck(BlockDispenseEvent event) {
         if (STBUtil.isWearable(event.getItem().getType())) {
-            STBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+            STBItem item = BaseSTBItem.fromItemStack(event.getItem());
             if (item != null && !item.isWearable()) {
                 event.setCancelled(true);
             }
@@ -383,7 +381,7 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler
     public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
-        STBItem item = BaseSTBItem.getItemFromItemStack(event.getItem());
+        STBItem item = BaseSTBItem.fromItemStack(event.getItem());
         if (item != null && !item.isEnchantable()) {
             event.setCancelled(true);
         }

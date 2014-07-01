@@ -364,7 +364,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         return b.getRelative(dx, pos.getUp(), dz);
     }
 
-    @Override
     public final void moveTo(Location oldLoc, Location newLoc) {
         for (RelativePosition pos : getBlockStructure()) {
             Block b1 = getMultiBlock(oldLoc, pos);
@@ -405,7 +404,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
 
     /**
      * Called when an STB block is actually broken (the event handler runs with MONITOR
-     * priority).
+     * priority).  You must not alter the outcome of this event!
      * <p/>
      * Subclasses may override this method, but should take care to call the superclass method.
      *

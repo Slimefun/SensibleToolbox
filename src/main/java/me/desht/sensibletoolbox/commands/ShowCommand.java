@@ -92,7 +92,7 @@ public class ShowCommand extends AbstractCommand {
             notFromConsole(sender);
             Player player = (Player) sender;
             // try to show either the held item or the targeted block
-            item = BaseSTBItem.getItemFromItemStack(player.getItemInHand());
+            item = BaseSTBItem.fromItemStack(player.getItemInHand());
             if (item == null) {
                 Block b = player.getTargetBlock(null, 10);
                 item = LocationManager.getManager().get(b.getLocation(), true);

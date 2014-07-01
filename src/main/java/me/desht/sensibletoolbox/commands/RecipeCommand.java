@@ -26,7 +26,7 @@ public class RecipeCommand extends AbstractCommand {
         RecipeBook book = null;
         int slot;
         for (slot = 0; slot < 35; slot++) {
-            book = BaseSTBItem.getItemFromItemStack(inv.getItem(slot), RecipeBook.class);
+            book = BaseSTBItem.fromItemStack(inv.getItem(slot), RecipeBook.class);
             if (book != null) {
                 break;
             }

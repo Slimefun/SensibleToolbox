@@ -18,7 +18,7 @@ public class SensibleToolbox {
      * @return the SensibleToolbox object
      */
     public static STBItem getItemFromItemStack(ItemStack stack) {
-        return BaseSTBItem.getItemFromItemStack(stack);
+        return BaseSTBItem.fromItemStack(stack);
     }
 
     /**

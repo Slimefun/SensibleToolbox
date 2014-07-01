@@ -498,14 +498,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             }
         } else if (isUpgradeSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
-                if (!isValidUpgrade(player, BaseSTBItem.getItemFromItemStack(onCursor))) {
+                if (!isValidUpgrade(player, BaseSTBItem.fromItemStack(onCursor))) {
                     return false;
                 }
             }
             needToProcessUpgrades = true;
         } else if (slot == getEnergyCellSlot()) {
             if (onCursor.getType() != Material.AIR) {
-                EnergyCell cell = BaseSTBItem.getItemFromItemStack(onCursor, EnergyCell.class);
+                EnergyCell cell = BaseSTBItem.fromItemStack(onCursor, EnergyCell.class);
                 if (cell != null) {
                     installEnergyCell(cell);
                 } else {
@@ -520,7 +520,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
-        BaseSTBItem item = BaseSTBItem.getItemFromItemStack(toInsert);
+        BaseSTBItem item = BaseSTBItem.fromItemStack(toInsert);
 
         if (getUpgradeSlots().length > 0 && isValidUpgrade(player, item)) {
             int upgradeSlot = findAvailableUpgradeSlot(toInsert);
@@ -604,7 +604,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         for (int slot : getUpgradeSlots()) {
             ItemStack stack = getInventoryItem(slot);
             if (stack != null) {
-                MachineUpgrade upgrade = BaseSTBItem.getItemFromItemStack(stack, MachineUpgrade.class);
+                MachineUpgrade upgrade = BaseSTBItem.fromItemStack(stack, MachineUpgrade.class);
                 if (upgrade == null) {
                     setInventoryItem(slot, null);
                     if (getLocation() != null) {

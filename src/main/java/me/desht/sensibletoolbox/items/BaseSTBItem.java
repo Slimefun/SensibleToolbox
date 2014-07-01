@@ -224,7 +224,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
      * @param stack the item stack
      * @return the STB item, or null if the item stack is not an STB item
      */
-    public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
+    public static BaseSTBItem fromItemStack(ItemStack stack) {
         if (!isSTBItem(stack)) {
             return null;
         }
@@ -245,8 +245,8 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
      * @param <T>   parametrised type, a subclass of BaseSTBItem
      * @return the STB item, or null if the item stack is not an STB item of the desired class
      */
-    public static <T extends BaseSTBItem> T getItemFromItemStack(ItemStack stack, Class<T> type) {
-        STBItem item = getItemFromItemStack(stack);
+    public static <T extends BaseSTBItem> T fromItemStack(ItemStack stack, Class<T> type) {
+        STBItem item = fromItemStack(stack);
         if (item != null && type.isAssignableFrom(item.getClass())) {
             return type.cast(item);
         } else {
@@ -374,7 +374,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 
     @Override
     public final boolean isIngredientFor(ItemStack result) {
-        STBItem item = BaseSTBItem.getItemFromItemStack(result);
+        STBItem item = BaseSTBItem.fromItemStack(result);
         if (item == null) {
             return false;
         }

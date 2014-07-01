@@ -7,7 +7,6 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.gui.AccessControlGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.RedstoneBehaviourGadget;
@@ -418,7 +417,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-        if (onCursor.getType() == Material.AIR || BaseSTBItem.getItemFromItemStack(onCursor, ItemRouterModule.class) != null) {
+        if (onCursor.getType() == Material.AIR || BaseSTBItem.isSTBItem(onCursor, ItemRouterModule.class)) {
             needToProcessModules = true;
             return true;
         } else {
@@ -433,8 +432,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
-        STBItem item = BaseSTBItem.getItemFromItemStack(toInsert, ItemRouterModule.class);
-        if (item == null) {
+        if (!BaseSTBItem.isSTBItem(toInsert, ItemRouterModule.class)) {
             return 0;
         }
         int nInserted = 0;
@@ -488,7 +486,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             }
         }
         for (Map.Entry<ItemStack, Integer> entry : mods.entrySet()) {
-            ItemRouterModule mod = BaseSTBItem.getItemFromItemStack(entry.getKey(), ItemRouterModule.class);
+            ItemRouterModule mod = BaseSTBItem.fromItemStack(entry.getKey(), ItemRouterModule.class);
             mod.setAmount(entry.getValue());
             insertModule(mod);
         }

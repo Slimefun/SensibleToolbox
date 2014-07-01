@@ -130,7 +130,7 @@ public class PaintCan extends BaseSTBBlock {
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            PaintBrush brush = BaseSTBItem.getItemFromItemStack(stack, PaintBrush.class);
+            PaintBrush brush = BaseSTBItem.fromItemStack(stack, PaintBrush.class);
             if (brush == null) {
                 // refilling a paintbrush/roller from the can is handled in the PaintBrush object
                 getGUI().show(player);

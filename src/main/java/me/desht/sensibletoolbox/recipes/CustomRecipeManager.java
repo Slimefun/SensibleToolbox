@@ -77,7 +77,7 @@ public class CustomRecipeManager {
     public static boolean validateCustomSmelt(ItemStack stack) {
         Class<? extends STBItem> klass = BaseSTBItem.getCustomSmelt(stack);
         if (klass != null) {
-            STBItem item = BaseSTBItem.getItemFromItemStack(stack);
+            STBItem item = BaseSTBItem.fromItemStack(stack);
             if (!klass.isInstance(item)) {
                 Debugger.getInstance().debug("stopped smelting of vanilla item: " + stack);
                 return false;
