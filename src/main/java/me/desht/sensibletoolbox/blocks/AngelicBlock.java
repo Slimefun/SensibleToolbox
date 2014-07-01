@@ -97,10 +97,7 @@ public class AngelicBlock extends BaseSTBBlock {
         Player p = event.getPlayer();
         Block b = event.getBlock();
         b.setType(Material.AIR);
-        HashMap<Integer, ItemStack> excess = p.getInventory().addItem(this.toItemStack());
-        for (ItemStack stack : excess.values()) {
-            p.getWorld().dropItemNaturally(p.getLocation(), stack);
-        }
+        STBUtil.giveItems(p, this.toItemStack());
         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
         LocationManager.getManager().unregisterLocation(b.getLocation(), this);
         event.setCancelled(true);
