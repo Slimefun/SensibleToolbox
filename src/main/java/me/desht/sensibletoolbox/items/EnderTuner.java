@@ -27,7 +27,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class EnderTuner extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.ARROW);
+    private static final MaterialData md = new MaterialData(Material.GOLD_NUGGET);
     private static final ItemStack GLOBAL_TEXTURE = InventoryGUI.makeTexture(
             STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.BLUE), "Global", "Common inventory for", "all players");
     private static final ItemStack PERSONAL_TEXTURE = InventoryGUI.makeTexture(
