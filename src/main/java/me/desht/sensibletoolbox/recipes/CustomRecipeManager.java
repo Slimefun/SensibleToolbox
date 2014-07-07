@@ -53,7 +53,8 @@ public class CustomRecipeManager {
     }
 
     public boolean hasRecipe(BaseSTBMachine machine, ItemStack item) {
-        return map.containsKey(machine.getItemTypeID()) && map.get(machine.getItemTypeID()).hasRecipe(item);
+        CustomRecipeCollection c = map.get(machine.getItemTypeID());
+        return c != null && c.hasRecipe(item);
     }
 
     public Set<ItemStack> getAllResults() {
