@@ -31,6 +31,10 @@ items_enabled:
   droppermodule: true
   ejectorupgrade: true
   elevator: true
+  energizedirondust: true
+  energizedgolddust: true
+  energizedironingot: true
+  energizedgoldingot: true
   enderbag: true
   enderbox: true
   enderleash: true
@@ -42,6 +46,7 @@ items_enabled:
   golddust: true
   heatengine: true
   hyperstorageunit: true
+  infernaldust: true
   ironcombinehoe: true
   irondust: true
   itemrouter: true
@@ -70,6 +75,7 @@ items_enabled:
   stackmodule: true
   tapemeasure: true
   tenkenergycell: true
+  toughmachineframe: true
   trashcan: true
   vacuummodule: true
   wateringcan: true

@@ -267,20 +267,6 @@ public class GeneralListener extends STBBaseListener {
     }
 
     @EventHandler
-    public void onBurn(FurnaceBurnEvent event) {
-        // for those STB items which can be smelted, ensure the vanilla item using
-        // that material can't also be smelted (a furnace recipe will have been added previously)
-        Block b = event.getBlock();
-        Furnace f = (Furnace) b.getState();
-        ItemStack stack = f.getInventory().getSmelting();
-        if (!CustomRecipeManager.validateCustomSmelt(stack)) {
-            b.getLocation().getWorld().dropItemNaturally(b.getLocation(), stack);
-            f.getInventory().setSmelting(null);
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onArmourEquipCheck(InventoryClickEvent event) {
         if (event.getInventory().getType() == InventoryType.CRAFTING) {
             if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {

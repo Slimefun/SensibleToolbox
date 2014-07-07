@@ -30,6 +30,7 @@ import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
+import me.desht.sensibletoolbox.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -43,7 +44,6 @@ import org.mcstats.MetricsLite;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
@@ -64,6 +64,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
+    }
+
+    @Override
+    public void onLoad() {
+        RecipeUtil.findVanillaFurnaceMaterials();
     }
 
     @Override
@@ -125,7 +130,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         Bukkit.getScheduler().runTask(this, new Runnable() {
             @Override
             public void run() {
-                BaseSTBItem.setupRecipes();
+                RecipeUtil.setupRecipes();
                 RecipeBook.buildRecipes();
             }
         });
@@ -218,6 +223,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private void registerEventListeners() {
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new GeneralListener(this), this);
+        pm.registerEvents(new FurnaceListener(this), this);
+        pm.registerEvents(new MobListener(this), this);
         pm.registerEvents(new WorldListener(this), this);
         pm.registerEvents(new TrashCanListener(this), this);
         pm.registerEvents(new ElevatorListener(this), this);

@@ -2,12 +2,15 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.GoldDust;
-import me.desht.sensibletoolbox.items.IronDust;
+import me.desht.sensibletoolbox.api.STBItem;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.items.components.GoldDust;
+import me.desht.sensibletoolbox.items.components.IronDust;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,18 +41,26 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
+        // add a corresponding smelter recipe for every known vanilla furnace recipe
         Iterator<Recipe> iter = Bukkit.recipeIterator();
         while (iter.hasNext()) {
             Recipe r = iter.next();
             if (r instanceof FurnaceRecipe) {
                 FurnaceRecipe fr = (FurnaceRecipe) r;
-                crm.addCustomRecipe(new CustomRecipe(this, fr.getInput(), fr.getResult(), getProcessingTime(fr.getInput())));
+                if (RecipeUtil.isVanillaSmelt(fr.getInput().getType())) {
+                    crm.addCustomRecipe(new CustomRecipe(this, fr.getInput(), fr.getResult(), getProcessingTime(fr.getInput())));
+                }
             }
         }
 
-        // custom STB items
-        crm.addCustomRecipe(new CustomRecipe(this, new GoldDust().toItemStack(), new ItemStack(Material.GOLD_INGOT), 120));
-        crm.addCustomRecipe(new CustomRecipe(this, new IronDust().toItemStack(), new ItemStack(Material.IRON_INGOT), 120));
+        // add a processing recipe for any STB item which reports itself as smeltable
+        for (String key : BaseSTBItem.getItemIds()) {
+            STBItem item = getItemById(key);
+            if (item.getSmeltingResult() != null) {
+                ItemStack stack = item.toItemStack();
+                crm.addCustomRecipe(new CustomRecipe(this, stack, item.getSmeltingResult(), getProcessingTime(stack)));
+            }
+        }
     }
 
     @Override
@@ -100,7 +111,7 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     public boolean acceptsItemType(ItemStack stack) {
-        return CustomRecipeManager.getManager().hasRecipe(this, stack) && CustomRecipeManager.validateCustomSmelt(stack);
+        return CustomRecipeManager.getManager().hasRecipe(this, stack);// && CustomRecipeManager.validateCustomSmelt(stack);
     }
 
     @Override

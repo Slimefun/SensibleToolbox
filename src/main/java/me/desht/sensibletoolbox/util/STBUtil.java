@@ -330,6 +330,32 @@ public class STBUtil {
     }
 
     /**
+     * Check if the given material is a burnable fuel.
+     *
+     * @param mat the material to check
+     * @return true if the material can be used as furnace fuel; false otherwise
+     */
+    public static boolean isFuel(Material mat) {
+        switch (mat) {
+            case WOOD:
+            case WOOD_AXE:
+            case WOOD_HOE:
+            case WOOD_PICKAXE:
+            case WOOD_SPADE:
+            case WOOD_SWORD:
+            case LOG:
+            case LOG_2:
+            case STICK:
+            case SAPLING:
+            case BLAZE_ROD:
+            case LAVA_BUCKET:
+            case COAL:
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Create a skull with the given player skin
      *
      * @param b      block in which to create the skull

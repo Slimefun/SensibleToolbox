@@ -12,16 +12,13 @@ import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.*;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.items.components.CircuitBoard;
-import me.desht.sensibletoolbox.items.components.MachineFrame;
-import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.items.components.*;
 import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.items.itemroutermodules.*;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
-import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
@@ -41,7 +38,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -62,9 +58,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
     public static final String SUFFIX_SEPARATOR = " \uff1a ";
 
     private static final Map<String, Class<? extends BaseSTBItem>> id2class = new HashMap<String, Class<? extends BaseSTBItem>>();
-    private static final Map<Material, Class<? extends STBItem>> customSmelts = new HashMap<Material, Class<? extends STBItem>>();
-    private static final Map<String, Class<? extends STBItem>> customIngredients = new HashMap<String, Class<? extends STBItem>>();
+    private static final Map<String, Class<? extends STBItem>> craftingRestriction = new HashMap<String, Class<? extends STBItem>>();
     private static final Map<String, String> id2plugin = new HashMap<String, String>();
+
     public static final int MAX_ITEM_ID_LENGTH = 32;
 
     private final String typeID;
@@ -133,6 +129,12 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new EnderTuner(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new EnderBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BagOfHolding(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new InfernalDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnergizedIronDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnergizedGoldDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnergizedIronIngot(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new EnergizedGoldIngot(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new ToughMachineFrame(), plugin, CONFIG_NODE, PERMISSION_NODE);
         if (plugin.isProtocolLibEnabled()) {
             registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
         }
@@ -176,40 +178,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         }
     }
 
-    public static void setupRecipes() {
-        for (String key : id2class.keySet()) {
-            STBItem item = getItemById(key);
-            Recipe r = item.getRecipe();
-            if (r != null) {
-                Bukkit.addRecipe(r);
-            }
-            for (Recipe r2 : item.getExtraRecipes()) {
-                Bukkit.addRecipe(r2);
-            }
-            ItemStack stack = item.getSmeltingResult();
-            if (stack != null) {
-                Bukkit.addRecipe(new FurnaceRecipe(stack, item.getMaterial()));
-                customSmelts.put(item.getMaterial(), item.getClass());
-            }
-        }
-        for (String key : id2class.keySet()) {
-            STBItem item = getItemById(key);
-            if (item instanceof BaseSTBMachine) {
-                ((BaseSTBMachine) item).addCustomRecipes(CustomRecipeManager.getManager());
-            }
-        }
-    }
-
-    /**
-     * Given an item (whose material has previously been registered as a Bukkit FurnaceRecipe ingredient),
-     * return the STB item class which this item must be a type of.
-     *
-     * @param stack the item stack to check
-     * @return the required STB class, or null if no custom smelting restriction has been registered
-     */
-    public static Class<? extends STBItem> getCustomSmelt(ItemStack stack) {
-        return customSmelts.get(stack.getType());
-    }
 
     /**
      * Get a set of all known STB item ID's.
@@ -371,7 +339,20 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
 
     @Override
     public final Class<? extends STBItem> getCraftingRestriction(Material mat) {
-        return customIngredients.get(getItemTypeID() + ":" + mat);
+        return craftingRestriction.get(getItemTypeID() + ":" + mat);
+    }
+
+    /**
+     * Register one or more STB items as custom ingredients in the crafting recipe for
+     * this item.  This will ensure that only these items, and not the vanilla item which
+     * uses the same material, will work in the crafting recipe.
+     *
+     * @param items the STB items to register as custom ingredients
+     */
+    protected final void registerCustomIngredients(STBItem... items) {
+        for (STBItem item : items) {
+            craftingRestriction.put(getItemTypeID() + ":" + item.getMaterial(), item.getClass());
+        }
     }
 
     @Override
@@ -402,19 +383,6 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
     @Override
     public Recipe[] getExtraRecipes() {
         return new Recipe[0];
-    }
-
-    /**
-     * Register one or more STB items as custom ingredients in the crafting recipe for
-     * this item.  This will ensure that only these items, and not the vanilla item which
-     * uses the same material, will work in the crafting recipe.
-     *
-     * @param items the STB items to register as custom ingredients
-     */
-    protected final void registerCustomIngredients(STBItem... items) {
-        for (STBItem item : items) {
-            customIngredients.put(getItemTypeID() + ":" + item.getMaterial(), item.getClass());
-        }
     }
 
     @Override

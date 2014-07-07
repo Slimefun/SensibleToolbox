@@ -15,6 +15,8 @@ import me.desht.sensibletoolbox.gui.ClickableGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.recipes.RecipeUtil;
+import me.desht.sensibletoolbox.recipes.STBFurnaceRecipe;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.BlockProtection;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -340,9 +342,8 @@ public class RecipeBook extends BaseSTBItem {
         gui.getInventory().setItem(TYPE_SLOT, SHAPELESS_ICON);
     }
 
-    private void showFurnaceRecipe(FurnaceRecipe recipe) {
-        ItemStack ingredient = getSmeltingIngredient(recipe.getInput());
-        gui.getInventory().setItem(RECIPE_SLOTS[4], ingredient); // 4 is the middle of the 9 item slots
+    private void showFurnaceRecipe(STBFurnaceRecipe recipe) {
+        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
         gui.getInventory().setItem(TYPE_SLOT, FURNACE_ICON);
     }
 
@@ -378,25 +379,6 @@ public class RecipeBook extends BaseSTBItem {
 //        } else {
 //            return stack;
 //        }
-    }
-
-    private ItemStack getSmeltingIngredient(ItemStack stack) {
-        Class<? extends STBItem> c = BaseSTBItem.getCustomSmelt(stack);
-        if (c != null) {
-            try {
-                STBItem item2 = c.getDeclaredConstructor().newInstance();
-                return item2.toItemStack();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (stack.getDurability() == 32767) {
-            ItemStack stack2 = stack.clone();
-            stack2.setDurability((short) 0);
-            return stack2;
-        } else {
-            return stack;
-        }
     }
 
     @Override
@@ -525,12 +507,21 @@ public class RecipeBook extends BaseSTBItem {
         // the isSimilar() checks are necessary to ensure we don't pick up recipes for items
         // of the same material but with different item meta information...
         for (Recipe recipe : Bukkit.getRecipesFor(result)) {
-            if (recipe.getResult().isSimilar(result)) {
+            if (recipe.getResult().isSimilar(result) && !(recipe instanceof FurnaceRecipe)) {
                 recipes.add(recipe);
             }
         }
+
+        // Furnace recipes need special treatment, since there could be multiple
+        // recipes per material (STB item ingredients), but Bukkit FurnaceRecipe
+        // doesn't support that concept.
+        for (ItemStack stack : RecipeUtil.getSmeltingIngredientsFor(result)) {
+            recipes.add(new STBFurnaceRecipe(result, stack));
+        }
+
+        // Custom STB recipes: items which are created in some machine added by STB
         for (CustomRecipe customRecipe : CustomRecipeManager.getManager().getRecipesFor(result)) {
-            if (customRecipe.getResult().isSimilar(result) && CustomRecipeManager.validateCustomSmelt(customRecipe.getIngredient())) {
+            if (customRecipe.getResult().isSimilar(result)) {
                 recipes.add(customRecipe);
             }
         }
@@ -556,8 +547,8 @@ public class RecipeBook extends BaseSTBItem {
         viewingRecipe = recipes.get(recipeNumber);
 
         gui.getInventory().setItem(RESULT_SLOT, viewingRecipe.getResult());
-        if (viewingRecipe instanceof FurnaceRecipe) {
-            showFurnaceRecipe((FurnaceRecipe) viewingRecipe);
+        if (viewingRecipe instanceof STBFurnaceRecipe) {
+            showFurnaceRecipe((STBFurnaceRecipe) viewingRecipe);
         } else if (viewingRecipe instanceof ShapedRecipe) {
             showShapedRecipe((ShapedRecipe) viewingRecipe);
         } else if (viewingRecipe instanceof ShapelessRecipe) {
