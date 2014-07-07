@@ -160,6 +160,7 @@
                     <doctitle>Sensible Toolbox, ${project.version}</doctitle>
                     <links>
                         <link>http://static.springsource.org/spring/docs/3.0.x/javadoc-api/</link>
+                        <link>http://jd.bukkit.org/dev/apidocs/</link>
                     </links>
                 </configuration>
             </plugin>
