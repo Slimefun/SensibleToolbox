@@ -40,7 +40,9 @@ public class Masher extends AbstractIOMachine {
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.DIAMOND_ORE), new ItemStack(Material.DIAMOND, 2), 160));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.IRON_ORE), new IronDust().toItemStack(2), 120));
+        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.IRON_INGOT), new IronDust().toItemStack(), 120));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
+        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_INGOT), new GoldDust().toItemStack(), 80));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.LAPIS_ORE), lapis, 80));
