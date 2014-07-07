@@ -6,7 +6,7 @@ import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.PopupMessage;
@@ -137,7 +137,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
         TenKEnergyCell cell = new TenKEnergyCell();
         cell.setCharge(0.0);
-        SimpleCircuit sc = new SimpleCircuit();
+        IntegratedCircuit sc = new IntegratedCircuit();
         registerCustomIngredients(cell, sc);
         recipe.shape(" DP", "CED", "I  ");
         recipe.setIngredient('D', Material.DIAMOND);

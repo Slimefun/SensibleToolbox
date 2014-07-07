@@ -135,6 +135,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new EnergizedIronIngot(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new EnergizedGoldIngot(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new ToughMachineFrame(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new QuartzDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new SiliconWafer(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new IntegratedCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         if (plugin.isProtocolLibEnabled()) {
             registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
         }

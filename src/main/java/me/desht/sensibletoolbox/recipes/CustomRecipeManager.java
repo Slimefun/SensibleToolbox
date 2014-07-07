@@ -65,24 +65,4 @@ public class CustomRecipeManager {
         stack2.setAmount(1);
         return stack2;
     }
-
-//    /**
-//     * Validate that the given item stack is actually smeltable via a custom STB smelting recipe.
-//     * E.g. this will prevent the smelting of plain gunpowder as if it were Iron Dust, even though
-//     * Iron Dust uses gunpowder for its material representation.
-//     *
-//     * @param stack the stack to check
-//     * @return true if this item is smeltable
-//     */
-//    public static boolean validateCustomSmelt(ItemStack stack) {
-//        Class<? extends STBItem> klass = BaseSTBItem.getCustomSmelt(stack);
-//        if (klass != null) {
-//            STBItem item = BaseSTBItem.fromItemStack(stack);
-//            if (!klass.isInstance(item)) {
-//                Debugger.getInstance().debug("stopped smelting of vanilla item: " + stack);
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 }

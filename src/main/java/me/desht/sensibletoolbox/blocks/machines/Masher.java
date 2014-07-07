@@ -2,10 +2,7 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.components.GoldDust;
-import me.desht.sensibletoolbox.items.components.IronDust;
-import me.desht.sensibletoolbox.items.components.MachineFrame;
-import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.items.components.*;
 import me.desht.sensibletoolbox.recipes.CustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -33,6 +30,7 @@ public class Masher extends AbstractIOMachine {
         ItemStack whiteDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.WHITE).toItemStack(5);
         ItemStack lapis = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE).toItemStack(8);
         ItemStack greenDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.GREEN).toItemStack(1);
+        QuartzDust qd = new QuartzDust();
 
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
@@ -48,6 +46,7 @@ public class Masher extends AbstractIOMachine {
         crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.LAPIS_ORE), lapis, 80));
         crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES), greenDye, 40));
         crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES_2), greenDye, 40));
+        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.QUARTZ), qd.toItemStack(), 120));
     }
 
     @Override

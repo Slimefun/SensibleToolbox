@@ -47,6 +47,7 @@ items_enabled:
   heatengine: true
   hyperstorageunit: true
   infernaldust: true
+  integratedcircuit: true
   ironcombinehoe: true
   irondust: true
   itemrouter: true
@@ -60,12 +61,14 @@ items_enabled:
   paintroller: true
   pullermodule: true
   pump: true
+  quartzdust: true
   receivermodule: true
   recipebook: true
   redstoneclock: true
   regulatorupgrade: true
   sawmill: true
   sendermodule: true
+  siliconwafer: true
   simplecircuit: true
   smelter: true
   sortermodule: true

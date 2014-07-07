@@ -8,7 +8,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class SimpleCircuit extends BaseSTBItem {
-    private static MaterialData md = new MaterialData(Material.REDSTONE_COMPARATOR);
+    private static MaterialData md = new MaterialData(Material.DIODE);
 
     public SimpleCircuit() {
     }

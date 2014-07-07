@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ItemNames;
-import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -39,15 +39,15 @@ public class HyperStorageUnit extends BigStorageUnit {
 
     @Override
     public Recipe getRecipe() {
-        SimpleCircuit sc = new SimpleCircuit();
+        IntegratedCircuit ic = new IntegratedCircuit();
         BigStorageUnit bsu = new BigStorageUnit();
-        registerCustomIngredients(sc, bsu);
+        registerCustomIngredients(ic, bsu);
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-        recipe.shape("OEO", "SBS", "RGR");
+        recipe.shape("OIO", "EBE", "RGR");
         recipe.setIngredient('O', Material.OBSIDIAN);
-        recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('B', bsu.getMaterialData());
+        recipe.setIngredient('I', ic.getMaterialData());
         recipe.setIngredient('E', Material.ENDER_PEARL);
+        recipe.setIngredient('B', bsu.getMaterialData());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;

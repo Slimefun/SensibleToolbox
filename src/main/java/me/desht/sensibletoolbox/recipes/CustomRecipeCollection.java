@@ -10,40 +10,48 @@ import java.util.Map;
  * Represents the custom recipes known by a specific type of machine.
  */
 public class CustomRecipeCollection {
-    private final Map<ItemStack, ProcessingResult> recipes = new HashMap<ItemStack, ProcessingResult>();
+    private final Map<String, ProcessingResult> recipes = new HashMap<String, ProcessingResult>();
 
     public void addCustomRecipe(ItemStack input, ItemStack result, int processingTime) {
-        recipes.put(CustomRecipeManager.makeSingle(input), new ProcessingResult(result, processingTime));
+        recipes.put(makeRecipeKey(input), new ProcessingResult(result, processingTime));
         Debugger.getInstance().debug("added custom recipe: " + input + " -> " + get(input).toString());
     }
 
     public void addCustomRecipe(CustomRecipe recipe) {
-        recipes.put(CustomRecipeManager.makeSingle(recipe.getIngredient()), new ProcessingResult(recipe.getResult(), recipe.getProcessingTime()));
+        recipes.put(makeRecipeKey(recipe.getIngredient()), new ProcessingResult(recipe.getResult(), recipe.getProcessingTime()));
         Debugger.getInstance().debug("added custom recipe: " + recipe.getIngredient().getType() + ":" + recipe.getIngredient().getDurability()
                 + " -> " + recipe.getResult() + " via " + recipe.getProcessorID());
     }
 
     public ProcessingResult get(ItemStack input) {
-        ItemStack single = CustomRecipeManager.makeSingle(input);
-        ProcessingResult res = recipes.get(single);
-        if (res == null && single.getDurability() != -1) {
+        ProcessingResult res = recipes.get(makeRecipeKey(input));
+        if (res == null && input.getDurability() != -1) {
             // perhaps there's a recipe with wildcarded data?
-            single.setDurability((short) 32767);
-            res = recipes.get(single);
+            ItemStack stack2 = input.clone();
+            stack2.setDurability((short) 32767);
+            res = recipes.get(makeRecipeKey(stack2));
         }
         return res;
     }
 
     public boolean hasRecipe(ItemStack input) {
-        ItemStack single = CustomRecipeManager.makeSingle(input);
-        if (recipes.containsKey(single)) {
+        String key = makeRecipeKey(input);
+        if (recipes.containsKey(key)) {
             return true;
-        } else if (single.getDurability() != -1) {
-            single.setDurability((short) 32767);
-            return recipes.containsKey(single);
+        } else if (input.getDurability() != -1) {
+            ItemStack stack2 = input.clone();
+            stack2.setDurability((short) 32767);
+            return recipes.containsKey(makeRecipeKey(stack2));
         } else {
             return false;
         }
     }
 
+    private String makeRecipeKey(ItemStack item) {
+        String res = item.getType() + ":" + item.getDurability();
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            res += ":" + item.getItemMeta().getDisplayName();
+        }
+        return res;
+    }
 }
