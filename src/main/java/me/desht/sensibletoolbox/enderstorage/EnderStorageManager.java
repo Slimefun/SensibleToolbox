@@ -111,7 +111,7 @@ public class EnderStorageManager implements Listener {
         }
     }
 
-    private void mkdir(File dir) {
+    void mkdir(File dir) {
         DHValidate.isTrue(dir.mkdir(), "can't create directory: " + dir);
     }
 

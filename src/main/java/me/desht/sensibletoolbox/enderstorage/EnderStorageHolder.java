@@ -48,10 +48,14 @@ public abstract class EnderStorageHolder implements InventoryHolder {
             @Override
             public void run() {
                 try {
+                    File dir = saveFile.getParentFile();
+                    if (!dir.exists()) {
+                        getManager().mkdir(dir);
+                    }
                     Files.write(encoded, saveFile, Charset.forName("UTF-8"));
                     Debugger.getInstance().debug("saved " + this + " to " + saveFile);
                 } catch (IOException e) {
-                    LogUtils.severe("Can't save ender storage " + this);
+                    LogUtils.severe("Can't save ender storage " + this + ": " + e.getMessage());
                 }
             }
         });

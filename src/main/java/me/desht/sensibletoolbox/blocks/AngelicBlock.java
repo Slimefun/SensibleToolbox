@@ -23,8 +23,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-
 public class AngelicBlock extends BaseSTBBlock {
     private static final MaterialData md = new MaterialData(Material.OBSIDIAN);
 
@@ -82,6 +80,7 @@ public class AngelicBlock extends BaseSTBBlock {
                 b.setType(getMaterial());
                 placeBlock(b, event.getPlayer(), STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
             }
+            event.setCancelled(true);
         }
     }
 

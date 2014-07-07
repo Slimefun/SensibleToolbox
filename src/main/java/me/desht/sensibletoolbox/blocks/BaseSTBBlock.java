@@ -298,7 +298,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     @Override
-    public final  Location getRelativeLocation(BlockFace face) {
+    public final Location getRelativeLocation(BlockFace face) {
         return getLocation().add(face.getModX(), face.getModY(), face.getModZ());
     }
 
