@@ -144,7 +144,7 @@ public class Masher extends AbstractIOMachine {
     }
 
     @Override
-    protected void playStartupSound() {
+    protected void onMachineStartup() {
         getLocation().getWorld().playSound(getLocation(), Sound.HORSE_SKELETON_IDLE, 1.0f, 0.5f);
     }
 

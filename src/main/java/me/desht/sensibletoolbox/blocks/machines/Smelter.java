@@ -153,14 +153,14 @@ public class Smelter extends AbstractIOMachine {
     }
 
     @Override
-    protected void playStartupSound() {
+    protected void onMachineStartup() {
         getLocation().getWorld().playSound(getLocation(), Sound.FIRE, 1.0f, 1.0f);
     }
 
     @Override
     protected void playActiveParticleEffect() {
         if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-            ParticleEffect.FLAME.play(getLocation().add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 0.001f, 7);
+            ParticleEffect.FLAME.play(getLocation().add(0.5, 0.5, 0.5), 0.4f, 0.4f, 0.4f, 0.001f, 10);
         }
     }
 }

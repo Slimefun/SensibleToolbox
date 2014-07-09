@@ -79,7 +79,7 @@ public class HeatEngine extends Generator {
     @Override
     protected void playActiveParticleEffect() {
         if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-            ParticleEffect.FLAME.play(getLocation().add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 0.001f, 15);
+            ParticleEffect.RED_DUST.play(getLocation().add(0.5, 1.0, 0.5), 0.1f, 0.8f, 0.1f, 0.01f, 20);
         }
     }
 
@@ -220,6 +220,4 @@ public class HeatEngine extends Generator {
         toProcess.setItemMeta(meta);
         return toProcess;
     }
-
-
 }

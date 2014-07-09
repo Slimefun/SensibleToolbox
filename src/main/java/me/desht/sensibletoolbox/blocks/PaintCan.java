@@ -286,7 +286,7 @@ public class PaintCan extends BaseSTBBlock {
         res[0] = getItemName();
         res[1] = cc.toString() + getColour();
         res[2] = getPaintLevel() + "/" + getMaxPaintLevel();
-        res[3] = cc + StringUtils.repeat("\u25fc", (getPaintLevel() * 13) / getMaxPaintLevel());
+        res[3] = cc + StringUtils.repeat("◼", (getPaintLevel() * 13) / getMaxPaintLevel());
         return res;
     }
 

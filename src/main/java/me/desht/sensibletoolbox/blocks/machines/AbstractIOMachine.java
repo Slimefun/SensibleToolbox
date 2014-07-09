@@ -45,7 +45,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
                 if (getInventoryItem(slot) != null) {
                     pullItemIntoProcessing(slot);
                     if (SensibleToolboxPlugin.getInstance().getConfig().getBoolean("noisy_machines")) {
-                        playStartupSound();
+                        onMachineStartup();
                     }
                     break;
                 }

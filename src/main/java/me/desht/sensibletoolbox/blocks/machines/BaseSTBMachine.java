@@ -16,6 +16,7 @@ import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,6 +50,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
     private final Map<BlockFace, EnergyNet> energyNets = new HashMap<BlockFace, EnergyNet>();
     private int regulatorAmount;
+    private String chargeLabel;
+    private int charge8; // a 0..7 value representing charge boundaries
 
     protected BaseSTBMachine() {
         super();
@@ -63,6 +66,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     public BaseSTBMachine(ConfigurationSection conf) {
         super(conf);
         charge = conf.getInt("charge");
+        charge8 = (int) ((charge * 8) / getMaxCharge());
         chargeDirection = ChargeDirection.valueOf(conf.getString("chargeDirection", "MACHINE"));
         jammed = false;
         if (conf.contains("energyCell") && getEnergyCellSlot() >= 0) {
@@ -124,7 +128,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     public abstract int getUpgradeLabelSlot();
 
-    protected abstract void playActiveParticleEffect();
+    protected void playActiveParticleEffect() {
+    }
 
     public boolean hasShapedRecipes() {
         return false;
@@ -195,7 +200,45 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         if (getGUI() != null && chargeMeterId >= 0) {
             getGUI().getMonitor(chargeMeterId).repaintNeeded();
         }
+
+        // does the charge indicator label need updating?
+        int c8 = (int) ((getCharge() * 8) / getMaxCharge());
+        if (c8 != charge8) {
+            charge8 = c8;
+            buildChargeLabel();
+            updateAttachedLabelSigns();
+        }
         updateBlock(false);
+    }
+
+    private String getChargeLabel() {
+        if (chargeLabel == null) {
+            buildChargeLabel();
+        }
+        return chargeLabel;
+    }
+
+    @Override
+    protected String[] getSignLabel() {
+        String[] label = super.getSignLabel();
+        if (label[3].isEmpty()) {
+            label[3] = getChargeLabel();
+        }
+        return label;
+    }
+
+    private void buildChargeLabel() {
+        StringBuilder s = new StringBuilder("⌁").append(ChatColor.DARK_RED.toString()).append("◼");
+        for (int i = 0; i < charge8; i++) {
+            s.append("◼");
+            if (i == 0) {
+                s.append(ChatColor.GOLD.toString());
+            } else if (i == 2) {
+                s.append(ChatColor.GREEN.toString());
+            }
+        }
+        s.append(StringUtils.repeat(" ", 15 - s.length()));
+        chargeLabel = s.toString();
     }
 
     @Override
@@ -203,7 +246,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         return getMaxCharge() > 0 ? new String[]{STBUtil.getChargeString(this)} : new String[0];
     }
 
-    protected void playStartupSound() {
+    /**
+     * Called when a machine starts processing an item.
+     */
+    protected void onMachineStartup() {
         // override in subclasses
     }
 
