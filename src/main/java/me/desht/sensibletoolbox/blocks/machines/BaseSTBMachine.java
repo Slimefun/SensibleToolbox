@@ -126,6 +126,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     protected abstract void playActiveParticleEffect();
 
+    public boolean hasShapedRecipes() {
+        return false;
+    }
+
     public void addCustomRecipes(CustomRecipeManager crm) {
         // override in subclasses
     }

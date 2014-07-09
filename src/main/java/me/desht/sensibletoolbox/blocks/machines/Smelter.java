@@ -4,11 +4,9 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.items.components.GoldDust;
-import me.desht.sensibletoolbox.items.components.IronDust;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import me.desht.sensibletoolbox.recipes.CustomRecipe;
+import me.desht.sensibletoolbox.recipes.SimpleCustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -48,7 +46,7 @@ public class Smelter extends AbstractIOMachine {
             if (r instanceof FurnaceRecipe) {
                 FurnaceRecipe fr = (FurnaceRecipe) r;
                 if (RecipeUtil.isVanillaSmelt(fr.getInput().getType())) {
-                    crm.addCustomRecipe(new CustomRecipe(this, fr.getInput(), fr.getResult(), getProcessingTime(fr.getInput())));
+                    crm.addCustomRecipe(new SimpleCustomRecipe(this, fr.getInput(), fr.getResult(), getProcessingTime(fr.getInput())));
                 }
             }
         }
@@ -58,7 +56,7 @@ public class Smelter extends AbstractIOMachine {
             STBItem item = getItemById(key);
             if (item.getSmeltingResult() != null) {
                 ItemStack stack = item.toItemStack();
-                crm.addCustomRecipe(new CustomRecipe(this, stack, item.getSmeltingResult(), getProcessingTime(stack)));
+                crm.addCustomRecipe(new SimpleCustomRecipe(this, stack, item.getSmeltingResult(), getProcessingTime(stack)));
             }
         }
     }
@@ -107,11 +105,6 @@ public class Smelter extends AbstractIOMachine {
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
-    }
-
-    @Override
-    public boolean acceptsItemType(ItemStack stack) {
-        return CustomRecipeManager.getManager().hasRecipe(this, stack);// && CustomRecipeManager.validateCustomSmelt(stack);
     }
 
     @Override

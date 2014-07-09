@@ -4,7 +4,7 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import me.desht.sensibletoolbox.recipes.CustomRecipe;
+import me.desht.sensibletoolbox.recipes.SimpleCustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
@@ -30,15 +30,15 @@ public class Sawmill extends AbstractIOMachine {
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
         for (TreeSpecies species : TreeSpecies.values()) {
-            crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeLog(species).toItemStack(1), STBUtil.makePlank(species).toItemStack(6), 60));
+            crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeLog(species).toItemStack(1), STBUtil.makePlank(species).toItemStack(6), 60));
         }
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOD_PLATE), new ItemStack(Material.WOOD, 2), 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOD_BUTTON), new ItemStack(Material.WOOD, 1), 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WORKBENCH), new ItemStack(Material.WOOD, 4), 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.SIGN), new ItemStack(Material.WOOD, 2), 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.CHEST), new ItemStack(Material.WOOD, 8), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_PLATE), new ItemStack(Material.WOOD, 2), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_BUTTON), new ItemStack(Material.WOOD, 1), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WORKBENCH), new ItemStack(Material.WOOD, 4), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.SIGN), new ItemStack(Material.WOOD, 2), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CHEST), new ItemStack(Material.WOOD, 8), 40));
     }
 
     @Override

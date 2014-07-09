@@ -3,7 +3,7 @@ package me.desht.sensibletoolbox.blocks.machines;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.components.*;
-import me.desht.sensibletoolbox.recipes.CustomRecipe;
+import me.desht.sensibletoolbox.recipes.SimpleCustomRecipe;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
@@ -32,23 +32,25 @@ public class Masher extends AbstractIOMachine {
         ItemStack greenDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.GREEN).toItemStack(1);
         QuartzDust qd = new QuartzDust();
 
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BONE), whiteDye, 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.BLAZE_ROD), new ItemStack(Material.BLAZE_POWDER, 4), 80));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.COAL_ORE), new ItemStack(Material.COAL, 2), 100));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.DIAMOND_ORE), new ItemStack(Material.DIAMOND, 2), 160));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.IRON_ORE), new IronDust().toItemStack(2), 120));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.IRON_INGOT), new IronDust().toItemStack(), 120));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GOLD_INGOT), new GoldDust().toItemStack(), 80));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.LAPIS_ORE), lapis, 80));
-        crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES), greenDye, 40));
-        crm.addCustomRecipe(new CustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES_2), greenDye, 40));
-        crm.addCustomRecipe(new CustomRecipe(this, new ItemStack(Material.QUARTZ), qd.toItemStack(), 120));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.BONE), whiteDye, 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.BLAZE_ROD), new ItemStack(Material.BLAZE_POWDER, 4), 80));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.COAL_ORE), new ItemStack(Material.COAL, 2), 100));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.DIAMOND_ORE), new ItemStack(Material.DIAMOND, 2), 160));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.IRON_ORE), new IronDust().toItemStack(2), 120));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.IRON_INGOT), new IronDust().toItemStack(), 120));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_INGOT), new GoldDust().toItemStack(), 80));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LAPIS_ORE), lapis, 80));
+//        crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES), greenDye, 40));
+//        crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES_2), greenDye, 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LEAVES), greenDye, 40), true);
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LEAVES_2), greenDye, 40), true);
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.QUARTZ), qd.toItemStack(), 120));
     }
 
     @Override

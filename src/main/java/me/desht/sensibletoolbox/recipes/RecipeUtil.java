@@ -86,4 +86,26 @@ public class RecipeUtil {
     public static boolean isVanillaSmelt(Material mat) {
         return vanillaSmelts.contains(mat);
     }
+
+    public static String makeRecipeKey(ItemStack item) {
+        String res = item.getType().toString();
+        if (item.getDurability() != -1) {
+            res += ":" + item.getDurability();
+        }
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            res += ":" + item.getItemMeta().getDisplayName();
+        }
+        return res;
+    }
+
+    public static String makeRecipeKey(boolean ignoreData, ItemStack item) {
+        String res = item.getType().toString();
+        if (!ignoreData && item.getDurability() != 32767) {
+            res += ":" + item.getDurability();
+        }
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            res += ":" + item.getItemMeta().getDisplayName();
+        }
+        return res;
+    }
 }

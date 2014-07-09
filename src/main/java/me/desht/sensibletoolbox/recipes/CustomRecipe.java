@@ -1,63 +1,60 @@
 package me.desht.sensibletoolbox.recipes;
 
-import me.desht.sensibletoolbox.api.STBItem;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
-public class CustomRecipe implements Recipe {
-    private final String processorID;  // id of STB item which makes this
-    private final ItemStack ingredient;
-    private final ItemStack result;
-    private final int processingTime; // in ticks
+import javax.naming.OperationNotSupportedException;
+import java.util.Collection;
 
-    public CustomRecipe(STBItem processor, ItemStack ingredient, ItemStack result, int processingTime) {
-        this.processorID = processor.getItemTypeID();
-        this.ingredient = ingredient;
-        this.result = result;
-        this.processingTime = processingTime;
-    }
-
-    public CustomRecipe(String itemId, ItemStack ingredient, ItemStack result, int processingTime) {
-        this.processorID = itemId;
-        this.ingredient = ingredient;
-        this.result = result;
-        this.processingTime = processingTime;
-    }
-
+/**
+ * Represents a recipe which takes a defined length of time and a specific
+ * STB machine to process it.
+ */
+public interface CustomRecipe extends Recipe {
     /**
-     * Get the time in ticks needed to make this recipe.
+     * Get the time in server ticks needed to make this recipe.
      *
      * @return the processing time, in ticks
      */
-    public int getProcessingTime() {
-        return processingTime;
-    }
-
-    @Override
-    public ItemStack getResult() {
-        return result;
-    }
+    public int getProcessingTime();
 
     /**
      * Get the item ID of the STB machine which is used to make this recipe.
      *
      * @return the STB item ID
      */
-    public String getProcessorID() {
-        return processorID;
-    }
+    public String getProcessorID();
 
     /**
-     * Get the input ingredient for this recipe.
+     * Add a supplementary result to this recipe.
      *
-     * @return the ingredient
+     * @param result the supplementary result to add
      */
-    public ItemStack getIngredient() {
-        return ingredient;
-    }
+    public void addSupplementaryResult(SupplementaryResult result) throws OperationNotSupportedException;
 
-    @Override
-    public String toString() {
-        return "Custom recipe: " + processorID + " : " + ingredient + " -> " + result + " in " + processingTime + " ticks";
-    }
+    /**
+     * List the possible supplementary results from this recipe.
+     *
+     * @return a collection of supplementary results
+     */
+    public Collection<SupplementaryResult> listSupplementaryResults();
+
+    /**
+     * Perform a one-off calculation of the actual supplementary results for
+     * this recipe, based on the result chances.  The return value of this
+     * method is likely to be different each time it is called, based on the
+     * defined result chances.
+     *
+     * @return a collection of item stacks
+     */
+    public Collection<ItemStack> calculateSupplementaryResults();
+
+    /**
+     * Construct a key for this recipe based on its ingredients, which
+     * uniquely identifies it, so that it can be efficiently looked up.
+     *
+     * @param ignoreData if true, create a key without the items' data values
+     * @return a unique key string for this recipe
+     */
+    public String makeKey(boolean ignoreData);
 }

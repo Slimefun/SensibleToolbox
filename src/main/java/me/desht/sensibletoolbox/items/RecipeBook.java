@@ -13,10 +13,7 @@ import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.gui.ButtonGadget;
 import me.desht.sensibletoolbox.gui.ClickableGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.recipes.CustomRecipe;
-import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
-import me.desht.sensibletoolbox.recipes.RecipeUtil;
-import me.desht.sensibletoolbox.recipes.STBFurnaceRecipe;
+import me.desht.sensibletoolbox.recipes.*;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.BlockProtection;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -347,7 +344,7 @@ public class RecipeBook extends BaseSTBItem {
         gui.getInventory().setItem(TYPE_SLOT, FURNACE_ICON);
     }
 
-    private void showCustomRecipe(CustomRecipe recipe) {
+    private void showCustomRecipe(SimpleCustomRecipe recipe) {
         gui.getInventory().setItem(RESULT_SLOT, recipe.getResult());
         STBItem item = BaseSTBItem.getItemById(recipe.getProcessorID());
         gui.getInventory().setItem(TYPE_SLOT, item.toItemStack());
@@ -519,7 +516,7 @@ public class RecipeBook extends BaseSTBItem {
             recipes.add(new STBFurnaceRecipe(result, stack));
         }
 
-        // Custom STB recipes: items which are created in some machine added by STB
+        // Custom STB recipes: items which are created in a machine added by STB
         for (CustomRecipe customRecipe : CustomRecipeManager.getManager().getRecipesFor(result)) {
             if (customRecipe.getResult().isSimilar(result)) {
                 recipes.add(customRecipe);
@@ -553,8 +550,8 @@ public class RecipeBook extends BaseSTBItem {
             showShapedRecipe((ShapedRecipe) viewingRecipe);
         } else if (viewingRecipe instanceof ShapelessRecipe) {
             showShapelessRecipe((ShapelessRecipe) viewingRecipe);
-        } else if (viewingRecipe instanceof CustomRecipe) {
-            showCustomRecipe((CustomRecipe) viewingRecipe);
+        } else if (viewingRecipe instanceof SimpleCustomRecipe) {
+            showCustomRecipe((SimpleCustomRecipe) viewingRecipe);
         }
 
         if (nRecipes > 1) {

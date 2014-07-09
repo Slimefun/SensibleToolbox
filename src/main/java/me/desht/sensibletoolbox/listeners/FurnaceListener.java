@@ -4,10 +4,14 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Furnace;
 import org.bukkit.block.Hopper;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +28,7 @@ public class FurnaceListener extends STBBaseListener {
 
 
     @EventHandler
-    public void onFurnaceInsert(InventoryClickEvent event) {
+    public void onFurnaceInsert(final InventoryClickEvent event) {
         if (event.getInventory().getType() != InventoryType.FURNACE) {
             return;
         }
@@ -43,6 +47,15 @@ public class FurnaceListener extends STBBaseListener {
                     }
                 }
             }
+        } else if (event.getRawSlot() == 2 && BaseSTBItem.isSTBItem(event.getCurrentItem())) {
+            // work around CB bug where shift-clicking custom items out of furnace seems
+            // to cause a de-sync, leaving phantom items in the furnace
+            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    STBUtil.forceInventoryRefresh(event.getInventory());
+                }
+            });
         }
     }
 
@@ -86,6 +99,7 @@ public class FurnaceListener extends STBBaseListener {
         BaseSTBItem item = BaseSTBItem.fromItemStack(event.getSource());
         if (item != null) {
             event.setResult(item.getSmeltingResult());
+
         }
     }
 

@@ -4,7 +4,7 @@
     <groupId>me.desht</groupId>
     <artifactId>sensibletoolbox</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.3</version>
+    <version>0.0.4-SNAPSHOT</version>
     <name>SensibleToolbox</name>
     <url>http://maven.apache.org</url>
 
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
