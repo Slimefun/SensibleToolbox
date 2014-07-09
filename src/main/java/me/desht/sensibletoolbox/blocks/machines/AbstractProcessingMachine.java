@@ -24,6 +24,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
     private double progress; // ticks remaining till this work cycle is done
     private int progressMeterId;
     private ItemStack processing;
+    private int ejectionInterval = 1; // try to eject every tick by default
 
     protected AbstractProcessingMachine() {
         super();
@@ -63,6 +64,15 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
         return (ProgressMeter) getGUI().getMonitor(progressMeterId);
     }
 
+    protected int getEjectionInterval() {
+        return ejectionInterval;
+    }
+
+    private void setEjectionInterval(int ejectionInterval) {
+        if (ejectionInterval != this.ejectionInterval) System.out.println(this + ": set ejection interval = " + ejectionInterval);
+        this.ejectionInterval = ejectionInterval;
+    }
+
     @Override
     public void setLocation(Location loc) {
         if (loc == null && getProcessing() != null) {
@@ -95,6 +105,10 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
     }
 
     protected void handleAutoEjection() {
+        if (getTicksLived() % getEjectionInterval() != 0) {
+            return;
+        }
+        boolean ejectFailed = false;
         if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
             for (int slot : getOutputSlots()) {
                 ItemStack stack = getInventoryItem(slot);
@@ -103,11 +117,16 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
                         stack.setAmount(stack.getAmount() - 1);
                         setInventoryItem(slot, stack);
                         setJammed(false);
+                    } else {
+                        ejectFailed = true;
                     }
                     break;
                 }
             }
         }
+        // possibly throttle back on ejection rate to reduce CPU
+        // consumption on repeated attempts to re-eject the item(s)
+        setEjectionInterval(ejectFailed ? 20 : 1);
     }
 
     /**
