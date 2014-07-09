@@ -297,6 +297,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         cmds.registerCommand(new ParticleCommand());
         cmds.registerCommand(new SoundCommand());
         cmds.registerCommand(new RecipeCommand());
+        cmds.registerCommand(new ExamineCommand());
     }
 
     @Override

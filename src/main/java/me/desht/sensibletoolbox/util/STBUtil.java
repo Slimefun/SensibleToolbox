@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.util;
 
+import com.comphenix.attribute.Attributes;
+import com.google.common.base.Joiner;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.MiscUtil;
@@ -842,6 +844,37 @@ public class STBUtil {
         HashMap<Integer,ItemStack> excess = player.getInventory().addItem(stacks);
         for (ItemStack stack : excess.values()) {
             player.getWorld().dropItemNaturally(player.getLocation(), stack);
+        }
+    }
+
+    public static void dumpItemStack(ItemStack stack) {
+        System.out.println("ItemStack: " + stack);
+        if (stack == null) {
+            return;
+        }
+        System.out.println("Quantity: " + stack.getAmount());
+        System.out.println("Material/Data: " + stack.getType() + ":" + stack.getDurability());
+        if (stack.hasItemMeta()) {
+            ItemMeta meta = stack.getItemMeta();
+            System.out.println("Display name: " + meta.getDisplayName());
+            System.out.println("Lore: [" + Joiner.on(",").join(meta.getLore()) + "]");
+            if (meta.hasEnchants()) {
+                for (Map.Entry<Enchantment, Integer> e : meta.getEnchants().entrySet()) {
+                    System.out.println("Enchant " + e.getKey() + " = " + e.getValue());
+                }
+            }
+        } else {
+            System.out.println("No metadata");
+        }
+        if (stack.getType() == Material.AIR) {
+            return;
+        }
+        Attributes a = new Attributes(stack);
+        System.out.println("Attribute count: " + a.size());
+        for (Attributes.Attribute attr : a.values()) {
+            System.out.println(String.format("* ID=%s name=[%s] amount=%f type=%s op=%s",
+                    attr.getUUID().toString(), attr.getName(), attr.getAmount(),
+                    attr.getAttributeType().toString(), attr.getOperation().toString()));
         }
     }
 }

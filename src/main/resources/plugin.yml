@@ -33,6 +33,9 @@ permissions:
   stb.commands.debug:
     description: Allow plugin debugging to be toggled with /stb debug
     default: op
+  stb.commands.examine:
+    description: Allow item data to be examined in detail with /stb debug
+    default: op
   stb.commands.getcfg:
     description: Allows the plugin configuration to be inspected with /stb getcfg
     default: op
