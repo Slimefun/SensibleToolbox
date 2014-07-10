@@ -68,7 +68,7 @@ public class ChargeCommand extends AbstractCommand {
         if (item != null) {
             player.setItemInHand(item.toItemStack());
         } else if (stb != null) {
-            stb.updateBlock(true);
+            stb.update(true);
             MiscUtil.statusMessage(player, "&6" + stb.getItemName() + "&- charged to " + STBUtil.getChargeString(c));
         }
         return true;

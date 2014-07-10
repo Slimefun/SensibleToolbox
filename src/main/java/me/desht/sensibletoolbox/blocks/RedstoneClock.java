@@ -72,7 +72,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
     public void setInterval(int interval) {
         this.interval = interval;
-        updateBlock(false);
+        update(false);
     }
 
     public int getOnDuration() {
@@ -81,7 +81,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
     public void setOnDuration(int onDuration) {
         this.onDuration = onDuration;
-        updateBlock(false);
+        update(false);
     }
 
     @Override

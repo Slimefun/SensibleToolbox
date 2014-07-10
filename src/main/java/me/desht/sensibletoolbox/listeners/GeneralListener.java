@@ -4,22 +4,20 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,18 +45,9 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-//        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-//            List<ItemStack> res = STBUtil.calculateDrops(event.getClickedBlock(), event.getItem());
-//            System.out.println(res.size() + " drops:");
-//            for (ItemStack s : res) {
-//                System.out.println("  drop: " + s.getAmount() + " x " + ItemNames.lookup(s));
-//            }
-//            event.setCancelled(true);
-//        }
-
         BaseSTBItem item = BaseSTBItem.fromItemStack(event.getItem());
         if (item != null) {
-            if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.interact." + item.getItemTypeID())) {
+            if (item.checkPlayerPermission(event.getPlayer(), "interact")) {
                 item.onInteractItem(event);
             }
         }
@@ -70,7 +59,7 @@ public class GeneralListener extends STBBaseListener {
             }
             BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation());
             if (stb != null) {
-                if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.interact_block." + stb.getItemTypeID())) {
+                if (stb.checkPlayerPermission(event.getPlayer(), "interact_block")) {
                     stb.onInteractBlock(event);
                 }
             }
@@ -111,7 +100,7 @@ public class GeneralListener extends STBBaseListener {
     public void onBlockDamage(BlockDamageEvent event) {
         BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
         if (stb != null) {
-            if (PermissionUtils.isAllowedTo(event.getPlayer(), "stb.break." + stb.getItemTypeID())) {
+            if (stb.checkPlayerPermission(event.getPlayer(), "break")) {
                 stb.onBlockDamage(event);
             } else {
                 event.setCancelled(true);
@@ -119,14 +108,31 @@ public class GeneralListener extends STBBaseListener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
-        STBItem item = BaseSTBItem.fromItemStack(event.getItemInHand());
-        if (item instanceof STBBlock && PermissionUtils.isAllowedTo(event.getPlayer(), "stb.place." + item.getItemTypeID())) {
-            ((BaseSTBBlock) item).onBlockPlace(event);
-        } else if (item != null) {
-            // prevent placing of non-block STB items, even if they use a block material (e.g. bag of holding)
-            event.setCancelled(true);
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onBlockPrePlaceCheck(BlockPlaceEvent event) {
+        BaseSTBItem stb = BaseSTBItem.fromItemStack(event.getItemInHand());
+        if (stb != null) {
+            if (!(stb instanceof BaseSTBBlock)) {
+                event.setCancelled(true);
+            } else if (!stb.checkPlayerPermission(event.getPlayer(), "place")) {
+                event.setCancelled(true);
+            } else if (!((BaseSTBBlock) stb).validatePlaceable(event.getBlock().getLocation())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onBlockWillPlace(BlockPlaceEvent event) {
+        BaseSTBItem stb = BaseSTBItem.fromItemStack(event.getItemInHand());
+        if (stb != null) {
+            // sanity check: we should only get here if the item is an STB block, since
+            // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
+            Validate.isTrue(stb instanceof BaseSTBBlock, "trying to place a non-block STB item? " + stb.getItemTypeID());
+            ((BaseSTBBlock) stb).onBlockPlace(event);
+            if (event.isCancelled()) {
+                throw new IllegalStateException("You must not change the cancellation status of a STB block place event!");
+            }
         }
     }
 
@@ -142,7 +148,6 @@ public class GeneralListener extends STBBaseListener {
         if (EnergyNetManager.isCable(event.getBlock())) {
             EnergyNetManager.onCableRemoved(event.getBlock());
         } else {
-            boolean isCancelled = event.isCancelled();
             BaseSTBItem item = BaseSTBItem.fromItemStack(event.getPlayer().getItemInHand());
             if (item != null) {
                 item.onBreakBlockWithItem(event);
@@ -151,7 +156,7 @@ public class GeneralListener extends STBBaseListener {
             if (stb != null) {
                 stb.onBlockBreak(event);
             }
-            if (event.isCancelled() != isCancelled) {
+            if (event.isCancelled()) {
                 throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
             }
         }
@@ -174,6 +179,18 @@ public class GeneralListener extends STBBaseListener {
                         b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.SIGN));
                     }
                 });
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onLabelSignBroken(BlockBreakEvent event) {
+        if (event.getBlock().getType() == Material.WALL_SIGN) {
+            Sign sign = (Sign) event.getBlock().getState().getData();
+            Block b2 = event.getBlock().getRelative(sign.getAttachedFace());
+            BaseSTBBlock stb = LocationManager.getManager().get(b2.getLocation());
+            if (stb != null) {
+                stb.detachLabelSign(sign.getAttachedFace().getOppositeFace());
             }
         }
     }
@@ -238,7 +255,6 @@ public class GeneralListener extends STBBaseListener {
                 } else if (item instanceof Chargeable && result instanceof Chargeable) {
                     // add the ingredient's charge to the final item's charge
                     finalSCU += ((Chargeable) item).getCharge();
-                    System.out.println("chargeable ingredient " + item + " ! SCU now = " + finalSCU);
                 }
             }
         }

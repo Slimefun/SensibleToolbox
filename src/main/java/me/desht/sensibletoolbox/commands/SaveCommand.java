@@ -16,7 +16,7 @@ public class SaveCommand extends AbstractCommand {
     @Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         LocationManager.getManager().save();
-        MiscUtil.statusMessage(sender, "Data saved");
+        MiscUtil.statusMessage(sender, "STB persisted data saved");
         return true;
     }
 }

@@ -26,7 +26,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -172,7 +171,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     @Override
     public void setChargeDirection(ChargeDirection chargeDirection) {
         this.chargeDirection = chargeDirection;
-        updateBlock(false);
+        update(false);
     }
 
     public void setAutoEjectDirection(BlockFace direction) {
@@ -208,7 +207,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             buildChargeLabel();
             updateAttachedLabelSigns();
         }
-        updateBlock(false);
+        update(false);
     }
 
     private String getChargeLabel() {
@@ -269,7 +268,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     public void setInventoryItem(int slot, ItemStack item) {
         Validate.isTrue(getGUI().getSlotType(slot) == InventoryGUI.SlotType.ITEM, "Attempt to insert item into non-item slot");
         getInventory().setItem(slot, item != null && item.getAmount() > 0 ? item : null);
-        updateBlock(false);
+        update(false);
     }
 
     @Override
@@ -490,7 +489,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
                         stack.setAmount(stack.getAmount() - toTake);
                         setInventoryItem(slot, stack);
                         setJammed(false);
-                        updateBlock(false);
+                        update(false);
                         if (Debugger.getInstance().getLevel() > 1) {
                             Debugger.getInstance().debug(2, "extracted " + STBUtil.describeItemStack(result) + " from " + this);
                         }
@@ -540,11 +539,15 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             if (onCursor.getType() != Material.AIR && !acceptsItemType(onCursor)) {
                 return false;
             }
+            if (inSlot != null) {
+                update(false);
+            }
         } else if (isOutputSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
                 return false;
-            } else {
+            } else if (inSlot != null) {
                 setJammed(false);
+                update(false);
             }
         } else if (isUpgradeSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
@@ -596,12 +599,16 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             if (inMachine == null) {
                 // insert the whole stack
                 setInventoryItem(insertionSlot, toInsert);
+                update(false);
                 return toInsert.getAmount();
             } else {
                 // insert as much as possible
                 int nToInsert = Math.min(inMachine.getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
-                inMachine.setAmount(inMachine.getAmount() + nToInsert);
-                setInventoryItem(insertionSlot, inMachine);
+                if (nToInsert > 0) {
+                    inMachine.setAmount(inMachine.getAmount() + nToInsert);
+                    setInventoryItem(insertionSlot, inMachine);
+                    update(false);
+                }
                 return nToInsert;
             }
         }
@@ -609,12 +616,12 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         return 0;
     }
 
-    private boolean isValidUpgrade(HumanEntity player, BaseSTBItem item) {
+    protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem item) {
         if (!(item instanceof MachineUpgrade)) {
             return false;
         }
         if (item instanceof EjectorUpgrade && ((EjectorUpgrade) item).getDirection() == BlockFace.SELF) {
-            STBUtil.complain((Player) player, "Ejector upgrade must have a direction configured.");
+            STBUtil.complain(player, "Ejector upgrade must have a direction configured.");
             return false;
         } else {
             return true;
@@ -628,8 +635,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             installEnergyCell(null);
         } else if (isUpgradeSlot(slot)) {
             needToProcessUpgrades = true;
-        } else if (isOutputSlot(slot)) {
+        } else if (isOutputSlot(slot) && getInventoryItem(slot) != null) {
             setJammed(false);
+            update(false);
+        } else if (isInputSlot(slot) && getInventoryItem(slot) != null) {
+            update(false);
         }
         return true;
     }
@@ -663,7 +673,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
                 } else {
                     upgrade.setAmount(stack.getAmount());
                     upgrades.add(upgrade);
-                    updateBlock(false);
+                    if (getTicksLived() > 20) {
+                        // if the machine has only just been placed, no need to do a DB save
+                        update(false);
+                    }
                 }
             }
         }
@@ -694,7 +707,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     public void installEnergyCell(EnergyCell cell) {
         installedCell = cell;
         Debugger.getInstance().debug("installed energy cell " + cell + " in " + this);
-        updateBlock(false);
+        update(false);
     }
 
     @Override
@@ -750,7 +763,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     @Override
     public void attachToEnergyNet(EnergyNet net, BlockFace face) {
-        Debugger.getInstance().debug(this + ": attach to enet " + net.getNetID());
+        Debugger.getInstance().debug(this + ": attach to Energy net #" + net.getNetID());
         energyNets.put(face, net);
     }
 
@@ -761,7 +774,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             Map.Entry<BlockFace, EnergyNet> entry = iter.next();
             if (entry.getValue().getNetID() == net.getNetID()) {
                 iter.remove();
-                Debugger.getInstance().debug(this + ": detached from enet #" + net.getNetID());
+                Debugger.getInstance().debug(this + ": detached from Energy net #" + net.getNetID());
             }
         }
     }

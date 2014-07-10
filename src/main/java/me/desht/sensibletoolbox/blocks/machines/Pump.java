@@ -179,7 +179,7 @@ public class Pump extends AbstractProcessingMachine {
             if (slot >= 0) {
                 setInventoryItem(slot, result);
                 setProcessing(null);
-                updateBlock(false);
+                update(false);
                 replacePumpedBlock(toPump);
             } else {
                 setJammed(true);

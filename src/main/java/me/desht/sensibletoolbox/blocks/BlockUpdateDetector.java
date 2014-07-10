@@ -55,7 +55,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     public void setDuration(int duration) {
         this.duration = duration;
-        updateBlock(false);
+        update(false);
     }
 
     public int getQuiet() {
@@ -64,7 +64,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     public void setQuiet(int quiet) {
         this.quiet = quiet;
-        updateBlock(false);
+        update(false);
     }
 
     @Override

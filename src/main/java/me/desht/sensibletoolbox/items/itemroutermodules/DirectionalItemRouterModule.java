@@ -10,7 +10,6 @@ import me.desht.sensibletoolbox.gui.FilterTypeGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.ToggleButton;
 import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.BlockProtection;
 import me.desht.sensibletoolbox.util.Filter;
 import me.desht.sensibletoolbox.util.STBUtil;
 import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
@@ -274,7 +273,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         }
         if (pulled != null) {
             if (stb != null) {
-                stb.updateBlock(false);
+                stb.update(false);
             }
             getItemRouter().setBufferItem(inBuffer == null ? pulled : inBuffer);
             return true;

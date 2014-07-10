@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.storage;
 
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.UUID;
@@ -12,32 +11,53 @@ public class UpdateRecord {
     private final int x;
     private final int y;
     private final int z;
-    private final String type;
-    private final String data;
+    private String type;
+    private String data;
 
     public static UpdateRecord finishingRecord() {
-        return new UpdateRecord(Operation.FINISH, null, null, null);
+        return new UpdateRecord(Operation.FINISH, null);
     }
 
     public static UpdateRecord commitRecord() {
-        return new UpdateRecord(Operation.COMMIT, null, null, null);
+        return new UpdateRecord(Operation.COMMIT, null);
     }
 
-    public UpdateRecord(Operation op, Location loc, String type, BaseSTBBlock stb) {
-        Validate.isTrue(!op.hasData() || stb != null);
+    public UpdateRecord(Operation op, Location loc) {
         this.op = op;
-        if (stb == null) {
-            this.worldID = null;
-            this.data = this.type = null;
-            this.x = this.y = this.z = 0;
-        } else {
+        if (loc != null) {
             this.worldID = loc.getWorld().getUID();
             this.x = loc.getBlockX();
             this.y = loc.getBlockY();
             this.z = loc.getBlockZ();
-            this.type = type;
-            this.data = stb.freeze().saveToString();
+        } else {
+            this.worldID = null;
+            this.x = this.y = this.z = 0;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UpdateRecord that = (UpdateRecord) o;
+
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        if (worldID != null ? !worldID.equals(that.worldID) : that.worldID != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = worldID != null ? worldID.hashCode() : 0;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        return result;
     }
 
     public Operation getOp() {
@@ -48,8 +68,16 @@ public class UpdateRecord {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getData() {
         return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
     public UUID getWorldID() {
@@ -75,8 +103,12 @@ public class UpdateRecord {
             case COMMIT:
                 return op.toString();
             default:
-                return String.format("%s %s,%d,%d,%d %s", op.toString(), worldID, x, y, z, type);
+                return String.format("%s %s,%d,%d,%d", op.toString(), worldID, x, y, z);
         }
+    }
+
+    public Location getLocation() {
+        return new Location(Bukkit.getWorld(worldID), x, y, z);
     }
 
     public enum Operation {

@@ -18,10 +18,7 @@ import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
@@ -104,7 +101,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     @Override
     public final void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
         this.redstoneBehaviour = redstoneBehaviour;
-        updateBlock(false);
+        update(false);
     }
 
     @Override
@@ -115,7 +112,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     @Override
     public final void setAccessControl(AccessControl accessControl) {
         this.accessControl = accessControl;
-        updateBlock(false);
+        update(false);
     }
 
     public final STBGUIHolder getGuiHolder() {
@@ -227,8 +224,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN
                 && event.getClickedBlock().getType() != Material.WALL_SIGN && event.getClickedBlock().getType() != Material.SIGN_POST) {
             // attach a label sign
-            attachLabelSign(event);
-            labelSigns.add(event.getBlockFace());
+            if (attachLabelSign(event)) {
+                labelSigns.add(event.getBlockFace());
+            }
             event.setCancelled(true);
         }
     }
@@ -335,7 +333,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
             persistableLocation = new PersistableLocation(loc);
             for (RelativePosition pos : getBlockStructure()) {
                 Block b1 = getMultiBlock(loc, pos);
-                Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + b1);
+                Debugger.getInstance().debug(2, "Multiblock for " + this + " -> " + b1);
                 b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
             }
             reattachLabelSigns(loc);
@@ -363,7 +361,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         }
         if (rescanNeeded) {
             findAttachedLabelSigns();
-//            updateBlock(false);
+            update(false);
         }
     }
 
@@ -411,22 +409,33 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     /**
-     * Called when an STB block is placed.  Subclasses may override this method, but should take care
-     * to call the superclass method.
+     * Called when an STB block is placed.  Subclasses may override this
+     * method, but should take care to call the superclass method.
+     * <p>
+     * This event is called with MONITOR priority; do not change the outcome
+     * of the event!
      *
      * @param event the block place event
      */
     public void onBlockPlace(BlockPlaceEvent event) {
-        Location baseLoc = event.getBlock().getLocation();
+        placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
+    }
+
+    /**
+     * Validate that this STB block (which may be a multi-block structure) is
+     * placeable at the given location.
+     *
+     * @param baseLoc the location of the STB block's base block
+     * @return true if the STB block is placeable; false otherwise
+     */
+    public boolean validatePlaceable(Location baseLoc) {
         for (RelativePosition rPos : getBlockStructure()) {
             Block b = getMultiBlock(baseLoc, rPos);
             if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.STATIONARY_WATER) {
-                MiscUtil.errorMessage(event.getPlayer(), "Not enough room to place this multi-block structure");
-                event.setCancelled(true);
-                return;
+                return false;
             }
         }
-        placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
+        return true;
     }
 
     /**
@@ -482,7 +491,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     @Override
-    public final void updateBlock(boolean redraw) {
+    public final void update(boolean redraw) {
         Location loc = getLocation();
         if (loc != null) {
             if (redraw) {
@@ -490,48 +499,52 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
                 // maybe one day Bukkit will have a block set method which takes a MaterialData
                 b.setTypeIdAndData(getMaterial().getId(), getMaterialData().getData(), true);
             }
-            LocationManager.getManager().updateLocation(loc, this);
+            LocationManager.getManager().updateLocation(loc);
         }
     }
 
-    private void attachLabelSign(PlayerInteractEvent event) {
+    private boolean attachLabelSign(PlayerInteractEvent event) {
         if (event.getBlockFace().getModY() != 0) {
             // only support placing a label sign on the side of a machine, not the top
             event.setCancelled(true);
-            return;
+            return false;
         }
         Block signBlock = event.getClickedBlock().getRelative(event.getBlockFace());
+        Player player = event.getPlayer();
 
         if (!signBlock.isEmpty()) {
             // looks like some non-solid block is in the way
-            STBUtil.complain(event.getPlayer(), "There is no room to place a label sign there!");
+            STBUtil.complain(player, "There is no room to place a label sign there!");
             event.setCancelled(true);
-            return;
+            return false;
         }
 
-        BlockPlaceEvent placeEvent = new BlockPlaceEvent(signBlock, signBlock.getState(), event.getClickedBlock(), event.getItem(), event.getPlayer(), true);
+        BlockPlaceEvent placeEvent = new BlockPlaceEvent(signBlock, signBlock.getState(), event.getClickedBlock(), event.getItem(), player, true);
         Bukkit.getPluginManager().callEvent(placeEvent);
         if (placeEvent.isCancelled()) {
-            STBUtil.complain(event.getPlayer());
-            return;
+            STBUtil.complain(player);
+            return false;
         }
 
         // ok, player is allowed to put a sign here
         attachLabelSign(signBlock, event.getBlockFace());
 
-        ItemStack stack = event.getPlayer().getItemInHand();
+        ItemStack stack = player.getItemInHand();
         stack.setAmount(stack.getAmount() - 1);
-        event.getPlayer().setItemInHand(stack.getAmount() <= 0 ? null : stack);
+        player.setItemInHand(stack.getAmount() <= 0 ? null : stack);
+
+        player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
+
+        return true;
     }
 
     private boolean attachLabelSign(Block signBlock, BlockFace face) {
-        System.out.println("attach label sign @ " + signBlock + ", face = " + face);
+        Debugger.getInstance().debug(this + ": attach label sign @ " + signBlock + ", face = " + face);
         if (!signBlock.isEmpty() && signBlock.getType() != Material.WALL_SIGN) {
             // something in the way!
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.SIGN));
             return false;
         } else {
-            System.out.println("ok to attach");
             // using setTypeIdAndData() here because we don't want to cause a physics update
             signBlock.setTypeIdAndData(Material.WALL_SIGN.getId(), (byte) 0, false);
             Sign sign = (Sign) signBlock.getState();
@@ -580,12 +593,19 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         }
     }
 
+    public void detachLabelSign(BlockFace face) {
+        Debugger.getInstance().debug(this + ": detach label sign on face " + face);
+        labelSigns.remove(face);
+        update(false);
+    }
+
     protected void updateAttachedLabelSigns() {
-        if (labelSigns == null || labelSigns.isEmpty()) {
+        Location loc = getLocation();
+        if (loc == null || labelSigns == null || labelSigns.isEmpty()) {
             return;
         }
         String[] text = getSignLabel();
-        Block b = getLocation().getBlock();
+        Block b = loc.getBlock();
         Iterator<BlockFace> iter = labelSigns.iterator();
         while (iter.hasNext()) {
             BlockFace face = iter.next();

@@ -72,7 +72,7 @@ public class PaintCan extends BaseSTBBlock {
     public void setPaintLevel(int paintLevel) {
         int oldLevel = this.paintLevel;
         this.paintLevel = paintLevel;
-        updateBlock(oldLevel == 0 && paintLevel != 0 || oldLevel != 0 && paintLevel == 0);
+        update(oldLevel == 0 && paintLevel != 0 || oldLevel != 0 && paintLevel == 0);
         updateAttachedLabelSigns();
         if (getPaintLevelMonitor() != null) {
             getPaintLevelMonitor().repaint();
@@ -87,7 +87,7 @@ public class PaintCan extends BaseSTBBlock {
         DyeColor oldColour = this.colour;
         this.colour = colour;
         if (this.colour != oldColour) {
-            updateBlock(true);
+            update(true);
             updateAttachedLabelSigns();
             if (getPaintLevelMonitor() != null) {
                 getPaintLevelMonitor().repaint();

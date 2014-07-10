@@ -119,7 +119,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
         for (EnergyNet net : getAttachedEnergyNets()) {
             net.findSourcesAndSinks();
         }
-        updateBlock(false);
+        update(false);
     }
 
     @Override

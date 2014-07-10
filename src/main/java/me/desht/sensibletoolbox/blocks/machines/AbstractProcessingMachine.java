@@ -69,7 +69,6 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
     }
 
     private void setEjectionInterval(int ejectionInterval) {
-        if (ejectionInterval != this.ejectionInterval) System.out.println(this + ": set ejection interval = " + ejectionInterval);
         this.ejectionInterval = ejectionInterval;
     }
 

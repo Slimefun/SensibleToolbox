@@ -60,7 +60,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
         setStorageAmount(conf.getInt("amount"));
         locked = conf.getBoolean("locked", false);
-        oldTotalAmount = storageAmount;
+        oldTotalAmount = getStorageAmount();
     }
 
     @Override
@@ -135,8 +135,9 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (this.stored != null) {
             String[] lines = WordUtils.wrap(ItemNames.lookup(this.stored), 15).split("\\n");
             signLabel[2] = lines[0];
+            String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
             if (lines.length > 1) {
-                signLabel[3] = lines[1];
+                signLabel[3] = pfx + lines[1];
             }
         } else {
             signLabel[2] = ChatColor.ITALIC + "Empty";
@@ -315,7 +316,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             getProgressMeter().setMaxProgress(maxCapacity);
             setProcessing(stored);
             setProgress(maxCapacity - getStorageAmount());
-            updateBlock(false);
+            update(false);
             updateAttachedLabelSigns();
             oldTotalAmount = getTotalAmount();
         }
@@ -340,6 +341,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
                     current.getWorld().dropItemNaturally(current, stack);
                     storageAmount -= stored.getMaxStackSize();
                 }
+                setStoredItemType(null);
                 setStorageAmount(0);
             }
         }
@@ -350,6 +352,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             setProgress(maxCapacity - storageAmount);
             ItemStack output = getOutputItem();
             outputAmount = output == null ? 0 : output.getAmount();
+            oldTotalAmount += outputAmount;
+            updateSignQuantityLine();
+            updateSignItemLines();
+            updateAttachedLabelSigns();
         }
     }
 

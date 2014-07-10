@@ -1,5 +1,8 @@
 package me.desht.sensibletoolbox.storage;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
@@ -10,6 +13,7 @@ import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.material.Sign;
@@ -38,13 +42,13 @@ public class LocationManager {
     private final DBStorage dbStorage;
     private final Thread updaterTask;
 
-    // tracks those blocks which need to do something on a server tick
-    private final Map<String, Set<BaseSTBBlock>> tickers = new HashMap<String, Set<BaseSTBBlock>>();
+    // tracks those blocks (on a per-world basis) which need to do something on a server tick
+    private final Map<UUID, Set<BaseSTBBlock>> allTickers = new HashMap<UUID, Set<BaseSTBBlock>>();
     // indexes all loaded blocks by world and (frozen) location
-    private final Map<String, Map<String, BaseSTBBlock>> blockIndex = new HashMap<String, Map<String, BaseSTBBlock>>();
+    private final Map<UUID, Map<String, BaseSTBBlock>> blockIndex = new HashMap<UUID, Map<String, BaseSTBBlock>>();
     // tracks the pending updates by (frozen) location since the last save was done
     private final Map<String, UpdateRecord> pendingUpdates = new HashMap<String, UpdateRecord>();
-    // blocking queue is used to pass actual updates over to the DB writer thread
+    // a blocking queue is used to pass actual updates over to the DB writer thread
     private final BlockingQueue<UpdateRecord> updateQueue = new LinkedBlockingQueue<UpdateRecord>();
 
     private LocationManager(SensibleToolboxPlugin plugin) throws SQLException {
@@ -87,30 +91,36 @@ public class LocationManager {
     }
 
     public void addTicker(BaseSTBBlock stb) {
-        Location l = stb.getLocation();
-        World w = l.getWorld();
-        if (!tickers.containsKey(w.getName())) {
-            tickers.put(w.getName(), new HashSet<BaseSTBBlock>());
+        Location loc = stb.getLocation();
+        World w = loc.getWorld();
+        Set<BaseSTBBlock> tickerSet = allTickers.get(w.getUID());
+        if (tickerSet == null) {
+            tickerSet = Sets.newHashSet();
+            allTickers.put(w.getUID(), tickerSet);
         }
-        Debugger.getInstance().debug(2, "add ticking block " + stb + " in world: " + w.getName());
-        tickers.get(w.getName()).add(stb);
+        tickerSet.add(stb);
+        Debugger.getInstance().debug(2, "Added ticking block " + stb);
     }
 
     private void removeTicker(BaseSTBBlock stb) {
-        Location l = stb.getLocation();
-        World w = l.getWorld();
-        if (!tickers.containsKey(w.getName())) {
-            tickers.put(w.getName(), new HashSet<BaseSTBBlock>());
+        Location loc = stb.getLocation();
+        World w = loc.getWorld();
+        Set<BaseSTBBlock> tickerSet = allTickers.get(w.getUID());
+        if (tickerSet != null) {
+            tickerSet.remove(stb);
+            Debugger.getInstance().debug(2, "Removed ticking block " + stb);
+        } else {
+            LogUtils.warning("attempt to remove ticker " + stb + ", but no tickers are loaded for world: " + w.getName() + " ?");
         }
-        Debugger.getInstance().debug(2, "remove ticking block " + stb + " in world: " + w.getName());
-        tickers.get(w.getName()).remove(stb);
     }
 
     private Map<String, BaseSTBBlock> getWorldIndex(World w) {
-        if (!blockIndex.containsKey(w.getName())) {
-            blockIndex.put(w.getName(), new HashMap<String, BaseSTBBlock>());
+        Map<String,BaseSTBBlock> index = blockIndex.get(w.getUID());
+        if (index == null) {
+            index = Maps.newHashMap();
+            blockIndex.put(w.getUID(), index);
         }
-        return blockIndex.get(w.getName());
+        return index;
     }
 
     public void registerLocation(Location loc, BaseSTBBlock stb, boolean isPlacing) {
@@ -126,7 +136,7 @@ public class LocationManager {
         getWorldIndex(loc.getWorld()).put(locStr, stb);
 
         if (isPlacing) {
-            addPendingDBOperation(loc, locStr, stb, UpdateRecord.Operation.INSERT);
+            addPendingDBOperation(loc, locStr, UpdateRecord.Operation.INSERT);
         }
 
         if (stb.getTickRate() > 0) {
@@ -136,8 +146,8 @@ public class LocationManager {
         Debugger.getInstance().debug("Registered " + stb + " @ " + loc);
     }
 
-    public void updateLocation(Location loc, BaseSTBBlock stb) {
-        addPendingDBOperation(loc, MiscUtil.formatLocation(loc), stb, UpdateRecord.Operation.UPDATE);
+    public void updateLocation(Location loc) {
+        addPendingDBOperation(loc, MiscUtil.formatLocation(loc), UpdateRecord.Operation.UPDATE);
     }
 
     public void unregisterLocation(Location loc, BaseSTBBlock stb) {
@@ -148,7 +158,7 @@ public class LocationManager {
             stb.setLocation(null);
             loc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
             String locStr = MiscUtil.formatLocation(loc);
-            addPendingDBOperation(loc, locStr, stb, UpdateRecord.Operation.DELETE);
+            addPendingDBOperation(loc, locStr, UpdateRecord.Operation.DELETE);
             getWorldIndex(loc.getWorld()).remove(locStr);
             Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
         } else {
@@ -166,34 +176,34 @@ public class LocationManager {
     public void moveBlock(BaseSTBBlock stb, Location oldLoc, Location newLoc) {
         oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
         String locStr = MiscUtil.formatLocation(oldLoc);
-        addPendingDBOperation(oldLoc, locStr, stb, UpdateRecord.Operation.DELETE);
+        addPendingDBOperation(oldLoc, locStr, UpdateRecord.Operation.DELETE);
         getWorldIndex(oldLoc.getWorld()).remove(locStr);
 
         stb.moveTo(oldLoc, newLoc);
 
         newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
         locStr = MiscUtil.formatLocation(newLoc);
-        addPendingDBOperation(newLoc, locStr, stb, UpdateRecord.Operation.INSERT);
+        addPendingDBOperation(newLoc, locStr, UpdateRecord.Operation.INSERT);
         getWorldIndex(newLoc.getWorld()).put(locStr, stb);
 
         Debugger.getInstance().debug("moved " + stb + " from " + oldLoc + " to " + newLoc);
     }
 
-    private void addPendingDBOperation(Location loc, String locStr, BaseSTBBlock stb, UpdateRecord.Operation op) {
+    private void addPendingDBOperation(Location loc, String locStr, UpdateRecord.Operation op) {
         UpdateRecord existingRec = pendingUpdates.get(locStr);
         switch (op) {
             case INSERT:
                 if (existingRec == null) {
                     // brand new insertion
-                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc, stb.getItemTypeID(), stb));
+                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc));
                 } else if (existingRec.getOp() == UpdateRecord.Operation.DELETE) {
                     // re-inserting where a block was just deleted
-                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
+                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc));
                 }
                 break;
             case UPDATE:
                 if (existingRec == null || existingRec.getOp() != UpdateRecord.Operation.INSERT) {
-                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc, stb.getItemTypeID(), stb));
+                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc));
                 }
                 break;
             case DELETE:
@@ -201,7 +211,7 @@ public class LocationManager {
                     // remove a recent insertion
                     pendingUpdates.remove(locStr);
                 } else {
-                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc, stb.getItemTypeID(), stb));
+                    pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc));
                 }
                 break;
             default:
@@ -295,8 +305,9 @@ public class LocationManager {
     public void tick() {
         long now = System.nanoTime();
         for (World w : Bukkit.getWorlds()) {
-            if (tickers.containsKey(w.getName())) {
-                for (BaseSTBBlock stb : tickers.get(w.getName())) {
+            Set<BaseSTBBlock> tickerSet = allTickers.get(w.getUID());
+            if (tickerSet != null) {
+                for (BaseSTBBlock stb : tickerSet) {
                     PersistableLocation pLoc = stb.getPersistableLocation();
                     int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
                     if (w.isChunkLoaded(x >> 4, z >> 4)) {
@@ -319,8 +330,16 @@ public class LocationManager {
     public void save() {
         // send any pending updates over to the DB updater thread via a BlockingQueue
         if (!pendingUpdates.isEmpty()) {
-            for (Map.Entry<String, UpdateRecord> rec : pendingUpdates.entrySet()) {
-                updateQueue.add(rec.getValue());
+            // TODO: may want to do this over a few ticks to reduce the risk of lag spikes
+            for (UpdateRecord rec : pendingUpdates.values()) {
+                BaseSTBBlock stb = get(rec.getLocation());
+                if (stb != null) {
+                    rec.setType(stb.getItemTypeID());
+                    rec.setData(stb.freeze().saveToString());
+                } else {
+                    Validate.isTrue(rec.getOp() == UpdateRecord.Operation.DELETE, "Found null STB block @ " + rec.getLocation() + " with op = " + rec.getOp());
+                }
+                updateQueue.add(rec);
             }
             updateQueue.add(UpdateRecord.commitRecord());
             pendingUpdates.clear();
@@ -404,10 +423,10 @@ public class LocationManager {
     public void worldUnloaded(World world) {
         save();
 
-        Map<String, BaseSTBBlock> map = blockIndex.get(world.getName());
+        Map<String, BaseSTBBlock> map = blockIndex.get(world.getUID());
         if (map != null) {
             map.clear();
-            blockIndex.remove(world.getName());
+            blockIndex.remove(world.getUID());
         }
     }
 
@@ -417,7 +436,7 @@ public class LocationManager {
      * @param world the world that has been loaded
      */
     public void worldLoaded(World world) {
-        if (!blockIndex.containsKey(world.getName())) {
+        if (!blockIndex.containsKey(world.getUID())) {
             try {
                 loadFromDatabase(world, null);
             } catch (SQLException e) {
@@ -428,17 +447,15 @@ public class LocationManager {
     }
 
     /**
-     * Get an array of all STB blocks for the given world.
+     * Get a list of all STB blocks for the given world.
      *
      * @param world  the world to query
      * @param sorted if true, the array is sorted by block type
      * @return an array of STB block objects
      */
-    public BaseSTBBlock[] listBlocks(World world, boolean sorted) {
+    public List<BaseSTBBlock> listBlocks(World world, boolean sorted) {
         Collection<BaseSTBBlock> list = getWorldIndex(world).values();
-        return sorted ?
-                MiscUtil.asSortedList(list).toArray(new BaseSTBBlock[list.size()]) :
-                list.toArray(new BaseSTBBlock[list.size()]);
+        return sorted ? MiscUtil.asSortedList(list) : Lists.newArrayList(list);
     }
 
     /**

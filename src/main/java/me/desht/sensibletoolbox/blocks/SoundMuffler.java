@@ -76,7 +76,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
     public void setVolume(int volume) {
         this.volume = volume;
-        updateBlock(false);
+        update(false);
     }
 
     @Override

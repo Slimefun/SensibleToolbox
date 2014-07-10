@@ -172,7 +172,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 Block b = getLocation().getBlock().getRelative(event.getBlockFace());
                 b.getWorld().dropItemNaturally(b.getLocation(), getBufferItem());
                 setBufferItem(null);
-                updateBlock(false);
+                update(false);
                 event.getPlayer().playSound(b.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
             }
             event.setCancelled(true);
@@ -248,7 +248,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
             }
             if (didSomeWork) {
-                updateBlock(false);
+                update(false);
                 playParticles();
             }
         }
@@ -491,7 +491,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             insertModule(mod);
         }
         Debugger.getInstance().debug("re-processed modules for " + this + " tick-rate=" + getTickRate() + " stack-size=" + getStackSize());
-        updateBlock(false);
+        update(false);
     }
 
     public List<BlockFace> getNeighbours() {

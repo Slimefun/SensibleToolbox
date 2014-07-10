@@ -93,7 +93,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
         if (!isJammed()) {
             setProcessing(null);
-            updateBlock(false);
+            update(false);
         }
     }
 
@@ -119,7 +119,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             STBUtil.forceInventoryRefresh(getInventory());
         }
 
-        updateBlock(false);
+        update(false);
     }
 
 

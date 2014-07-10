@@ -1,9 +1,11 @@
 package me.desht.sensibletoolbox.items;
 
 import com.comphenix.attribute.AttributeStorage;
+import com.google.common.collect.Maps;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.STBFreezable;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
@@ -21,6 +23,7 @@ import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +35,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -57,9 +61,10 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
     private static final String STB_LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
     public static final String SUFFIX_SEPARATOR = " \uff1a ";
 
-    private static final Map<String, Class<? extends BaseSTBItem>> id2class = new HashMap<String, Class<? extends BaseSTBItem>>();
-    private static final Map<String, Class<? extends STBItem>> craftingRestriction = new HashMap<String, Class<? extends STBItem>>();
-    private static final Map<String, String> id2plugin = new HashMap<String, String>();
+    private static final Map<String, Class<? extends BaseSTBItem>> id2class = Maps.newHashMap();
+    private static final Map<String, Class<? extends STBItem>> craftingRestriction = Maps.newHashMap();
+    private static final Map<String, String> permissionPrefix = Maps.newHashMap();
+    private static final Map<String, String> id2plugin = Maps.newHashMap();
 
     public static final int MAX_ITEM_ID_LENGTH = 32;
 
@@ -165,6 +170,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         if (permissionNode == null) {
             permissionNode = "stb";
         }
+        permissionPrefix.put(id, permissionNode);
 
         Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".interact." + id, PermissionDefault.TRUE));
 
@@ -181,6 +187,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         }
     }
 
+    public boolean checkPlayerPermission(Player player, String action) {
+        String prefix = permissionPrefix.get(getItemTypeID());
+        Validate.notNull(prefix, "Can't determine permission node prefix for " + getItemTypeID());
+        return PermissionUtils.isAllowedTo(player, prefix + "." + action + "." + getItemTypeID());
+    }
 
     /**
      * Get a set of all known STB item ID's.

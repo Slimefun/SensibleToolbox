@@ -824,6 +824,12 @@ public class STBUtil {
         MiscUtil.errorMessage(player, message);
     }
 
+    public static void complain(HumanEntity player, String message) {
+        if (player instanceof Player) {
+            complain((Player) player, message);
+        }
+    }
+
     /**
      * Check if the given material is leaves.
      *

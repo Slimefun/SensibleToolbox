@@ -2,8 +2,10 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
+import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.recipes.FuelItems;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
@@ -11,6 +13,7 @@ import org.bukkit.CoalType;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -116,6 +119,18 @@ public class HeatEngine extends Generator {
     }
 
     @Override
+    protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
+        if (!super.isValidUpgrade(player, upgrade)) {
+            return false;
+        }
+        if (!(upgrade instanceof RegulatorUpgrade)) {
+            STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public Recipe getRecipe() {
         SimpleCircuit sc = new SimpleCircuit();
         TenKEnergyCell cell = new TenKEnergyCell();
@@ -181,7 +196,7 @@ public class HeatEngine extends Generator {
                 if (getProgress() <= 0) {
                     // fuel burnt
                     setProcessing(null);
-                    updateBlock(false);
+                    update(false);
                 }
             }
         }
@@ -209,7 +224,7 @@ public class HeatEngine extends Generator {
         setProgress(currentFuel.getBurnTime());
         stack.setAmount(stack.getAmount() - 1);
         setInventoryItem(inputSlot, stack);
-        updateBlock(false);
+        update(false);
     }
 
     private ItemStack makeProcessingItem(FuelItems.FuelValues fuel, ItemStack input) {

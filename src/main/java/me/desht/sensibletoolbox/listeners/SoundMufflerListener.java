@@ -42,12 +42,12 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
     }
 
     public void registerMuffler(SoundMuffler m) {
-        Debugger.getInstance().debug("register sound muffler @ " + m.getLocation());
+        Debugger.getInstance().debug("Registered sound muffler @ " + m.getLocation());
         mufflers.add(m);
     }
 
     public void unregisterMuffler(SoundMuffler m) {
-        Debugger.getInstance().debug("unregister sound muffler @ " + m.getLocation());
+        Debugger.getInstance().debug("Unregistered sound muffler @ " + m.getLocation());
         mufflers.remove(m);
     }
 

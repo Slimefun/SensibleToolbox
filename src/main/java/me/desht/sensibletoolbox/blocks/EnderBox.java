@@ -62,7 +62,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public void setEnderFrequency(int frequency) {
         this.frequency = frequency;
         signLabel[2] = ChatColor.DARK_RED + getDisplaySuffix();
-        updateBlock(false);
+        update(false);
         updateAttachedLabelSigns();
     }
 
@@ -75,7 +75,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public void setGlobal(boolean global) {
         this.global = global;
         signLabel[2] = ChatColor.DARK_RED + getDisplaySuffix();
-        updateBlock(false);
+        update(false);
         updateAttachedLabelSigns();
     }
 

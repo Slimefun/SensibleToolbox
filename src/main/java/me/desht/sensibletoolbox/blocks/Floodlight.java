@@ -47,7 +47,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 
     public void setColor(DyeColor color) {
         this.color = color;
-        updateBlock(true);
+        update(true);
     }
 
     @Override
