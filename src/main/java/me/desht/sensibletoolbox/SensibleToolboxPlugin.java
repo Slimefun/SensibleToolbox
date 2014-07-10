@@ -32,10 +32,12 @@ import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -109,6 +111,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         setupLandslide();
         setupLWC();
+
+        InventoryGUI.buildStockTextures();
 
         BaseSTBItem.registerItems(this);
         registerEventListeners();
@@ -321,6 +325,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
         } else if (key.equals("energy.tick_rate")) {
             DHValidate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
+        } else if (key.startsWith("gui.texture.")) {
+            STBUtil.parseMaterialSpec(newVal.toString());
         }
         return newVal;
     }
@@ -339,6 +345,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             LocationManager.getManager().setSaveInterval((Integer) newVal);
         } else if (key.equals("energy.tick_rate")) {
             scheduleEnergyNetTicker();
+        } else if (key.startsWith("gui.texture.")) {
+            InventoryGUI.buildStockTextures();
         }
     }
 

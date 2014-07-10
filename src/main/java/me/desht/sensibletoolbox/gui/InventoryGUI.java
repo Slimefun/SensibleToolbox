@@ -10,10 +10,8 @@ import me.desht.sensibletoolbox.util.BukkitSerialization;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.IntRange;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
@@ -30,11 +28,23 @@ import java.util.List;
 
 public class InventoryGUI {
     // some handy stock textures
-    public static final ItemStack INPUT_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
-    public static final ItemStack OUTPUT_TEXTURE = new ItemStack(Material.ENDER_PORTAL);
-    public static final ItemStack BG_TEXTURE = new ItemStack(Material.STATIONARY_WATER);
+    public static ItemStack INPUT_TEXTURE;
+    public static ItemStack OUTPUT_TEXTURE;
+    public static ItemStack BG_TEXTURE;
+    public static ItemStack LABEL_TEXTURE;
+    public static ItemStack BUTTON_TEXTURE;
 
     static {
+        buildStockTextures();
+    }
+
+    public static void buildStockTextures() {
+        Configuration config = SensibleToolboxPlugin.getInstance().getConfig();
+        INPUT_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.input"));
+        OUTPUT_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.output"));
+        BG_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.bg"));
+        LABEL_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.label"));
+        BUTTON_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.button"));
         setDisplayName(INPUT_TEXTURE, ChatColor.AQUA + "Input");
         setDisplayName(OUTPUT_TEXTURE, ChatColor.AQUA + "Output");
         setDisplayName(BG_TEXTURE, " ");
@@ -118,7 +128,7 @@ public class InventoryGUI {
     }
 
     public void addLabel(String label, int slot, ItemStack texture, String... lore) {
-        ItemStack stack = texture == null ? new ItemStack(Material.ENDER_PORTAL) : texture;
+        ItemStack stack = texture == null ? LABEL_TEXTURE.clone() : texture;
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.AQUA + label);
         if (lore.length > 0) {

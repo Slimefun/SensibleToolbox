@@ -14,6 +14,13 @@ paint_per_dye: 25
 multibuilder:
   charge_per_op: 40
 noisy_machines: true
+gui:
+  texture:
+    input: stained_glass_pane:cyan
+    output: stained_glass_pane:orange
+    bg: stained_glass_pane:blue
+    label: stained_glass_pane:green
+    button: monster_egg:52
 items_enabled:
   advancedmoisturechecker: true
   advancedrecipebook: true

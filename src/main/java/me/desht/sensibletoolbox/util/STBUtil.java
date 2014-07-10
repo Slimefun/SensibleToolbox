@@ -2,13 +2,12 @@ package me.desht.sensibletoolbox.util;
 
 import com.comphenix.attribute.Attributes;
 import com.google.common.base.Joiner;
-import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemNames;
-import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.*;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -19,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
@@ -882,5 +882,82 @@ public class STBUtil {
                     attr.getUUID().toString(), attr.getName(), attr.getAmount(),
                     attr.getAttributeType().toString(), attr.getOperation().toString()));
         }
+    }
+
+    /**
+     * Given a string specification, try to get an ItemStack.
+     * <p>
+     * The spec. is of the form "material-name[:data-byte][,amount][,glow]" where
+     * material-name is a valid Bukkit material name as understoood by
+     * {@link Material#matchMaterial(String)}, data-byte is a numeric byte value,
+     * amount is an optional item quantity, and "glow" if present indicates that
+     * the item should glow if possible.
+     * <p>
+     * No item metadata is considered by this method.
+     *
+     * @param spec the specification
+     * @return the return ItemStack
+     * @throws DHUtilsException if the specification is invalid
+     */
+    public static ItemStack parseMaterialSpec(String spec) {
+        if (spec == null || spec.isEmpty()) {
+            return null;
+        }
+
+        String[] fields = spec.split(",");
+        MaterialData mat = parseMatAndData(fields[0]);
+
+        int amount = 1;
+        boolean glowing = false;
+        for (int i = 1; i < fields.length; i++) {
+            if (StringUtils.isNumeric(fields[i])) {
+                amount = Integer.parseInt(fields[i]);
+            } else if (fields[i].equalsIgnoreCase("glow")) {
+                glowing = true;
+            }
+        }
+        ItemStack stack = mat.toItemStack(amount);
+        if (glowing && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+            ItemGlow.setGlowing(stack, true);
+        }
+
+        return stack;
+    }
+
+    private static MaterialData parseMatAndData(String matData) {
+        String[] fields = matData.split("[:()]");
+        Material mat = Material.matchMaterial(fields[0]);
+        if (mat == null) {
+            throw new DHUtilsException("Unknown material " + fields[0]);
+        }
+        MaterialData res = new MaterialData(mat);
+        if (fields.length > 1) {
+            if (StringUtils.isNumeric(fields[1])) {
+                res.setData(Byte.parseByte(fields[1]));
+            } else {
+                switch (mat) {
+                    case INK_SACK:
+                        Dye dye = new Dye();
+                        dye.setColor(DyeColor.valueOf(fields[1].toUpperCase()));
+                        res = dye;
+                        break;
+                    case WOOL:
+                    case CARPET:
+                    case STAINED_GLASS:
+                    case STAINED_GLASS_PANE:
+                    case STAINED_CLAY:
+                        // maybe one day these will all implement Colorable...
+                        DyeColor dc2 = DyeColor.valueOf(fields[1].toUpperCase());
+                        res.setData(dc2.getWoolData());
+                        break;
+                    case SAPLING:
+                    case WOOD:
+                        TreeSpecies ts = TreeSpecies.valueOf(fields[1].toUpperCase());
+                        res.setData(ts.getData());
+                        break;
+                }
+            }
+        }
+        return res;
     }
 }
