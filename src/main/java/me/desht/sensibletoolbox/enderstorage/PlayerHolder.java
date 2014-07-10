@@ -2,8 +2,12 @@ package me.desht.sensibletoolbox.enderstorage;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.util.UUID;
 
 public class PlayerHolder extends EnderStorageHolder {
     private final OfflinePlayer player;
@@ -52,4 +56,5 @@ public class PlayerHolder extends EnderStorageHolder {
     public String toString() {
         return "Player Ender Storage " + player.getName() + "#" + getFrequency();
     }
+
 }

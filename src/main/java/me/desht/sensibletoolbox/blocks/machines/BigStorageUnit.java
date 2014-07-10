@@ -563,16 +563,20 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     @Override
-    public Inventory showOutputItems() {
+    public Inventory showOutputItems(UUID uuid) {
         Inventory inv = Bukkit.createInventory(this, 9);
-        inv.setItem(0, getOutputItem());
+        if (hasAccessRights(uuid)) {
+            inv.setItem(0, getOutputItem());
+        }
         return inv;
     }
 
     @Override
-    public void updateOutputItems(Inventory inventory) {
-        setOutputItem(inventory.getItem(0));
-        setOutputAmount(getOutputItem() == null ? 0 : getOutputItem().getAmount());
+    public void updateOutputItems(UUID uuid, Inventory inventory) {
+        if (hasAccessRights(uuid)) {
+            setOutputItem(inventory.getItem(0));
+            setOutputAmount(getOutputItem() == null ? 0 : getOutputItem().getAmount());
+        }
     }
 
     /**

@@ -137,13 +137,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     @Override
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
         if (hasAccessRights(uuid)) {
-            Inventory inv = getInventoryFor(uuid);
-            int nInserted = VanillaInventoryUtils.vanillaInsertion(inv, item, item.getAmount(), face, sorting);
-            if (nInserted > 0) {
-                EnderStorageHolder holder = (EnderStorageHolder) inv.getHolder();
-                holder.setChanged();
-            }
-            return nInserted;
+            return getInventoryHolderFor(uuid).insertItems(item, face, sorting, uuid);
         } else {
             return 0;
         }
@@ -152,43 +146,37 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     @Override
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
         if (hasAccessRights(uuid)) {
-            Inventory inv = getInventoryFor(uuid);
-            ItemStack stack = VanillaInventoryUtils.pullFromInventory(inv, amount, receiver, null);
-            if (stack != null) {
-                EnderStorageHolder holder = (EnderStorageHolder) inv.getHolder();
-                holder.setChanged();
-            }
-            return stack;
+            return getInventoryHolderFor(uuid).extractItems(face, receiver, amount, uuid);
         } else {
             return null;
         }
     }
 
     @Override
-    public Inventory showOutputItems() {
-        Inventory source = getInventory();
-        Inventory res = Bukkit.createInventory(source.getHolder(), source.getSize());
-        res.setContents(source.getContents());
-        return res;
+    public Inventory showOutputItems(UUID uuid) {
+        if (hasAccessRights(uuid)) {
+            return getInventoryHolderFor(uuid).showOutputItems(uuid);
+        } else {
+            return Bukkit.createInventory(this, getInventory().getSize());
+        }
     }
 
     @Override
-    public void updateOutputItems(Inventory inventory) {
-        Inventory target = getInventory();
-        target.setContents(inventory.getContents());
-        EnderStorageHolder holder = (EnderStorageHolder) inventory.getHolder();
-        holder.setChanged();
+    public void updateOutputItems(UUID uuid, Inventory inventory) {
+        if (hasAccessRights(uuid)) {
+            getInventoryHolderFor(uuid).updateOutputItems(uuid, inventory);
+        }
     }
 
     @Override
     public Inventory getInventory() {
-        return getInventoryFor(getOwner());
+        return getInventoryHolderFor(getOwner()).getInventory();
     }
 
-    private Inventory getInventoryFor(UUID uuid) {
+    private EnderStorageHolder getInventoryHolderFor(UUID uuid) {
         EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
         return isGlobal() ?
-                esm.getGlobalInventory(getEnderFrequency()) :
-                esm.getPlayerInventory(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
+                esm.getGlobalInventoryHolder(getEnderFrequency()) :
+                esm.getPlayerInventoryHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
     }
 }

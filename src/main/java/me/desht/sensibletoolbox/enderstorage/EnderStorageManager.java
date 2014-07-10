@@ -50,7 +50,7 @@ public class EnderStorageManager implements Listener {
         return storageDir;
     }
 
-    public Inventory getGlobalInventory(int frequency) {
+    public GlobalHolder getGlobalInventoryHolder(int frequency) {
         GlobalHolder h = globalInvs.get(frequency);
         if (h == null) {
             h = new GlobalHolder(this, frequency);
@@ -62,11 +62,10 @@ public class EnderStorageManager implements Listener {
                 return null;
             }
         }
-
-        return h.getInventory();
+        return h;
     }
 
-    public Inventory getPlayerInventory(OfflinePlayer player, int frequency) {
+    public PlayerHolder getPlayerInventoryHolder(OfflinePlayer player, Integer frequency) {
         Map<Integer, PlayerHolder> map = playerInvs.get(player.getUniqueId());
         if (map == null) {
             map = new HashMap<Integer, PlayerHolder>();
@@ -83,7 +82,15 @@ public class EnderStorageManager implements Listener {
                 return null;
             }
         }
-        return h.getInventory();
+        return h;
+    }
+
+    public Inventory getGlobalInventory(int frequency) {
+        return getGlobalInventoryHolder(frequency).getInventory();
+    }
+
+    public Inventory getPlayerInventory(OfflinePlayer player, int frequency) {
+        return getPlayerInventoryHolder(player, frequency).getInventory();
     }
 
     private void setupStorageStructure(SensibleToolboxPlugin plugin, File storageDir) {

@@ -4,17 +4,21 @@ import com.google.common.io.Files;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.util.BukkitSerialization;
+import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Scanner;
+import java.util.UUID;
 
-public abstract class EnderStorageHolder implements InventoryHolder {
+public abstract class EnderStorageHolder implements STBInventoryHolder {
     private final int frequency;
     private final EnderStorageManager manager;
     private Inventory inventory;
@@ -72,6 +76,38 @@ public abstract class EnderStorageHolder implements InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    @Override
+    public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
+        int nInserted = VanillaInventoryUtils.vanillaInsertion(getInventory(), item, item.getAmount(), face, sorting);
+        if (nInserted > 0) {
+            setChanged();
+        }
+        return nInserted;
+    }
+
+    @Override
+    public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+        ItemStack stack = VanillaInventoryUtils.pullFromInventory(getInventory(), amount, receiver, null);
+        if (stack != null) {
+           setChanged();
+        }
+        return stack;
+    }
+
+    @Override
+    public Inventory showOutputItems(UUID uuid) {
+        Inventory res = Bukkit.createInventory(this, getInventory().getSize());
+        res.setContents(getInventory().getContents());
+        return res;
+    }
+
+    @Override
+    public void updateOutputItems(UUID uuid, Inventory inventory) {
+        Inventory target = getInventory();
+        target.setContents(inventory.getContents());
+        setChanged();
     }
 
     public void setChanged() {

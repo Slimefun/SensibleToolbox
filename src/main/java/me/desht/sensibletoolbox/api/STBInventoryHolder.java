@@ -44,16 +44,18 @@ public interface STBInventoryHolder extends InventoryHolder {
     /**
      * Get a view of the items which can be extracted from this inventory.  Note that
      * the returned inventory is a copied view, and modifying it will not change the
-     * inventory holder's actual contents (but see {@link #updateOutputItems(org.bukkit.inventory.Inventory)})
+     * inventory holder's actual contents (but see {@link #updateOutputItems(UUID, org.bukkit.inventory.Inventory)})
      *
+     * @param uuid UUID of the player trying to get the view
      * @return an inventory containing a copy of the items which can be extracted
      */
-    public Inventory showOutputItems();
+    public Inventory showOutputItems(UUID uuid);
 
     /**
      * Update (overwite) the STB output inventory with the contents of the supplied inventory.
      *
-     * @param inventory the inventory to update items from
+     * @param uuid UUID of the player trying to update the inventory
+     * @param inventory the source inventory to update items from
      */
-    void updateOutputItems(Inventory inventory);
+    void updateOutputItems(UUID uuid, Inventory inventory);
 }

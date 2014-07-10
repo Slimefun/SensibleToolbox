@@ -114,13 +114,13 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public Inventory showOutputItems() {
+    public Inventory showOutputItems(UUID uuid) {
         // a trash can always appears to have an empty inventory
         return Bukkit.createInventory(this, 9);
     }
 
     @Override
-    public void updateOutputItems(Inventory inventory) {
+    public void updateOutputItems(UUID uuid, Inventory inventory) {
         // do nothing
     }
 
