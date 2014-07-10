@@ -58,6 +58,7 @@ items_enabled:
   ironcombinehoe: true
   irondust: true
   itemrouter: true
+  landmarker: true
   machineframe: true
   masher: true
   moisturechecker: true
