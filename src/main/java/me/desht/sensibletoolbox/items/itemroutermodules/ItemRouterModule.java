@@ -9,7 +9,6 @@ import org.bukkit.material.Dye;
 
 public abstract class ItemRouterModule extends BaseSTBItem {
     private ItemRouter itemRouter;
-    private int amount;
 
     protected static Dye makeDye(DyeColor color) {
         Dye dye = new Dye();
@@ -18,27 +17,10 @@ public abstract class ItemRouterModule extends BaseSTBItem {
     }
 
     protected ItemRouterModule() {
-        amount = 1;
     }
 
     public ItemRouterModule(ConfigurationSection conf) {
         super(conf);
-        amount = conf.getInt("amount", 1);
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    @Override
-    public YamlConfiguration freeze() {
-        YamlConfiguration conf = super.freeze();
-        conf.set("amount", amount);
-        return conf;
     }
 
     @Override
@@ -53,6 +35,5 @@ public abstract class ItemRouterModule extends BaseSTBItem {
     public void setItemRouter(ItemRouter owner) {
         this.itemRouter = owner;
     }
-
 
 }

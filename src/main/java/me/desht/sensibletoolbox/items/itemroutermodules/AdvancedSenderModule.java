@@ -101,19 +101,13 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             // try to link up with a receiver module
-            boolean linked = false;
             ItemRouter rtr = LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
-            if (rtr != null) {
-                for (ItemRouterModule mod : rtr.getInstalledModules()) {
-                    if (mod instanceof ReceiverModule) {
-                        linkToRouter(rtr);
-                        event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
-                        linked = true;
-                        break;
-                    }
-                }
+            if (rtr != null && rtr.findModule(ReceiverModule.class) != null) {
+                linkToRouter(rtr);
+                event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+            } else {
+                STBUtil.complain(event.getPlayer());
             }
-            STBUtil.complain(event.getPlayer());
             event.setCancelled(true);
         } else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
@@ -142,11 +136,9 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
                 if (loc.getWorld() != loc2.getWorld() || loc.distanceSquared(loc2) > RANGE * RANGE) {
                     return false;
                 }
-                for (ItemRouterModule mod : rtr.getInstalledModules()) {
-                    if (mod instanceof ReceiverModule) {
-                        int sent = sendItems((ReceiverModule) mod);
-                        return sent > 0;
-                    }
+                ReceiverModule mod = rtr.findModule(ReceiverModule.class);
+                if (mod != null) {
+                    return sendItems(mod) > 0;
                 }
             }
         }

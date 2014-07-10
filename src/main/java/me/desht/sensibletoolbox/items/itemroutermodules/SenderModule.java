@@ -122,14 +122,7 @@ public class SenderModule extends DirectionalItemRouterModule {
             }
         }
         ItemRouter rtr = LocationManager.getManager().get(b.getLocation(), ItemRouter.class);
-        if (rtr != null) {
-            for (ItemRouterModule mod : rtr.getInstalledModules()) {
-                if (mod instanceof ReceiverModule) {
-                    return (ReceiverModule) mod;
-                }
-            }
-        }
-        return null;
+        return rtr == null ? null : rtr.findModule(ReceiverModule.class);
     }
 
     private boolean allowsItemsThrough(Material mat) {

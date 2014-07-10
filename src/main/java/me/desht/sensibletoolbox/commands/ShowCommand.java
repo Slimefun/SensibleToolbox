@@ -131,7 +131,7 @@ public class ShowCommand extends AbstractCommand {
             List<String> l = new ArrayList<String>(inv.getSize());
             for (ItemStack stack : inv) {
                 if (stack != null) {
-                    l.add(STBUtil.describeItemStack(inv.getItem(0)));
+                    l.add(STBUtil.describeItemStack(stack));
                 }
             }
             s = Joiner.on(", ").join(l);
