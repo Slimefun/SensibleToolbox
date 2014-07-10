@@ -303,7 +303,6 @@ public class RecipeBook extends BaseSTBItem {
                         inSlot.setDurability((short) 0);
                     }
                     if (itemListPos.containsKey(inSlot)) {
-                        System.out.println("yes!");
                         trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
                         viewingItem = itemListPos.get(inSlot);
                         recipeNumber = 0;
