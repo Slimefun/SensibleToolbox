@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBItem;
@@ -347,37 +346,35 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler
     public void onGUIInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof STBGUIHolder) {
-            ((STBGUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
-        } else if (event.getInventory().getHolder() instanceof Player) {
-            InventoryGUI gui = InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
-            if (gui != null) {
-                gui.receiveEvent(event);
-            }
+        InventoryGUI gui = getGUIForInventoryEvent(event);
+        if (gui != null) {
+            gui.receiveEvent(event);
         }
     }
 
     @EventHandler
     public void onGUIInventoryDrag(InventoryDragEvent event) {
-        if (event.getInventory().getHolder() instanceof STBGUIHolder) {
-            ((STBGUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
-        } else if (event.getInventory().getHolder() instanceof Player) {
-            InventoryGUI gui = InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
-            if (gui != null) {
-                gui.receiveEvent(event);
-            }
+        InventoryGUI gui = getGUIForInventoryEvent(event);
+        if (gui != null) {
+            gui.receiveEvent(event);
         }
     }
 
     @EventHandler
     public void onGUIInventoryClose(InventoryCloseEvent event) {
+        InventoryGUI gui = getGUIForInventoryEvent(event);
+        if (gui != null) {
+            gui.receiveEvent(event);
+        }
+    }
+
+    private InventoryGUI getGUIForInventoryEvent(InventoryEvent event) {
         if (event.getInventory().getHolder() instanceof STBGUIHolder) {
-            ((STBGUIHolder) event.getInventory().getHolder()).getGUI().receiveEvent(event);
+            return ((STBGUIHolder) event.getInventory().getHolder()).getGUI();
         } else if (event.getInventory().getHolder() instanceof Player) {
-            InventoryGUI gui = InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
-            if (gui != null) {
-                gui.receiveEvent(event);
-            }
+            return InventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
+        } else {
+            return null;
         }
     }
 
