@@ -297,7 +297,11 @@ public class RecipeBook extends BaseSTBItem {
                     }
                 } else {
                     // drill down into the description for an item in the recipe
+                    if (inSlot.getDurability() == 32767 && !itemListPos.containsKey(inSlot)) {
+                        inSlot.setDurability((short) 0);
+                    }
                     if (itemListPos.containsKey(inSlot)) {
+                        System.out.println("yes!");
                         trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
                         viewingItem = itemListPos.get(inSlot);
                         recipeNumber = 0;
