@@ -6,7 +6,6 @@ import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.enderstorage.EnderStorageHolder;
 import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,14 +34,12 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public EnderBox() {
         setEnderFrequency(1);
         setGlobal(false);
-        signLabel[0] = makeItemLabel();
     }
 
     public EnderBox(ConfigurationSection conf) {
         super(conf);
         setEnderFrequency(conf.getInt("frequency"));
         setGlobal(conf.getBoolean("global"));
-        signLabel[0] = makeItemLabel();
     }
 
     @Override
@@ -100,8 +97,10 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     }
 
     @Override
-    protected String[] getSignLabel() {
-        return signLabel;
+    protected String[] getSignLabel(BlockFace face) {
+        String[] label = super.getSignLabel(face);
+        System.arraycopy(signLabel, 1, label, 1, 3);
+        return label;
     }
 
     @Override

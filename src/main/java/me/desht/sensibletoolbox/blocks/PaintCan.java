@@ -280,10 +280,9 @@ public class PaintCan extends BaseSTBBlock {
     }
 
     @Override
-    protected String[] getSignLabel() {
-        String res[] = new String[4];
+    protected String[] getSignLabel(BlockFace face) {
+        String res[] = super.getSignLabel(face);
         ChatColor cc = STBUtil.dyeColorToChatColor(getColour());
-        res[0] = getItemName();
         res[1] = cc.toString() + getColour();
         res[2] = getPaintLevel() + "/" + getMaxPaintLevel();
         res[3] = cc + StringUtils.repeat("◼", (getPaintLevel() * 13) / getMaxPaintLevel());

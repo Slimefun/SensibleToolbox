@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -142,9 +143,9 @@ public class SoundMuffler extends BaseSTBBlock {
     }
 
     @Override
-    public String[] getSignLabel() {
+    public String[] getSignLabel(BlockFace face) {
         return new String[]{
-                getItemName(),
+                makeItemLabel(face),
                 ChatColor.DARK_RED + "Volume " + ChatColor.RESET + getVolume(),
                 "",
                 ""

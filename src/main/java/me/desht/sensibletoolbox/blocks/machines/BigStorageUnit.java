@@ -45,13 +45,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         super();
         locked = false;
         setStoredItemType(null);
-        signLabel[0] = makeItemLabel();
         oldTotalAmount = storageAmount = outputAmount = 0;
     }
 
     public BigStorageUnit(ConfigurationSection conf) {
         super(conf);
-        signLabel[0] = makeItemLabel();
         try {
             Inventory inv = BukkitSerialization.fromBase64(conf.getString("stored"));
             setStoredItemType(inv.getItem(0));
@@ -478,8 +476,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     @Override
-    protected String[] getSignLabel() {
-        return signLabel;
+    protected String[] getSignLabel(BlockFace face) {
+        String[] label = super.getSignLabel(face);
+        System.arraycopy(signLabel, 1, label, 1, 3);
+        return label;
     }
 
     public ItemStack getOutputItem() {

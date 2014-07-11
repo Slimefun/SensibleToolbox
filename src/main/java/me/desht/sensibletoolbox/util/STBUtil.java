@@ -3,11 +3,13 @@ package me.desht.sensibletoolbox.util;
 import com.comphenix.attribute.Attributes;
 import com.google.common.base.Joiner;
 import me.desht.dhutils.*;
+import me.desht.dhutils.block.BlockUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBItem;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -959,5 +961,44 @@ public class STBUtil {
             }
         }
         return res;
+    }
+
+    /**
+     * Get the relative rotations of two block faces; the number of clockwise
+     * 90-degree rotations from the first face to the second.
+     *
+     * @param face1 the first face
+     * @param face2 the second face
+     * @return the number of 90-degree rotations between the faces
+     */
+    public static int getFaceRotation(BlockFace face1, BlockFace face2) {
+        Validate.isTrue(face1.getModY() == 0 && Math.abs(face1.getModX() + face1.getModZ()) == 1, "invalid face " + face1);
+        Validate.isTrue(face2.getModY() == 0 && Math.abs(face2.getModX() + face2.getModZ()) == 1, "invalid face " + face2);
+        if (face1 == face2) {
+            return 0;
+        } else if (face1 == face2.getOppositeFace()) {
+            return 2;
+        } else {
+            return face2 == BlockUtil.getLeft(face1) ? 3 : 1;
+        }
+    }
+
+    /**
+     * Given a BlockFace and a rotation in units of 90 degrees, return the
+     * face obtained by a clockwise rotation.
+     *
+     * @param face the original face
+     * @param rotation number of clockwise 90-degree rotations
+     * @return the rotated face
+     */
+    public static BlockFace getRotatedFace(BlockFace face, int rotation) {
+        Validate.isTrue(face.getModY() == 0 && Math.abs(face.getModX() + face.getModZ()) == 1, "invalid face " + face);
+        switch (rotation) {
+            case 0: return face;
+            case 2: return face.getOppositeFace();
+            case 1: return BlockUtil.getLeft(face).getOppositeFace();
+            case 3: return BlockUtil.getLeft(face);
+            default: throw new IllegalArgumentException("invalid rotation" + rotation);
+        }
     }
 }

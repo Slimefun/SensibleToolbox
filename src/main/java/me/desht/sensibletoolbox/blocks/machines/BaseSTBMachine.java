@@ -218,8 +218,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     }
 
     @Override
-    protected String[] getSignLabel() {
-        String[] label = super.getSignLabel();
+    protected String[] getSignLabel(BlockFace face) {
+        String[] label = super.getSignLabel(face);
         if (label[3].isEmpty()) {
             label[3] = getChargeLabel();
         }
