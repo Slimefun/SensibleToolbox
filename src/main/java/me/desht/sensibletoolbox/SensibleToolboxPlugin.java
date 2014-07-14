@@ -32,12 +32,12 @@ import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.util.SunlightLevels;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -63,6 +63,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private BukkitTask energyTask = null;
     private LWC lwc = null;
     private EnderStorageManager enderStorageManager;
+    private SunlightLevels sunlightLevels;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -156,6 +157,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         scheduleEnergyNetTicker();
 
         setupMetrics();
+
+        sunlightLevels = new SunlightLevels();
+        Bukkit.getScheduler().runTaskTimer(this, sunlightLevels, 1L, 20L);
 
         inited = true;
     }
@@ -302,6 +306,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         cmds.registerCommand(new SoundCommand());
         cmds.registerCommand(new RecipeCommand());
         cmds.registerCommand(new ExamineCommand());
+        cmds.registerCommand(new RedrawCommand());
     }
 
     @Override
@@ -369,5 +374,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public EnderStorageManager getEnderStorageManager() {
         return enderStorageManager;
+    }
+
+    public SunlightLevels getSunlightLevels() {
+        return sunlightLevels;
     }
 }

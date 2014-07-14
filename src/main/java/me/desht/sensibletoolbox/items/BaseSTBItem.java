@@ -125,6 +125,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new RegulatorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new HeatEngine(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BasicSolarCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new DenseSolar(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new RecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new AdvancedRecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new Multimeter(), plugin, CONFIG_NODE, PERMISSION_NODE);
@@ -144,6 +145,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new SiliconWafer(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new IntegratedCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new LandMarker(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new PVCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
         if (plugin.isProtocolLibEnabled()) {
             registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
         }
@@ -485,7 +487,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
             short max = res.getType().getMaxDurability();
             double d = ch.getCharge() / (double) ch.getMaxCharge();
             short dur = (short) (max * d);
-            res.setDurability((short) (max - dur));
+            res.setDurability((short) Math.max(1, max - dur));
         }
 
         // any serialized data from the object goes in the ItemStack attributes
@@ -558,6 +560,11 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
     @Override
     public boolean onClickOutside(HumanEntity player) {
         return false;
+    }
+
+
+    @Override
+    public void onGUIOpened(HumanEntity player) {
     }
 
     @Override

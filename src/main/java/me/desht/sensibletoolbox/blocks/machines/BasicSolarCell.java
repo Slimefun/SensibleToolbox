@@ -1,47 +1,68 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.LightMeter;
+import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.items.PVCell;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.util.RelativePosition;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
+import java.util.UUID;
+
 public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
 
-    private static final double SCU_PER_TICK = 0.5;
-    private static final int LIGHT_SLOT = 13;
+    private static final int PV_CELL_SLOT = 1;
+    private static final int LIGHT_METER_SLOT = 13;
 
     private byte effectiveLightLevel;
     private int lightMeterId;
+    private int pvCellLife;
 
     public BasicSolarCell() {
-
+        pvCellLife = 0;
+        setChargeDirection(ChargeDirection.CELL);
     }
 
     public BasicSolarCell(ConfigurationSection conf) {
         super(conf);
+        pvCellLife = conf.getInt("pvCellLife", 0);
+    }
+
+    @Override
+    public YamlConfiguration freeze() {
+        YamlConfiguration conf = super.freeze();
+        conf.set("pvCellLife", pvCellLife);
+        return conf;
     }
 
     @Override
     public int[] getInputSlots() {
-        return new int[0];  // no input
+        return new int[] { 1 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0];  // no output
+        return new int[] { 1 };
     }
 
     @Override
@@ -55,6 +76,93 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
+    public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+        boolean res = super.onSlotClick(player, slot, click, inSlot, onCursor);
+        if (res) {
+            rescanPVCell();
+        }
+        return res;
+    }
+
+    @Override
+    public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
+        int inserted = super.onShiftClickInsert(player, slot, toInsert);
+        if (inserted > 0) {
+            rescanPVCell();
+        }
+        return inserted;
+    }
+
+    @Override
+    public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
+        boolean res = super.onShiftClickExtract(player, slot, toExtract);
+        if (res) {
+            rescanPVCell();
+        }
+        return res;
+    }
+
+    @Override
+    public void onGUIOpened(HumanEntity player) {
+        drawPVCell(getGUI());
+    }
+
+    @Override
+    public boolean acceptsItemType(ItemStack item) {
+        return BaseSTBItem.isSTBItem(item, PVCell.class);
+    }
+
+    @Override
+    public int insertItems(ItemStack toInsert, BlockFace side, boolean sorting, UUID uuid) {
+        int n = super.insertItems(toInsert, side, sorting, uuid);
+        if (n > 0) {
+            rescanPVCell();
+        }
+        return n;
+    }
+
+    @Override
+    public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
+        ItemStack stack = super.extractItems(face, receiver, amount, uuid);
+        if (stack != null) {
+            rescanPVCell();
+        }
+        return stack;
+    }
+
+    @Override
+    public void repaint(Block block) {
+        super.repaint(block);
+        drawPVLayer(block.getRelative(BlockFace.UP));
+    }
+
+    private void rescanPVCell() {
+        // defer this since we need to ensure the inventory slot is actually updated
+        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                PVCell cell = BaseSTBItem.fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
+                int pvl = cell == null ? 0 : cell.getLifespan();
+                if (pvl != pvCellLife) {
+                    boolean doRedraw = pvl == 0 || pvCellLife == 0;
+                    pvCellLife = pvl;
+                    update(doRedraw);
+                }
+            }
+        });
+    }
+
+    private void drawPVCell(InventoryGUI gui) {
+        if (pvCellLife > 0) {
+            PVCell pvCell = new PVCell();
+            pvCell.setLifespan(pvCellLife);
+            gui.setItem(PV_CELL_SLOT, pvCell.toItemStack());
+        } else {
+            gui.setItem(PV_CELL_SLOT, null);
+        }
+    }
+
+    @Override
     protected void playActiveParticleEffect() {
         // nothing
     }
@@ -65,18 +173,26 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
-    public boolean hasGlow() {
-        return true;
-    }
-
-    @Override
     public String getItemName() {
-        return "Basic Solar Cell";
+        return "Basic Solar";
     }
 
     @Override
     public String[] getLore() {
-        return new String[]{"Generates up to 1 SCU/t", "while outside in bright sunlight"};
+        return new String[]{"Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", "⇧ + L-click block (empty hand): ",  ChatColor.RESET +"  - extract PV cell"};
+    }
+
+    @Override
+    public String[] getExtraLore() {
+        String[] l = super.getExtraLore();
+        String[] l2 = new String[l.length + 1];
+        System.arraycopy(l, 0, l2, 0, l.length);
+        if (pvCellLife == 0) {
+            l2[l.length] = ChatColor.GRAY.toString() + ChatColor.ITALIC + "No PV Cell installed";
+        } else {
+            l2[l.length] = PVCell.formatCellLife(pvCellLife);
+        }
+        return l2;
     }
 
     @Override
@@ -133,12 +249,25 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
         return 20;
     }
 
+    private void drawPVLayer(Block b) {
+        // put a carpet on top of the main block to represent the PV cell
+        DyeColor color = pvCellLife > 0 ? getCapColour() : DyeColor.GRAY;
+        MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, color);
+        b.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
+    }
+
     @Override
     public void onBlockPlace(BlockPlaceEvent event) {
-        // put a carpet on top of the main block to represent the PV cell
-        Block above = event.getBlock().getRelative(BlockFace.UP);
-        MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, getCapColour());
-        above.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
+        drawPVLayer(event.getBlock().getRelative(BlockFace.UP));
+    }
+
+    @Override
+    public void setLocation(Location loc) {
+        if (loc == null) {
+            // remove any pv cell in the gui; pv level is stored as separately
+            getGUI().setItem(PV_CELL_SLOT, null);
+        }
+        super.setLocation(loc);
     }
 
     protected DyeColor getCapColour() {
@@ -148,6 +277,20 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     @Override
     public RelativePosition[] getBlockStructure() {
         return new RelativePosition[]{new RelativePosition(0, 1, 0)};
+    }
+
+    @Override
+    public void onInteractBlock(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (event.getItem() == null && event.getAction() == Action.LEFT_CLICK_BLOCK && player.isSneaking()) {
+            ItemStack stack = extractItems(event.getBlockFace(), null, 1, event.getPlayer().getUniqueId());
+            if (stack != null) {
+                Block block = event.getClickedBlock();
+                block.getWorld().dropItemNaturally(block.getLocation(), stack);
+                player.playSound(block.getLocation(), Sound.CLICK, 1.0f, 0.6f);
+            }
+        }
+        super.onInteractBlock(event);
     }
 
     @Override
@@ -162,9 +305,18 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     public void onServerTick() {
         calculateLightLevel();
 
-        if (getCharge() < getMaxCharge()) {
-            double toAdd = SCU_PER_TICK * getTickRate() * getChargeMultiplier(getLightLevel());
-            setCharge(getCharge() + toAdd);
+        if (pvCellLife > 0 && getCharge() < getMaxCharge() && isRedstoneActive()) {
+            double toAdd = getPowerOutput() * getTickRate() * getChargeMultiplier(getLightLevel());
+            if (toAdd > 0) {
+                setCharge(getCharge() + toAdd);
+                pvCellLife = Math.max(0, pvCellLife - getTickRate());
+                if (pvCellLife == 0) {
+                    update(true);
+                }
+                if (!getGUI().getViewers().isEmpty()) {
+                    drawPVCell(getGUI());
+                }
+            }
         }
 
         getLightMeter().doRepaint();
@@ -178,10 +330,19 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     private void calculateLightLevel() {
         Block b = getLocation().getBlock().getRelative(BlockFace.UP);
+        byte newLight = SensibleToolboxPlugin.getInstance().getSunlightLevels().getSunlightLevel(b.getWorld());
         byte lightFromSky = b.getLightFromSky();
-        byte newLight = lightFromSky < 14 ? 0 : b.getLightLevel();
-        if (lightFromSky < 15) newLight--;
-        if (b.getWorld().hasStorm()) newLight--;
+        if (lightFromSky < 14) {
+            newLight = 0;  // block is excessively shaded
+        } else if (lightFromSky < 15) {
+            newLight--;    // partially shaded
+        }
+        if (b.getWorld().hasStorm()) {
+            newLight -= 3;  // raining: big efficiency drop
+        }
+        if (newLight < 0) {
+            newLight = 0;
+        }
         if (newLight != effectiveLightLevel) {
             getLightMeter().repaintNeeded();
             effectiveLightLevel = newLight;
@@ -197,14 +358,28 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = super.createGUI();
 
+        gui.addLabel("PV Cell", 0, null, "Insert a PV Cell Here");
+        gui.setSlotType(PV_CELL_SLOT, InventoryGUI.SlotType.ITEM);
+
+        drawPVCell(gui);
+
         lightMeterId = gui.addMonitor(new LightMeter(gui));
 
         return gui;
     }
 
     @Override
+    protected boolean shouldPaintSlotSurrounds() {
+        return false;
+    }
+
+    @Override
     public int getLightMeterSlot() {
-        return LIGHT_SLOT;
+        return LIGHT_METER_SLOT;
+    }
+
+    protected double getPowerOutput() {
+        return 0.5;
     }
 
     private double getChargeMultiplier(byte light) {
@@ -221,5 +396,4 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
                 return 0.0;
         }
     }
-
 }

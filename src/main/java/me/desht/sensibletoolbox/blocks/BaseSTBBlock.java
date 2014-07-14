@@ -35,6 +35,7 @@ import java.util.UUID;
 public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     public static final String STB_BLOCK = "STB_Block";
     public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
+    private boolean needToScanSigns;
     private PersistableLocation persistableLocation;
     private BlockFace facing;
     private long ticksLived;
@@ -51,6 +52,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         redstoneBehaviour = RedstoneBehaviour.IGNORE;
         accessControl = AccessControl.PUBLIC;
         ticksLived = 0;
+        needToScanSigns = false;
     }
 
     public BaseSTBBlock(ConfigurationSection conf) {
@@ -62,6 +64,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         redstoneBehaviour = RedstoneBehaviour.valueOf(conf.getString("redstoneBehaviour", "IGNORE"));
         accessControl = AccessControl.valueOf(conf.getString("accessControl", "PUBLIC"));
         ticksLived = 0;
+        needToScanSigns = !conf.contains("labels");  // coming from pre-v0.0.4
         byte faces = (byte) conf.getInt("labels", 0);
         labelSigns.or(BitSet.valueOf(new byte[] { faces }));
     }
@@ -323,6 +326,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
                 b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
             }
             reattachLabelSigns(loc);
+            if (needToScanSigns) {
+                scanForAttachedLabelSigns();
+                needToScanSigns = false;
+            }
             setGUI(createGUI());
         } else {
             if (persistableLocation != null) {
@@ -531,12 +538,22 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         Location loc = getLocation();
         if (loc != null) {
             if (redraw) {
-                Block b = loc.getBlock();
-                // maybe one day Bukkit will have a block set method which takes a MaterialData
-                b.setTypeIdAndData(getMaterial().getId(), getMaterialData().getData(), true);
+                repaint(loc.getBlock());
             }
             LocationManager.getManager().updateLocation(loc);
         }
+    }
+
+    /**
+     * Called when a block needs to be repainted due to some state change. If
+     * you override this method (to repaint auxiliary blocks), be sure to call
+     * the superclass method.
+     *
+     * @param block the base (primary) block of this STB block
+     */
+    public void repaint(Block block) {
+        // maybe one day Bukkit will have a block set method which takes a MaterialData
+        block.setTypeIdAndData(getMaterial().getId(), getMaterialData().getData(), true);
     }
 
     private boolean attachLabelSign(PlayerInteractEvent event) {

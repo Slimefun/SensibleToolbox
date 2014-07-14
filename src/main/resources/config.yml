@@ -33,6 +33,7 @@ items_enabled:
   blockupdatedetector: true
   breakermodule: true
   circuitboard: true
+  densesolar: true
   diamondcombinehoe: true
   distributormodule: true
   droppermodule: true
@@ -69,6 +70,7 @@ items_enabled:
   paintroller: true
   pullermodule: true
   pump: true
+  pvcell: true
   quartzdust: true
   receivermodule: true
   recipebook: true

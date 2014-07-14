@@ -203,6 +203,7 @@ public class InventoryGUI {
         }
         Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwningItem());
         setOpenGUI(player, this);
+        listener.onGUIOpened(player);
         player.openInventory(inventory);
     }
 
@@ -431,6 +432,13 @@ public class InventoryGUI {
          * @return true if the click should go ahead, false to cancel the event
          */
         public boolean onClickOutside(HumanEntity player);
+
+        /**
+         * Called when an inventory GUI window is opened.
+         *
+         * @param player player who opened the window
+         */
+        public void onGUIOpened(HumanEntity player);
 
         /**
          * Called when an inventory GUI window is closed.

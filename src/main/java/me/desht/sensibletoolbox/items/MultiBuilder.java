@@ -110,17 +110,17 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         switch (getMode()) {
             case BUILD:
                 return new String[]{
-                        "L-click block: preview",
-                        "R-click block: build",
-                        "\u21e7 + R-click block: build one",
-                        "\u21e7 + mouse-wheel: EXCHANGE mode"
+                        "L-click block: " + ChatColor.RESET + "preview",
+                        "R-click block: " + ChatColor.RESET + "build",
+                        "⇧ + R-click block: " + ChatColor.RESET + "build one",
+                        "⇧ + mouse-wheel: " + ChatColor.RESET + "EXCHANGE mode"
                 };
             case EXCHANGE:
                 return new String[]{
-                        "L-click block: exchange one block",
-                        "R-click block: exchange many blocks",
-                        "\u21e7 + R-click block: set target block",
-                        "\u21e7 + mouse-wheel: BUILD mode"
+                        "L-click block: " + ChatColor.RESET + "exchange one block",
+                        "R-click block: " + ChatColor.RESET + "exchange many blocks",
+                        "⇧ + R-click block: " + ChatColor.RESET + "set target block",
+                        "⇧ + mouse-wheel: " + ChatColor.RESET + "BUILD mode"
                 };
             default:
                 return new String[0];

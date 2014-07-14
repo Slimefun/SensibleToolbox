@@ -103,7 +103,7 @@ public class UpdateRecord {
             case COMMIT:
                 return op.toString();
             default:
-                return String.format("%s %s,%d,%d,%d", op.toString(), worldID, x, y, z);
+                return String.format("%s %s,%d,%d,%d %s", op.toString(), worldID, x, y, z, type);
         }
     }
 

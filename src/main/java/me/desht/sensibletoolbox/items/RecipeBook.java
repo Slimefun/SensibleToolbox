@@ -254,12 +254,10 @@ public class RecipeBook extends BaseSTBItem {
         for (BlockFace face : STBUtil.directFaces) {
             Block b = fabricationBlock.getRelative(face);
             if (VanillaInventoryUtils.isVanillaInventory(b) && BlockProtection.isBlockAccessible(player, b)) {
-                System.out.println("add vanilla inv " + b);
                 resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
             } else {
                 BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
                 if (stb instanceof STBInventoryHolder && stb.hasAccessRights(player)) {
-                    System.out.println("add STB inv " + stb);
                     resourceInventories.add((STBInventoryHolder) stb);
                 }
             }

@@ -275,8 +275,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     protected InventoryGUI createGUI() {
         InventoryGUI gui = new InventoryGUI(this, getInventoryGUISize(), ChatColor.DARK_BLUE + getItemName());
 
-        gui.paintSlotSurround(getInputSlots(), InventoryGUI.INPUT_TEXTURE);
-        gui.paintSlotSurround(getOutputSlots(), InventoryGUI.OUTPUT_TEXTURE);
+        if (shouldPaintSlotSurrounds()) {
+            gui.paintSlotSurround(getInputSlots(), InventoryGUI.INPUT_TEXTURE);
+            gui.paintSlotSurround(getOutputSlots(), InventoryGUI.OUTPUT_TEXTURE);
+        }
         for (int slot : getInputSlots()) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
@@ -309,6 +311,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
             gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(), true);
         }
         return gui;
+    }
+
+    protected boolean shouldPaintSlotSurrounds() {
+        return true;
     }
 
     public int getRedstoneBehaviourSlot() {
