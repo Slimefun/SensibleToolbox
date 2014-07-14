@@ -128,6 +128,7 @@ public class GeneralListener extends STBBaseListener {
             // sanity check: we should only get here if the item is an STB block, since
             // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
             Validate.isTrue(stb instanceof BaseSTBBlock, "trying to place a non-block STB item? " + stb.getItemTypeID());
+            ((BaseSTBBlock) stb).placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
             ((BaseSTBBlock) stb).onBlockPlace(event);
             if (event.isCancelled()) {
                 throw new IllegalStateException("You must not change the cancellation status of a STB block place event!");
@@ -153,6 +154,7 @@ public class GeneralListener extends STBBaseListener {
             }
             BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
             if (stb != null) {
+                stb.breakBlock(event.getBlock());
                 stb.onBlockBreak(event);
             }
             if (event.isCancelled()) {

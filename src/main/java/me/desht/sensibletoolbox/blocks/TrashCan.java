@@ -65,13 +65,10 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     public void onBlockPlace(BlockPlaceEvent event) {
         setInventoryTitle(event, ChatColor.DARK_RED + "!!! " + getItemName() + " !!!");
 
-        super.onBlockPlace(event);
-        if (!event.isCancelled()) {
-            // put a skull on top of the main block
-            Block above = event.getBlock().getRelative(BlockFace.UP);
-            Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", event.getPlayer());
-            skull.update();
-        }
+        // put a skull on top of the main block
+        Block above = event.getBlock().getRelative(BlockFace.UP);
+        Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", event.getPlayer());
+        skull.update();
     }
 
     @Override

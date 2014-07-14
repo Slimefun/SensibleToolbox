@@ -429,8 +429,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     /**
-     * Called when an STB block is placed.  Subclasses may override this
-     * method, but should take care to call the superclass method.
+     * Called when an STB block has been placed.  The physical block has not
+     * yet been placed in the world, but the block is already registered as an
+     * STB block, and placement will definitely happen at this point.  This
+     * method is called after {@link #placeBlock(org.bukkit.block.Block, org.bukkit.entity.Player, org.bukkit.block.BlockFace)}
      * <p>
      * This event is called with MONITOR priority; do not change the outcome
      * of the event!
@@ -438,7 +440,23 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
      * @param event the block place event
      */
     public void onBlockPlace(BlockPlaceEvent event) {
-        placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
+    }
+
+    /**
+     * Do the basic initialisation for a newly-place STB block.  This method
+     * does not actually place the physical block in the world.  This should
+     * not normally need to be called directly (STB's built-in BlockPlaceEvent
+     * handler usually deals with this), but may be useful where a block is
+     * placed via some other means.
+     *
+     * @param block the block which is being placed
+     * @param player the player placing the block
+     * @param facing the direction that the block should face
+     */
+    public final void placeBlock(Block block, Player player, BlockFace facing) {
+        setFacing(facing);
+        setOwner(player.getUniqueId());
+        LocationManager.getManager().registerLocation(block.getLocation(), this, true);
     }
 
     /**
@@ -448,7 +466,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
      * @param baseLoc the location of the STB block's base block
      * @return true if the STB block is placeable; false otherwise
      */
-    public boolean validatePlaceable(Location baseLoc) {
+    public final boolean validatePlaceable(Location baseLoc) {
         for (RelativePosition rPos : getBlockStructure()) {
             Block b = getMultiBlock(baseLoc, rPos);
             if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.STATIONARY_WATER) {
@@ -459,21 +477,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     }
 
     /**
-     * Called when an STB block is actually broken (the event handler runs with MONITOR
-     * priority).  You must not alter the outcome of this event!
-     * <p/>
-     * Subclasses may override this method, but should take care to call the superclass method.
+     * Called when an STB block is actually broken.  At the point of calling,
+     * the block (and any possible auxiliary blocks) will have already been
+     * set to AIR, and {@link #breakBlock(org.bukkit.block.Block)} will have
+     * already been run.
+     * <p>
+     * The event handler runs with MONITOR priority; you must not alter the
+     * outcome of this event!
      *
      * @param event the block break event
      */
     public void onBlockBreak(BlockBreakEvent event) {
-        breakBlock(event.getBlock());
-    }
-
-    protected void placeBlock(Block b, Player p, BlockFace facing) {
-        setFacing(facing);
-        setOwner(p.getUniqueId());
-        LocationManager.getManager().registerLocation(b.getLocation(), this, true);
     }
 
     public final void breakBlock(Block b) {
@@ -486,11 +500,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
             }
         }
         LocationManager.getManager().unregisterLocation(baseLoc, this);
-        origin.setType(Material.AIR);
         for (RelativePosition pos : getBlockStructure()) {
-            Block b1 = getMultiBlock(baseLoc, pos);
-            b1.setType(Material.AIR);
+            Block auxBlock = getMultiBlock(baseLoc, pos);
+            auxBlock.setType(Material.AIR);
         }
+        origin.setType(Material.AIR);
         b.getWorld().dropItemNaturally(b.getLocation(), toItemStack());
     }
 
@@ -569,7 +583,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
         } else {
             Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
             // using setTypeIdAndData() here because we don't want to cause a physics update
-            System.out.println("attached block " + signBlock.getRelative(face.getOppositeFace()));
             signBlock.setTypeIdAndData(Material.WALL_SIGN.getId(), (byte) 0, false);
             Sign sign = (Sign) signBlock.getState();
             org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();

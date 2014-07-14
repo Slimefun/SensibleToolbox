@@ -110,13 +110,11 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public void onBlockPlace(BlockPlaceEvent event) {
-        super.onBlockPlace(event);
         SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
     }
 
     @Override
     public void onBlockBreak(BlockBreakEvent event) {
-        super.onBlockBreak(event);
         SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
     }
 

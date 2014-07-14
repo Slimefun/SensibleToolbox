@@ -135,13 +135,10 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     @Override
     public void onBlockPlace(BlockPlaceEvent event) {
-        super.onBlockPlace(event);
-        if (!event.isCancelled()) {
-            // put a carpet on top of the main block to represent the PV cell
-            Block above = event.getBlock().getRelative(BlockFace.UP);
-            MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, getCapColour());
-            above.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
-        }
+        // put a carpet on top of the main block to represent the PV cell
+        Block above = event.getBlock().getRelative(BlockFace.UP);
+        MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, getCapColour());
+        above.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
     }
 
     protected DyeColor getCapColour() {

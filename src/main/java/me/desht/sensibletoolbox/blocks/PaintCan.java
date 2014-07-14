@@ -271,12 +271,9 @@ public class PaintCan extends BaseSTBBlock {
 
     @Override
     public void onBlockPlace(BlockPlaceEvent event) {
-        super.onBlockPlace(event);
-        if (!event.isCancelled()) {
-            Block above = event.getBlock().getRelative(BlockFace.UP);
-            Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", event.getPlayer());
-            skull.update();
-        }
+        Block above = event.getBlock().getRelative(BlockFace.UP);
+        Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", event.getPlayer());
+        skull.update();
     }
 
     @Override
