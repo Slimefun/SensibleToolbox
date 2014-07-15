@@ -35,11 +35,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
     @Override
     public void onServerTick() {
-        if (!isRedstoneActive()) {
-            return;
-        }
-
-        if (getProcessing() == null) {
+        if (getProcessing() == null && isRedstoneActive()) {
             // not doing any processing - anything in input to take?
             for (int slot : getInputSlots()) {
                 if (getInventoryItem(slot) != null) {

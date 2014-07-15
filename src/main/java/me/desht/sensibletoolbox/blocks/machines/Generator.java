@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -21,5 +22,10 @@ public abstract class Generator extends AbstractProcessingMachine {
     @Override
     public boolean suppliesEnergy(BlockFace face) {
         return true;
+    }
+
+    @Override
+    public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
+        return behaviour != RedstoneBehaviour.PULSED;
     }
 }

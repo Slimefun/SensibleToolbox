@@ -16,7 +16,7 @@ public class ProgressMeter extends MonitorGadget {
         Validate.isTrue(getGUI().getOwningBlock() instanceof ProcessingMachine,
                 "Attempt to install progress meter in non-processing machine " + getGUI().getOwningBlock());
         machine = (ProcessingMachine) getGUI().getOwningBlock();
-        Validate.isTrue(machine.getProgressCounterSlot() > 0 || machine.getProgressItemSlot() > 0, "At least one counter slot and item slot must be >= 0!");
+        Validate.isTrue(machine.getProgressCounterSlot() > 0 || machine.getProgressItemSlot() > 0, "At least one of counter slot and item slot must be >= 0!");
         this.progressIcon = machine.getProgressIcon();
         Validate.isTrue(progressIcon != null && progressIcon.getMaxDurability() > 0, "Material " + progressIcon + " doesn't have a durability!");
     }

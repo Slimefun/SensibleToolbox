@@ -14,8 +14,16 @@ public class RedstoneBehaviourGadget extends ClickableGadget {
 
     @Override
     public void onClicked(InventoryClickEvent event) {
-        int n = (behaviour.ordinal() + 1) % RedstoneBehaviour.values().length;
-        behaviour = RedstoneBehaviour.values()[n];
+        int b = behaviour.ordinal();
+        int n = b;
+
+        do {
+            n = (n + 1) % RedstoneBehaviour.values().length;
+            behaviour = RedstoneBehaviour.values()[n];
+            if (n == b) {
+                break; // avoid infinite loop due to no supported behaviour
+            }
+        } while (!getGUI().getOwningBlock().supportsRedstoneBehaviour(behaviour));
         event.setCurrentItem(behaviour.getTexture());
         getGUI().getOwningBlock().setRedstoneBehaviour(behaviour);
     }

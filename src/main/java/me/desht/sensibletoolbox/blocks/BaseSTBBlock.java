@@ -45,6 +45,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     private AccessControl accessControl;
     private final BitSet labelSigns = new BitSet(4);
     private UUID owner;
+    private int lastPower;
+    private boolean pulsing;
 
     protected BaseSTBBlock() {
         super();
@@ -179,6 +181,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
                 return getLocation().getBlock().isBlockIndirectlyPowered();
             case LOW:
                 return !getLocation().getBlock().isBlockIndirectlyPowered();
+            case PULSED:
+                return pulsing;
             default:
                 return false;
         }
@@ -200,6 +204,30 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
      * @param event the block physics event
      */
     public void onBlockPhysics(BlockPhysicsEvent event) {
+    }
+
+    /**
+     * Called when the redstone power being supplied to an STB block changes.
+     *
+     * @param oldPower the block's current power level
+     * @param newPower the block's new power level
+     */
+    public void onRedstonePowerChanged(int oldPower, int newPower) {
+    }
+
+    public final void handlePhysicsEvent(BlockPhysicsEvent event) {
+        int power = event.getBlock().getBlockPower();
+        if (power != lastPower) {
+            Debugger.getInstance().debug(this + " redstone power change: " + lastPower + "->" + power);
+            onRedstonePowerChanged(lastPower, power);
+            if (lastPower == 0 && power > 0 && getRedstoneBehaviour() == RedstoneBehaviour.PULSED) {
+                pulsing = true;
+                onServerTick();
+                pulsing = false;
+            }
+            lastPower = power;
+        }
+        onBlockPhysics(event);
     }
 
     /**
@@ -460,10 +488,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
      * @param player the player placing the block
      * @param facing the direction that the block should face
      */
-    public final void placeBlock(Block block, Player player, BlockFace facing) {
+    public final void placeBlock(final Block block, Player player, BlockFace facing) {
         setFacing(facing);
         setOwner(player.getUniqueId());
         LocationManager.getManager().registerLocation(block.getLocation(), this, true);
+        // defer this so it's done after the block is actually placed in the world
+        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                lastPower = getLocation().getBlock().getBlockPower();
+            }
+        });
     }
 
     /**
@@ -729,5 +764,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem implements STBBlock {
     @Override
     public PistonMoveReaction getPistonMoveReaction() {
         return PistonMoveReaction.MOVE;
+    }
+
+    @Override
+    public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
+        return true;
     }
 }

@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
@@ -235,4 +236,5 @@ public class HeatEngine extends Generator {
         toProcess.setItemMeta(meta);
         return toProcess;
     }
+
 }

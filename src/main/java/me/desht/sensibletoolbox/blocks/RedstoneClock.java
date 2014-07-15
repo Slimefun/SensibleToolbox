@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.gui.AccessControlGadget;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.NumericGadget;
@@ -161,5 +162,10 @@ public class RedstoneClock extends BaseSTBBlock {
             getGUI().show(event.getPlayer());
         }
         super.onInteractBlock(event);
+    }
+
+    @Override
+    public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
+        return behaviour != RedstoneBehaviour.PULSED;
     }
 }

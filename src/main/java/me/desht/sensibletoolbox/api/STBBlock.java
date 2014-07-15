@@ -147,4 +147,12 @@ public interface STBBlock extends STBItem {
      * @return the relative location
      */
     public Location getRelativeLocation(BlockFace face);
+
+    /**
+     * Check if this block supports the given redstone behaviour mode.
+     *
+     * @param behaviour the mode to check
+     * @return true if the block supports this behaviour; false otherwise
+     */
+    public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour);
 }

@@ -201,7 +201,7 @@ public class GeneralListener extends STBBaseListener {
         Block block = event.getBlock();
         BaseSTBBlock item = LocationManager.getManager().get(block.getLocation());
         if (item != null) {
-            item.onBlockPhysics(event);
+            item.handlePhysicsEvent(event);
         } else {
             if (block.getType() == Material.LEVER) {
                 Lever l = (Lever) block.getState().getData();

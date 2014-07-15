@@ -92,7 +92,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine implement
 
     @Override
     public void onServerTick() {
-        if (getTicksLived() % PROGRESS_INTERVAL == 0 && isRedstoneActive() && getGUI().getViewers().size() > 0) {
+        if (getTicksLived() % PROGRESS_INTERVAL == 0 && getGUI().getViewers().size() > 0) {
             getProgressMeter().doRepaint();
         }
         super.onServerTick();

@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.LightSensitive;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.gui.InventoryGUI;
 import me.desht.sensibletoolbox.gui.LightMeter;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
@@ -210,16 +211,6 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
-    public boolean acceptsEnergy(BlockFace face) {
-        return false;
-    }
-
-    @Override
-    public boolean suppliesEnergy(BlockFace face) {
-        return true;
-    }
-
-    @Override
     public int getMaxCharge() {
         return 100;
     }
@@ -395,5 +386,20 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
             default:
                 return 0.0;
         }
+    }
+
+    @Override
+    public boolean acceptsEnergy(BlockFace face) {
+        return false;
+    }
+
+    @Override
+    public boolean suppliesEnergy(BlockFace face) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
+        return behaviour != RedstoneBehaviour.PULSED;
     }
 }
