@@ -87,6 +87,7 @@ items_enabled:
   speedupgrade: true
   stackmodule: true
   tapemeasure: true
+  tenkbatterybox: true
   tenkenergycell: true
   toughmachineframe: true
   trashcan: true

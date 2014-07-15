@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.energycells;
 
+import me.desht.sensibletoolbox.items.components.EnergizedIronIngot;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -41,9 +42,10 @@ public class FiftyKEnergyCell extends EnergyCell {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
         TenKEnergyCell cell = new TenKEnergyCell();
         cell.setCharge(0.0);
-        registerCustomIngredients(cell);
+        EnergizedIronIngot ei = new EnergizedIronIngot();
+        registerCustomIngredients(cell, ei);
         recipe.shape("III", "CCC", "GRG");
-        recipe.setIngredient('I', Material.IRON_INGOT);
+        recipe.setIngredient('I', ei.getMaterialData());
         recipe.setIngredient('C', STBUtil.makeWildCardMaterialData(cell));
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
