@@ -1,17 +1,27 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
+import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 
 public class DenseSolar extends BasicSolarCell {
+    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.GRAY);
+
     public DenseSolar() {
     }
 
     public DenseSolar(ConfigurationSection conf) {
         super(conf);
+    }
+
+    @Override
+    public MaterialData getMaterialData() {
+        return md;
     }
 
     @Override
