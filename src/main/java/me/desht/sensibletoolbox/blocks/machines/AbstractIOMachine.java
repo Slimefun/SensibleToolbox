@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.util.STBUtil;
@@ -8,6 +9,8 @@ import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Random;
 
 /**
  * Represents a machine which processes items from its input slots to
@@ -50,8 +53,11 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
         if (getProgress() > 0 && getCharge() > 0) {
             // currently processing....
-            setProgress(getProgress() - getSpeedMultiplier() * getTickRate());
-            setCharge(getCharge() - getPowerMultiplier() * getTickRate());
+            double chargeNeeded = getPowerMultiplier() * getTickRate();
+            // throttle back on the progress and charge if necessary
+            int mult = chargeNeeded < getCharge() ? getTickRate() : (int) (getCharge() / getPowerMultiplier());
+            setProgress(getProgress() - getSpeedMultiplier() * mult);
+            setCharge(getCharge() - getPowerMultiplier() * mult);
             playActiveParticleEffect();
         }
 
@@ -74,6 +80,10 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             int slot = findOutputSlot(result);
             if (slot >= 0) {
                 // good, there's space to move it out of processing
+                if (new Random().nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
+                    // bonus item, yay!
+                    result.setAmount(Math.min(result.getMaxStackSize(), result.getAmount() * 2));
+                }
                 ItemStack stack = getInventoryItem(slot);
                 if (stack == null) {
                     stack = result;

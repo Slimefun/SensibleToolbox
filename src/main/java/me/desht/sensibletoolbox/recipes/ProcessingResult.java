@@ -16,7 +16,7 @@ public class ProcessingResult {
     }
 
     public ItemStack getResult() {
-        return result;
+        return result.clone();
     }
 
     @Override

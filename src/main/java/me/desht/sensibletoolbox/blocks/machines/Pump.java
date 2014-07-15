@@ -142,17 +142,13 @@ public class Pump extends AbstractProcessingMachine {
 
     @Override
     public void onServerTick() {
-        if (!isRedstoneActive()) {
-            return;
-        }
-
         int inputSlot = getInputSlots()[0];
         ItemStack stackIn = getInventoryItem(inputSlot);
 
         // TODO: for lava pumping, we need to seek the available lava source block
         Block toPump = findNextBlockToPump();
 
-        if (getProcessing() == null && stackIn != null) {
+        if (getProcessing() == null && stackIn != null && isRedstoneActive()) {
             // pull a bucket from the input stack into processing
             ItemStack toProcess = makeProcessingItem(toPump, stackIn.getType());
             setProcessing(toProcess);

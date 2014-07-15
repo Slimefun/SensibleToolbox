@@ -10,10 +10,7 @@ import me.desht.sensibletoolbox.energynet.EnergyNetManager;
 import me.desht.sensibletoolbox.gui.*;
 import me.desht.sensibletoolbox.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
-import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
-import me.desht.sensibletoolbox.items.machineupgrades.MachineUpgrade;
-import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
-import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
+import me.desht.sensibletoolbox.items.machineupgrades.*;
 import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +46,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
     private final List<MachineUpgrade> upgrades = new ArrayList<MachineUpgrade>();
     private final Map<BlockFace, EnergyNet> energyNets = new HashMap<BlockFace, EnergyNet>();
     private int regulatorAmount;
+    private int thoroughnessAmount;
     private String chargeLabel;
     private int charge8; // a 0..7 value representing charge boundaries
 
@@ -341,12 +339,20 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         return 54;
     }
 
+    public int getRegulatorAmount() {
+        return regulatorAmount;
+    }
+
     public void setRegulatorAmount(int regulatorAmount) {
         this.regulatorAmount = regulatorAmount;
     }
 
-    public int getRegulatorAmount() {
-        return regulatorAmount;
+    public int getThoroughnessAmount() {
+        return thoroughnessAmount;
+    }
+
+    public void setThoroughnessAmount(int thoroughnessAmount) {
+        this.thoroughnessAmount = thoroughnessAmount;
     }
 
     @Override
@@ -697,6 +703,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         int nSpeed = 0;
         BlockFace ejectDirection = null;
         int nRegulator = 0;
+        int nThorough = 0;
         for (MachineUpgrade upgrade : upgrades) {
             if (upgrade instanceof SpeedUpgrade) {
                 nSpeed += upgrade.getAmount();
@@ -704,11 +711,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
                 ejectDirection = ((EjectorUpgrade) upgrade).getDirection();
             } else if (upgrade instanceof RegulatorUpgrade) {
                 nRegulator += upgrade.getAmount();
+            } else if (upgrade instanceof ThoroughnessUpgrade) {
+                nThorough += upgrade.getAmount();
             }
         }
         setRegulatorAmount(nRegulator);
-        setSpeedMultiplier(Math.pow(1.4, nSpeed));
-        setPowerMultiplier(Math.pow(1.6, nSpeed));
+        setThoroughnessAmount(nThorough);
+        setSpeedMultiplier(Math.pow(1.4, nSpeed - nThorough));
+        setPowerMultiplier(Math.pow(1.6, nSpeed + nThorough));
         setPowerMultiplier(Math.max(getPowerMultiplier() - nRegulator * 0.1, 1.0));
         setAutoEjectDirection(ejectDirection);
         Debugger.getInstance().debug("upgrades for " + this + " speed=" + getSpeedMultiplier() +
@@ -807,4 +817,5 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
         }
         return res;
     }
+
 }

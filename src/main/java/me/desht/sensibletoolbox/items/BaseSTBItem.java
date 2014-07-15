@@ -21,6 +21,7 @@ import me.desht.sensibletoolbox.items.itemroutermodules.*;
 import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
+import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.Validate;
@@ -123,6 +124,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new SpeedUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new EjectorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new RegulatorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new ThoroughnessUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new HeatEngine(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new BasicSolarCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new DenseSolar(), plugin, CONFIG_NODE, PERMISSION_NODE);

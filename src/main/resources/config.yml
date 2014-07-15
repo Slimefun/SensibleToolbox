@@ -89,6 +89,7 @@ items_enabled:
   tapemeasure: true
   tenkbatterybox: true
   tenkenergycell: true
+  thoroughnessupgrade: true
   toughmachineframe: true
   trashcan: true
   vacuummodule: true

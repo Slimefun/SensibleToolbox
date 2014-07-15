@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.machineupgrades;
 
+import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
@@ -33,15 +34,17 @@ public class SpeedUpgrade extends MachineUpgrade {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Place in a machine block", "Increases speed by 40%", "Increases power usage by 60%"};
+        return new String[]{"Place in a machine block", "Speed: x1.4", "Power Usage: x1.6"};
     }
 
     @Override
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-        recipe.shape("IRI", "IBI", "IGI");
+        SimpleCircuit sc = new SimpleCircuit();
+        registerCustomIngredients(sc);
+        recipe.shape("ISI", "IBI", "IGI");
         recipe.setIngredient('I', Material.IRON_FENCE);
-        recipe.setIngredient('R', Material.REDSTONE);
+        recipe.setIngredient('S', sc.getMaterialData());
         recipe.setIngredient('B', Material.BLAZE_ROD);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
