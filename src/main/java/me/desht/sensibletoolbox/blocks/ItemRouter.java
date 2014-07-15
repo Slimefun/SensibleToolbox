@@ -435,11 +435,13 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public Inventory showOutputItems(UUID uuid) {
-        Inventory inv = Bukkit.createInventory(this, 9);
         if (hasAccessRights(uuid)) {
+            Inventory inv = Bukkit.createInventory(this, 9);
             inv.setItem(0, getBufferItem());
+            return inv;
+        } else {
+            return null;
         }
-        return inv;
     }
 
     @Override

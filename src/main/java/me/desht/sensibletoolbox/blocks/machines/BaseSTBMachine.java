@@ -515,34 +515,21 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements STBMachine 
 
     @Override
     public Inventory showOutputItems(UUID uuid) {
-        if (!hasAccessRights(uuid)) {
-            return Bukkit.createInventory(this, getInventory().getSize());
-        } else if (getOutputSlots() == null) {
-            Inventory inv = Bukkit.createInventory(this, getInventory().getSize());
-            for (int i = 0; i < inv.getSize(); i++) {
-                inv.setItem(i, getInventoryItem(i));
-            }
-            return inv;
-        } else {
+        if (hasAccessRights(uuid) && getOutputSlots() != null) {
             Inventory inv = Bukkit.createInventory(this, STBUtil.roundUp(getOutputSlots().length, 9));
             int i = 0;
             for (int slot : getOutputSlots()) {
                 inv.setItem(i++, getInventoryItem(slot));
             }
             return inv;
+        } else {
+            return null;
         }
     }
 
     @Override
     public void updateOutputItems(UUID uuid, Inventory inventory) {
-        if (!hasAccessRights(uuid)) {
-            return;
-        }
-        if (getOutputSlots() == null) {
-            for (int i = 0; i < getInventory().getSize() && i < inventory.getSize(); i++) {
-                setInventoryItem(i, inventory.getItem(i));
-            }
-        } else {
+        if (hasAccessRights(uuid) && getOutputSlots() != null) {
             int i = 0;
             for (int slot : getOutputSlots()) {
                 setInventoryItem(slot, inventory.getItem(i++));

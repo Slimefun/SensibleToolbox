@@ -153,11 +153,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
     @Override
     public Inventory showOutputItems(UUID uuid) {
-        if (hasAccessRights(uuid)) {
-            return getInventoryHolderFor(uuid).showOutputItems(uuid);
-        } else {
-            return Bukkit.createInventory(this, getInventory().getSize());
-        }
+        return hasAccessRights(uuid) ? getInventoryHolderFor(uuid).showOutputItems(uuid) : null;
     }
 
     @Override

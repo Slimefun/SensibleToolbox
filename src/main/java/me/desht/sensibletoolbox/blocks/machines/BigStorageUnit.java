@@ -564,11 +564,13 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public Inventory showOutputItems(UUID uuid) {
-        Inventory inv = Bukkit.createInventory(this, 9);
         if (hasAccessRights(uuid)) {
+            Inventory inv = Bukkit.createInventory(this, 9);
             inv.setItem(0, getOutputItem());
+            return inv;
+        } else {
+            return null;
         }
-        return inv;
     }
 
     @Override

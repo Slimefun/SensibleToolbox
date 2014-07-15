@@ -408,7 +408,10 @@ public class RecipeBook extends BaseSTBItem {
         List<Inventory> vanillaInventories = Lists.newArrayList();
         for (InventoryHolder h : resourceInventories) {
             if (h instanceof STBInventoryHolder) {
-                vanillaInventories.add(((STBInventoryHolder) h).showOutputItems(player.getUniqueId()));
+                Inventory inv = ((STBInventoryHolder) h).showOutputItems(player.getUniqueId());
+                if (inv != null) {
+                    vanillaInventories.add(inv);
+                }
             } else if (h instanceof BlockState && BlockProtection.isBlockAccessible(player, ((BlockState) h).getBlock())) {
                 vanillaInventories.add(h.getInventory());
             }
