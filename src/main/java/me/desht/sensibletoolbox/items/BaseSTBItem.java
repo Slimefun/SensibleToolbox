@@ -23,7 +23,6 @@ import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.storage.LocationManager;
 import me.desht.sensibletoolbox.util.STBUtil;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -119,6 +118,7 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         registerItem(new SpeedModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new TenKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new FiftyKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new TenKBatteryBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new FiftyKBatteryBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new SpeedUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new EjectorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
@@ -508,7 +508,9 @@ public abstract class BaseSTBItem implements STBFreezable, Comparable<STBItem>, 
         for (String l : lore) {
             res.add(LORE_COLOR + l);
         }
-        Collections.addAll(res, lore2);
+        for (String l : lore2) {
+            res.add(LORE_COLOR + l);
+        }
         return res;
     }
 
