@@ -2,9 +2,9 @@ package me.desht.sensibletoolbox.api.recipes;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
-import me.desht.sensibletoolbox.api.SensibleToolbox;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.FurnaceRecipe;

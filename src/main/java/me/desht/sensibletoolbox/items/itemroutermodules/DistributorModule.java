@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;

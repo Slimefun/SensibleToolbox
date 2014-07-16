@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api.gui;
 
 import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
+import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +35,7 @@ public class ProgressMeter extends MonitorGadget {
                 meta.setDisplayName(machine.getProgressMessage());
                 stack.setItemMeta(meta);
             } else {
-                stack = InventoryGUI.BG_TEXTURE;
+                stack = STBInventoryGUI.BG_TEXTURE;
             }
             getGUI().getInventory().setItem(machine.getProgressCounterSlot(), stack);
         }
@@ -42,7 +43,7 @@ public class ProgressMeter extends MonitorGadget {
             if (machine.getProcessing() != null) {
                 getGUI().getInventory().setItem(machine.getProgressItemSlot(), machine.getProcessing());
             } else {
-                getGUI().getInventory().setItem(machine.getProgressItemSlot(), InventoryGUI.BG_TEXTURE);
+                getGUI().getInventory().setItem(machine.getProgressItemSlot(), STBInventoryGUI.BG_TEXTURE);
             }
         }
     }

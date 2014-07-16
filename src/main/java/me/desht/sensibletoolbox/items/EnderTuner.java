@@ -1,17 +1,14 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
-import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.gui.*;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
-import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.NumericGadget;
-import me.desht.sensibletoolbox.api.gui.ToggleButton;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,9 +27,9 @@ import org.bukkit.material.MaterialData;
 
 public class EnderTuner extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.GOLD_NUGGET);
-    private static final ItemStack GLOBAL_TEXTURE = InventoryGUI.makeTexture(
+    private static final ItemStack GLOBAL_TEXTURE = GUIUtil.makeTexture(
             STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.BLUE), "Global", "Common inventory for", "all players");
-    private static final ItemStack PERSONAL_TEXTURE = InventoryGUI.makeTexture(
+    private static final ItemStack PERSONAL_TEXTURE = GUIUtil.makeTexture(
             STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.YELLOW), "Personal", "Separate inventory for", "each player");
     public static final int TUNING_GUI_SIZE = 27;
     public static final int TUNED_ITEM_SLOT = 11;
@@ -97,7 +94,7 @@ public class EnderTuner extends BaseSTBItem {
     }
 
     private InventoryGUI makeTuningInventory(Player player) {
-        final InventoryGUI gui = new InventoryGUI(player, this, TUNING_GUI_SIZE, ChatColor.DARK_PURPLE + "Ender Tuner");
+        final InventoryGUI gui = GUIUtil.createGUI(player, this, TUNING_GUI_SIZE, ChatColor.DARK_PURPLE + "Ender Tuner");
         for (int slot = 0; slot < gui.getInventory().getSize(); slot++) {
             gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
         }

@@ -1,17 +1,18 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.ItemNames;
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.Filtering;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.gui.FilterTypeGadget;
+import me.desht.sensibletoolbox.api.gui.GUIUtil;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.ToggleButton;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.Filter;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
-import me.desht.sensibletoolbox.api.gui.FilterTypeGadget;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.ToggleButton;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -34,13 +35,13 @@ import java.util.List;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering {
     private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
-    private static final ItemStack WHITE_BUTTON = InventoryGUI.makeTexture(new Wool(DyeColor.WHITE), ChatColor.UNDERLINE + "Whitelist");
-    private static final ItemStack BLACK_BUTTON = InventoryGUI.makeTexture(new Wool(DyeColor.BLACK), ChatColor.UNDERLINE + "Blacklist");
-    private static final ItemStack OFF_BUTTON = InventoryGUI.makeTexture(
+    private static final ItemStack WHITE_BUTTON = GUIUtil.makeTexture(new Wool(DyeColor.WHITE), ChatColor.UNDERLINE + "Whitelist");
+    private static final ItemStack BLACK_BUTTON = GUIUtil.makeTexture(new Wool(DyeColor.BLACK), ChatColor.UNDERLINE + "Blacklist");
+    private static final ItemStack OFF_BUTTON = GUIUtil.makeTexture(
             STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.LIGHT_BLUE), ChatColor.UNDERLINE + "Termination OFF",
             "Subsequent modules will", "process items even if this", "module processes items."
     );
-    private static final ItemStack ON_BUTTON = InventoryGUI.makeTexture(
+    private static final ItemStack ON_BUTTON = GUIUtil.makeTexture(
             new Wool(DyeColor.ORANGE), ChatColor.UNDERLINE + "Termination ON",
             "If this module processes an item,", "the processing sequence stops."
     );
@@ -163,7 +164,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     }
 
     private InventoryGUI createGUI(Player player) {
-        InventoryGUI gui = new InventoryGUI(player, this, 27, ChatColor.DARK_RED + "Module Configuration");
+        InventoryGUI gui = GUIUtil.createGUI(player, this, 27, ChatColor.DARK_RED + "Module Configuration");
 
         gui.addGadget(new ToggleButton(gui, 8, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
             @Override

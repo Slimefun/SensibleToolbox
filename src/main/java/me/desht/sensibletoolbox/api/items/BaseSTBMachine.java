@@ -4,10 +4,11 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.api.*;
 import me.desht.sensibletoolbox.api.gui.*;
+import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.energy.EnergyNet;
 import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
-import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.items.machineupgrades.*;
 import org.apache.commons.lang.StringUtils;
@@ -198,7 +199,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return speedMultiplier;
     }
 
-    private final void setSpeedMultiplier(double speedMultiplier) {
+    private void setSpeedMultiplier(double speedMultiplier) {
         this.speedMultiplier = speedMultiplier;
     }
 
@@ -212,7 +213,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return powerMultiplier;
     }
 
-    private final void setPowerMultiplier(double powerMultiplier) {
+    private void setPowerMultiplier(double powerMultiplier) {
         this.powerMultiplier = powerMultiplier;
     }
 
@@ -226,7 +227,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return autoEjectDirection;
     }
 
-    private final void setAutoEjectDirection(BlockFace direction) {
+    private void setAutoEjectDirection(BlockFace direction) {
         autoEjectDirection = direction;
     }
 
@@ -342,11 +343,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     @Override
     protected InventoryGUI createGUI() {
-        InventoryGUI gui = new InventoryGUI(this, getInventoryGUISize(), ChatColor.DARK_BLUE + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, getInventoryGUISize(), ChatColor.DARK_BLUE + getItemName());
 
         if (shouldPaintSlotSurrounds()) {
-            gui.paintSlotSurround(getInputSlots(), InventoryGUI.INPUT_TEXTURE);
-            gui.paintSlotSurround(getOutputSlots(), InventoryGUI.OUTPUT_TEXTURE);
+            gui.paintSlotSurround(getInputSlots(), STBInventoryGUI.INPUT_TEXTURE);
+            gui.paintSlotSurround(getOutputSlots(), STBInventoryGUI.OUTPUT_TEXTURE);
         }
         for (int slot : getInputSlots()) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
@@ -371,8 +372,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         gui.addGadget(new RedstoneBehaviourGadget(gui, getRedstoneBehaviourSlot()));
         gui.addGadget(new AccessControlGadget(gui, getAccessControlSlot()));
 
-        if (gui.containsSlot(getEnergyCellSlot())) {
-            gui.setSlotType(getEnergyCellSlot(), InventoryGUI.SlotType.ITEM);
+        if (getEnergyCellSlot() != -1) {
+            gui.setSlotType(getEnergyCellSlot(), STBInventoryGUI.SlotType.ITEM);
         }
         gui.addGadget(new ChargeDirectionGadget(gui, getChargeDirectionSlot()));
         chargeMeterId = getMaxCharge() > 0 ? gui.addMonitor(new ChargeMeter(gui)) : -1;

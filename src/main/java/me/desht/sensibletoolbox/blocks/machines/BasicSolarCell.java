@@ -1,11 +1,14 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.*;
-import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
-import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.ChargeDirection;
+import me.desht.sensibletoolbox.api.LightSensitive;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.LightMeter;
+import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.PVCell;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import org.bukkit.*;

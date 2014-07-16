@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.api.gui;
 
-import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.ChargeDirection;
+import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

@@ -23,15 +23,16 @@ import com.griefcraft.lwc.LWCPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.SunlightLevels;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.core.ItemRegistry;
 import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
-import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
+import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
 import org.bukkit.Bukkit;
@@ -114,9 +115,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         setupLandslide();
         setupLWC();
 
-        InventoryGUI.buildStockTextures();
+        STBInventoryGUI.buildStockTextures();
 
-//        BaseSTBItem.registerItems(this);
         itemRegistry = new ItemRegistry(this);
         itemRegistry.registerItems();
         registerEventListeners();
@@ -175,7 +175,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             // Any open inventory GUI's must be closed -
             // if they stay open after server reload, event dispatch will probably not work,
             // allowing fake items to be removed from them - not a good thing
-            InventoryGUI gui = InventoryGUI.getOpenGUI(p);
+            InventoryGUI gui = STBInventoryGUI.getOpenGUI(p);
             if (gui != null) {
                 gui.hide(p);
                 p.closeInventory();
@@ -354,7 +354,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         } else if (key.equals("energy.tick_rate")) {
             scheduleEnergyNetTicker();
         } else if (key.startsWith("gui.texture.")) {
-            InventoryGUI.buildStockTextures();
+            STBInventoryGUI.buildStockTextures();
         }
     }
 

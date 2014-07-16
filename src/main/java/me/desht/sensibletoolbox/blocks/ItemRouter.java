@@ -6,16 +6,17 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
+import me.desht.sensibletoolbox.api.gui.GUIUtil;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.BukkitSerialization;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
-import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import me.desht.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.SpeedModule;
@@ -211,7 +212,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     protected InventoryGUI createGUI() {
-        InventoryGUI gui = new InventoryGUI(this, 36, ChatColor.DARK_RED + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, 36, ChatColor.DARK_RED + getItemName());
         gui.getInventory().setItem(BUFFER_DISPLAY_SLOT, getBufferItem());
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
         gui.addGadget(new AccessControlGadget(gui, 17));

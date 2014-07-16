@@ -2,13 +2,10 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.gui.*;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.api.gui.ButtonGadget;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.LevelMonitor;
 import me.desht.sensibletoolbox.items.PaintBrush;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
@@ -144,7 +141,7 @@ public class PaintCan extends BaseSTBBlock {
 
     @Override
     public InventoryGUI createGUI() {
-        InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_RED + getItemName());
         for (int slot : ITEM_SLOTS) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }

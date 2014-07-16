@@ -1,9 +1,9 @@
 package me.desht.sensibletoolbox.api.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.recipes.ProcessingResult;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;

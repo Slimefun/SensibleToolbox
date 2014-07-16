@@ -3,11 +3,12 @@ package me.desht.sensibletoolbox.blocks.machines;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.gui.GUIUtil;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.ToggleButton;
 import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
 import me.desht.sensibletoolbox.api.util.BukkitSerialization;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.ToggleButton;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -27,9 +28,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
-    private static final ItemStack LOCKED_BUTTON = InventoryGUI.makeTexture(new MaterialData(Material.EYE_OF_ENDER),
+    private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.EYE_OF_ENDER),
             ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
-    private static final ItemStack UNLOCKED_BUTTON = InventoryGUI.makeTexture(new MaterialData(Material.ENDER_PEARL),
+    private static final ItemStack UNLOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.ENDER_PEARL),
             ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
     private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";

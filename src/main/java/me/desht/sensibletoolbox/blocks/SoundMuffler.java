@@ -2,9 +2,10 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.NumericGadget;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -40,7 +41,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     protected InventoryGUI createGUI() {
-        InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
         gui.addGadget(new NumericGadget(gui, 0, "Volume", new IntRange(0, 100), getVolume(), 10, 1, new NumericGadget.NumericListener() {
             @Override
             public boolean run(int newValue) {

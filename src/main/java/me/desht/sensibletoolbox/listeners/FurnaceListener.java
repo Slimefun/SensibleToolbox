@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
-import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

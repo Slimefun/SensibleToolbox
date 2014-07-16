@@ -2,13 +2,13 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.AbstractIOMachine;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
-import me.desht.sensibletoolbox.api.SensibleToolbox;
-import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.api.recipes.SimpleCustomRecipe;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import org.bukkit.Bukkit;

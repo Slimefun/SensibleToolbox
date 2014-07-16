@@ -2,8 +2,8 @@ package me.desht.sensibletoolbox.core.energy;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.storage.BlockPosition;
 import me.desht.sensibletoolbox.core.storage.LocationManager;

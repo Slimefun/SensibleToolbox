@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.api.items;
 
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.ProgressMeter;
+import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

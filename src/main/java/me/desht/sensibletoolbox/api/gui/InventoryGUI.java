@@ -1,383 +1,173 @@
 package me.desht.sensibletoolbox.api.gui;
 
-import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
-import me.desht.sensibletoolbox.api.util.BukkitSerialization;
-import me.desht.sensibletoolbox.api.util.STBUtil;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.IntRange;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class InventoryGUI {
-    // some handy stock textures
-    public static ItemStack INPUT_TEXTURE;
-    public static ItemStack OUTPUT_TEXTURE;
-    public static ItemStack BG_TEXTURE;
-    public static ItemStack LABEL_TEXTURE;
-    public static ItemStack BUTTON_TEXTURE;
+public interface InventoryGUI {
+    public SlotType getSlotType(int slot);
 
-    static {
-        buildStockTextures();
-    }
+    public void setSlotType(int slot, SlotType type);
 
-    public static void buildStockTextures() {
-        Configuration config = SensibleToolboxPlugin.getInstance().getConfig();
-        INPUT_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.input"));
-        OUTPUT_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.output"));
-        BG_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.bg"));
-        LABEL_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.label"));
-        BUTTON_TEXTURE = STBUtil.parseMaterialSpec(config.getString("gui.texture.button"));
-        setDisplayName(INPUT_TEXTURE, ChatColor.AQUA + "Input");
-        setDisplayName(OUTPUT_TEXTURE, ChatColor.AQUA + "Output");
-        setDisplayName(BG_TEXTURE, " ");
-    }
+    /**
+     * Add a clickable gadget to this GUI.  The gadget will define its
+     * position in the GUI.
+     *
+     * @param gadget the gadget to add
+     */
+    public void addGadget(ClickableGadget gadget);
 
-    private static final String STB_OPEN_GUI = "STB_Open_GUI";
-    private final Inventory inventory;
-    private final InventoryGUIListener listener;
-    private final ClickableGadget[] gadgets;
-    private final SlotType[] slotTypes;
-    private final IntRange slotRange;
-    private final List<MonitorGadget> monitors = new ArrayList<MonitorGadget>();
+    /**
+     * Get the clickable gadget in the given slot.
+     *
+     * @param slot the slot to check
+     * @return the clickable gadget, or null if there is no gadget there
+     */
+    public ClickableGadget getGadget(int slot);
 
-    public InventoryGUI(InventoryGUIListener listener, int size, String title) {
-        this(null, listener, size, title);
-    }
+    /**
+     * Add an informational label to this GUI.
+     * <p>
+     * If a null texture is passed, a default texture defined in the
+     * SensibleToolbox plugin configuration ("gui.texture.label") is used.
+     *
+     * @param label the label text
+     * @param slot the inventory slot to place the label in
+     * @param texture the texture for the label, may be null
+     * @param lore the label tooltip; extended information can be defined here
+     */
+    public void addLabel(String label, int slot, ItemStack texture, String... lore);
 
-    public InventoryGUI(Player player, InventoryGUIListener listener, int size, String title) {
-        this.listener = listener;
-        this.inventory = player == null ?
-                Bukkit.createInventory(((BaseSTBBlock) listener).getGuiHolder(), size, title) :
-                Bukkit.createInventory(player, size, title);
-        this.gadgets = new ClickableGadget[size];
-        this.slotRange = new IntRange(0, size - 1);
-        this.slotTypes = new SlotType[size];
+    /**
+     * Add a monitor gadget to this GUI.  The gadget defines its own
+     * position in the GUI.
+     *
+     * @param gadget the gadget to add
+     * @return a unique integer identifying the monitor gadget
+     */
+    public int addMonitor(MonitorGadget gadget);
 
-        for (int slot = 0; slot < size; slot++) {
-            setSlotType(slot, SlotType.BACKGROUND);
-        }
-    }
+    /**
+     * Get the monitor gadget for the given ID.
+     *
+     * @param monitorId a unique identifier, as returned
+     *                  by {@link #addMonitor(MonitorGadget)}
+     * @return a monitor gadget, or null if no such gadget exists
+     */
+    public MonitorGadget getMonitor(int monitorId);
 
-    public static List<String> makeLore(String... lore) {
-        List<String> res = new ArrayList<String>();
-        for (String s : lore) {
-            res.add(ChatColor.GRAY + s);
-        }
-        return res;
-    }
+    /**
+     * Get the item in the given inventory slot.  The slot must have
+     * previously been marked as an item slot with
+     * {@link #setSlotType(int, me.desht.sensibletoolbox.api.gui.InventoryGUI.SlotType)}
+     *
+     * @param slot the slot to check
+     * @return the item in that slot, may be null
+     */
+    public ItemStack getItem(int slot);
 
-    public static InventoryGUI getOpenGUI(Player player) {
-        for (MetadataValue mv : player.getMetadata(STB_OPEN_GUI)) {
-            if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
-                return (InventoryGUI) mv.value();
-            }
-        }
-        return null;
-    }
+    /**
+     * Change the item in the given inventory slot.  The slot must have
+     * previously been marked as an item slot with
+     * {@link #setSlotType(int, me.desht.sensibletoolbox.api.gui.InventoryGUI.SlotType)}
+     *
+     * @param slot the slot to update
+     * @param stack the new item to place in the slot
+     */
+    public void setItem(int slot, ItemStack stack);
 
-    private static void setOpenGUI(Player player, InventoryGUI gui) {
-        if (gui != null) {
-            player.setMetadata(STB_OPEN_GUI, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), gui));
-        } else {
-            player.removeMetadata(STB_OPEN_GUI, SensibleToolboxPlugin.getInstance());
-        }
-    }
+    /**
+     * Get the STB block which owns this GUI.
+     *
+     * @return the owning STB block
+     * @throws java.lang.IllegalStateException if the owner is not an STB block
+     */
+    public BaseSTBBlock getOwningBlock();
 
-    public static ItemStack makeTexture(MaterialData material, String title, String... lore) {
-        ItemStack res = material.toItemStack();
-        ItemMeta meta = res.getItemMeta();
-        meta.setDisplayName(title);
-        if (lore.length > 0) {
-            meta.setLore(makeLore(lore));
-        }
-        res.setItemMeta(meta);
-        return res;
-    }
+    /**
+     * Get the STB item which owns this GUI.
+     *
+     * @return the owning STB item
+     * @throws java.lang.IllegalStateException if the owner is not an STB item
+     */
+    public BaseSTBItem getOwningItem();
 
-    public static void setDisplayName(ItemStack stack, String disp) {
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(disp);
-        stack.setItemMeta(meta);
-    }
+    /**
+     * Get the Bukkit inventory backing this GUI.  Care should be taken when
+     * working with the raw inventory.
+     *
+     * @return the Bukkit inventory
+     */
+    public Inventory getInventory();
 
-    public void addGadget(ClickableGadget gadget) {
-        int slot = gadget.getSlot();
-        if (containsSlot(slot)) {
-            inventory.setItem(slot, gadget.getTexture());
-            gadgets[slot] = gadget;
-            setSlotType(slot, SlotType.GADGET);
-        }
-    }
+    /**
+     * Show this GUI to the given player.
+     *
+     * @param player the player to show the GUI to
+     */
+    public void show(Player player);
 
-    public void addLabel(String label, int slot, ItemStack texture, String... lore) {
-        ItemStack stack = texture == null ? LABEL_TEXTURE.clone() : texture;
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.AQUA + label);
-        if (lore.length > 0) {
-            meta.setLore(makeLore(lore));
-        }
-        stack.setItemMeta(meta);
-        setSlotType(slot, SlotType.BACKGROUND);
-        inventory.setItem(slot, stack);
-    }
+    /**
+     * Hide this GUI from the given player (pop it down)
+     *
+     * @param player the player to hide the GUI from
+     */
+    public void hide(Player player);
 
-    public int addMonitor(MonitorGadget gadget) {
-        Validate.isTrue(gadget.getSlots().length > 0, "Gadget has no slots!");
-        monitors.add(gadget);
-        for (int slot : gadget.getSlots()) {
-            setSlotType(slot, SlotType.GADGET);
-        }
-        return monitors.size() - 1;
-    }
+    /**
+     * Get a list of players who currently have this GUI open.
+     *
+     * @return a list of HumanEntity
+     */
+    public List<HumanEntity> getViewers();
 
-    public ItemStack getItem(int slot) {
-        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
-        return inventory.getItem(slot);
-    }
+    /**
+     * Paint the slots surrounding the given list of slots.
+     *
+     * @param slots an array of slots
+     * @param texture an item stack to use as a slot texture
+     */
+    public void paintSlotSurround(int[] slots, ItemStack texture);
 
-    public void setItem(int slot, ItemStack stack) {
-        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
-        inventory.setItem(slot, stack);
-    }
+    /**
+     * Paint a slot in the GUI with the given texture.
+     *
+     * @param slot the slot to paint
+     * @param texture an item stack to use as a slot texture
+     * @param overwrite if false, don't paint the slot unless it's empty
+     */
+    public void paintSlot(int slot, ItemStack texture, boolean overwrite);
 
-    public ClickableGadget getGadget(int slot) {
-        Validate.isTrue(getSlotType(slot) == SlotType.GADGET, "Slot " + slot + " is not a gadget slot");
-        return gadgets[slot];
-    }
+    /**
+     * Freeze any items in the given slots into a string representation.  This
+     * can later be passed to {@link #thawSlots(String, int...)}.
+     *
+     * @param slots an array of slots to freeze
+     * @return a string representation of the items in the given slots
+     */
+    public String freezeSlots(int... slots);
 
-    public MonitorGadget getMonitor(int monitorId) {
-        return monitors.get(monitorId);
-    }
+    /**
+     * Thaw a frozen item representation into the given slots.  This frozen
+     * representation would have been created by {@link #freezeSlots(int...)}
+     *
+     * @param frozen a frozen string representing some items
+     * @param slots the slots to thaw those items into
+     */
+    public void thawSlots(String frozen, int... slots);
 
-    public BaseSTBBlock getOwningBlock() {
-        if (listener instanceof BaseSTBBlock) {
-            return (BaseSTBBlock) listener;
-        }
-        throw new IllegalStateException("attempt to get STB block for non-block listener");
-    }
-
-    public BaseSTBItem getOwningItem() {
-        if (listener instanceof BaseSTBItem) {
-            return (BaseSTBItem) listener;
-        }
-        throw new IllegalStateException("attempt to get STB item for non-item listener");
-    }
-
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public boolean containsSlot(int slot) {
-        return slotRange.containsInteger(slot);
-    }
-
-    public void show(Player player) {
-        if (getOwningItem() instanceof BaseSTBBlock && !getOwningBlock().hasAccessRights(player)) {
-            STBUtil.complain(player, "That " + getOwningItem().getItemName() + " is private!");
-            return;
-        }
-        if (inventory.getViewers().isEmpty()) {
-            // no one's already looking at this inventory/gui, so ensure it's up to date
-            Debugger.getInstance().debug("refreshing GUI inventory of " + getOwningItem());
-            for (MonitorGadget monitor : monitors) {
-                monitor.doRepaint();
-            }
-        }
-        Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwningItem());
-        setOpenGUI(player, this);
-        listener.onGUIOpened(player);
-        player.openInventory(inventory);
-    }
-
-    public void hide(Player player) {
-        Debugger.getInstance().debug(player.getName() + ": hide GUI");
-        setOpenGUI(player, null);
-        player.closeInventory();
-    }
-
-    public List<HumanEntity> getViewers() {
-        return inventory.getViewers();
-    }
-
-    public void receiveEvent(InventoryClickEvent event) {
-        boolean shouldCancel = true;
-        if (containsSlot(event.getRawSlot())) {
-            // clicking inside the GUI
-            switch (getSlotType(event.getRawSlot())) {
-                case GADGET:
-                    if (gadgets[event.getRawSlot()] != null) {
-                        gadgets[event.getRawSlot()].onClicked(event);
-                    }
-                    break;
-                case ITEM:
-                    shouldCancel = !processGUIInventoryAction(event);
-                    Debugger.getInstance().debug("handled click for " + event.getWhoClicked().getName() + " in item slot " + event.getRawSlot() + " of " + getOwningItem() + ": cancelled = " + shouldCancel);
-                    break;
-                default:
-                    break;
-            }
-        } else if (event.getRawSlot() > 0) {
-            // clicking inside the player's inventory
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                int nInserted = listener.onShiftClickInsert(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
-                if (nInserted > 0) {
-                    ItemStack stack = event.getCurrentItem();
-                    stack.setAmount(stack.getAmount() - nInserted);
-                    event.setCurrentItem(stack.getAmount() > 0 ? stack : null);
-                }
-            } else {
-                shouldCancel = !listener.onPlayerInventoryClick(event.getWhoClicked(), event.getSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
-            }
-        } else {
-            // clicking outside the inventory entirely
-            shouldCancel = !listener.onClickOutside(event.getWhoClicked());
-        }
-        if (shouldCancel) {
-            event.setCancelled(true);
-        }
-    }
-
-    public void receiveEvent(InventoryDragEvent event) {
-        boolean inGUI = false;
-        boolean shouldCancel = true;
-        for (int slot : event.getRawSlots()) {
-            if (containsSlot(slot)) {
-                inGUI = true;
-            }
-        }
-        if (inGUI) {
-            // we only allow drags with a single slot involved, and we fake that as a left-click on the slot
-            if (event.getRawSlots().size() == 1) {
-                int slot = (event.getRawSlots().toArray(new Integer[1]))[0];
-                shouldCancel = !listener.onSlotClick(event.getWhoClicked(), slot, ClickType.LEFT, inventory.getItem(slot), event.getOldCursor());
-            }
-        } else {
-            // drag is purely in the player's inventory; allow it
-            shouldCancel = false;
-        }
-        if (shouldCancel) {
-            event.setCancelled(true);
-        }
-    }
-
-    private boolean processGUIInventoryAction(InventoryClickEvent event) {
-        switch (event.getAction()) {
-            case MOVE_TO_OTHER_INVENTORY:
-                return listener.onShiftClickExtract(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
-            case PLACE_ONE:
-            case PLACE_ALL:
-            case PLACE_SOME:
-            case SWAP_WITH_CURSOR:
-            case PICKUP_ALL:
-            case PICKUP_HALF:
-            case PICKUP_ONE:
-            case PICKUP_SOME:
-                return listener.onSlotClick(event.getWhoClicked(), event.getRawSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
-            default:
-                return false;
-        }
-    }
-
-    public void receiveEvent(InventoryCloseEvent event) {
-        Debugger.getInstance().debug("received GUI close event for " + event.getPlayer().getName());
-        listener.onGUIClosed(event.getPlayer());
-        if (event.getPlayer() instanceof Player) {
-            setOpenGUI((Player) event.getPlayer(), null);
-        }
-        Debugger.getInstance().debug(event.getPlayer().getName() + " closed GUI for " + getOwningItem());
-    }
-
-    public SlotType getSlotType(int slot) {
-        return slotTypes[slot];
-    }
-
-    public void setSlotType(int slot, SlotType type) {
-        slotTypes[slot] = type;
-        switch (type) {
-            case BACKGROUND:
-                paintSlot(slot, BG_TEXTURE, true);
-                break;
-            case ITEM:
-                paintSlot(slot, null, true);
-                break;
-        }
-    }
-
-    public void paintSlotSurround(int[] slots, ItemStack texture) {
-        for (int slot : slots) {
-            int row = slot / 9, col = slot % 9;
-            for (int i = row - 1; i <= row + 1; i++) {
-                for (int j = col - 1; j <= col + 1; j++) {
-                    paintSlot(i, j, texture, true);
-                }
-            }
-        }
-    }
-
-    public void paintSlot(int row, int col, ItemStack texture, boolean overwrite) {
-        paintSlot(row * 9 + col, texture, overwrite);
-    }
-
-    public void paintSlot(int slot, ItemStack texture, boolean overwrite) {
-        if (slotRange.containsInteger(slot)) {
-            if (overwrite || inventory.getItem(slot) == null) {
-                inventory.setItem(slot, texture);
-            }
-        }
-    }
-
-    public String freezeSlots(int... slots) {
-        int invSize = STBUtil.roundUp(slots.length, 9);
-        Inventory tmpInv = Bukkit.createInventory(null, invSize);
-        for (int i = 0; i < slots.length; i++) {
-            tmpInv.setItem(i, inventory.getItem(slots[i]));
-        }
-        return BukkitSerialization.toBase64(tmpInv, slots.length);
-    }
-
-    public void thawSlots(String frozen, int... slots) {
-        if (frozen != null && !frozen.isEmpty() && slots.length > 0) {
-            try {
-                Inventory tmpInv = BukkitSerialization.fromBase64(frozen);
-                for (int i = 0; i < slots.length; i++) {
-                    inventory.setItem(slots[i], tmpInv.getItem(i));
-                }
-
-            } catch (IOException e) {
-                LogUtils.severe("can't restore inventory for " + getOwningItem().getItemName());
-            }
-        }
-    }
-
-    public void ejectItems(int... slots) {
-        Location loc = getOwningBlock().getLocation();
-        for (int slot : slots) {
-            ItemStack stack = inventory.getItem(slot);
-            if (stack != null) {
-                loc.getWorld().dropItemNaturally(loc, stack);
-                inventory.setItem(slot, null);
-            }
-        }
-    }
+    /**
+     * Eject any items in the given slots, dropping them on the ground at or
+     * near the GUI's owning block or player.
+     *
+     * @param slots the slots to eject items from
+     */
+    public void ejectItems(int... slots);
 
     public enum SlotType {
         BACKGROUND,

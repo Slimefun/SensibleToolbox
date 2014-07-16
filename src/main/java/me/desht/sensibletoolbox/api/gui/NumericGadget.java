@@ -67,7 +67,7 @@ public class NumericGadget extends ClickableGadget {
                 "R-Click: +" + incr,
                 "With Shift held, +/-" + altIncr
         };
-        meta.setLore(InventoryGUI.makeLore(lore));
+        meta.setLore(GUIUtil.makeLore(lore));
         icon.setItemMeta(meta);
         return icon;
     }

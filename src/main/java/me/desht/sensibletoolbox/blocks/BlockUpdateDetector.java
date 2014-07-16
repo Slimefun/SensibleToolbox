@@ -2,13 +2,10 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.api.gui.*;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.NumericGadget;
-import me.desht.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -136,7 +133,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     @Override
     protected InventoryGUI createGUI() {
-        InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
         gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.NumericListener() {
             @Override
             public boolean run(int newValue) {

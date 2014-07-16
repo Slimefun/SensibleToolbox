@@ -2,14 +2,11 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
-import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.NumericGadget;
-import me.desht.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -40,7 +37,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
     @Override
     protected InventoryGUI createGUI() {
-        InventoryGUI gui = new InventoryGUI(this, 9, ChatColor.DARK_RED + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_RED + getItemName());
         gui.addGadget(new NumericGadget(gui, 0, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.NumericListener() {
             @Override
             public boolean run(int newValue) {

@@ -8,15 +8,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
 
 public class LightMeter extends MonitorGadget {
-    private static final ItemStack BRIGHT = InventoryGUI.makeTexture(new Wool(DyeColor.LIME),
+    private static final ItemStack BRIGHT = GUIUtil.makeTexture(new Wool(DyeColor.LIME),
             ChatColor.RESET + "Efficiency: " + ChatColor.GREEN + "100%");
-    private static final ItemStack DIM1 = InventoryGUI.makeTexture(new Wool(DyeColor.YELLOW),
+    private static final ItemStack DIM1 = GUIUtil.makeTexture(new Wool(DyeColor.YELLOW),
             ChatColor.RESET + "Efficiency: " + ChatColor.YELLOW + "75%");
-    private static final ItemStack DIM2 = InventoryGUI.makeTexture(new Wool(DyeColor.ORANGE),
+    private static final ItemStack DIM2 = GUIUtil.makeTexture(new Wool(DyeColor.ORANGE),
             ChatColor.RESET + "Efficiency: " + ChatColor.GOLD + "50%");
-    private static final ItemStack DIM3 = InventoryGUI.makeTexture(new Wool(DyeColor.RED),
+    private static final ItemStack DIM3 = GUIUtil.makeTexture(new Wool(DyeColor.RED),
             ChatColor.RESET + "Efficiency: " + ChatColor.RED + "25%");
-    private static final ItemStack DARK = InventoryGUI.makeTexture(new Wool(DyeColor.GRAY),
+    private static final ItemStack DARK = GUIUtil.makeTexture(new Wool(DyeColor.GRAY),
             ChatColor.RESET + "Efficiency: " + ChatColor.DARK_GRAY + "0%");
 
     private static ItemStack[] levels = new ItemStack[16];
