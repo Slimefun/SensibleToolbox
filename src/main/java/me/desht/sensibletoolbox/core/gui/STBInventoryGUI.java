@@ -77,14 +77,6 @@ public class STBInventoryGUI implements InventoryGUI {
         }
     }
 
-//    public static List<String> makeLore(String... lore) {
-//        List<String> res = new ArrayList<String>();
-//        for (String s : lore) {
-//            res.add(ChatColor.GRAY + s);
-//        }
-//        return res;
-//    }
-
     public static InventoryGUI getOpenGUI(Player player) {
         for (MetadataValue mv : player.getMetadata(STB_OPEN_GUI)) {
             if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
@@ -101,23 +93,6 @@ public class STBInventoryGUI implements InventoryGUI {
             player.removeMetadata(STB_OPEN_GUI, SensibleToolboxPlugin.getInstance());
         }
     }
-
-//    public static ItemStack makeTexture(MaterialData material, String title, String... lore) {
-//        ItemStack res = material.toItemStack();
-//        ItemMeta meta = res.getItemMeta();
-//        meta.setDisplayName(title);
-//        if (lore.length > 0) {
-//            meta.setLore(makeLore(lore));
-//        }
-//        res.setItemMeta(meta);
-//        return res;
-//    }
-//
-//    public static void setDisplayName(ItemStack stack, String disp) {
-//        ItemMeta meta = stack.getItemMeta();
-//        meta.setDisplayName(disp);
-//        stack.setItemMeta(meta);
-//    }
 
     @Override
     public void addGadget(ClickableGadget gadget) {

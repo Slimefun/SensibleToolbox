@@ -40,6 +40,19 @@ public class SensibleToolbox {
     }
 
     /**
+     * Given a location, return the STB block at that location, if any.
+     *
+     * @param location the location to check
+     * @param checkSign if true and the location contains a sign, then also
+     *                  check the location of the block the sign is attached
+     *                  to
+     * @return the STB block at that location, or null if there is none
+     */
+    public static BaseSTBBlock getBlockAt(Location location, boolean checkSign) {
+        return LocationManager.getManager().get(location, checkSign);
+    }
+
+    /**
      * Given a UUID, attempt to get the player name for that UUID.  This will only succeed if that
      * player has previously connected to this server, and the last known name for the UUID will be
      * returned.  If the player has changed their name since last logging in, this change will not
