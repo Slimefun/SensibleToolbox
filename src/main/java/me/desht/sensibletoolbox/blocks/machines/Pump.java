@@ -1,8 +1,9 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

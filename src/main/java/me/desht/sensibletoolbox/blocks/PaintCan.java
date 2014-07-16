@@ -2,14 +2,14 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.gui.ButtonGadget;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.LevelMonitor;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
+import me.desht.sensibletoolbox.api.gui.ButtonGadget;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.LevelMonitor;
 import me.desht.sensibletoolbox.items.PaintBrush;
-import me.desht.sensibletoolbox.util.RelativePosition;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -130,7 +130,7 @@ public class PaintCan extends BaseSTBBlock {
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            PaintBrush brush = BaseSTBItem.fromItemStack(stack, PaintBrush.class);
+            PaintBrush brush = SensibleToolbox.getItemRegistry().fromItemStack(stack, PaintBrush.class);
             if (brush == null) {
                 // refilling a paintbrush/roller from the can is handled in the PaintBrush object
                 getGUI().show(player);

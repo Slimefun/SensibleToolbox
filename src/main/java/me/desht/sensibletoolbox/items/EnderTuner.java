@@ -1,15 +1,17 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.EnderTunable;
-import me.desht.sensibletoolbox.api.STBBlock;
-import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
-import me.desht.sensibletoolbox.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.NumericGadget;
-import me.desht.sensibletoolbox.gui.ToggleButton;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.NumericGadget;
+import me.desht.sensibletoolbox.api.gui.ToggleButton;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -85,7 +87,7 @@ public class EnderTuner extends BaseSTBItem {
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         Block clicked = event.getClickedBlock();
-        STBBlock stb = clicked == null ? null : LocationManager.getManager().get(clicked.getLocation(), true);
+        BaseSTBBlock stb = clicked == null ? null : LocationManager.getManager().get(clicked.getLocation(), true);
         if (stb instanceof EnderTunable && stb.hasAccessRights(event.getPlayer())) {
             tuningBlock = (EnderTunable) stb;
         }
@@ -103,11 +105,11 @@ public class EnderTuner extends BaseSTBItem {
         int freq = 1;
         boolean global = false;
         if (tuningBlock != null) {
-            gui.setItem(TUNED_ITEM_SLOT, ((STBBlock)tuningBlock).toItemStack());
+            gui.setItem(TUNED_ITEM_SLOT, ((BaseSTBBlock)tuningBlock).toItemStack());
             gui.addLabel("Ender Box", TUNED_ITEM_SLOT - 1, null);
             freq = tuningBlock.getEnderFrequency();
             global = tuningBlock.isGlobal();
-            gui.addGadget(new AccessControlGadget(gui, ACCESS_CONTROL_SLOT, (STBBlock) tuningBlock));
+            gui.addGadget(new AccessControlGadget(gui, ACCESS_CONTROL_SLOT, (BaseSTBBlock) tuningBlock));
         } else {
             gui.addLabel("Ender Bag", TUNED_ITEM_SLOT - 1, null, "Place an Ender Bag or", "Ender Box here to tune", "its Ender frequency");
         }
@@ -115,7 +117,7 @@ public class EnderTuner extends BaseSTBItem {
             @Override
             public boolean run(boolean newValue) {
                 ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
-                BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
                 if (item instanceof EnderTunable) {
                     ((EnderTunable) item).setGlobal(newValue);
                     gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
@@ -131,7 +133,7 @@ public class EnderTuner extends BaseSTBItem {
             @Override
             public boolean run(int newValue) {
                 ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
-                BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
                 if (item instanceof EnderTunable) {
                     ((EnderTunable) item).setEnderFrequency(newValue);
                     gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
@@ -160,7 +162,7 @@ public class EnderTuner extends BaseSTBItem {
                 ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(1);
                 return true;
             } else {
-                BaseSTBItem item = BaseSTBItem.fromItemStack(onCursor);
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(onCursor);
                 if (item instanceof EnderTunable) {
                     ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());
                     ((ToggleButton) gui.getGadget(GLOBAL_BUTTON_SLOT)).setValue(((EnderTunable) item).isGlobal());
@@ -197,7 +199,7 @@ public class EnderTuner extends BaseSTBItem {
             }
             return 0;
         }
-        BaseSTBItem item = BaseSTBItem.fromItemStack(toInsert);
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(toInsert);
         if (item instanceof EnderTunable && gui.getItem(TUNED_ITEM_SLOT) == null) {
             gui.setItem(TUNED_ITEM_SLOT, toInsert);
             ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());

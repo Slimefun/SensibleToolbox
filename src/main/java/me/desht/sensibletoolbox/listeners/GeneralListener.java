@@ -2,15 +2,16 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem.ItemAction;
 import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.energynet.EnergyNetManager;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.STBGUIHolder;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.STBGUIHolder;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,9 +45,9 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        BaseSTBItem item = BaseSTBItem.fromItemStack(event.getItem());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getItem());
         if (item != null) {
-            if (item.checkPlayerPermission(event.getPlayer(), "interact")) {
+            if (item.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT)) {
                 item.onInteractItem(event);
             }
         }
@@ -58,7 +59,7 @@ public class GeneralListener extends STBBaseListener {
             }
             BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation());
             if (stb != null) {
-                if (stb.checkPlayerPermission(event.getPlayer(), "interact_block")) {
+                if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT_BLOCK)) {
                     stb.onInteractBlock(event);
                 }
             }
@@ -68,7 +69,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEntityEvent event) {
         ItemStack stack = event.getPlayer().getItemInHand();
-        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
         if (item != null) {
             item.onInteractEntity(event);
         }
@@ -77,7 +78,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         ItemStack stack = event.getPlayer().getItemInHand();
-        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
         if (item != null) {
             item.onItemConsume(event);
         }
@@ -87,7 +88,7 @@ public class GeneralListener extends STBBaseListener {
     public void onItemChanged(PlayerItemHeldEvent event) {
         if (event.getPlayer().isSneaking()) {
             ItemStack stack = event.getPlayer().getItemInHand();
-            BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
             if (item != null) {
                 item.onItemHeld(event);
                 event.setCancelled(true);
@@ -99,7 +100,7 @@ public class GeneralListener extends STBBaseListener {
     public void onBlockDamage(BlockDamageEvent event) {
         BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
         if (stb != null) {
-            if (stb.checkPlayerPermission(event.getPlayer(), "break")) {
+            if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.BREAK)) {
                 stb.onBlockDamage(event);
             } else {
                 event.setCancelled(true);
@@ -109,11 +110,11 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockPrePlaceCheck(BlockPlaceEvent event) {
-        BaseSTBItem stb = BaseSTBItem.fromItemStack(event.getItemInHand());
+        BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(event.getItemInHand());
         if (stb != null) {
             if (!(stb instanceof BaseSTBBlock)) {
                 event.setCancelled(true);
-            } else if (!stb.checkPlayerPermission(event.getPlayer(), "place")) {
+            } else if (!stb.checkPlayerPermission(event.getPlayer(), ItemAction.PLACE)) {
                 event.setCancelled(true);
             } else if (!((BaseSTBBlock) stb).validatePlaceable(event.getBlock().getLocation())) {
                 event.setCancelled(true);
@@ -123,7 +124,7 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockWillPlace(BlockPlaceEvent event) {
-        BaseSTBItem stb = BaseSTBItem.fromItemStack(event.getItemInHand());
+        BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(event.getItemInHand());
         if (stb != null) {
             // sanity check: we should only get here if the item is an STB block, since
             // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
@@ -148,7 +149,7 @@ public class GeneralListener extends STBBaseListener {
         if (EnergyNetManager.isCable(event.getBlock())) {
             EnergyNetManager.onCableRemoved(event.getBlock());
         } else {
-            BaseSTBItem item = BaseSTBItem.fromItemStack(event.getPlayer().getItemInHand());
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getPlayer().getItemInHand());
             if (item != null) {
                 item.onBreakBlockWithItem(event);
             }
@@ -241,13 +242,13 @@ public class GeneralListener extends STBBaseListener {
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
 
-        STBItem result = BaseSTBItem.fromItemStack(event.getRecipe().getResult());
+        BaseSTBItem result = SensibleToolbox.getItemRegistry().fromItemStack(event.getRecipe().getResult());
         double finalSCU = 0.0;
 
         // prevent STB items being used where the vanilla material is expected
         // (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)
         for (ItemStack ingredient : event.getInventory().getMatrix()) {
-            STBItem item = BaseSTBItem.fromItemStack(ingredient);
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(ingredient);
             if (item != null) {
                 if (!item.isIngredientFor(event.getRecipe().getResult())) {
                     Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
@@ -271,8 +272,8 @@ public class GeneralListener extends STBBaseListener {
         if (result != null) {
             for (ItemStack ingredient : event.getInventory().getMatrix()) {
                 if (ingredient != null) {
-                    Class<? extends STBItem> c = result.getCraftingRestriction(ingredient.getType());
-                    if (c != null && !BaseSTBItem.isSTBItem(ingredient, c)) {
+                    Class<? extends BaseSTBItem> c = result.getCraftingRestriction(ingredient.getType());
+                    if (c != null && !SensibleToolbox.getItemRegistry().isSTBItem(ingredient, c)) {
                         Debugger.getInstance().debug("stopped crafting of " + result + " with vanilla item: " + ingredient.getType());
                         event.getInventory().setResult(null);
                         break;
@@ -288,7 +289,7 @@ public class GeneralListener extends STBBaseListener {
         if (event.getInventory().getType() == InventoryType.CRAFTING) {
             if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && STBUtil.isWearable(event.getCurrentItem().getType())) {
-                    STBItem item = BaseSTBItem.fromItemStack(event.getCurrentItem());
+                    BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getCurrentItem());
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
                         int newSlot = findNewSlot(event);
@@ -299,7 +300,7 @@ public class GeneralListener extends STBBaseListener {
                     }
                 }
             } else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
-                STBItem item = BaseSTBItem.fromItemStack(event.getCursor());
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getCursor());
                 if (item != null && !item.isWearable()) {
                     event.setCancelled(true);
                 }
@@ -327,7 +328,7 @@ public class GeneralListener extends STBBaseListener {
             for (int slot : event.getRawSlots()) {
                 if (slot >= 5 && slot <= 8) {
                     // armour slots
-                    STBItem item = BaseSTBItem.fromItemStack(event.getOldCursor());
+                    BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getOldCursor());
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
                     }
@@ -339,7 +340,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onArmourEquipCheck(BlockDispenseEvent event) {
         if (STBUtil.isWearable(event.getItem().getType())) {
-            STBItem item = BaseSTBItem.fromItemStack(event.getItem());
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getItem());
             if (item != null && !item.isWearable()) {
                 event.setCancelled(true);
             }
@@ -382,7 +383,7 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler
     public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
-        STBItem item = BaseSTBItem.fromItemStack(event.getItem());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getItem());
         if (item != null && !item.isEnchantable()) {
             event.setCancelled(true);
         }

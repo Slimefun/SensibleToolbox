@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox.commands;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 

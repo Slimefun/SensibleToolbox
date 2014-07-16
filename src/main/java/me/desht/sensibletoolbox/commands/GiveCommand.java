@@ -4,8 +4,8 @@ import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public class GiveCommand extends AbstractCommand {
             target = (Player) sender;
         }
         String id = args[0].replace(" ", "").toLowerCase();
-        STBItem item = BaseSTBItem.getItemById(id);
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(id);
         DHValidate.notNull(item, "Unknown SensibleToolbox item: " + args[0]);
         target.getInventory().addItem(item.toItemStack(amount));
         MiscUtil.statusMessage(target, "You received " + amount + " x &6" + item.getItemName() + "&-.");
@@ -62,7 +62,7 @@ public class GiveCommand extends AbstractCommand {
     protected List<String> getItemCompletions(Plugin plugin, CommandSender sender, String prefix) {
         List<String> res = new ArrayList<String>();
 
-        for (String item : BaseSTBItem.getItemIds()) {
+        for (String item : SensibleToolbox.getItemRegistry().getItemIds()) {
             if (item.startsWith(prefix)) {
                 res.add(item);
             }

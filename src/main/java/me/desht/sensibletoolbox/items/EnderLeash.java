@@ -1,7 +1,8 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.Debugger;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;

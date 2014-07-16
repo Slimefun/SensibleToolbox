@@ -1,11 +1,12 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.enderstorage.EnderStorageHolder;
-import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.enderstorage.EnderStorageHolder;
+import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.api;
 
-import me.desht.sensibletoolbox.energynet.EnergyNet;
+import me.desht.sensibletoolbox.core.energy.EnergyNet;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 

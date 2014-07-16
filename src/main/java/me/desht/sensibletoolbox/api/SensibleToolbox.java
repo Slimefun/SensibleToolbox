@@ -1,7 +1,11 @@
 package me.desht.sensibletoolbox.api;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.core.ItemRegistry;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -11,14 +15,28 @@ import java.util.UUID;
  * Top-level collection of utility methods for Sensible Toolbox.
  */
 public class SensibleToolbox {
+    public static ItemRegistry getItemRegistry() {
+        return SensibleToolboxPlugin.getInstance().getItemRegistry();
+    }
+
     /**
      * Given an item stack, get the SensibleToolbox object for that item, if any.
      *
      * @param stack the item stack
      * @return the SensibleToolbox object
      */
-    public static STBItem getItemFromItemStack(ItemStack stack) {
-        return BaseSTBItem.fromItemStack(stack);
+    public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
+        return getItemRegistry().fromItemStack(stack);
+    }
+
+    /**
+     * Given a location, return the STB block at that location, if any.
+     *
+     * @param location the location to check
+     * @return the STB block at that location, or null if there is none
+     */
+    public static BaseSTBBlock getBlockAt(Location location) {
+        return LocationManager.getManager().get(location);
     }
 
     /**
@@ -35,54 +53,65 @@ public class SensibleToolbox {
     }
 
     /**
-     * Register a new item with SensibleToolbox. The item must be a subclass of {@link BaseSTBItem}.
+     * Register a new item with SensibleToolbox. The item must be a subclass
+     * of {@link BaseSTBItem}.
      * <p/>
-     * Permission nodes will be registered for the item: <i>stb.{interact}.{itemId}</i> will
-     * always be registered, and if the item is a subclass of BaseSTBBlock, then
+     * Permission nodes will be registered for the item:
+     * <i>stb.{interact}.{itemId}</i> will always be registered, and if the
+     * item is a subclass of BaseSTBBlock, then
      * <i>stb.{place|break|interact_block}.{itemId}</i> will also be registered.
      * <p/>
-     * {@code itemId} is the item's ID; the base class name of the item, lowercased.
+     * {@code itemId} is the item's ID; the base class name of the item,
+     * lowercased.  It may be no longer than 32 characters.
      *
      * @param plugin the plugin doing the registration
      * @param item   an instance of the item to be registered
      */
     public static void registerItem(Plugin plugin, BaseSTBItem item) {
-        BaseSTBItem.registerItem(item, plugin);
+        getItemRegistry().registerItem(item, plugin);
     }
 
     /**
-     * Register an item with Sensible Toolbox.  The item must be a subclass of {@link BaseSTBItem}.
+     * Register an item with Sensible Toolbox.  The item must be a subclass of
+     * {@link BaseSTBItem}.
      * <p/>
-     * If the supplied {@code configNode} is non-null, Sensible Toolbox will check the
-     * boolean configuration node "{configNode}.{itemId}", and only register the
-     * item if the node is true.
+     * If the supplied {@code configNode} is non-null, Sensible Toolbox will
+     * check the boolean configuration node "{configNode}.{itemId}" in the
+     * calling plugin's configuration, and only register the item if the node
+     * is true.
      * <p/>
-     * Permission nodes will be registered for the item: <i>stb.{interact}.{itemId}</i> will
-     * always be registered, and if the item is a subclass of BaseSTBBlock, then
+     *Permission nodes will be registered for the item:
+     * <i>stb.{interact}.{itemId}</i> will always be registered, and if the
+     * item is a subclass of BaseSTBBlock, then
      * <i>stb.{place|break|interact_block}.{itemId}</i> will also be registered.
      * <p/>
-     * {@code itemId} is the item's ID; the base class name of the item, lowercased.
+     * {@code itemId} is the item's ID; the base class name of the item,
+     * lowercased.  It may be no longer than 32 characters.
      *
      * @param plugin     the plugin doing the registration
      * @param item       an instance of the item to be registered
      * @param configNode the parent configuration node prefix controlling enablement
      */
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode) {
-        BaseSTBItem.registerItem(item, plugin, configNode);
+        getItemRegistry().registerItem(item, plugin, configNode);
     }
 
     /**
-     * Register an item with Sensible Toolbox.  The item must be a subclass of {@link BaseSTBItem}.
+     * Register an item with Sensible Toolbox.  The item must be a subclass of
+     * {@link BaseSTBItem}.
      * <p/>
-     * If the supplied {@code configNode} is non-null, Sensible Toolbox will check the
-     * boolean configuration node "{configNode}.{itemId}", and only register the
-     * item if the node is true.
+     * If the supplied {@code configNode} is non-null, Sensible Toolbox will
+     * check the boolean configuration node "{configNode}.{itemId}" in the
+     * calling plugin's configuration, and only register the item if the node
+     * is true.
      * <p/>
-     * Permission nodes will be registered for the item: <i>{permissionNode}.{interact}.{itemId}</i>
-     * will always be registered, and if the item is a subclass of BaseSTBBlock, then
-     * <i>{permissionNode}.{place|break|interact_block}.{itemId}</i> will also be registered.
+     * Permission nodes will be registered for the item:
+     * <i>stb.{interact}.{itemId}</i> will always be registered, and if the
+     * item is a subclass of BaseSTBBlock, then
+     * <i>stb.{place|break|interact_block}.{itemId}</i> will also be registered.
      * <p/>
-     * {@code itemId} is the item's ID; the base class name of the item, lowercased.
+     * {@code itemId} is the item's ID; the base class name of the item,
+     * lowercased.  It may be no longer than 32 characters.
      *
      * @param plugin         the plugin doing the registration
      * @param item           an instance of the item to be registered
@@ -90,6 +119,6 @@ public class SensibleToolbox {
      * @param permissionNode the permission node prefix for registering item permissions
      */
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode, String permissionNode) {
-        BaseSTBItem.registerItem(item, plugin, configNode, permissionNode);
+        getItemRegistry().registerItem(item, plugin, configNode, permissionNode);
     }
 }

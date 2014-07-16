@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

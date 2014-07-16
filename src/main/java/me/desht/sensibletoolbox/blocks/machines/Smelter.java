@@ -2,15 +2,19 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.items.AbstractIOMachine;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
+import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
+import me.desht.sensibletoolbox.api.recipes.SimpleCustomRecipe;
 import me.desht.sensibletoolbox.items.components.MachineFrame;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import me.desht.sensibletoolbox.recipes.SimpleCustomRecipe;
-import me.desht.sensibletoolbox.recipes.CustomRecipeManager;
-import me.desht.sensibletoolbox.recipes.RecipeUtil;
-import me.desht.sensibletoolbox.util.STBUtil;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -52,8 +56,8 @@ public class Smelter extends AbstractIOMachine {
         }
 
         // add a processing recipe for any STB item which reports itself as smeltable
-        for (String key : BaseSTBItem.getItemIds()) {
-            STBItem item = getItemById(key);
+        for (String key : SensibleToolbox.getItemRegistry().getItemIds()) {
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(key);
             if (item.getSmeltingResult() != null) {
                 ItemStack stack = item.toItemStack();
                 crm.addCustomRecipe(new SimpleCustomRecipe(this, stack, item.getSmeltingResult(), getProcessingTime(stack)));

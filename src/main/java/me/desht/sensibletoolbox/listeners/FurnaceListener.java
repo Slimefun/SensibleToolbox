@@ -1,17 +1,15 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.recipes.RecipeUtil;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Furnace;
 import org.bukkit.block.Hopper;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
@@ -47,7 +45,7 @@ public class FurnaceListener extends STBBaseListener {
                     }
                 }
             }
-        } else if (event.getRawSlot() == 2 && BaseSTBItem.isSTBItem(event.getCurrentItem())) {
+        } else if (event.getRawSlot() == 2 && SensibleToolbox.getItemRegistry().isSTBItem(event.getCurrentItem())) {
             // work around CB bug where shift-clicking custom items out of furnace seems
             // to cause a de-sync, leaving phantom items in the furnace
             Bukkit.getScheduler().runTask(plugin, new Runnable() {
@@ -96,7 +94,7 @@ public class FurnaceListener extends STBBaseListener {
     public void onSmelt(FurnaceSmeltEvent event) {
         // this ensures that an STB item smelted in a furnace leaves the
         // correct result in the furnace's output slot
-        BaseSTBItem item = BaseSTBItem.fromItemStack(event.getSource());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getSource());
         if (item != null) {
             event.setResult(item.getSmeltingResult());
 
@@ -104,7 +102,7 @@ public class FurnaceListener extends STBBaseListener {
     }
 
     private boolean validateSmeltingIngredient(ItemStack stack) {
-        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
         if (item != null) {
             return item.getSmeltingResult() != null;
         } else {

@@ -2,8 +2,9 @@ package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cuboid.Cuboid;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;

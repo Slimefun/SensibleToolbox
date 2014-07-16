@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
@@ -20,12 +20,12 @@ public class AnvilListener extends STBBaseListener {
         // any kind of anvil activity for STB items.
         if (event.getWhoClicked() instanceof Player && event.getInventory().getType() == InventoryType.ANVIL) {
             if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
-                if (BaseSTBItem.isSTBItem(event.getCursor())) {
+                if (SensibleToolbox.getItemRegistry().isSTBItem(event.getCursor())) {
                     event.setCancelled(true);
                     MiscUtil.errorMessage((Player) event.getWhoClicked(), "Sensible Toolbox items don't fit in a vanilla anvil.");
                 }
             } else if (event.getRawSlot() > 2 && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                if (BaseSTBItem.isSTBItem(event.getCurrentItem())) {
+                if (SensibleToolbox.getItemRegistry().isSTBItem(event.getCurrentItem())) {
                     event.setCancelled(true);
                     MiscUtil.errorMessage((Player) event.getWhoClicked(), "Sensible Toolbox items don't fit in a vanilla anvil.");
                 }

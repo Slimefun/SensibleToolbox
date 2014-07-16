@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.items.machineupgrades;
 
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class MachineUpgrade extends BaseSTBItem {

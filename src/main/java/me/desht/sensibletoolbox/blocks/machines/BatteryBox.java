@@ -1,10 +1,12 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
+import me.desht.sensibletoolbox.api.ChargeDirection;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
-import me.desht.sensibletoolbox.energynet.EnergyNet;
-import me.desht.sensibletoolbox.gui.EnergyFlowGadget;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.energy.EnergyNet;
+import me.desht.sensibletoolbox.api.gui.EnergyFlowGadget;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.block.BlockFace;

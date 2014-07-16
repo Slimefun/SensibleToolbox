@@ -1,18 +1,17 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.ItemNames;
-import me.desht.sensibletoolbox.api.FilterType;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.Filtering;
-import me.desht.sensibletoolbox.api.STBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.util.Filter;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
-import me.desht.sensibletoolbox.gui.FilterTypeGadget;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.ToggleButton;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.Filter;
-import me.desht.sensibletoolbox.util.STBUtil;
-import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import me.desht.sensibletoolbox.api.gui.FilterTypeGadget;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.ToggleButton;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -70,7 +69,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         setTerminator(conf.getBoolean("terminator", false));
         if (conf.contains("filtered")) {
             boolean isWhite = conf.getBoolean("filterWhitelist", true);
-            FilterType filterType = FilterType.valueOf(conf.getString("filterType", "MATERIAL"));
+            Filter.FilterType filterType = Filter.FilterType.valueOf(conf.getString("filterType", "MATERIAL"));
             @SuppressWarnings("unchecked")
             List<ItemStack> l = (List<ItemStack>) conf.getList("filtered");
             filter = Filter.fromItemList(isWhite, l, filterType);
@@ -264,7 +263,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         int nToPull = getItemRouter().getStackSize();
         Location targetLoc = getTargetLocation(loc);
         ItemStack pulled;
-        STBBlock stb = LocationManager.getManager().get(targetLoc);
+        BaseSTBBlock stb = LocationManager.getManager().get(targetLoc);
         if (stb instanceof STBInventoryHolder) {
             pulled = ((STBInventoryHolder) stb).extractItems(from.getOppositeFace(), inBuffer, nToPull, getItemRouter().getOwner());
         } else {

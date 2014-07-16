@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.items.energycells;
 
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.components.EnergizedIronIngot;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

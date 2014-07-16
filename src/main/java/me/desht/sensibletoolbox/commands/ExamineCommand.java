@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.commands;
 
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

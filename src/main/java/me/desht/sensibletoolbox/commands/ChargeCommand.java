@@ -4,12 +4,12 @@ import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,7 +31,7 @@ public class ChargeCommand extends AbstractCommand {
         notFromConsole(sender);
 
         Player player = (Player) sender;
-        STBItem item = BaseSTBItem.fromItemStack(player.getItemInHand());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
         BaseSTBBlock stb = null;
         Chargeable c = null;
         if (item != null && item instanceof Chargeable) {

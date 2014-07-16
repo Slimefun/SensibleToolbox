@@ -1,12 +1,11 @@
 package me.desht.sensibletoolbox.commands;
 
 import me.desht.dhutils.DHValidate;
-import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -65,7 +64,7 @@ public class RedrawCommand extends AbstractCommand {
             }
             return filterPrefix(sender, worlds, args[args.length - 1]);
         } else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
-            return filterPrefix(sender, BaseSTBItem.getItemIds(), args[args.length - 1]);
+            return filterPrefix(sender, SensibleToolbox.getItemRegistry().getItemIds(), args[args.length - 1]);
         } else {
             showUsage(sender);
             return noCompletions(sender);

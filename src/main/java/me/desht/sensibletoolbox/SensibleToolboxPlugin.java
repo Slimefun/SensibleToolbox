@@ -23,17 +23,17 @@ import com.griefcraft.lwc.LWCPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.SunlightLevels;
 import me.desht.sensibletoolbox.commands.*;
-import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
-import me.desht.sensibletoolbox.energynet.EnergyNetManager;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.core.ItemRegistry;
+import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
+import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
+import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
-import me.desht.sensibletoolbox.recipes.RecipeUtil;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.SunlightLevels;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -64,6 +64,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private LWC lwc = null;
     private EnderStorageManager enderStorageManager;
     private SunlightLevels sunlightLevels;
+    private ItemRegistry itemRegistry;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -115,7 +116,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         InventoryGUI.buildStockTextures();
 
-        BaseSTBItem.registerItems(this);
+//        BaseSTBItem.registerItems(this);
+        itemRegistry = new ItemRegistry(this);
+        itemRegistry.registerItems();
         registerEventListeners();
         registerCommands();
 
@@ -378,5 +381,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public SunlightLevels getSunlightLevels() {
         return sunlightLevels;
+    }
+
+    public ItemRegistry getItemRegistry() {
+        return itemRegistry;
     }
 }

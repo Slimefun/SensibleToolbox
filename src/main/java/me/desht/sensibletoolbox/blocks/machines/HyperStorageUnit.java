@@ -1,8 +1,8 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ItemNames;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

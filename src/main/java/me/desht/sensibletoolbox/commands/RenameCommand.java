@@ -3,7 +3,7 @@ package me.desht.sensibletoolbox.commands;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.items.EnderLeash;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,7 @@ public class RenameCommand extends AbstractCommand {
 
         Player player = (Player) sender;
         ItemStack stack = player.getItemInHand();
-        EnderLeash el = BaseSTBItem.fromItemStack(stack, EnderLeash.class);
+        EnderLeash el = SensibleToolbox.getItemRegistry().fromItemStack(stack, EnderLeash.class);
 
         DHValidate.isTrue(el != null, "You are not holding an Ender Leash.");
         DHValidate.isTrue(el.getCapturedEntityType() != null, "You don't have a captured animal to rename.");

@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

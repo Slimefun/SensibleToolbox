@@ -6,20 +6,20 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.gui.AccessControlGadget;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.RedstoneBehaviourGadget;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.BukkitSerialization;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import me.desht.sensibletoolbox.api.gui.AccessControlGadget;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import me.desht.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.SpeedModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.StackModule;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.BukkitSerialization;
-import me.desht.sensibletoolbox.util.STBUtil;
-import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -101,7 +101,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 if (f.length > 1) {
                     modConf.loadFromString(f[1]);
                 }
-                ItemRouterModule mod = (ItemRouterModule) BaseSTBItem.getItemById(f[0], modConf);
+                ItemRouterModule mod = (ItemRouterModule) SensibleToolbox.getItemRegistry().getItemById(f[0], modConf);
                 insertModule(mod, modConf.getInt("amount"));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -302,7 +302,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         Block b = loc.getBlock();
         for (BlockFace face : STBUtil.directFaces) {
             Block b1 = b.getRelative(face);
-            STBBlock stb = LocationManager.getManager().get(b1.getLocation());
+            BaseSTBBlock stb = LocationManager.getManager().get(b1.getLocation());
             if (stb instanceof STBInventoryHolder) {
                 neighbours.add(face);
             } else if (VanillaInventoryUtils.isVanillaInventory(b1)) {
@@ -458,7 +458,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-        if (onCursor.getType() == Material.AIR || BaseSTBItem.isSTBItem(onCursor, ItemRouterModule.class)) {
+        if (onCursor.getType() == Material.AIR || SensibleToolbox.getItemRegistry().isSTBItem(onCursor, ItemRouterModule.class)) {
             needToProcessModules = true;
             return true;
         } else {
@@ -473,7 +473,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
-        if (!BaseSTBItem.isSTBItem(toInsert, ItemRouterModule.class)) {
+        if (!SensibleToolbox.getItemRegistry().isSTBItem(toInsert, ItemRouterModule.class)) {
             return 0;
         }
         int nInserted = 0;
@@ -530,7 +530,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
 
         for (Map.Entry<ItemStack, Integer> entry : mods.entrySet()) {
-            ItemRouterModule mod = BaseSTBItem.fromItemStack(entry.getKey(), ItemRouterModule.class);
+            ItemRouterModule mod = SensibleToolbox.getItemRegistry().fromItemStack(entry.getKey(), ItemRouterModule.class);
             if (mod != null) {
                 insertModule(mod, entry.getValue());
             }

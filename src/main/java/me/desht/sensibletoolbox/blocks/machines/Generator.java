@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
+import me.desht.sensibletoolbox.api.ChargeDirection;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;

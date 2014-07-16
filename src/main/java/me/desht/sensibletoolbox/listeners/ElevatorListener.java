@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.blocks.Elevator;
-import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;

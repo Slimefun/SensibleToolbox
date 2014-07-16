@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
 import com.google.common.collect.Lists;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

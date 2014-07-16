@@ -6,18 +6,17 @@ import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
-import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.gui.ButtonGadget;
-import me.desht.sensibletoolbox.gui.ClickableGadget;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.recipes.*;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.BlockProtection;
-import me.desht.sensibletoolbox.util.STBUtil;
-import me.desht.sensibletoolbox.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.api.*;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.recipes.*;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
+import me.desht.sensibletoolbox.api.gui.ButtonGadget;
+import me.desht.sensibletoolbox.api.gui.ClickableGadget;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -138,7 +137,7 @@ public class RecipeBook extends BaseSTBItem {
                     if (recipeTypeFilter == RecipeType.ALL) {
                         filteredItems.add(stack);
                     } else {
-                        BaseSTBItem item = BaseSTBItem.fromItemStack(stack);
+                        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
                         if (item == null && recipeTypeFilter == RecipeType.VANILLA || item != null && recipeTypeFilter == RecipeType.STB) {
                             filteredItems.add(stack);
                         }
@@ -318,7 +317,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void showShapedRecipe(ShapedRecipe recipe) {
-        STBItem item = BaseSTBItem.fromItemStack(recipe.getResult());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(recipe.getResult());
         String[] shape = recipe.getShape();
         Map<Character, ItemStack> map = recipe.getIngredientMap();
         for (int i = 0; i < shape.length; i++) {
@@ -333,7 +332,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void showShapelessRecipe(ShapelessRecipe recipe) {
-        STBItem item = BaseSTBItem.fromItemStack(recipe.getResult());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(recipe.getResult());
         List<ItemStack> ingredients = recipe.getIngredientList();
         for (int i = 0; i < ingredients.size(); i++) {
             ItemStack ingredient = getIngredient(item, ingredients.get(i));
@@ -349,20 +348,20 @@ public class RecipeBook extends BaseSTBItem {
 
     private void showCustomRecipe(SimpleCustomRecipe recipe) {
         gui.getInventory().setItem(RESULT_SLOT, recipe.getResult());
-        STBItem item = BaseSTBItem.getItemById(recipe.getProcessorID());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(recipe.getProcessorID());
         gui.getInventory().setItem(TYPE_SLOT, item.toItemStack());
         gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
     }
 
-    private ItemStack getIngredient(STBItem item, ItemStack stack) {
+    private ItemStack getIngredient(BaseSTBItem item, ItemStack stack) {
         if (stack == null) {
             return null;
         }
         if (item != null) {
-            Class<? extends STBItem> c = item.getCraftingRestriction(stack.getType());
+            Class<? extends BaseSTBItem> c = item.getCraftingRestriction(stack.getType());
             if (c != null) {
                 try {
-                    STBItem item2 = c.getDeclaredConstructor().newInstance();
+                    BaseSTBItem item2 = c.getDeclaredConstructor().newInstance();
                     ItemStack stack2 = item2.toItemStack();
                     stack2.setDurability(stack.getDurability());
                     return stack2;
@@ -385,7 +384,7 @@ public class RecipeBook extends BaseSTBItem {
     public void onGUIClosed(HumanEntity player) {
         int slot = getInventorySlot();
         PlayerInventory inventory = player.getInventory();
-        if (BaseSTBItem.isSTBItem(inventory.getItem(slot), RecipeBook.class)) {
+        if (SensibleToolbox.getItemRegistry().isSTBItem(inventory.getItem(slot), RecipeBook.class)) {
             // If the player moved his recipe book to a different slot, we don't want to
             // overwrite the old slot with the updated book
             inventory.setItem(slot, toItemStack(inventory.getItem(slot).getAmount()));
@@ -448,7 +447,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void fabricateFree(ItemStack result) {
-        BaseSTBItem stb = BaseSTBItem.fromItemStack(result);
+        BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(result);
         if (stb instanceof Chargeable) {
             Chargeable c = (Chargeable) stb;
             c.setCharge(c.getMaxCharge());
@@ -464,12 +463,12 @@ public class RecipeBook extends BaseSTBItem {
         for (ItemStack stack : taken) {
             // the SCU level of any chargeable ingredient will contribute
             // to the charge on the resulting item
-            BaseSTBItem stb = BaseSTBItem.fromItemStack(stack);
+            BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(stack);
             if (stb instanceof Chargeable) {
                 totalCharge += ((Chargeable) stb).getCharge();
             }
         }
-        BaseSTBItem stb = BaseSTBItem.fromItemStack(result);
+        BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(result);
         if (stb instanceof Chargeable) {
             Chargeable c = (Chargeable) stb;
             c.setCharge(Math.min(totalCharge, c.getMaxCharge()));

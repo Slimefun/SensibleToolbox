@@ -1,9 +1,9 @@
 package me.desht.sensibletoolbox.items.energycells;
 
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.Chargeable;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -97,7 +97,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
                 if (slot == held)
                     continue;
                 ItemStack stack = player.getInventory().getItem(slot);
-                STBItem item = BaseSTBItem.fromItemStack(stack);
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
                 if (item != null && item instanceof Chargeable) {
                     Chargeable c = (Chargeable) item;
                     double toTransfer = Math.min(c.getMaxCharge() - c.getCharge(), c.getChargeRate());

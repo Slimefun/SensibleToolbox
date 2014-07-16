@@ -1,15 +1,13 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.LightSensitive;
-import me.desht.sensibletoolbox.api.RedstoneBehaviour;
-import me.desht.sensibletoolbox.gui.InventoryGUI;
-import me.desht.sensibletoolbox.gui.LightMeter;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.*;
+import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.LightMeter;
 import me.desht.sensibletoolbox.items.PVCell;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import me.desht.sensibletoolbox.util.RelativePosition;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -110,7 +108,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     @Override
     public boolean acceptsItemType(ItemStack item) {
-        return BaseSTBItem.isSTBItem(item, PVCell.class);
+        return SensibleToolbox.getItemRegistry().isSTBItem(item, PVCell.class);
     }
 
     @Override
@@ -142,7 +140,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                PVCell cell = BaseSTBItem.fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
+                PVCell cell = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
                 int pvl = cell == null ? 0 : cell.getLifespan();
                 if (pvl != pvCellLife) {
                     boolean doRedraw = pvl == 0 || pvCellLife == 0;

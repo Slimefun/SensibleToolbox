@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.LogUtils;
 import me.desht.landslide.BlockSlideEvent;
-import me.desht.sensibletoolbox.storage.LocationManager;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;

@@ -1,11 +1,12 @@
 package me.desht.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.EnderTunable;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.EnderBox;
-import me.desht.sensibletoolbox.enderstorage.EnderStorageManager;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;

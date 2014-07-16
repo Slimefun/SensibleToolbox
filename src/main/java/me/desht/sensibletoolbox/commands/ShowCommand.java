@@ -3,12 +3,12 @@ package me.desht.sensibletoolbox.commands;
 import com.google.common.base.Joiner;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.api.STBItem;
-import me.desht.sensibletoolbox.blocks.BaseSTBBlock;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.BukkitSerialization;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.BukkitSerialization;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -70,8 +70,8 @@ public class ShowCommand extends AbstractCommand {
         File out = new File(plugin.getDataFolder(), "item-dump.txt");
         try {
             PrintWriter writer = new PrintWriter(out, "UTF-8");
-            for (String itemId : BaseSTBItem.getItemIds()) {
-                STBItem item = BaseSTBItem.getItemById(itemId);
+            for (String itemId : SensibleToolbox.getItemRegistry().getItemIds()) {
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(itemId);
                 String lore = Joiner.on("\\\\").join(item.getLore()).replace("\u00a7r", "");
                 String appearance = ItemNames.lookup(item.getMaterialData().toItemStack());
                 if (item.hasGlow()) {
@@ -92,7 +92,7 @@ public class ShowCommand extends AbstractCommand {
             notFromConsole(sender);
             Player player = (Player) sender;
             // try to show either the held item or the targeted block
-            item = BaseSTBItem.fromItemStack(player.getItemInHand());
+            item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
             if (item == null) {
                 Block b = player.getTargetBlock(null, 10);
                 item = LocationManager.getManager().get(b.getLocation(), true);
@@ -164,7 +164,7 @@ public class ShowCommand extends AbstractCommand {
             }
             return filterPrefix(sender, worlds, args[args.length - 1]);
         } else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
-            return filterPrefix(sender, BaseSTBItem.getItemIds(), args[args.length - 1]);
+            return filterPrefix(sender, SensibleToolbox.getItemRegistry().getItemIds(), args[args.length - 1]);
         } else {
             showUsage(sender);
             return noCompletions(sender);

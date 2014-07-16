@@ -4,11 +4,12 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.IconMenu;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.STBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.PopupMessage;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.PaintCan;
-import me.desht.sensibletoolbox.storage.LocationManager;
-import me.desht.sensibletoolbox.util.PopupMessage;
-import me.desht.sensibletoolbox.util.STBUtil;
+import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -137,7 +138,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block b = event.getClickedBlock();
-            STBBlock stb = LocationManager.getManager().get(b.getLocation());
+            BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
             if (stb instanceof PaintCan) {
                 refillFromCan((PaintCan) stb);
             } else if (okToColor(b, stb)) {
@@ -162,7 +163,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         event.setCancelled(true);
     }
 
-    private boolean okToColor(Block b, STBBlock stb) {
+    private boolean okToColor(Block b, BaseSTBBlock stb) {
         if (stb != null && !(stb instanceof Colorable)) {
             // we don't want blocks which happen to use a Colorable material to be paintable
             return false;
@@ -180,14 +181,14 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             needed = this.getMaxPaintLevel();
         }
         int actual = Math.min(needed, can.getPaintLevel());
-        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColour());
-        Debugger.getInstance().debug("try to fill brush with " + needed + ", actual = " + actual);
+        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColour() +
+                "; try to fill brush with " + needed + ", actual = " + actual);
         if (actual > 0) {
             this.setColour(can.getColour());
             this.setPaintLevel(this.getPaintLevel() + actual);
             can.setPaintLevel(can.getPaintLevel() - actual);
-            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColour());
-            Debugger.getInstance().debug("can now = " + can.getPaintLevel() + " " + can.getColour());
+            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColour() +
+                    ", can now = " + can.getPaintLevel() + " " + can.getColour());
         }
     }
 
@@ -247,7 +248,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         int painted = 0;
         for (Block b : blocks) {
             Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
-            STBBlock stb = LocationManager.getManager().get(b.getLocation());
+            BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
             if (stb != null && stb instanceof Colorable) {
                 ((Colorable) stb).setColor(getColour());
             } else {

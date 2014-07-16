@@ -2,9 +2,9 @@ package me.desht.sensibletoolbox.commands;
 
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.RecipeBook;
-import me.desht.sensibletoolbox.util.STBUtil;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ public class RecipeCommand extends AbstractCommand {
         RecipeBook book = null;
         int slot;
         for (slot = 0; slot < 35; slot++) {
-            book = BaseSTBItem.fromItemStack(inv.getItem(slot), RecipeBook.class);
+            book = SensibleToolbox.getItemRegistry().fromItemStack(inv.getItem(slot), RecipeBook.class);
             if (book != null) {
                 break;
             }

@@ -1,10 +1,9 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
-import me.desht.sensibletoolbox.items.BaseSTBItem;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.Dye;
 
 public abstract class ItemRouterModule extends BaseSTBItem {
