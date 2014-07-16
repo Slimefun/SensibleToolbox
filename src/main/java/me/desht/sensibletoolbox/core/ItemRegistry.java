@@ -163,6 +163,7 @@ public class ItemRegistry {
         }
         permissionPrefix.put(id, permissionNode);
 
+        Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".craft." + id, PermissionDefault.TRUE));
         Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".interact." + id, PermissionDefault.TRUE));
 
         if (item instanceof BaseSTBBlock) {

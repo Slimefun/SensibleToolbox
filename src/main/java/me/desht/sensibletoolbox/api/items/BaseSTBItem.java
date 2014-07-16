@@ -400,6 +400,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     public enum ItemAction {
+        CRAFT,
         PLACE,
         BREAK,
         INTERACT,

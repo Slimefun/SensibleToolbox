@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -243,6 +244,16 @@ public class GeneralListener extends STBBaseListener {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
 
         BaseSTBItem result = SensibleToolbox.getItemRegistry().fromItemStack(event.getRecipe().getResult());
+        if (result != null) {
+            // ensure that everyone viewing the crafting inventory has permission to craft the item
+            for (HumanEntity he : event.getViewers()) {
+                if (he instanceof Player && !result.checkPlayerPermission((Player) he, ItemAction.CRAFT)) {
+                    event.getInventory().setResult(null);
+                    return;
+                }
+            }
+        }
+
         double finalSCU = 0.0;
 
         // prevent STB items being used where the vanilla material is expected
