@@ -1,30 +1,33 @@
 package me.desht.sensibletoolbox.api.gui;
 
 import me.desht.sensibletoolbox.api.Filtering;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.Filter;
 import org.apache.commons.lang.Validate;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.material.MaterialData;
 
-public class FilterTypeGadget extends ClickableGadget {
-    private Filter.FilterType filterType;
-
+public class FilterTypeGadget extends CyclerGadget<Filter.FilterType> {
     public FilterTypeGadget(InventoryGUI gui, int slot) {
-        super(gui, slot);
+        super(gui, slot, "Filter Type");
         Validate.isTrue(gui.getOwningItem() instanceof Filtering, "Filter Type gadget can only be added to filtering items!");
-        filterType = ((Filtering) getGUI().getOwningItem()).getFilter().getFilterType();
+        add(Filter.FilterType.MATERIAL, ChatColor.GRAY, new MaterialData(Material.STONE),
+                "Match material only");
+        add(Filter.FilterType.BLOCK_DATA, ChatColor.DARK_AQUA, new MaterialData(Material.DIAMOND_SWORD),
+                "Match material & block metadata");
+        add(Filter.FilterType.ITEM_META, ChatColor.LIGHT_PURPLE, new MaterialData(Material.ENCHANTED_BOOK),
+                "Match material, block metadata", "and item metadata (NBT)");
+        setInitialValue(((Filtering)getGUI().getOwningItem()).getFilter().getFilterType());
     }
 
     @Override
-    public void onClicked(InventoryClickEvent event) {
-        int n = (filterType.ordinal() + 1) % Filter.FilterType.values().length;
-        filterType = Filter.FilterType.values()[n];
-        event.setCurrentItem(filterType.getTexture());
-        ((Filtering) getGUI().getOwningItem()).getFilter().setFilterType(filterType);
+    protected boolean ownerOnly() {
+        return false;
     }
 
     @Override
-    public ItemStack getTexture() {
-        return filterType.getTexture();
+    protected void apply(BaseSTBItem stbItem, Filter.FilterType newValue) {
+        ((Filtering) getGUI().getOwningItem()).getFilter().setFilterType(newValue);
     }
 }

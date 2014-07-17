@@ -189,40 +189,30 @@ public class Filter {
          * Match only the item's material.  E.g. don't care about wool colour,
          * stone texture, coal vs. charcoal etc.
          */
-        MATERIAL(Material.STONE, "Match material only"),
+        MATERIAL("Filter by Material"),
         /**
          * Match the item's material and its data byte (sometimes referred to
          * as metadata or damage values).  E.g. green wool is distinguished
          * from white wool, and a fully repaired diamond sword is
          * distinguished from a damaged diamond sword.
          */
-        BLOCK_DATA(Material.IRON_SWORD, "Match material & block data"),
+        BLOCK_DATA("Filter by Material/Block Meta"),
         /**
          * Match the item's material, data byte and item meta (sometimes
          * referred to as NBT data).  E.g. a diamond sword with Looting I is
          * distinguished from a diamond sword with Looting II, even if their
          * damage values are identical.
          */
-        ITEM_META(Material.ENCHANTED_BOOK, "Match material, block data & metadata");
+        ITEM_META("Filter by Material/Block Meta/Item Meta");
 
         private final String label;
-        private final Material mat;
 
-        private FilterType(Material mat, String label) {
-            this.mat = mat;
+        FilterType(String label) {
             this.label = label;
         }
 
         public String getLabel() {
             return label;
-        }
-
-        public ItemStack getTexture() {
-            ItemStack res = new ItemStack(mat);
-            ItemMeta meta = res.getItemMeta();
-            meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label);
-            res.setItemMeta(meta);
-            return res;
         }
     }
 }

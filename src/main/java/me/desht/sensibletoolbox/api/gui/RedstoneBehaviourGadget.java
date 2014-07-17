@@ -1,35 +1,40 @@
 package me.desht.sensibletoolbox.api.gui;
 
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.material.MaterialData;
 
-public class RedstoneBehaviourGadget extends ClickableGadget {
-    private RedstoneBehaviour behaviour;
-
+public class RedstoneBehaviourGadget extends CyclerGadget<RedstoneBehaviour> {
     public RedstoneBehaviourGadget(InventoryGUI gui, int slot) {
-        super(gui, slot);
-        behaviour = getGUI().getOwningBlock().getRedstoneBehaviour();
+        super(gui, slot, "Redstone Mode");
+        add(RedstoneBehaviour.IGNORE, ChatColor.GRAY, new MaterialData(Material.SULPHUR),
+                "Operate regardless of", "redstone signal level");
+        add(RedstoneBehaviour.HIGH, ChatColor.RED, new MaterialData(Material.REDSTONE),
+                "Require a redstone", "signal to operate");
+        add(RedstoneBehaviour.LOW, ChatColor.YELLOW, new MaterialData(Material.GLOWSTONE_DUST),
+                "Require no redstone", "signal to operate");
+        add(RedstoneBehaviour.PULSED, ChatColor.DARK_AQUA, STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE),
+                "Operate once per", "redstone pulse");
+        setInitialValue(gui.getOwningBlock().getRedstoneBehaviour());
     }
 
     @Override
-    public void onClicked(InventoryClickEvent event) {
-        int b = behaviour.ordinal();
-        int n = b;
-
-        do {
-            n = (n + 1) % RedstoneBehaviour.values().length;
-            behaviour = RedstoneBehaviour.values()[n];
-            if (n == b) {
-                break; // avoid infinite loop due to no supported behaviour
-            }
-        } while (!getGUI().getOwningBlock().supportsRedstoneBehaviour(behaviour));
-        event.setCurrentItem(behaviour.getTexture());
-        getGUI().getOwningBlock().setRedstoneBehaviour(behaviour);
+    protected boolean ownerOnly() {
+        return false;
     }
 
     @Override
-    public ItemStack getTexture() {
-        return behaviour.getTexture();
+    protected boolean supported(BaseSTBItem stbItem, RedstoneBehaviour what) {
+        return ((BaseSTBBlock) stbItem).supportsRedstoneBehaviour(what);
+    }
+
+    @Override
+    protected void apply(BaseSTBItem stbItem, RedstoneBehaviour newValue) {
+        ((BaseSTBBlock) stbItem).setRedstoneBehaviour(newValue);
     }
 }

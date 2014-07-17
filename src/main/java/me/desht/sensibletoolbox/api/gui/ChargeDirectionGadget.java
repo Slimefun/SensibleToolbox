@@ -1,32 +1,32 @@
 package me.desht.sensibletoolbox.api.gui;
 
 import me.desht.sensibletoolbox.api.ChargeDirection;
+import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
-public class ChargeDirectionGadget extends ClickableGadget {
-    private ChargeDirection chargeDirection;
-    private final BaseSTBMachine machine;
-
+public class ChargeDirectionGadget extends CyclerGadget<ChargeDirection> {
     public ChargeDirectionGadget(InventoryGUI gui, int slot) {
-        super(gui, slot);
-        Validate.isTrue(gui.getOwningItem() instanceof BaseSTBMachine, "Charge Direction gadget can only be added to machines!");
-        machine = (BaseSTBMachine) gui.getOwningItem();
-        chargeDirection = machine.getChargeDirection();
+        super(gui, slot, "Charge");
+        add(ChargeDirection.MACHINE, ChatColor.GOLD, new MaterialData(Material.MAGMA_CREAM),
+                "Energy will transfer from", "an installed energy cell", "to this machine");
+        add(ChargeDirection.CELL, ChatColor.GREEN, new MaterialData(Material.SLIME_BALL),
+                "Energy will transfer from", "this machine to", "an installed energy cell");
+        setInitialValue(((BaseSTBMachine) gui.getOwningItem()).getChargeDirection());
     }
 
     @Override
-    public void onClicked(InventoryClickEvent event) {
-        int n = (chargeDirection.ordinal() + 1) % ChargeDirection.values().length;
-        chargeDirection = ChargeDirection.values()[n];
-        event.setCurrentItem(chargeDirection.getTexture());
-        machine.setChargeDirection(chargeDirection);
+    protected boolean ownerOnly() {
+        return false;
     }
 
     @Override
-    public ItemStack getTexture() {
-        return chargeDirection.getTexture();
+    protected void apply(BaseSTBItem stbItem, ChargeDirection newValue) {
+        ((BaseSTBMachine) stbItem).setChargeDirection(newValue);
     }
 }

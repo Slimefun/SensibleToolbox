@@ -141,32 +141,8 @@ public abstract class BatteryBox extends BaseSTBMachine {
     }
 
     public enum EnergyFlow {
-        IN(new Wool(DyeColor.BLUE), "Energy In"),
-        OUT(new Wool(DyeColor.ORANGE), "Energy Out"),
-        NONE(new Wool(DyeColor.SILVER), "No Energy Flow");
-
-        private final MaterialData material;
-        private final String label;
-
-        private EnergyFlow(MaterialData material, String label) {
-            this.material = material;
-            this.label = label;
-        }
-
-        public MaterialData getMaterial() {
-            return material;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public ItemStack getTexture(BlockFace face) {
-            ItemStack res = material.toItemStack();
-            ItemMeta meta = res.getItemMeta();
-            meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + face + ": " + label);
-            res.setItemMeta(meta);
-            return res;
-        }
+        IN,
+        OUT,
+        NONE;
     }
 }

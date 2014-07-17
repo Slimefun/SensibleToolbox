@@ -25,7 +25,10 @@ permissions:
       stb.commands.show: true
       stb.recipebook.freefab: true
   stb.access.any:
-    description: Allow a block's access control setting to be overridden
+    description: Allow a block's access control settings to be ignored
+    default: op
+  stb.access.modify:
+    description: Allow a block's access control settings to be changed
     default: op
   stb.commands.charge:
     description: Allow the SCU values for blocks/items to be modified with /stb charge
