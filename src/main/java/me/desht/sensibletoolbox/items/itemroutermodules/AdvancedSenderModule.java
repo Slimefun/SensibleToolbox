@@ -21,6 +21,7 @@ import org.bukkit.material.MaterialData;
 
 public class AdvancedSenderModule extends DirectionalItemRouterModule {
     private static final int RANGE = 24;
+    private static final int RANGE2 = RANGE * RANGE;
     private static final Dye md = makeDye(DyeColor.LIGHT_BLUE);
     private Location linkedLoc;
 
@@ -67,26 +68,13 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
                 " (line of sight is not needed)",
                 "L-Click item router with installed",
                 " Receiver Module: " + ChatColor.RESET + " Link Adv. Sender",
-                "⇧ + L-Click anywhere: " + ChatColor.RESET + " Unlink Adv. Sender"
+                "⇧ + L-Click: " + ChatColor.RESET + " Unlink Adv. Sender"
         };
     }
 
     @Override
     public String getDisplaySuffix() {
-        if (linkedLoc == null) {
-            return "[Not Linked]";
-        } else {
-            String prefix = "";
-            if (getItemRouter() != null) {
-                Location loc = getItemRouter().getLocation();
-                if (loc.getWorld() != linkedLoc.getWorld() || loc.distanceSquared(linkedLoc) > RANGE * RANGE) {
-                    prefix = ChatColor.RED.toString() + ChatColor.ITALIC;
-                }
-            } else if (LocationManager.getManager().get(linkedLoc, ItemRouter.class) == null) {
-                prefix = ChatColor.RED.toString() + ChatColor.STRIKETHROUGH;
-            }
-            return prefix + "[" + MiscUtil.formatLocation(linkedLoc) + "]";
-        }
+        return linkedLoc == null ? "[Not Linked]" : "[" + MiscUtil.formatLocation(linkedLoc) + "]";
     }
 
     @Override
@@ -104,7 +92,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             // try to link up with a receiver module
-            ItemRouter rtr = LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
+            ItemRouter rtr = LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class, true);
             if (rtr != null && rtr.findModule(ReceiverModule.class) != null) {
                 linkToRouter(rtr);
                 event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
@@ -114,7 +102,6 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             event.setCancelled(true);
         } else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
-            STBUtil.complain(event.getPlayer());
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
         } else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
@@ -127,19 +114,24 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
         linkedLoc = rtr == null ? null : rtr.getLocation();
     }
 
+    protected boolean inRange(Location ourLoc) {
+        return ourLoc != null &&
+                ourLoc.getWorld().equals(linkedLoc.getWorld()) &&
+                ourLoc.distanceSquared(linkedLoc) <= RANGE2;
+    }
+
     @Override
     public boolean execute(Location loc) {
         if (getItemRouter() != null && getItemRouter().getBufferItem() != null && linkedLoc != null) {
             if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
                 return false;
             }
-            ItemRouter rtr = LocationManager.getManager().get(linkedLoc, ItemRouter.class);
-            if (rtr != null) {
-                Location loc2 = rtr.getLocation();
-                if (loc.getWorld() != loc2.getWorld() || loc.distanceSquared(loc2) > RANGE * RANGE) {
+            ItemRouter otherRouter = LocationManager.getManager().get(linkedLoc, ItemRouter.class);
+            if (otherRouter != null) {
+                if (!inRange(loc)) {
                     return false;
                 }
-                ReceiverModule mod = rtr.findModule(ReceiverModule.class);
+                ReceiverModule mod = otherRouter.findModule(ReceiverModule.class);
                 if (mod != null) {
                     return sendItems(mod) > 0;
                 }

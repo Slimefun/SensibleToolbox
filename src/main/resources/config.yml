@@ -53,6 +53,7 @@ items_enabled:
   goldcombinehoe: true
   golddust: true
   heatengine: true
+  hypersendermodule: true
   hyperstorageunit: true
   infernaldust: true
   integratedcircuit: true

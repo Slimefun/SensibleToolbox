@@ -97,6 +97,7 @@ public class ItemRegistry {
         registerItem(new SenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new DistributorModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new AdvancedSenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new HyperSenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new ReceiverModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new SorterModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new VacuumModule(), plugin, CONFIG_NODE, PERMISSION_NODE);

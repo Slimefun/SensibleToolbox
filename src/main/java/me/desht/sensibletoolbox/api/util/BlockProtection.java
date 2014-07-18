@@ -24,7 +24,7 @@ public class BlockProtection {
             Protection prot = lwc.findProtection(block);
             if (prot != null) {
                 boolean ok = lwc.canAccessProtection(player, prot);
-                Debugger.getInstance().debug("LWC check: can " + player.getName() + " access " + block + "? " + lwc.canAccessProtection(player, prot));
+                Debugger.getInstance().debug(2, "LWC check: can " + player.getName() + " access " + block + "? " + ok);
                 return ok;
             } else {
                 return true;
@@ -50,7 +50,7 @@ public class BlockProtection {
             Protection prot = lwc.findProtection(block);
             if (prot != null) {
                 boolean ok = uuid.equals(UUIDRegistry.getUUID(prot.getOwner()));
-                Debugger.getInstance().debug("LWC check: can UUID " + uuid + " access " + block + "? " + ok);
+                Debugger.getInstance().debug(2, "LWC check: can UUID " + uuid + " access " + block + "? " + ok);
                 return ok;
             } else {
                 return true;
