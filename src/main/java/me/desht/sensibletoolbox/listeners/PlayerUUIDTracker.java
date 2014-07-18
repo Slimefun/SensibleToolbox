@@ -52,16 +52,16 @@ public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
         }
     }
 
-    public String getPlayer(UUID uuid) {
+    public String getPlayerName(UUID uuid) {
         return map.getString(uuid.toString());
     }
 
-    public String getPlayer(Player p) {
+    public String getPlayerName(Player p) {
         return map.getString(p.getUniqueId().toString());
     }
 
     public void updatePlayer(Player p) {
-        String name = getPlayer(p);
+        String name = getPlayerName(p);
         if (name == null || !name.equals(p.getName())) {
             map.set(p.getUniqueId().toString(), p.getName());
             Debugger.getInstance().debug("Updated UUID->Name map: " + p.getUniqueId() + " = " + p.getName());

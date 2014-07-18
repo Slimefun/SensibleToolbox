@@ -49,6 +49,7 @@ import org.mcstats.MetricsLite;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
@@ -69,6 +70,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private SunlightLevels sunlightLevels;
     private ItemRegistry itemRegistry;
     private STBFriendManager friendManager;
+    private Random random;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -84,6 +86,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         instance = this;
 
         LogUtils.init(this);
+
+        random = new Random();
 
         configManager = new ConfigurationManager(this, this);
 
@@ -404,5 +408,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public FriendManager getFriendManager() {
         return friendManager;
+    }
+
+    public Random getRandom() {
+        return random;
     }
 }

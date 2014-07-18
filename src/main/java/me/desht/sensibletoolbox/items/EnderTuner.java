@@ -236,4 +236,9 @@ public class EnderTuner extends BaseSTBItem {
             }
         }
     }
+
+    @Override
+    public boolean isStackable() {
+        return false;
+    }
 }

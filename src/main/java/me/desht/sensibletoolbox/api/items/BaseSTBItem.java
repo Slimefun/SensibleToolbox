@@ -293,6 +293,10 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
 
         // any serialized data from the object goes in the ItemStack attributes
         YamlConfiguration conf = freeze();
+        if (!isStackable()) {
+            // add a (hopefully) unique hidden field to ensure the item can't stack
+            conf.set("*nostack", System.nanoTime() ^ SensibleToolboxPlugin.getInstance().getRandom().nextLong());
+        }
         conf.set("*TYPE", getItemTypeID());
         AttributeStorage storage = AttributeStorage.newTarget(res, ItemRegistry.STB_ATTRIBUTE_ID);
         String data = conf.saveToString();
@@ -325,13 +329,25 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Check if this item is wearable.  By default, any armour item will be wearable, but if you wish to use
-     * an armour material for a non-wearable item, then override this method.
+     * Check if this item is wearable.  By default, any armour item will be
+     * wearable, but if you wish to use an armour material for a non-wearable
+     * item, then override this method.
      *
      * @return true if the item is wearable
      */
     public boolean isWearable() {
         return STBUtil.isWearable(getMaterial());
+    }
+
+    /**
+     * Check whether this item is stackable in an inventory.  This can be
+     * overridden to false for STB items which should not stack, but use a
+     * vanilla material that does stack.
+     *
+     * @return true if the item should be stackable; false otherwise
+     */
+    public boolean isStackable() {
+        return true;
     }
 
     /**

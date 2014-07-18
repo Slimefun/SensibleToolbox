@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A gadget which can cycle through the values of the given parameterised enum
@@ -138,9 +139,8 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label + ":" + color + " " + what.toString());
         if (lore.length > 0) {
+            String ownerName = getOwnerName();
             List<String> l = Lists.newArrayListWithCapacity(lore.length);
-            String ownerName = stbItem instanceof BaseSTBBlock ?
-                    SensibleToolboxPlugin.getInstance().getUuidTracker().getPlayer(((BaseSTBBlock) stbItem).getOwner()) : "";
             for (String s : lore) {
                 l.add(ChatColor.GRAY + s.replaceAll("<OWNER>", ownerName));
             }
@@ -148,5 +148,15 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         }
         stack.setItemMeta(meta);
         return stack;
+    }
+
+    private String getOwnerName() {
+        if (stbItem instanceof BaseSTBBlock) {
+            UUID id = ((BaseSTBBlock) stbItem).getOwner();
+            String name = SensibleToolboxPlugin.getInstance().getUuidTracker().getPlayerName(((BaseSTBBlock) stbItem).getOwner());
+            return name == null ? id.toString() : name;
+        } else {
+            return "";
+        }
     }
 }

@@ -75,7 +75,7 @@ public class SensibleToolbox {
      * @return the last known player name for this UUID, if any (null if name not known)
      */
     public static String getPlayerNameFromUUID(UUID uuid) {
-        return getPluginInstance().getUuidTracker().getPlayer(uuid);
+        return getPluginInstance().getUuidTracker().getPlayerName(uuid);
     }
 
     /**

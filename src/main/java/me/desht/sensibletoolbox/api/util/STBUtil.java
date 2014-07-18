@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.api.util;
 
 import com.comphenix.attribute.Attributes;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import me.desht.dhutils.*;
 import me.desht.dhutils.block.BlockUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
@@ -854,35 +855,37 @@ public class STBUtil {
         }
     }
 
-    public static void dumpItemStack(ItemStack stack) {
-        System.out.println("ItemStack: " + stack);
+    public static List<String> dumpItemStack(ItemStack stack) {
         if (stack == null) {
-            return;
+            return Collections.emptyList();
         }
-        System.out.println("Quantity: " + stack.getAmount());
-        System.out.println("Material/Data: " + stack.getType() + ":" + stack.getDurability());
+        List<String> l = Lists.newArrayList();
+        l.add("Quantity: " + stack.getAmount());
+        l.add("Material/Data: " + stack.getType() + ":" + stack.getDurability());
         if (stack.hasItemMeta()) {
             ItemMeta meta = stack.getItemMeta();
-            System.out.println("Display name: " + meta.getDisplayName());
-            System.out.println("Lore: [" + Joiner.on(",").join(meta.getLore()) + "]");
+            l.add("Display name: " + meta.getDisplayName());
+            if (meta.hasLore()) {
+                l.add("Lore: [" + Joiner.on(",").join(meta.getLore()) + "]");
+            }
             if (meta.hasEnchants()) {
                 for (Map.Entry<Enchantment, Integer> e : meta.getEnchants().entrySet()) {
-                    System.out.println("Enchant " + e.getKey() + " = " + e.getValue());
+                    l.add("Enchant " + e.getKey() + " = " + e.getValue());
                 }
             }
         } else {
-            System.out.println("No metadata");
+            l.add("No metadata");
         }
-        if (stack.getType() == Material.AIR) {
-            return;
+        if (stack.getType() != Material.AIR) {
+            Attributes a = new Attributes(stack);
+            l.add("Attribute count: " + a.size());
+            for (Attributes.Attribute attr : a.values()) {
+                l.add(String.format("* ID=%s name=[%s] amount=%f type=%s op=%s",
+                        attr.getUUID().toString(), attr.getName(), attr.getAmount(),
+                        attr.getAttributeType().toString(), attr.getOperation().toString()));
+            }
         }
-        Attributes a = new Attributes(stack);
-        System.out.println("Attribute count: " + a.size());
-        for (Attributes.Attribute attr : a.values()) {
-            System.out.println(String.format("* ID=%s name=[%s] amount=%f type=%s op=%s",
-                    attr.getUUID().toString(), attr.getName(), attr.getAmount(),
-                    attr.getAttributeType().toString(), attr.getOperation().toString()));
-        }
+        return l;
     }
 
     /**

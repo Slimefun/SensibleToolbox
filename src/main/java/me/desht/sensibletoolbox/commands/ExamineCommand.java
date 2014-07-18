@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.commands;
 
+import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.commands.AbstractCommand;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,9 @@ public class ExamineCommand extends AbstractCommand {
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         notFromConsole(sender);
         Player player = (Player) sender;
-        STBUtil.dumpItemStack(player.getItemInHand());
+        MessagePager pager = MessagePager.getPager(sender).clear();
+        pager.add(STBUtil.dumpItemStack(player.getItemInHand()));
+        pager.showPage();
         return true;
     }
 }
