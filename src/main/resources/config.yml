@@ -14,6 +14,7 @@ paint_per_dye: 25
 multibuilder:
   charge_per_op: 40
 noisy_machines: true
+explode_item_drop_chance: 50
 gui:
   texture:
     input: stained_glass_pane:cyan

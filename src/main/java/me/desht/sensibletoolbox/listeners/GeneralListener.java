@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.listeners;
 
 import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
@@ -138,6 +139,32 @@ public class GeneralListener extends STBBaseListener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onBlockMayBurnAway(BlockBurnEvent event) {
+        BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+        if (stb != null && !stb.isFlammable()) {
+            event.setCancelled(true);
+            for (BlockFace face : STBUtil.directFaces) {
+                Block b = event.getBlock().getRelative(face);
+                if (b.getType() == Material.FIRE && plugin.getRandom().nextInt(3) != 0) {
+                    b.setType(Material.AIR);
+                }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onBlockBurntAway(BlockBurnEvent event) {
+        BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+        if (stb != null) {
+            if (!stb.isFlammable()) {
+                LogUtils.warning("Non-flammable STB block " + stb + " was not protected from flame?");
+            }
+            stb.breakBlock(event.getBlock(), false);
+            stb.onBlockBurnt(event);
+        }
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onCablePlace(BlockPlaceEvent event) {
         if (EnergyNetManager.isCable(event.getBlock())) {
@@ -156,7 +183,7 @@ public class GeneralListener extends STBBaseListener {
             }
             BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
             if (stb != null) {
-                stb.breakBlock(event.getBlock());
+                stb.breakBlock(event.getBlock(), true);
                 stb.onBlockBreak(event);
             }
             if (event.isCancelled()) {
@@ -232,7 +259,7 @@ public class GeneralListener extends STBBaseListener {
             BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
             if (stb != null) {
                 if (stb.onEntityExplode(event)) {
-                    stb.breakBlock(b);
+                    stb.breakBlock(b, plugin.getRandom().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
                 }
                 iter.remove();
             }
@@ -431,7 +458,7 @@ public class GeneralListener extends STBBaseListener {
                         event.setCancelled(true);
                         break LOOP; // if this one blocks, all subsequent blocks do too
                     case BREAK:
-                        stb.breakBlock(moving);
+                        stb.breakBlock(moving, true);
                         break;
                 }
             }
@@ -458,7 +485,7 @@ public class GeneralListener extends STBBaseListener {
                         event.setCancelled(true);
                         break;
                     case BREAK:
-                        stb.breakBlock(event.getRetractLocation().getBlock());
+                        stb.breakBlock(event.getRetractLocation().getBlock(), true);
                         break;
                 }
             }

@@ -34,7 +34,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
     private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
-    private static final long DOUBLE_CLICK_TIME = 200L;
+    private static final long DOUBLE_CLICK_TIME = 250L;
     private ItemStack stored;
     private int storageAmount;
     private int outputAmount;

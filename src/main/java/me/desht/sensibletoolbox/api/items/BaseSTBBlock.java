@@ -613,8 +613,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     /**
      * Called when an STB block is actually broken.  At the point of calling,
      * the block (and any possible auxiliary blocks) will have already been
-     * set to AIR, and {@link #breakBlock(org.bukkit.block.Block)} will have
-     * already been run.
+     * set to AIR and the STB block will have been unregistered.
      * <p>
      * The event handler runs with MONITOR priority; you must not alter the
      * outcome of this event!
@@ -624,7 +623,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     public void onBlockBreak(BlockBreakEvent event) {
     }
 
-    public final void breakBlock(Block b) {
+    public final void breakBlock(Block b, boolean dropItem) {
         Location baseLoc = this.getLocation();
         Block origin = baseLoc.getBlock();
         scanForAttachedLabelSigns();
@@ -639,7 +638,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             auxBlock.setType(Material.AIR);
         }
         origin.setType(Material.AIR);
-        b.getWorld().dropItemNaturally(b.getLocation(), toItemStack());
+        if (dropItem) {
+            b.getWorld().dropItemNaturally(b.getLocation(), toItemStack());
+        }
     }
 
     @Override
@@ -880,6 +881,19 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     protected InventoryGUI createGUI() {
         return null;
+    }
+
+    /**
+     * Called when an STB block has completely burned away.  This is called
+     * with EventPriority.MONITOR; do not attempt to cancel this event.
+     *
+     * @param event the block burn event
+     */
+    public void onBlockBurnt(BlockBurnEvent event) {
+    }
+
+    public boolean isFlammable() {
+        return false;
     }
 
     /**
