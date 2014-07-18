@@ -28,7 +28,9 @@ import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.SunlightLevels;
 import me.desht.sensibletoolbox.commands.*;
+import me.desht.sensibletoolbox.api.FriendManager;
 import me.desht.sensibletoolbox.core.ItemRegistry;
+import me.desht.sensibletoolbox.core.STBFriendManager;
 import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
 import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
@@ -66,6 +68,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private EnderStorageManager enderStorageManager;
     private SunlightLevels sunlightLevels;
     private ItemRegistry itemRegistry;
+    private STBFriendManager friendManager;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -119,6 +122,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         itemRegistry = new ItemRegistry(this);
         itemRegistry.registerItems();
+        friendManager = new STBFriendManager(this);
         registerEventListeners();
         registerCommands();
 
@@ -157,6 +161,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             }
         }, 1L, 300L);
 
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                friendManager.save();
+            }
+        }, 60L, 300L);
+
         scheduleEnergyNetTicker();
 
         setupMetrics();
@@ -186,6 +197,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
         LocationManager.getManager().save();
         LocationManager.getManager().shutdown();
+
+        friendManager.save();
 
         Bukkit.getScheduler().cancelTasks(this);
 
@@ -310,6 +323,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         cmds.registerCommand(new RecipeCommand());
         cmds.registerCommand(new ExamineCommand());
         cmds.registerCommand(new RedrawCommand());
+        cmds.registerCommand(new FriendCommand());
+        cmds.registerCommand(new UnfriendCommand());
     }
 
     @Override
@@ -385,5 +400,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public ItemRegistry getItemRegistry() {
         return itemRegistry;
+    }
+
+    public FriendManager getFriendManager() {
+        return friendManager;
     }
 }

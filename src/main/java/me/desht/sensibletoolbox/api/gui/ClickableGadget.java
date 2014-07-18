@@ -11,12 +11,27 @@ public abstract class ClickableGadget extends Gadget {
         this.slot = slot;
     }
 
+    /**
+     * Get the inventory slot that this gadget occupies.
+     *
+     * @return the gadget's slot
+     */
     public int getSlot() {
         return slot;
     }
 
+    /**
+     * Called when the gadget is clicked.
+     *
+     * @param event the inventory click event
+     */
     public abstract void onClicked(InventoryClickEvent event);
 
+    /**
+     * Return an item stack representing this gadget's texture in the GUI.
+     *
+     * @return an item stack
+     */
     public abstract ItemStack getTexture();
 
     protected void updateGUI() {

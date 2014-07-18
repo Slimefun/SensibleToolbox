@@ -30,6 +30,12 @@ permissions:
   stb.access.modify:
     description: Allow a block's access control settings to be changed
     default: op
+  stb.friends.other:
+    description: Allow viewing/modification of other players' friend data
+    default: op
+  stb.recipebook.freefab:
+    description: Allow any item in the Recipe Book to be fabricated freely
+    default: op
   stb.commands.charge:
     description: Allow the SCU values for blocks/items to be modified with /stb charge
     default: op
@@ -63,6 +69,6 @@ permissions:
   stb.commands.show:
     description: Allows existing STB blocks to be listed and inspected with /stb show
     default: op
-  stb.recipebook.freefab:
-    description: Allow any item in the Recipe Book to be fabricated freely
-    default: op
+  stb.commands.friend:
+    description: Allow friend information to be viewed/modified with /stb friend
+    default: true

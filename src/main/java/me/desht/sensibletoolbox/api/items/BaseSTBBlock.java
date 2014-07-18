@@ -8,6 +8,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.AccessControl;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.api.util.STBUtil;
@@ -210,6 +211,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 return true;
             case PRIVATE:
                 return getOwner().equals(player.getUniqueId()) || PermissionUtils.isAllowedTo(player, "stb.access.any");
+            case RESTRICTED:
+                return getOwner().equals(player.getUniqueId()) || PermissionUtils.isAllowedTo(player, "stb.access.any") || SensibleToolbox.isFriend(getOwner(), player.getUniqueId());
             default:
                 return false;
         }
@@ -230,6 +233,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 return true;
             case PRIVATE:
                 return uuid == null || getOwner().equals(uuid);
+            case RESTRICTED:
+                return uuid == null || getOwner().equals(uuid) || SensibleToolbox.isFriend(getOwner(), uuid);
             default:
                 return false;
         }

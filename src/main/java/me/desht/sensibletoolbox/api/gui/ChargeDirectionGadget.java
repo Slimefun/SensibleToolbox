@@ -3,11 +3,8 @@ package me.desht.sensibletoolbox.api.gui;
 import me.desht.sensibletoolbox.api.ChargeDirection;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
-import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 public class ChargeDirectionGadget extends CyclerGadget<ChargeDirection> {

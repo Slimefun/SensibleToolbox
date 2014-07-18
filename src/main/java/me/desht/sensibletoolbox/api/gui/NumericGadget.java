@@ -73,6 +73,12 @@ public class NumericGadget extends ClickableGadget {
     }
 
     public interface NumericListener {
+        /**
+         * Called when the value of the numeric gadget is to be changed.
+         *
+         * @param newValue the proposed new value
+         * @return false to prevent the value being changed; true to allow the change to occur
+         */
         public boolean run(int newValue);
     }
 }

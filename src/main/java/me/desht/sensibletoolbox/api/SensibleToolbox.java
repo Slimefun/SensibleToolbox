@@ -5,6 +5,7 @@ import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.core.ItemRegistry;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -15,8 +16,20 @@ import java.util.UUID;
  * Top-level collection of utility methods for Sensible Toolbox.
  */
 public class SensibleToolbox {
+    private static SensibleToolboxPlugin instance;
+
+    public static SensibleToolboxPlugin getPluginInstance() {
+        if (instance == null) {
+            instance = (SensibleToolboxPlugin) Bukkit.getPluginManager().getPlugin("SensibleToolbox");
+            if (instance == null || !instance.isEnabled()) {
+                throw new IllegalStateException("SensibleToolbox plugin is not available!");
+            }
+        }
+        return instance;
+    }
+
     public static ItemRegistry getItemRegistry() {
-        return SensibleToolboxPlugin.getInstance().getItemRegistry();
+        return getPluginInstance().getItemRegistry();
     }
 
     /**
@@ -62,7 +75,7 @@ public class SensibleToolbox {
      * @return the last known player name for this UUID, if any (null if name not known)
      */
     public static String getPlayerNameFromUUID(UUID uuid) {
-        return SensibleToolboxPlugin.getInstance().getUuidTracker().getPlayer(uuid);
+        return getPluginInstance().getUuidTracker().getPlayer(uuid);
     }
 
     /**
@@ -133,5 +146,19 @@ public class SensibleToolbox {
      */
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode, String permissionNode) {
         getItemRegistry().registerItem(item, plugin, configNode, permissionNode);
+    }
+
+    /**
+     * Check if the player with ID id2 is a friend of player with ID id1, i.e.
+     * that id1 has added id2 as a friend.  Note that this relationship is
+     * not commutative; just because id2 is a friend of id1 does not mean that
+     * id1 is a friend of id2.
+     *
+     * @param id1 the first player's UUID
+     * @param id2 the second player's UUID
+     * @return true if id2 is a friend of id1; false otherwise
+     */
+    public static boolean isFriend(UUID id1, UUID id2) {
+        return getPluginInstance().getFriendManager().isFriend(id1, id2);
     }
 }
