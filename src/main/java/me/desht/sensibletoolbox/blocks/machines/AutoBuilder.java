@@ -364,8 +364,8 @@ public class AutoBuilder extends BaseSTBMachine {
     private BuilderStatus setupWorkArea() {
         workArea = null;
 
-        LandMarker lm1 = SensibleToolbox.getItemfromItemStack(getInventoryItem(LANDMARKER_SLOT_1), LandMarker.class);
-        LandMarker lm2 = SensibleToolbox.getItemfromItemStack(getInventoryItem(LANDMARKER_SLOT_2), LandMarker.class);
+        LandMarker lm1 = SensibleToolbox.getItemRegistry().fromItemStack(getInventoryItem(LANDMARKER_SLOT_1), LandMarker.class);
+        LandMarker lm2 = SensibleToolbox.getItemRegistry().fromItemStack(getInventoryItem(LANDMARKER_SLOT_2), LandMarker.class);
 
         if (lm1 != null && lm2 != null) {
             Location loc1 = lm1.getLocation();

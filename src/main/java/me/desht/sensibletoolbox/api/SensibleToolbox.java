@@ -4,7 +4,6 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.core.ItemRegistry;
-import me.desht.sensibletoolbox.core.STBItemRegistry;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
