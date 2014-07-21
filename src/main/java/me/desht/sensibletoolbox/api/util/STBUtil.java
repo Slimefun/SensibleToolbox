@@ -1003,4 +1003,50 @@ public class STBUtil {
             default: throw new IllegalArgumentException("invalid rotation" + rotation);
         }
     }
+
+    public static double getMaterialHardness(Material mat) {
+        switch (mat) {
+            case BEDROCK: case ENDER_PORTAL_FRAME: case ENDER_PORTAL: case PORTAL: case COMMAND:
+                return Double.MAX_VALUE;
+            case OBSIDIAN:
+                return 50;
+            case ENDER_CHEST:
+                return 22.5;
+            case ANVIL: case COAL_BLOCK: case DIAMOND_BLOCK: case EMERALD_BLOCK: case IRON_BLOCK:
+                case REDSTONE_BLOCK: case ENCHANTMENT_TABLE: case IRON_FENCE: case IRON_DOOR: case MOB_SPAWNER:
+                return 5;
+            case WEB:
+                return 4;
+            case DISPENSER: case DROPPER: case FURNACE:
+                return 3.5;
+            case BEACON: case GOLD_BLOCK: case COAL_ORE: case DRAGON_EGG: case DIAMOND_ORE: case EMERALD_ORE:
+                case ENDER_STONE: case GOLD_ORE: case HOPPER:case IRON_ORE: case LAPIS_BLOCK: case QUARTZ_ORE:
+                case REDSTONE_ORE: case TRAP_DOOR: case WOOD_DOOR:
+                return 3;
+            case CHEST: case TRAPPED_CHEST: case WORKBENCH:
+                return 2.5;
+            case BRICK_STAIRS: case BRICK: case CAULDRON: case COBBLESTONE: case COBBLESTONE_STAIRS: case COBBLE_WALL:
+                case FENCE: case FENCE_GATE: case JUKEBOX: case MOSSY_COBBLESTONE:case NETHER_BRICK:
+                case NETHER_FENCE: case NETHER_BRICK_STAIRS: case STEP: case LOG_2:case LOG: case WOOD:
+                case WOOD_STEP: case WOOD_STAIRS:
+                return 2;
+            case BOOKSHELF: case STONE: case SMOOTH_BRICK: case SMOOTH_STAIRS:
+                return 1.5;
+            case HARD_CLAY: case STAINED_CLAY:
+                return 1.25;
+            case JACK_O_LANTERN: case MELON: case PUMPKIN: case SKULL: case SIGN_POST: case WALL_SIGN:
+                return 1;
+            case QUARTZ_BLOCK: case NOTE_BLOCK: case QUARTZ_STAIRS: case SANDSTONE: case SANDSTONE_STAIRS: case WOOL:
+                return 0.8;
+            case MONSTER_EGG:
+                return 0.75;
+            case RAILS:
+                return 0.7;
+            case CLAY: case SOIL: case GRASS: case GRAVEL: case MYCEL: case WATER_LILY: case SPONGE:
+                return 0.6;
+            // TODO: more to enter here
+            default:
+                return 0.5;
+        }
+    }
 }

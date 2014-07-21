@@ -401,7 +401,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         return true;
     }
 
-
     @Override
     public boolean onClickOutside(HumanEntity player) {
         return false;

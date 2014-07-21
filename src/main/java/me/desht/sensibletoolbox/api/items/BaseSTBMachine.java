@@ -504,12 +504,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      * @param side the side being inserted from (SELF is a valid option here too)
      * @return the slot number if a slot is available, or -1 otherwise
      */
-    protected int findAvailableInputSlot(ItemStack item, BlockFace side) {
+    private int findAvailableInputSlot(ItemStack item, BlockFace side) {
         for (int slot : getInputSlots()) {
             ItemStack inSlot = getInventoryItem(slot);
-            if (inSlot == null || inSlot.isSimilar(item)) {
-                return slot;
-            } else if (inSlot.isSimilar(item)) {
+            if (inSlot == null || inSlot.isSimilar(item) && inSlot.getAmount() < item.getMaxStackSize()) {
                 return slot;
             }
         }
@@ -730,27 +728,49 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             return 1;
         }
 
-        int insertionSlot = findAvailableInputSlot(toInsert, BlockFace.SELF);
-        if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
-            ItemStack inMachine = getInventoryItem(insertionSlot);
-            if (inMachine == null) {
-                // insert the whole stack
-                setInventoryItem(insertionSlot, toInsert);
-                update(false);
-                return toInsert.getAmount();
-            } else {
-                // insert as much as possible
-                int nToInsert = Math.min(inMachine.getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
-                if (nToInsert > 0) {
-                    inMachine.setAmount(inMachine.getAmount() + nToInsert);
-                    setInventoryItem(insertionSlot, inMachine);
-                    update(false);
-                }
-                return nToInsert;
+//        int insertionSlot = findAvailableInputSlot(toInsert, BlockFace.SELF);
+//        if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
+//            ItemStack inMachine = getInventoryItem(insertionSlot);
+//            if (inMachine == null) {
+//                // insert the whole stack
+//                setInventoryItem(insertionSlot, toInsert);
+//                update(false);
+//                return toInsert.getAmount();
+//            } else {
+//                // insert as much as possible
+//                int nToInsert = Math.min(inMachine.getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
+//                if (nToInsert > 0) {
+//                    inMachine.setAmount(inMachine.getAmount() + nToInsert);
+//                    setInventoryItem(insertionSlot, inMachine);
+//                    update(false);
+//                }
+//                return nToInsert;
+//            }
+//        }
+        int remaining = doInsertion(toInsert);
+
+        return toInsert.getAmount() - remaining;
+    }
+
+    private int doInsertion(ItemStack stack) {
+        int remaining = stack.getAmount();
+        for (int slot : getInputSlots()) {
+            ItemStack inInventory = getInventoryItem(slot);
+            if (inInventory == null) {
+                setInventoryItem(slot, stack);
+                return 0;
+            } else if (inInventory.isSimilar(stack)) {
+                int toInsert = Math.min(stack.getAmount(), stack.getMaxStackSize() - inInventory.getAmount());
+                inInventory.setAmount(inInventory.getAmount() + toInsert);
+                setInventoryItem(slot, inInventory);
+                remaining -= toInsert;
+                stack.setAmount(remaining);
+            }
+            if (remaining <= 0) {
+                return 0;
             }
         }
-
-        return 0;
+        return remaining;
     }
 
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem item) {

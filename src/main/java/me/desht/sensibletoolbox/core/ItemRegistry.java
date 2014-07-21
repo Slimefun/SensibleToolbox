@@ -135,6 +135,7 @@ public class ItemRegistry {
         registerItem(new IntegratedCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new LandMarker(), plugin, CONFIG_NODE, PERMISSION_NODE);
         registerItem(new PVCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
+        registerItem(new AutoBuilder(), plugin, CONFIG_NODE, PERMISSION_NODE);
         if (plugin.isProtocolLibEnabled()) {
             registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
         }

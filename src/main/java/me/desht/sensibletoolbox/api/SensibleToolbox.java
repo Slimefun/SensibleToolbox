@@ -33,13 +33,25 @@ public class SensibleToolbox {
     }
 
     /**
-     * Given an item stack, get the SensibleToolbox object for that item, if any.
+     * Given an item stack, get the SensibleToolbox object for that item, if
+     * any.
      *
      * @param stack the item stack
-     * @return the SensibleToolbox object
+     * @return the SensibleToolbox object, or null if the item is not a STB item
      */
     public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
         return getItemRegistry().fromItemStack(stack);
+    }
+
+    /**
+     * Given an item stack and item type, get the SensibleToolbox object for
+     * that item and type, if any.
+     *
+     * @param stack the item stack
+     * @return the SensibleToolbox object, or null if the item is not a STB item of the given type
+     */
+    public static <T extends BaseSTBItem> T getItemfromItemStack(ItemStack stack, Class<T> type) {
+        return getItemRegistry().fromItemStack(stack, type);
     }
 
     /**

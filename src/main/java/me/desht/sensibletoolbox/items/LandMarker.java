@@ -95,10 +95,10 @@ public class LandMarker extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_AIR && getLocation() != null) {
+        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) && getLocation() != null) {
             setLocation(null);
             event.getPlayer().setItemInHand(toItemStack());
-        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getClickedBlock().getLocation().equals(loc)) {
+        } else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
             setLocation(event.getClickedBlock().getLocation());
             event.getPlayer().setItemInHand(toItemStack());
         }

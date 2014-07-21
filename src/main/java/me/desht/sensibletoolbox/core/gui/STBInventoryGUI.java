@@ -212,7 +212,7 @@ public class STBInventoryGUI implements InventoryGUI {
             // clicking inside the GUI
             switch (getSlotType(event.getRawSlot())) {
                 case GADGET:
-                    if (gadgets[event.getRawSlot()] != null) {
+                    if (gadgets[event.getRawSlot()] != null && gadgets[event.getRawSlot()].isEnabled()) {
                         gadgets[event.getRawSlot()].onClicked(event);
                     }
                     break;
