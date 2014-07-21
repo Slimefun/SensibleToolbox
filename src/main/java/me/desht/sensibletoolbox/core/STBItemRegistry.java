@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.ItemRegistry;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;

@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.core;
+package me.desht.sensibletoolbox.api;
 
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,7 +44,7 @@ public interface ItemRegistry {
      * <p>
      * If the supplied permissionPrefix parameter is non-null, it is used as
      * the prefix to register the item's permission nodes, instead of the
-     * default "stb".  See <a href="http://dev.bukkit.org/bukkit-plugins/sensible-toolbox/pages/permissions/"
+     * default "stb".  See <a href="http://dev.bukkit.org/bukkit-plugins/sensible-toolbox/pages/permissions/">
      * this page</a> for more information on permissions.
      *
      * @param item an instance of the item to be registered

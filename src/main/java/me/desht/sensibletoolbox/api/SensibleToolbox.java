@@ -3,7 +3,6 @@ package me.desht.sensibletoolbox.api;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
-import me.desht.sensibletoolbox.core.ItemRegistry;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,7 +43,7 @@ public class SensibleToolbox {
      *
      * @param stack the item stack
      * @return the SensibleToolbox object, or null if the item is not a STB item
-     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack)}
+     * @deprecated use {@link ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack)}
      */
     @Deprecated
     public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
@@ -57,7 +56,7 @@ public class SensibleToolbox {
      *
      * @param stack the item stack
      * @return the SensibleToolbox object, or null if the item is not a STB item of the given type
-     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack, Class)}
+     * @deprecated use {@link ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack, Class)}
      */
     @Deprecated
     public static <T extends BaseSTBItem> T getItemfromItemStack(ItemStack stack, Class<T> type) {
@@ -107,7 +106,7 @@ public class SensibleToolbox {
      *
      * @param plugin the plugin doing the registration
      * @param item   an instance of the item to be registered
-     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin)}
+     * @deprecated use {@link ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin)}
      */
     public static void registerItem(Plugin plugin, BaseSTBItem item) {
         getItemRegistry().registerItem(item, plugin);
@@ -120,7 +119,7 @@ public class SensibleToolbox {
      * @param plugin     the plugin doing the registration
      * @param item       an instance of the item to be registered
      * @param configNode the parent configuration node prefix controlling enablement
-     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String)}
+     * @deprecated use {@link ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String)}
      */
     @Deprecated
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode) {
@@ -135,7 +134,7 @@ public class SensibleToolbox {
      * @param item           an instance of the item to be registered
      * @param configNode     the parent configuration node prefix controlling enablement
      * @param permissionNode the permission node prefix for registering item permissions
-     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String, String)}
+     * @deprecated use {@link ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String, String)}
      */
     @Deprecated
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode, String permissionNode) {
