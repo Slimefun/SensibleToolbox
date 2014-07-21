@@ -9,11 +9,12 @@ public enum AccessControl {
      */
     PUBLIC,
     /**
-     * Only the owner may access this block.
+     * Only the block's owner may access this block.
      */
     PRIVATE,
     /**
-     * Only the owner and owner's friends may access this block.
+     * Only the owner and owner's friends may access this block.  See
+     * {@link me.desht.sensibletoolbox.api.FriendManager}
      */
     RESTRICTED,
 }

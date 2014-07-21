@@ -34,6 +34,10 @@ import org.bukkit.util.ChatPaginator;
 import java.util.BitSet;
 import java.util.UUID;
 
+/**
+ * Represents an STB block; an item which can be placed as a block
+ * in the world.
+ */
 public abstract class BaseSTBBlock extends BaseSTBItem {
     public static final String STB_BLOCK = "STB_Block";
     public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";

@@ -9,6 +9,10 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
+/**
+ * A GUI gadet which allows a STB block's redstone behaviour to be
+ * displayed and changed.
+ */
 public class RedstoneBehaviourGadget extends CyclerGadget<RedstoneBehaviour> {
     public RedstoneBehaviourGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Redstone Mode");

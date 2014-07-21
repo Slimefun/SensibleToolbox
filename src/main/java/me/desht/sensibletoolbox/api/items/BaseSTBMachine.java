@@ -29,6 +29,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+/**
+ * Represents an STB block which acts a machine; it is chargeable and
+ * holds an inventory with possible input and output slots.
+ */
 public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableBlock, STBInventoryHolder {
     private double charge;
     private ChargeDirection chargeDirection;

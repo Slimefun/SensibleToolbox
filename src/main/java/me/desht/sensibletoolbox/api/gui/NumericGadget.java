@@ -10,6 +10,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * A GUI gadget which allows an integer value to be displayed
+ * and changed.
+ */
 public class NumericGadget extends ClickableGadget {
     private final String title;
     private final IntRange range;
@@ -19,6 +23,18 @@ public class NumericGadget extends ClickableGadget {
     private final ItemStack icon = new ItemStack(Material.PAPER);
     private int value;
 
+    /**
+     * Construct a numeric gadget.
+     *
+     * @param gui the GUI that the gadget belongs to
+     * @param slot the GUI slot that the gadget occupies
+     * @param title the label for the numeric gadget
+     * @param range the range for the gadget
+     * @param value the initial value for the gadget
+     * @param incr the primary increment
+     * @param altIncr the alternate increment
+     * @param callback the code to run when the gadget is clicked
+     */
     public NumericGadget(InventoryGUI gui, int slot, String title, IntRange range, int value, int incr, int altIncr, NumericListener callback) {
         super(gui, slot);
         this.title = title;
@@ -49,6 +65,11 @@ public class NumericGadget extends ClickableGadget {
         }
     }
 
+    /**
+     * Change the value of this numeric gadget.
+     *
+     * @param value the new value
+     */
     public void setValue(int value) {
         Validate.isTrue(range.containsInteger(value), "Value " + value + " is out of range");
         this.value = value;
@@ -72,12 +93,15 @@ public class NumericGadget extends ClickableGadget {
         return icon;
     }
 
+    /**
+     * A callback to be executed when a numeric gadget is clicked.
+     */
     public interface NumericListener {
         /**
          * Called when the value of the numeric gadget is to be changed.
          *
          * @param newValue the proposed new value
-         * @return false to prevent the value being changed; true to allow the change to occur
+         * @return true if the new value should be accepted; false otherwise
          */
         public boolean run(int newValue);
     }

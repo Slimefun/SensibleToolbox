@@ -27,7 +27,7 @@ import me.desht.sensibletoolbox.api.FriendManager;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.api.util.SunlightLevels;
+import me.desht.sensibletoolbox.util.SunlightLevels;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.core.STBFriendManager;
 import me.desht.sensibletoolbox.core.STBItemRegistry;

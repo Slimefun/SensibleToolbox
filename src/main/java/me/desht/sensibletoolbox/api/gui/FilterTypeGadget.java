@@ -8,7 +8,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
+/**
+ * A GUI gadget which can display and change a filter's filter type.
+ */
 public class FilterTypeGadget extends CyclerGadget<Filter.FilterType> {
+    /**
+     * Construct a filter type gadget.
+     *
+     * @param gui the GUI that the gadget belongs to
+     * @param slot the GUI slot that the gadget occupies
+     */
     public FilterTypeGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Filter Type");
         Validate.isTrue(gui.getOwningItem() instanceof Filtering, "Filter Type gadget can only be added to filtering items!");

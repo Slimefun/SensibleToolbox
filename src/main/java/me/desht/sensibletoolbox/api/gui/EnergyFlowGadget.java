@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.api.gui;
 
+import me.desht.sensibletoolbox.api.EnergyFlow;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.machines.BatteryBox;
@@ -9,18 +10,25 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
-public class EnergyFlowGadget extends CyclerGadget<BatteryBox.EnergyFlow> {
+public class EnergyFlowGadget extends CyclerGadget<EnergyFlow> {
     private final BlockFace face;
 
+    /**
+     * Construct an energy flow gadget.
+     *
+     * @param gui the GUI that the gadget belongs to
+     * @param slot the GUI slot that the gadget occupies
+     * @param face the block face that this energy flow applies to
+     */
     public EnergyFlowGadget(InventoryGUI gui, int slot, BlockFace face) {
         super(gui, slot, face.toString());
         Validate.isTrue(gui.getOwningItem() instanceof BatteryBox, "Energy flow gadget can only be used on a battery box!");
         this.face = face;
-        add(BatteryBox.EnergyFlow.IN, ChatColor.DARK_AQUA, STBUtil.makeColouredMaterial(Material.WOOL, DyeColor.BLUE),
+        add(EnergyFlow.IN, ChatColor.DARK_AQUA, STBUtil.makeColouredMaterial(Material.WOOL, DyeColor.BLUE),
                 "Device accepts energy", "on this face");
-        add(BatteryBox.EnergyFlow.OUT, ChatColor.GOLD, STBUtil.makeColouredMaterial(Material.WOOL, DyeColor.ORANGE),
+        add(EnergyFlow.OUT, ChatColor.GOLD, STBUtil.makeColouredMaterial(Material.WOOL, DyeColor.ORANGE),
                 "Device emits energy", "on this face");
-        add(BatteryBox.EnergyFlow.NONE, ChatColor.GRAY, STBUtil.makeColouredMaterial(Material.WOOL, DyeColor.SILVER),
+        add(EnergyFlow.NONE, ChatColor.GRAY, STBUtil.makeColouredMaterial(Material.WOOL, DyeColor.SILVER),
                 "This face does not", "accept or emit energy");
         setInitialValue(((BatteryBox) gui.getOwningItem()).getEnergyFlow(face));
     }
@@ -31,7 +39,7 @@ public class EnergyFlowGadget extends CyclerGadget<BatteryBox.EnergyFlow> {
     }
 
     @Override
-    protected void apply(BaseSTBItem stbItem, BatteryBox.EnergyFlow newValue) {
+    protected void apply(BaseSTBItem stbItem, EnergyFlow newValue) {
         ((BatteryBox) getGUI().getOwningItem()).setFlow(face, newValue);
     }
 }

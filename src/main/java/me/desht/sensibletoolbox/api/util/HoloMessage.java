@@ -11,7 +11,20 @@ import org.bukkit.util.Vector;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Display a temporary popup message to a player via a hologram.  This
+ * requires the HoloAPI plugin to function.
+ */
 public class HoloMessage {
+    /**
+     * Display a quick popup message to the given player.  The message
+     * duration is dependent on the message length and the plugin
+     * configuration (item <em>holo_messages.duration_per_line</em>).
+     *
+     * @param player the player to show the message to
+     * @param loc the base location at which to show the message text
+     * @param message the message text
+     */
     public static void quickMessage(Player player, Location loc, List<String> message) {
         Vector v = player.getLocation().getDirection();
         // this will place the message slightly in front of and above the location

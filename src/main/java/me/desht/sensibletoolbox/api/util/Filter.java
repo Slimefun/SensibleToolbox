@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A class which can filter items based on several criteria: whitelist/blacklist,
+ * filter by material, by block data or by item metadata.
+ */
 public class Filter {
-//    private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
     private final List<ItemStack> filteredItems = new ArrayList<ItemStack>();
     private FilterType filterType;
     private boolean whiteList;

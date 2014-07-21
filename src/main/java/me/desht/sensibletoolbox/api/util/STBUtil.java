@@ -27,19 +27,32 @@ import org.bukkit.metadata.Metadatable;
 
 import java.util.*;
 
+/**
+ * A collection of miscellaneous utility methods.
+ */
 public class STBUtil {
+    /**
+     * The block faces directly adjacent to a block.
+     */
     public static final BlockFace[] directFaces = {
             BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST
     };
+    /**
+     * The block faces in the four cardinal horizontal directions.
+     */
     public static final BlockFace[] mainHorizontalFaces = new BlockFace[]{
             BlockFace.EAST, BlockFace.SOUTH,
             BlockFace.WEST, BlockFace.NORTH
     };
+    /**
+     * The block faces in all eight compass directions, plus the block itself.
+     */
     public static final BlockFace[] allHorizontalFaces = new BlockFace[]{
             BlockFace.SELF,
             BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,
             BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH
     };
+
     private static final int gravelChance[] = new int[]{
             0, 14, 25, 100
     };
@@ -1004,6 +1017,14 @@ public class STBUtil {
         }
     }
 
+    /**
+     * Get the hardness for a given material.
+     * //TODO: incomplete
+     * @see <a href="http://minecraft.gamepedia.com/Digging#Blocks_by_Hardness">Minecraft Wiki page</a>
+     *
+     * @param mat the material to check
+     * @return the base hardness of the block
+     */
     public static double getMaterialHardness(Material mat) {
         switch (mat) {
             case BEDROCK: case ENDER_PORTAL_FRAME: case ENDER_PORTAL: case PORTAL: case COMMAND:

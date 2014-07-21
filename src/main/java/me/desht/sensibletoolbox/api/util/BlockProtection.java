@@ -10,6 +10,10 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * Check protections in force for various vanilla blocks and inventories.
+ *
+ */
 public class BlockProtection {
     /**
      * Check if the given player has access rights for the given block.

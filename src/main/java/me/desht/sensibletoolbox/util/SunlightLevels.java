@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.api.util;
+package me.desht.sensibletoolbox.util;
 
 import com.google.common.collect.Maps;
 import org.bukkit.Bukkit;

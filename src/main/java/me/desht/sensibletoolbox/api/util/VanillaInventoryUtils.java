@@ -12,7 +12,16 @@ import org.bukkit.inventory.*;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * Utility methods to interact with vanilla inventories.
+ */
 public class VanillaInventoryUtils {
+    /**
+     * Check if the given block contains a vanilla inventory,
+     *
+     * @param target the block to check
+     * @return true if this block holds a vanilla inventory; false otherwise
+     */
     public static boolean isVanillaInventory(Block target) {
         switch (target.getType()) {
             case CHEST:
@@ -28,6 +37,12 @@ public class VanillaInventoryUtils {
         }
     }
 
+    /**
+     * Get the vanilla inventory for the given block.
+     *
+     * @param target the block containing the target inventory
+     * @return the block's inventory, or null if the block does not have one
+     */
     public static Inventory getVanillaInventoryFor(Block target) {
         switch (target.getType()) {
             case CHEST:
@@ -52,15 +67,17 @@ public class VanillaInventoryUtils {
     }
 
     /**
-     * Attempt to insert items from the given buffer into the given block, which should be a
-     * vanilla inventory holder.  Items successfully inserted will be removed from the buffer stack.
-     * Any items which could not be inserted will be returned.
+     * Attempt to insert items from the given buffer into the given block,
+     * which should be a vanilla inventory holder.  Items successfully
+     * inserted will be removed from the buffer stack.
      *
      * @param target the block to insert into
      * @param source the item stack to take items from
      * @param amount the number of items from the buffer to insert
-     * @param side   the side on which insertion is occurring (some blocks care about this, e.g. furnace)
-     * @param inserterId UUID of the player doing the insertion (may be null or the UUID of an offline player)
+     * @param side   the side on which insertion is occurring
+     *               (some blocks care about this, e.g. furnace)
+     * @param inserterId UUID of the player doing the insertion
+     *                   (may be null or the UUID of an offline player)
      * @return the number of items actually inserted
      */
     public static int vanillaInsertion(Block target, ItemStack source, int amount, BlockFace side, boolean sorting, UUID inserterId) {
@@ -77,7 +94,6 @@ public class VanillaInventoryUtils {
     /**
      * Attempt to insert items from the given buffer into the given inventory.
      * Items successfully inserted will be removed from the buffer stack.
-     * Any items which could not be inserted will be returned.
      *
      * @param targetInv the inventory to insert into
      * @param source the item stack to take items from
@@ -134,9 +150,11 @@ public class VanillaInventoryUtils {
      *
      * @param target the block containing the target inventory
      * @param amount the desired number of items
-     * @param buffer an array of item stacks into which to insert the transferred items
+     * @param buffer an item stack into which to insert
+     *               the transferred items
      * @param filter a filter to whitelist/blacklist items
-     * @param pullerId UUID of the player doing the pulling (may be null or the UUID of an offline player)
+     * @param pullerId UUID of the player doing the pulling
+     *                 (may be null or the UUID of an offline player)
      * @return the items pulled, or null if nothing was pulled
      */
     public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, UUID pullerId) {
@@ -152,7 +170,8 @@ public class VanillaInventoryUtils {
      *
      * @param targetInv the target inventory
      * @param amount the desired number of items
-     * @param buffer an array of item stacks into which to insert the transferred items
+     * @param buffer an item stack into which to insert
+     *               the transferred items
      * @param filter a filter to whitelist/blacklist items
      * @return the items pulled, or null if nothing was pulled
      */
@@ -249,8 +268,8 @@ public class VanillaInventoryUtils {
     }
 
     /**
-     * Attempt to put the given item stack in the given slot.  Some or all items may not fit if there's
-     * already something in the slot.
+     * Attempt to put the given item stack in the given slot.  Some or all items
+     * may not fit if there's already something in the slot.
      *
      * @param inv   the inventory
      * @param slot  the slot to insert into

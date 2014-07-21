@@ -5,6 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * A GUI gadget which allows a toggleable (boolean) value to be
+ * displayed and changed.
+ */
 public class ToggleButton extends ClickableGadget {
     private final ItemStack trueTexture;
     private final ItemStack falseTexture;
@@ -44,7 +48,16 @@ public class ToggleButton extends ClickableGadget {
         updateGUI();
     }
 
+    /**
+     * A callback to be executed when a toggle button is clicked.
+     */
     public interface ToggleListener {
+        /**
+         * Called when a toggle button is clicked.
+         *
+         * @param newValue the proposed new value for the toggle
+         * @return true if the new value should be accepted; false otherwise
+         */
         public boolean run(boolean newValue);
     }
 }

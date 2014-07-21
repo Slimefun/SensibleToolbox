@@ -9,9 +9,24 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
+/**
+ * Implements a GUI system using custom inventory windows.
+ */
 public interface InventoryGUI {
+    /**
+     * Get the type of the given slot.
+     *
+     * @param slot the slot to check
+     * @return the slot type
+     */
     public SlotType getSlotType(int slot);
 
+    /**
+     * Change the type of the given slot.
+     *
+     * @param slot the slot to change
+     * @param type the new slot type
+     */
     public void setSlotType(int slot, SlotType type);
 
     /**
@@ -170,8 +185,19 @@ public interface InventoryGUI {
     public void ejectItems(int... slots);
 
     public enum SlotType {
+        /**
+         * A background slot.  This slot type is never interactable.
+         */
         BACKGROUND,
+        /**
+         * A slot which holds an item which might be placed or removed
+         * from the GUI.
+         */
         ITEM,
+        /**
+         * A slot which holds an interactable control of some kind
+         * (e.g. a button, a label, a monitor for some value...)
+         */
         GADGET
     }
 }

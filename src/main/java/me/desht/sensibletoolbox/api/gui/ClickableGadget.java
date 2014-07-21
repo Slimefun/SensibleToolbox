@@ -3,6 +3,9 @@ package me.desht.sensibletoolbox.api.gui;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Abstract base class for all clickable gadgets.
+ */
 public abstract class ClickableGadget extends Gadget {
     private final int slot;
 

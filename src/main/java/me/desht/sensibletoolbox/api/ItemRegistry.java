@@ -7,6 +7,10 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Set;
 
+/**
+ * An interface to the STB item registry system, allow registration
+ * of new STB items and obtaining existing items.
+ */
 public interface ItemRegistry {
     /**
      * Register the given item as a Sensible Toolbox item.

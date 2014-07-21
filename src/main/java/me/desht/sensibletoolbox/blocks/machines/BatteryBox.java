@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.api.ChargeDirection;
+import me.desht.sensibletoolbox.api.EnergyFlow;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.gui.EnergyFlowGadget;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
@@ -132,11 +133,5 @@ public abstract class BatteryBox extends BaseSTBMachine {
     @Override
     public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
         return behaviour != RedstoneBehaviour.PULSED;
-    }
-
-    public enum EnergyFlow {
-        IN,
-        OUT,
-        NONE;
     }
 }

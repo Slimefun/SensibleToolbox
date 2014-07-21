@@ -1,5 +1,9 @@
 package me.desht.sensibletoolbox.api;
 
+/**
+ * Represents an STB item or block which has an ender frequency
+ * including global/personal visibility.
+ */
 public interface EnderTunable {
     /**
      * Get the ender frequency of this tunable object.

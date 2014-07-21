@@ -3,6 +3,12 @@ package me.desht.sensibletoolbox.api;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * An interface to the STB friend system; managing the trust between
+ * any two given players.  This is primarily useful for STB blocks which
+ * use the <em>Restricted</em> access control level - see
+ * {@link me.desht.sensibletoolbox.api.AccessControl}
+ */
 public interface FriendManager {
     /**
      * Add the player with ID id2 as a friend of the player with ID id1; this
