@@ -162,6 +162,9 @@
                         <link>http://static.springsource.org/spring/docs/3.0.x/javadoc-api/</link>
                         <link>http://jd.bukkit.org/dev/apidocs/</link>
                     </links>
+                    <subpackages>
+                        me.desht.sensibletoolbox.api:me.desht.sensibletoolbox.items:me.desht.sensibletoolbox.blocks
+                    </subpackages>
                 </configuration>
             </plugin>
             <plugin>
