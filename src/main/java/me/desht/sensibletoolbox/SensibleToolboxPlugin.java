@@ -29,8 +29,8 @@ import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.SunlightLevels;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.api.FriendManager;
-import me.desht.sensibletoolbox.core.ItemRegistry;
 import me.desht.sensibletoolbox.core.STBFriendManager;
+import me.desht.sensibletoolbox.core.STBItemRegistry;
 import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
 import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
@@ -68,7 +68,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private LWC lwc = null;
     private EnderStorageManager enderStorageManager;
     private SunlightLevels sunlightLevels;
-    private ItemRegistry itemRegistry;
+    private STBItemRegistry itemRegistry;
     private STBFriendManager friendManager;
     private Random random;
 
@@ -124,7 +124,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         STBInventoryGUI.buildStockTextures();
 
-        itemRegistry = new ItemRegistry(this);
+        itemRegistry = new STBItemRegistry(this);
         itemRegistry.registerItems();
         friendManager = new STBFriendManager(this);
         registerEventListeners();
@@ -402,7 +402,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return sunlightLevels;
     }
 
-    public ItemRegistry getItemRegistry() {
+    public STBItemRegistry getItemRegistry() {
         return itemRegistry;
     }
 

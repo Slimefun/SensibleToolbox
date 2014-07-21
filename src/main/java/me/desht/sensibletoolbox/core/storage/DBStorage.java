@@ -2,7 +2,7 @@ package me.desht.sensibletoolbox.core.storage;
 
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.core.ItemRegistry;
+import me.desht.sensibletoolbox.core.STBItemRegistry;
 
 import java.io.File;
 import java.sql.*;
@@ -31,7 +31,7 @@ public class DBStorage {
                         "x INTEGER NOT NULL," +
                         "y INTEGER NOT NULL," +
                         "z INTEGER NOT NULL," +
-                        "type VARCHAR(" + ItemRegistry.MAX_ITEM_ID_LENGTH + ") NOT NULL," +
+                        "type VARCHAR(" + STBItemRegistry.MAX_ITEM_ID_LENGTH + ") NOT NULL," +
                         "data TEXT NOT NULL," +
                         "PRIMARY KEY (world_id,x,y,z)");
     }

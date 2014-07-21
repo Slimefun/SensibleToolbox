@@ -9,7 +9,7 @@ import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUIListener;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.ItemRegistry;
+import me.desht.sensibletoolbox.core.STBItemRegistry;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -47,12 +47,12 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
 
     protected BaseSTBItem() {
         typeID = getClass().getSimpleName().toLowerCase();
-        providerName = SensibleToolbox.getItemRegistry().getProviderName(this);
+        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
     }
 
     protected BaseSTBItem(ConfigurationSection conf) {
         typeID = getClass().getSimpleName().toLowerCase();
-        providerName = SensibleToolbox.getItemRegistry().getProviderName(this);
+        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
     }
 
     public void storeEnchants(ItemStack stack) {
@@ -68,7 +68,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @return true if the player has permission to take the action; false otherwise
      */
     public final boolean checkPlayerPermission(Player player, ItemAction action) {
-        String prefix = SensibleToolbox.getItemRegistry().getPermissionPrefix(this);
+        String prefix = SensibleToolboxPlugin.getInstance().getItemRegistry().getPermissionPrefix(this);
         Validate.notNull(prefix, "Can't determine permission node prefix for " + getItemTypeID());
         return PermissionUtils.isAllowedTo(player, prefix + "." + action.getNode() + "." + getItemTypeID());
     }
@@ -81,7 +81,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @return null for no restriction, or a BaseSTBItem subclass to specify a restriction
      */
     public final Class<? extends BaseSTBItem> getCraftingRestriction(Material mat) {
-        return SensibleToolbox.getItemRegistry().getCraftingRestriction(this,  mat);
+        return SensibleToolboxPlugin.getInstance().getItemRegistry().getCraftingRestriction(this,  mat);
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      */
     protected final void registerCustomIngredients(BaseSTBItem... items) {
         for (BaseSTBItem item : items) {
-            SensibleToolbox.getItemRegistry().addCraftingRestriction(this, item.getMaterial(), item.getClass());
+            SensibleToolboxPlugin.getInstance().getItemRegistry().addCraftingRestriction(this, item.getMaterial(), item.getClass());
         }
     }
 
@@ -298,7 +298,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
             conf.set("*nostack", System.nanoTime() ^ SensibleToolboxPlugin.getInstance().getRandom().nextLong());
         }
         conf.set("*TYPE", getItemTypeID());
-        AttributeStorage storage = AttributeStorage.newTarget(res, ItemRegistry.STB_ATTRIBUTE_ID);
+        AttributeStorage storage = AttributeStorage.newTarget(res, STBItemRegistry.STB_ATTRIBUTE_ID);
         String data = conf.saveToString();
         storage.setData(data);
         Debugger.getInstance().debug(3, "serialize " + this + " to itemstack:\n" + data);
@@ -309,7 +309,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         String[] lore = getLore();
         String[] lore2 = getExtraLore();
         List<String> res = new ArrayList<String>(lore.length + lore2.length + 1);
-        res.add(ItemRegistry.LORE_PREFIX + getProviderName() + " (STB) item");
+        res.add(STBItemRegistry.LORE_PREFIX + getProviderName() + " (STB) item");
         for (String l : lore) {
             res.add(LORE_COLOR + l);
         }

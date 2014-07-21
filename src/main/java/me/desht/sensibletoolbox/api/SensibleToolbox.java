@@ -4,6 +4,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.core.ItemRegistry;
+import me.desht.sensibletoolbox.core.STBItemRegistry;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,6 +29,12 @@ public class SensibleToolbox {
         return instance;
     }
 
+    /**
+     * Get the item registry instance, which handles all item registration
+     * retrieval and inspection.
+     *
+     * @return the STB item registry
+     */
     public static ItemRegistry getItemRegistry() {
         return getPluginInstance().getItemRegistry();
     }
@@ -38,7 +45,9 @@ public class SensibleToolbox {
      *
      * @param stack the item stack
      * @return the SensibleToolbox object, or null if the item is not a STB item
+     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack)}
      */
+    @Deprecated
     public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
         return getItemRegistry().fromItemStack(stack);
     }
@@ -49,7 +58,9 @@ public class SensibleToolbox {
      *
      * @param stack the item stack
      * @return the SensibleToolbox object, or null if the item is not a STB item of the given type
+     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack, Class)}
      */
+    @Deprecated
     public static <T extends BaseSTBItem> T getItemfromItemStack(ItemStack stack, Class<T> type) {
         return getItemRegistry().fromItemStack(stack, type);
     }
@@ -78,10 +89,11 @@ public class SensibleToolbox {
     }
 
     /**
-     * Given a UUID, attempt to get the player name for that UUID.  This will only succeed if that
-     * player has previously connected to this server, and the last known name for the UUID will be
-     * returned.  If the player has changed their name since last logging in, this change will not
-     * be reflected in the return value for this method.
+     * Given a UUID, attempt to get the player name for that UUID.  This will
+     * only succeed if that player has previously connected to this server,
+     * in which case the last known name for the UUID will be returned.  If
+     * the player has changed their name since last logging in, this change
+     * will not be reflected in the return value for this method.
      *
      * @param uuid the UUID to check
      * @return the last known player name for this UUID, if any (null if name not known)
@@ -93,17 +105,10 @@ public class SensibleToolbox {
     /**
      * Register a new item with SensibleToolbox. The item must be a subclass
      * of {@link BaseSTBItem}.
-     * <p/>
-     * Permission nodes will be registered for the item:
-     * <i>stb.{interact}.{itemId}</i> will always be registered, and if the
-     * item is a subclass of BaseSTBBlock, then
-     * <i>stb.{place|break|interact_block}.{itemId}</i> will also be registered.
-     * <p/>
-     * {@code itemId} is the item's ID; the base class name of the item,
-     * lowercased.  It may be no longer than 32 characters.
      *
      * @param plugin the plugin doing the registration
      * @param item   an instance of the item to be registered
+     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin)}
      */
     public static void registerItem(Plugin plugin, BaseSTBItem item) {
         getItemRegistry().registerItem(item, plugin);
@@ -112,24 +117,13 @@ public class SensibleToolbox {
     /**
      * Register an item with Sensible Toolbox.  The item must be a subclass of
      * {@link BaseSTBItem}.
-     * <p/>
-     * If the supplied {@code configNode} is non-null, Sensible Toolbox will
-     * check the boolean configuration node "{configNode}.{itemId}" in the
-     * calling plugin's configuration, and only register the item if the node
-     * is true.
-     * <p/>
-     *Permission nodes will be registered for the item:
-     * <i>stb.{interact}.{itemId}</i> will always be registered, and if the
-     * item is a subclass of BaseSTBBlock, then
-     * <i>stb.{place|break|interact_block}.{itemId}</i> will also be registered.
-     * <p/>
-     * {@code itemId} is the item's ID; the base class name of the item,
-     * lowercased.  It may be no longer than 32 characters.
      *
      * @param plugin     the plugin doing the registration
      * @param item       an instance of the item to be registered
      * @param configNode the parent configuration node prefix controlling enablement
+     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String)}
      */
+    @Deprecated
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode) {
         getItemRegistry().registerItem(item, plugin, configNode);
     }
@@ -137,25 +131,14 @@ public class SensibleToolbox {
     /**
      * Register an item with Sensible Toolbox.  The item must be a subclass of
      * {@link BaseSTBItem}.
-     * <p/>
-     * If the supplied {@code configNode} is non-null, Sensible Toolbox will
-     * check the boolean configuration node "{configNode}.{itemId}" in the
-     * calling plugin's configuration, and only register the item if the node
-     * is true.
-     * <p/>
-     * Permission nodes will be registered for the item:
-     * <i>stb.{interact}.{itemId}</i> will always be registered, and if the
-     * item is a subclass of BaseSTBBlock, then
-     * <i>stb.{place|break|interact_block}.{itemId}</i> will also be registered.
-     * <p/>
-     * {@code itemId} is the item's ID; the base class name of the item,
-     * lowercased.  It may be no longer than 32 characters.
      *
      * @param plugin         the plugin doing the registration
      * @param item           an instance of the item to be registered
      * @param configNode     the parent configuration node prefix controlling enablement
      * @param permissionNode the permission node prefix for registering item permissions
+     * @deprecated use {@link me.desht.sensibletoolbox.core.ItemRegistry#registerItem(me.desht.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String, String)}
      */
+    @Deprecated
     public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode, String permissionNode) {
         getItemRegistry().registerItem(item, plugin, configNode, permissionNode);
     }
