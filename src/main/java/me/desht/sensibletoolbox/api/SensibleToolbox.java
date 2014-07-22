@@ -6,9 +6,7 @@ import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -176,29 +174,4 @@ public class SensibleToolbox {
         return getPluginInstance().getEnergyNetManager().getEnergyNet(block);
     }
 
-    /**
-     * Get the personal ender inventory for the given player and frequency.
-     * Note that this inventory is <em>not</em> related to the inventory
-     * returned by the Bukkit
-     * {@link org.bukkit.entity.Player#getEnderChest()} method.
-     *
-     * @param player the player
-     * @param frequency the ender frequency to use
-     * @return an ender inventory
-     */
-    public static Inventory getEnderInventory(OfflinePlayer player, int frequency) {
-        return getPluginInstance().getEnderStorageManager().getPlayerInventory(player, frequency);
-    }
-
-    /**
-     * Get the global ender inventory for the given frequency.  Note that this
-     * inventory is <em>not</em> related to the inventory returned by the
-     * Bukkit {@link org.bukkit.entity.Player#getEnderChest()} method.
-     *
-     * @param frequency the ender frequency to use
-     * @return an ender inventory
-     */
-    public static Inventory getEnderInventory(int frequency) {
-        return getPluginInstance().getEnderStorageManager().getGlobalInventory(frequency);
-    }
 }

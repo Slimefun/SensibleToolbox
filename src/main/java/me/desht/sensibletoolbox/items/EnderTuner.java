@@ -3,11 +3,11 @@ package me.desht.sensibletoolbox.items;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
 import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -125,7 +125,7 @@ public class EnderTuner extends BaseSTBItem {
                 return false;
             }
         }));
-        gui.addGadget(new NumericGadget(gui, FREQUENCY_BUTTON_SLOT, "Ender Frequency", new IntRange(1, EnderStorageManager.MAX_ENDER_FREQUENCY), freq, 1, 10, new NumericGadget.NumericListener() {
+        gui.addGadget(new NumericGadget(gui, FREQUENCY_BUTTON_SLOT, "Ender Frequency", new IntRange(1, EnderStorage.MAX_ENDER_FREQUENCY), freq, 1, 10, new NumericGadget.NumericListener() {
             @Override
             public boolean run(int newValue) {
                 ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
@@ -227,11 +227,12 @@ public class EnderTuner extends BaseSTBItem {
     }
 
     @Override
-    public void onGUIClosed(HumanEntity player) {
+    public void onGUIClosed(final HumanEntity player) {
         if (tuningBlock == null) {
             ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
             if (stack != null) {
                 STBUtil.giveItems(player, stack);
+                _hackyDelayedInvUpdate((Player) player);
             }
         }
     }

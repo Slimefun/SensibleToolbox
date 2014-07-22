@@ -4,7 +4,7 @@ import com.google.common.io.Files;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import me.desht.sensibletoolbox.api.util.BukkitSerialization;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import org.bukkit.Bukkit;
@@ -18,12 +18,12 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 import java.util.UUID;
 
-public abstract class EnderStorageHolder implements STBInventoryHolder {
+public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     private final int frequency;
     private final EnderStorageManager manager;
     private Inventory inventory;
 
-    protected EnderStorageHolder(EnderStorageManager manager, int frequency) {
+    protected STBEnderStorageHolder(EnderStorageManager manager, int frequency) {
         this.frequency = frequency;
         this.manager = manager;
     }
@@ -65,6 +65,7 @@ public abstract class EnderStorageHolder implements STBInventoryHolder {
         });
     }
 
+    @Override
     public int getFrequency() {
         return frequency;
     }
@@ -110,6 +111,7 @@ public abstract class EnderStorageHolder implements STBInventoryHolder {
         setChanged();
     }
 
+    @Override
     public void setChanged() {
         getManager().setChanged(this);
     }
@@ -122,7 +124,7 @@ public abstract class EnderStorageHolder implements STBInventoryHolder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        EnderStorageHolder that = (EnderStorageHolder) o;
+        STBEnderStorageHolder that = (STBEnderStorageHolder) o;
 
         if (frequency != that.frequency) return false;
 

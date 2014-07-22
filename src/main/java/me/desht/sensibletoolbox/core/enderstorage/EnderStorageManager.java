@@ -6,13 +6,13 @@ import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import me.desht.sensibletoolbox.items.EnderBag;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -28,8 +28,8 @@ public class EnderStorageManager implements Listener {
     private static final String ENDER_STORAGE_DIR = "enderstorage";
     private final File storageDir;
 
-    private final Map<Integer,GlobalHolder> globalInvs = Maps.newHashMap();
-    private final Map<UUID, Map<Integer, PlayerHolder>> playerInvs = Maps.newHashMap();
+    private final Map<Integer,GlobalEnderHolder> globalInvs = Maps.newHashMap();
+    private final Map<UUID, Map<Integer, PlayerEnderHolder>> playerInvs = Maps.newHashMap();
     private final Set<EnderStorageHolder> updateNeeded = Sets.newHashSet();
 
     private static final FilenameFilter uuidFilter = new FilenameFilter() {
@@ -47,15 +47,15 @@ public class EnderStorageManager implements Listener {
         }
     }
 
-    public File getStorageDir() {
+    File getStorageDir() {
         return storageDir;
     }
 
-    public GlobalHolder getGlobalInventoryHolder(int frequency) {
+    public GlobalEnderHolder getGlobalInventoryHolder(int frequency) {
         Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
-        GlobalHolder h = globalInvs.get(frequency);
+        GlobalEnderHolder h = globalInvs.get(frequency);
         if (h == null) {
-            h = new GlobalHolder(this, frequency);
+            h = new GlobalEnderHolder(this, frequency);
             try {
                 h.loadInventory();
                 globalInvs.put(frequency, h);
@@ -67,16 +67,16 @@ public class EnderStorageManager implements Listener {
         return h;
     }
 
-    public PlayerHolder getPlayerInventoryHolder(OfflinePlayer player, Integer frequency) {
+    public PlayerEnderHolder getPlayerInventoryHolder(OfflinePlayer player, Integer frequency) {
         Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
-        Map<Integer, PlayerHolder> map = playerInvs.get(player.getUniqueId());
+        Map<Integer, PlayerEnderHolder> map = playerInvs.get(player.getUniqueId());
         if (map == null) {
-            map = new HashMap<Integer, PlayerHolder>();
+            map = new HashMap<Integer, PlayerEnderHolder>();
             playerInvs.put(player.getUniqueId(), map);
         }
-        PlayerHolder h = map.get(frequency);
+        PlayerEnderHolder h = map.get(frequency);
         if (h == null) {
-            h = new PlayerHolder(this, player, frequency);
+            h = new PlayerEnderHolder(this, player, frequency);
             try {
                 h.loadInventory();
                 map.put(frequency, h);
@@ -86,14 +86,6 @@ public class EnderStorageManager implements Listener {
             }
         }
         return h;
-    }
-
-    public Inventory getGlobalInventory(int frequency) {
-        return getGlobalInventoryHolder(frequency).getInventory();
-    }
-
-    public Inventory getPlayerInventory(OfflinePlayer player, int frequency) {
-        return getPlayerInventoryHolder(player, frequency).getInventory();
     }
 
     private void setupStorageStructure(SensibleToolboxPlugin plugin, File storageDir) {
@@ -125,14 +117,14 @@ public class EnderStorageManager implements Listener {
         DHValidate.isTrue(dir.mkdir(), "can't create directory: " + dir);
     }
 
-    public void setChanged(EnderStorageHolder holder) {
+    void setChanged(EnderStorageHolder holder) {
         updateNeeded.add(holder);
     }
 
     public void tick() {
         if (!updateNeeded.isEmpty()) {
             for (EnderStorageHolder holder : updateNeeded) {
-                holder.saveInventory();
+                ((STBEnderStorageHolder) holder).saveInventory();
             }
             updateNeeded.clear();
         }
@@ -140,7 +132,7 @@ public class EnderStorageManager implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() instanceof EnderStorageHolder) {
+        if (event.getInventory().getHolder() instanceof STBEnderStorageHolder) {
             EnderStorageHolder h = (EnderStorageHolder) event.getInventory().getHolder();
             setChanged(h);
         }

@@ -1,13 +1,11 @@
 package me.desht.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
-import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
+import me.desht.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.enderstorage.EnderStorageHolder;
-import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -123,8 +121,8 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
             Player player = event.getPlayer();
             if (hasAccessRights(player)) {
                 Inventory inv = isGlobal() ?
-                        SensibleToolbox.getEnderInventory(getEnderFrequency()) :
-                        SensibleToolbox.getEnderInventory(player, getEnderFrequency());
+                        EnderStorage.getEnderInventory(getEnderFrequency()) :
+                        EnderStorage.getEnderInventory(player, getEnderFrequency());
                 player.openInventory(inv);
                 player.playSound(getLocation(), Sound.CHEST_OPEN, 0.5f, 1.0f);
             } else {
@@ -170,9 +168,8 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     }
 
     private EnderStorageHolder getInventoryHolderFor(UUID uuid) {
-        EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
         return isGlobal() ?
-                esm.getGlobalInventoryHolder(getEnderFrequency()) :
-                esm.getPlayerInventoryHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
+                EnderStorage.getEnderStorageHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency()) :
+                EnderStorage.getEnderStorageHolder(getEnderFrequency());
     }
 }

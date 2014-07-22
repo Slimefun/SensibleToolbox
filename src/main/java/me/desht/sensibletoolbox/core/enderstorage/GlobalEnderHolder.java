@@ -4,8 +4,8 @@ import org.bukkit.ChatColor;
 
 import java.io.File;
 
-public class GlobalHolder extends EnderStorageHolder {
-    public GlobalHolder(EnderStorageManager manager, int frequency) {
+public class GlobalEnderHolder extends STBEnderStorageHolder {
+    public GlobalEnderHolder(EnderStorageManager manager, int frequency) {
         super(manager, frequency);
     }
 
@@ -24,4 +24,10 @@ public class GlobalHolder extends EnderStorageHolder {
     public String toString() {
         return "Global Ender Storage #" + getFrequency();
     }
+
+    @Override
+    public boolean isGlobal() {
+        return true;
+    }
+
 }

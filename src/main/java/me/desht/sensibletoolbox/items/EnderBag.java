@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.EnderBox;
@@ -132,8 +133,8 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
             }
 
             Inventory inv = isGlobal() ?
-                    SensibleToolbox.getEnderInventory(getEnderFrequency()) :
-                    SensibleToolbox.getEnderInventory(player, getEnderFrequency());
+                    EnderStorage.getEnderInventory(getEnderFrequency()) :
+                    EnderStorage.getEnderInventory(player, getEnderFrequency());
             player.openInventory(inv);
             event.setCancelled(true);
         }

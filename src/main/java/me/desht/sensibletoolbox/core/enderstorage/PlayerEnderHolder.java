@@ -5,10 +5,10 @@ import org.bukkit.OfflinePlayer;
 
 import java.io.File;
 
-public class PlayerHolder extends EnderStorageHolder {
+public class PlayerEnderHolder extends STBEnderStorageHolder {
     private final OfflinePlayer player;
 
-    protected PlayerHolder(EnderStorageManager manager, OfflinePlayer player, int frequency) {
+    protected PlayerEnderHolder(EnderStorageManager manager, OfflinePlayer player, int frequency) {
         super(manager, frequency);
         this.player = player;
     }
@@ -29,7 +29,7 @@ public class PlayerHolder extends EnderStorageHolder {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        PlayerHolder that = (PlayerHolder) o;
+        PlayerEnderHolder that = (PlayerEnderHolder) o;
 
         if (!player.equals(that.player)) return false;
 
@@ -53,4 +53,8 @@ public class PlayerHolder extends EnderStorageHolder {
         return "Player Ender Storage " + player.getName() + "#" + getFrequency();
     }
 
+    @Override
+    public boolean isGlobal() {
+        return false;
+    }
 }
