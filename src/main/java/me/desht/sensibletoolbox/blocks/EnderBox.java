@@ -118,7 +118,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public void onInteractBlock(PlayerInteractEvent event) {
         super.onInteractBlock(event);
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             Player player = event.getPlayer();
             if (hasAccessRights(player)) {
                 EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
