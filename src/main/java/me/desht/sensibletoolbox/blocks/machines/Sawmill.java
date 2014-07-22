@@ -79,7 +79,7 @@ public class Sawmill extends AbstractIOMachine {
 
     @Override
     protected void playActiveParticleEffect() {
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
             ParticleEffect.CLOUD.play(getLocation().add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 0.001f, 7);
         }
     }

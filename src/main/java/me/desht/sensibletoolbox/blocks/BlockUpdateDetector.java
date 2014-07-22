@@ -114,7 +114,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
             lastPulse = timeNow;
             final BlockState state = b.getState();
             b.setType(Material.REDSTONE_BLOCK);
-            Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     state.update(true, false);

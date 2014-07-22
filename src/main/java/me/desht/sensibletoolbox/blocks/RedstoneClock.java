@@ -145,7 +145,7 @@ public class RedstoneClock extends BaseSTBBlock {
             // power down
             b.setTypeIdAndData(getMaterialData().getItemTypeId(), getMaterialData().getData(), true);
         } else if (time % 50 == 10) {
-            if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+            if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
                 ParticleEffect.RED_DUST.play(loc.add(0.5, 0.5, 0.5), 0.7f, 0.7f, 0.7f, 0.0f, 10);
             } else {
                 loc.getWorld().playEffect(loc.add(0, 0.5, 0), Effect.SMOKE, BlockFace.UP);

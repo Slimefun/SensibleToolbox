@@ -173,7 +173,7 @@ public class EnderTuner extends BaseSTBItem {
     private void _hackyDelayedInvUpdate(final Player player) {
         // this is unfortunately needed to ensure player sees the updated frequency
         // button text after a tunable item is inserted
-        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
                 //noinspection deprecation

@@ -140,7 +140,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     private void rescanPVCell() {
         // defer this since we need to ensure the inventory slot is actually updated
-        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
                 PVCell cell = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
@@ -322,7 +322,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     private void calculateLightLevel() {
         Block b = getLocation().getBlock().getRelative(BlockFace.UP);
-        byte newLight = SensibleToolboxPlugin.getInstance().getSunlightLevels().getSunlightLevel(b.getWorld());
+        byte newLight = ((SensibleToolboxPlugin) getProviderPlugin()).getSunlightLevels().getSunlightLevel(b.getWorld());
         byte lightFromSky = b.getLightFromSky();
         if (lightFromSky < 14) {
             newLight = 0;  // block is excessively shaded

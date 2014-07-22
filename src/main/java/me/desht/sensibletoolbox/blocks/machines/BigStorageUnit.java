@@ -435,8 +435,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             stack.setAmount(stack.getAmount() - toInsert);
             player.getInventory().setItem(slot, stack.getAmount() == 0 ? null : stack);
             setCharge(getCharge() - chargeNeeded);
-            player.setMetadata(STB_LAST_BSU_INSERT,
-                    new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), System.currentTimeMillis()));
+            player.setMetadata(STB_LAST_BSU_INSERT, new FixedMetadataValue(getProviderPlugin(), System.currentTimeMillis()));
             return toInsert;
         } else {
             STBUtil.complain(player, getItemName() + " has insufficient charge to accept items.");

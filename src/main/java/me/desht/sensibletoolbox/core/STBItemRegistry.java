@@ -9,18 +9,7 @@ import me.desht.sensibletoolbox.api.ItemRegistry;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.blocks.*;
-import me.desht.sensibletoolbox.blocks.machines.*;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
-import me.desht.sensibletoolbox.items.*;
-import me.desht.sensibletoolbox.items.components.*;
-import me.desht.sensibletoolbox.items.energycells.FiftyKEnergyCell;
-import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
-import me.desht.sensibletoolbox.items.itemroutermodules.*;
-import me.desht.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
-import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
-import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
-import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,96 +40,7 @@ public class STBItemRegistry implements ItemRegistry {
     private final Map<String, Class<? extends BaseSTBItem>> id2class = Maps.newHashMap();
     private final Map<String, Class<? extends BaseSTBItem>> craftingRestrictions = Maps.newHashMap();
     private final Map<String, String> permissionPrefix = Maps.newHashMap();
-    private final Map<String, String> id2plugin = Maps.newHashMap();
-
-    private final SensibleToolboxPlugin plugin;
-
-    public STBItemRegistry(SensibleToolboxPlugin plugin) {
-        this.plugin = plugin;
-    }
-
-    public void registerItems() {
-        final String CONFIG_NODE = "items_enabled";
-        final String PERMISSION_NODE = "stb";
-
-        registerItem(new AngelicBlock(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnderLeash(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new RedstoneClock(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BlockUpdateDetector(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnderBag(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new WateringCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new MoistureChecker(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new AdvancedMoistureChecker(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new WoodCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new IronCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new GoldCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new DiamondCombineHoe(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new TrashCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new PaintBrush(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new PaintRoller(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new PaintCan(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Elevator(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new TapeMeasure(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new CircuitBoard(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new SimpleCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new MultiBuilder(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Floodlight(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new MachineFrame(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Smelter(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Masher(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Sawmill(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new IronDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new GoldDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new ItemRouter(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BlankModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new PullerModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new DropperModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new SenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new DistributorModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new AdvancedSenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new HyperSenderModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new ReceiverModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new SorterModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new VacuumModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BreakerModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new StackModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new SpeedModule(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new TenKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new FiftyKEnergyCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new TenKBatteryBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new FiftyKBatteryBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new SpeedUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EjectorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new RegulatorUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new ThoroughnessUpgrade(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new HeatEngine(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BasicSolarCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new DenseSolar(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new RecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new AdvancedRecipeBook(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Multimeter(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BigStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new HyperStorageUnit(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new Pump(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnderTuner(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnderBox(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new BagOfHolding(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new InfernalDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnergizedIronDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnergizedGoldDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnergizedIronIngot(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new EnergizedGoldIngot(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new ToughMachineFrame(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new QuartzDust(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new SiliconWafer(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new IntegratedCircuit(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new LandMarker(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new PVCell(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        registerItem(new AutoBuilder(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        if (plugin.isProtocolLibEnabled()) {
-            registerItem(new SoundMuffler(), plugin, CONFIG_NODE, PERMISSION_NODE);
-        }
-    }
+    private final Map<String, Plugin> id2plugin = Maps.newHashMap();
 
     @Override
     public void registerItem(BaseSTBItem item, Plugin plugin) {
@@ -162,7 +62,7 @@ public class STBItemRegistry implements ItemRegistry {
 
         Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
         id2class.put(id, item.getClass());
-        id2plugin.put(id, plugin.getDescription().getName());
+        id2plugin.put(id, plugin);
 
         if (permissionNode == null) {
             permissionNode = "stb";
@@ -292,6 +192,10 @@ public class STBItemRegistry implements ItemRegistry {
     }
 
     public String getProviderName(BaseSTBItem item) {
+        return id2plugin.get(item.getItemTypeID()).getName();
+    }
+
+    public Plugin getPlugin(BaseSTBItem item) {
         return id2plugin.get(item.getItemTypeID());
     }
 

@@ -322,7 +322,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             Dye dye = (Dye) dyeStack.getData();
             DyeColor newColour = dye.getColor();
             int dyeAmount = dyeStack.getAmount();
-            int paintPerDye = SensibleToolboxPlugin.getInstance().getConfig().getInt("paint_per_dye", PAINT_PER_DYE);
+            int paintPerDye = getItemConfig().getInt("paint_per_dye", PAINT_PER_DYE);
             int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / paintPerDye, dyeAmount);
             if (toUse == 0) {
                 // not enough room for any mixing

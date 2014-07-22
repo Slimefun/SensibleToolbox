@@ -114,7 +114,7 @@ public class AngelicBlock extends BaseSTBBlock {
     @Override
     public void onServerTick() {
         Location loc = getLocation();
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
             ParticleEffect.CLOUD.play(loc.add(0.5, 0.5, 0.5), 0f, 0f, 0f, 0.05f, 10);
         } else {
             loc.getWorld().playEffect(loc.add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);

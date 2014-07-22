@@ -255,7 +255,7 @@ public class WateringCan extends BaseSTBItem {
     private void useSomeWater(Player p, Block b, int amount) {
         setWaterLevel(Math.max(0, getWaterLevel() - amount));
         p.playSound(p.getLocation(), Sound.WATER, 1.0f, 2.0f);
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
             Location loc = b.getLocation();
             ParticleEffect.SPLASH.play(loc.add(0.5, 0.5, 0.5), 0.2f, 0.2f, 0.2f, 1.0f, 10);
         }

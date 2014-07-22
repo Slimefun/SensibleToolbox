@@ -88,7 +88,7 @@ public class MoistureChecker extends BaseSTBItem {
                 }
             }
             if (!l.isEmpty()) {
-                Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+                Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
                     @Override
                     public void run() {
                         for (Location loc : l) {
@@ -96,7 +96,7 @@ public class MoistureChecker extends BaseSTBItem {
                         }
                     }
                 });
-                Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+                Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
                     @Override
                     public void run() {
                         for (Location loc : l) {

@@ -241,7 +241,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         super.setLocation(loc);
         if (loc != null) {
             // defer this so we can be sure all neighbouring STB blocks are actually created first
-            Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+            Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     findNeighbourInventories();
@@ -285,7 +285,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
                 findNeighbourInventories();
@@ -312,7 +312,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     private void playParticles() {
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
             Location loc = getLocation().add(0.5, 0.5, 0.5);
             ParticleEffect.WITCH_MAGIC.play(loc, 0.25f, 0.25f, 0.25f, 0, 12);
         }

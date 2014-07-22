@@ -84,18 +84,18 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
     @Override
     public void setLocation(Location loc) {
         if (loc == null) {
-            SensibleToolboxPlugin.getInstance().getFloodlightListener().unregisterFloodlight(this);
+            ((SensibleToolboxPlugin) getProviderPlugin()).getFloodlightListener().unregisterFloodlight(this);
             removeLighting(getLocation());
         }
         super.setLocation(loc);
         if (loc != null) {
-            SensibleToolboxPlugin.getInstance().getFloodlightListener().registerFloodlight(this);
+            ((SensibleToolboxPlugin) getProviderPlugin()).getFloodlightListener().registerFloodlight(this);
             addLighting(getLocation());
         }
     }
 
     private void removeLighting(Location loc) {
-        if (SensibleToolboxPlugin.getInstance().isNMSenabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isNMSenabled()) {
             Debugger.getInstance().debug(2, "reset block lighting @ " + loc);
             List<Floodlight> otherLights = new ArrayList<Floodlight>();
             Location loc2 = loc.clone();
@@ -112,7 +112,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
 
             long delay = 1;
             for (final Floodlight other : otherLights) {
-                Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+                Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
                     @Override
                     public void run() {
                         addLighting(other.getLocation());
@@ -127,7 +127,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
     }
 
     private void addLighting(Location loc) {
-        if (SensibleToolboxPlugin.getInstance().isNMSenabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isNMSenabled()) {
             Debugger.getInstance().debug(2, "force block light @ " + loc);
             Block b = loc.getBlock();
             Cuboid c = new Cuboid(loc).outset(Cuboid.CuboidDirection.Both, 1);

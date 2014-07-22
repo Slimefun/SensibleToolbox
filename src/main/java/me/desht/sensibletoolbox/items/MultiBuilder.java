@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cost.ItemCost;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
@@ -37,7 +36,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     private static final MaterialData md = new MaterialData(Material.GOLD_AXE);
     private static final int MAX_REPLACED = 21;
     public static final int MAX_BUILD_BLOCKS = 9;
-    public static final int DEF_CHARGE_PER_OPERATION = 40;
+    public static final int DEF_SCU_PER_OPERATION = 40;
     private Mode mode;
     private double charge;
     private MaterialData mat;
@@ -294,7 +293,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             return 0;
         }
         int nAffected = Math.min(blocks.length, howMuch);
-        int chargePerOp = SensibleToolboxPlugin.getInstance().getConfig().getInt("multibuilder.charge_per_op", DEF_CHARGE_PER_OPERATION);
+        int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * nAffected * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         if (nAffected > 0 && getCharge() >= chargeNeeded) {
             setCharge(getCharge() - chargeNeeded);
@@ -312,7 +311,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 player.getWorld().dropItemNaturally(player.getLocation(), stack);
             }
 
-            new SwapTask(player, affectedBlocks).runTaskTimer(SensibleToolboxPlugin.getInstance(), 1L, 1L);
+            new SwapTask(player, affectedBlocks).runTaskTimer(getProviderPlugin(), 1L, 1L);
 
             player.updateInventory();
         } else if (getCharge() < chargeNeeded) {
@@ -371,7 +370,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private void showBuildPreview(final Player player, final List<Block> blocks) {
-        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
                 for (Block b : blocks) {
@@ -379,7 +378,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 }
             }
         });
-        Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
                 for (Block b : blocks) {
@@ -391,7 +390,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private void doBuild(Player player, Block source, List<Block> actualBlocks) {
         ItemStack inHand = player.getItemInHand();
-        int chargePerOp = SensibleToolboxPlugin.getInstance().getConfig().getInt("multibuilder.charge_per_op", DEF_CHARGE_PER_OPERATION);
+        int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         if (getCharge() >= chargeNeeded) {
             setCharge(getCharge() - chargeNeeded);

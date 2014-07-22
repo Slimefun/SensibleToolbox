@@ -60,13 +60,14 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public void setLocation(Location loc) {
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        SensibleToolboxPlugin plugin = (SensibleToolboxPlugin) getProviderPlugin();
+        if (plugin.isProtocolLibEnabled()) {
             if (loc == null && getLocation() != null) {
-                SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
+                plugin.getSoundMufflerListener().unregisterMuffler(this);
             }
             super.setLocation(loc);
             if (loc != null) {
-                SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+                plugin.getSoundMufflerListener().registerMuffler(this);
             }
         } else {
             super.setLocation(loc);
@@ -112,12 +113,12 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public void onBlockPlace(BlockPlaceEvent event) {
-        SensibleToolboxPlugin.getInstance().getSoundMufflerListener().registerMuffler(this);
+        ((SensibleToolboxPlugin) getProviderPlugin()).getSoundMufflerListener().registerMuffler(this);
     }
 
     @Override
     public void onBlockBreak(BlockBreakEvent event) {
-        SensibleToolboxPlugin.getInstance().getSoundMufflerListener().unregisterMuffler(this);
+        ((SensibleToolboxPlugin) getProviderPlugin()).getSoundMufflerListener().unregisterMuffler(this);
     }
 
     @Override
@@ -135,7 +136,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public void onServerTick() {
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
             Location loc = getLocation();
             ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
         }

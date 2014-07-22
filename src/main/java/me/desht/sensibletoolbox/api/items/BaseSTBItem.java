@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +43,20 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     public static final String SUFFIX_SEPARATOR = " \uff1a ";
 
     private final String typeID;
-    private final String providerName;
+//    private final String providerName;
+    private final Plugin providerPlugin;
     private Map<Enchantment, Integer> enchants;
 
     protected BaseSTBItem() {
         typeID = getClass().getSimpleName().toLowerCase();
-        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
+        providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
+//        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
     }
 
     protected BaseSTBItem(ConfigurationSection conf) {
         typeID = getClass().getSimpleName().toLowerCase();
-        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
+        providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
+//        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
     }
 
     public void storeEnchants(ItemStack stack) {
@@ -351,12 +355,46 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Return the name of the plugin which has registered this STB item.
+     * Return the name of the plugin which registered this STB item.
      *
      * @return a plugin name
      */
     public String getProviderName() {
-        return providerName;
+        return providerPlugin.getName();
+    }
+
+    /**
+     * Return the instance of the plugin which registered this STB item.
+     *
+     * @return the plugin which registered this item
+     */
+    public Plugin getProviderPlugin() {
+        return providerPlugin;
+    }
+
+    /**
+     * Get the item-specific configuration from the providing plugin's config.
+     * The configuration section prefix used will be
+     * "<em>prefix</em>.<em>item-type-id</em>." where <em>item-type-id</em> is
+     * the return value of {@link #getItemTypeID()}.
+     *
+     * @param prefix the configuration node prefix
+     * @return the configuration section for this item's config
+     */
+    public ConfigurationSection getItemConfig(String prefix) {
+        return getProviderPlugin().getConfig().getConfigurationSection(prefix + "." + getItemTypeID());
+    }
+
+    /**
+     * Get the item-specific configuration from the providing plugin's config.
+     * The configuration section prefix used will be
+     * "item_settings.<em>item-type-id</em>." where <em>item-type-id</em> is
+     * the return value of {@link #getItemTypeID()}.
+     *
+     * @return the configuration section for this item's config
+     */
+    public ConfigurationSection getItemConfig() {
+        return getProviderPlugin().getConfig().getConfigurationSection("item_settings");
     }
 
     @Override

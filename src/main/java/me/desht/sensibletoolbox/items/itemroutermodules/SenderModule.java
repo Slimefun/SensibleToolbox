@@ -80,7 +80,7 @@ public class SenderModule extends DirectionalItemRouterModule {
                     toSend.setAmount(Math.min(nToInsert, toSend.getAmount()));
                     int nReceived = receiver.receiveItem(toSend, getItemRouter().getOwner());
                     getItemRouter().reduceBuffer(nReceived);
-                    if (nReceived > 0 && SensibleToolboxPlugin.getInstance().getConfig().getInt("particle_effects") >= 2) {
+                    if (nReceived > 0 && getProviderPlugin().getConfig().getInt("particle_effects") >= 2) {
                         playSenderParticles(getItemRouter(), receiver.getItemRouter());
 
                     }
@@ -104,7 +104,7 @@ public class SenderModule extends DirectionalItemRouterModule {
     }
 
     private void playSenderParticles(ItemRouter src, ItemRouter dest) {
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
             Location s = src.getLocation();
             Location d = dest.getLocation();
             double xOff = (d.getX() - s.getX()) / 2;

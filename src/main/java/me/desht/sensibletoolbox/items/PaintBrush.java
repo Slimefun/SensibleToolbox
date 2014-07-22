@@ -289,7 +289,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     private IconMenu buildMenu(Painting painting) {
         editingPainting = painting;
         Art[] other = getOtherArt(painting.getArt());
-        IconMenu menu = new IconMenu("Select Artwork", STBUtil.roundUp(other.length, 9), this, SensibleToolboxPlugin.getInstance());
+        IconMenu menu = new IconMenu("Select Artwork", STBUtil.roundUp(other.length, 9), this, getProviderPlugin());
         int pos = 0;
         for (Art a : other) {
             menu.setOption(pos++, new ItemStack(Material.PAINTING), a.name(), "");

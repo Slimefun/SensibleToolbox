@@ -2,7 +2,6 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.dhutils.cuboid.Cuboid;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.ButtonGadget;
 import me.desht.sensibletoolbox.api.gui.CyclerGadget;
@@ -40,6 +39,7 @@ public class AutoBuilder extends BaseSTBMachine {
     private int buildX, buildY, buildZ;
     private int invSlot;  // the inventory slot index (into getInputSlots()) being pulled from
     private BuilderStatus status = BuilderStatus.NO_WORKAREA;
+    private int baseScuPerOp;
 
     public AutoBuilder() {
         super();
@@ -179,6 +179,7 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     private void startup() {
+        baseScuPerOp = getItemConfig().getInt("scu_per_op");
         if (workArea == null) {
             BuilderStatus bs = setupWorkArea();
             setStatus(bs);
@@ -237,8 +238,7 @@ public class AutoBuilder extends BaseSTBMachine {
             double scuNeeded = 0.0;
             switch (getBuildMode()) {
                 case CLEAR:
-                    scuNeeded = SensibleToolboxPlugin.getInstance().getConfig().getInt("auto_builder.charge_per_op") * STBUtil.getMaterialHardness(b.getType());
-                    System.out.println("clear mode: test block " + b);
+                    scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
                     if (scuNeeded <= getCharge() && b.getType() != Material.AIR) {
                         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                         b.setType(Material.AIR);
@@ -248,7 +248,7 @@ public class AutoBuilder extends BaseSTBMachine {
                 case WALLS:
                 case FRAME:
                     if (shouldBuildHere()) {
-                        scuNeeded = SensibleToolboxPlugin.getInstance().getConfig().getInt("auto_builder.charge_per_op");
+                        scuNeeded = baseScuPerOp;
                         if (scuNeeded <= getCharge() && (b.isEmpty() || b.isLiquid())) {
                             ItemStack item = fetchNextBuildItem();
                             if (item == null) {
@@ -266,9 +266,6 @@ public class AutoBuilder extends BaseSTBMachine {
             setCharge(getCharge() - scuNeeded);
 
             buildX++;
-//            if (getBuildMode() == AutoBuilderMode.WALLS && !onOuterFace()) {
-//                buildX = buildArea.getUpperX();
-//            }
             if (buildX > workArea.getUpperX()) {
                 buildX = workArea.getLowerX();
                 buildZ++;
@@ -474,7 +471,7 @@ public class AutoBuilder extends BaseSTBMachine {
             for (Block b : corners) {
                 p.sendBlockChange(b.getLocation(), Material.STAINED_GLASS, DyeColor.LIME.getWoolData());
             }
-            Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     if (p.isOnline()) {
@@ -484,7 +481,7 @@ public class AutoBuilder extends BaseSTBMachine {
                     }
                 }
             }, 25L);
-            Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
+            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     if (p.isOnline()) {
