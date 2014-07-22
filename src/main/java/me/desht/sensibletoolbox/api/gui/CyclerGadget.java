@@ -31,12 +31,31 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
     private final BaseSTBItem stbItem;
     private final String label;
 
+    /**
+     * Constructs a cycler gadget.
+     * <p/>
+     * The <em>item</em> parameter would typically refer to a separate STB
+     * item or block from the GUI's owner.  This allows a GUI on one item to
+     * configure a setting in a separate block.
+     *
+     * @param gui the GUI to add the gadget to
+     * @param slot the GUI slot to display the gadget in
+     * @param label the primary tooltip for the gadget
+     * @param item the item this gadget should apply to
+     */
     protected CyclerGadget(InventoryGUI gui, int slot, String label, BaseSTBItem item) {
         super(gui, slot);
         stbItem = item == null ? gui.getOwningItem() : item;
         this.label = label;
     }
 
+    /**
+     * Constructs a cycler gadget.
+     *
+     * @param gui the GUI to add the gadget to
+     * @param slot the GUI slot to display the gadget in
+     * @param label the primary tooltip for the gadget
+     */
     protected CyclerGadget(InventoryGUI gui, int slot, String label) {
         this(gui, slot, label, null);
     }

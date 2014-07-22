@@ -765,8 +765,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Check if this STB block can be pushed or pulled by a piston, and if doing so would break it.
-     * The default behaviour is to allow movement; override this in subclasses to modify the behaviour.
+     * Check if this STB block can be pushed or pulled by a piston, and if
+     * doing so would break it.  The default behaviour is to allow movement;
+     * override this in subclasses to modify the behaviour.
      *
      * @return the move reaction: one of MOVE, BLOCK, or BREAK
      */
@@ -850,8 +851,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Temporarily override the item display name, just before the item is placed.  The item
-     * display name is used as the inventory title for blocks such as the dropper.
+     * Temporarily override the item display name, just before the item is
+     * placed.  The item display name is used as the inventory title for
+     * blocks such as the dropper.
      *
      * @param event the block place event
      */
@@ -896,16 +898,22 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     public void onBlockBurnt(BlockBurnEvent event) {
     }
 
+    /**
+     * Check if this block is flammable.  This can be used to override the
+     * flammability of blocks, i.e. to make an STB block non-flammable even
+     * if its base material is flammable.
+     *
+     * @return true if the block should be flammable; false otherwise
+     */
     public boolean isFlammable() {
         return false;
     }
 
     /**
-     * Represents the relative position of an auxiliary block from a multi-block
-     * structure.  The position is relative to the block's base location as returned
-     * by {@link BaseSTBBlock#getLocation()} and
-     * the block's orientation as returned by
-     * {@link BaseSTBBlock#getFacing()}
+     * Represents the relative position of an auxiliary block from a
+     * multi-block structure.  The position is relative to the block's base
+     * location as returned by {@link BaseSTBBlock#getLocation()} and the
+     * block's orientation as returned by {@link BaseSTBBlock#getFacing()}
      */
     public class RelativePosition {
         private final int front, up, left;

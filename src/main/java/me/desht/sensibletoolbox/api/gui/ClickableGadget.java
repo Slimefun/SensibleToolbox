@@ -37,6 +37,11 @@ public abstract class ClickableGadget extends Gadget {
      */
     public abstract ItemStack getTexture();
 
+    /**
+     * Update the gadget's appearance in the GUI.  This should be called if a
+     * gadget's value is changed programmatically, i.e. not via a player
+     * action.
+     */
     protected void updateGUI() {
         getGUI().getInventory().setItem(getSlot(), getTexture());
     }

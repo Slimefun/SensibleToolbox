@@ -7,11 +7,20 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * A progress meter gadget.  The GUI that this is added to must be owned by an
+ * {@link me.desht.sensibletoolbox.api.items.AbstractProcessingMachine}.
+ */
 public class ProgressMeter extends MonitorGadget {
     private final Material progressIcon;
     private final AbstractProcessingMachine machine;
     private int maxProcessingTime = 0;
 
+    /**
+     * Constructs a new progress meter.
+     *
+     * @param gui the GUI which holds this progress meter
+     */
     public ProgressMeter(InventoryGUI gui) {
         super(gui);
         Validate.isTrue(getGUI().getOwningBlock() instanceof AbstractProcessingMachine,
@@ -22,6 +31,7 @@ public class ProgressMeter extends MonitorGadget {
         Validate.isTrue(progressIcon != null && progressIcon.getMaxDurability() > 0, "Material " + progressIcon + " doesn't have a durability!");
     }
 
+    @Override
     public void repaint() {
         if (machine.getProgressCounterSlot() > 0 && machine.getProgressCounterSlot() < getGUI().getInventory().getSize()) {
             ItemStack stack;
@@ -59,10 +69,22 @@ public class ProgressMeter extends MonitorGadget {
         }
     }
 
+    /**
+     * Get the current progress as a percentage of the maximum processing
+     * time.
+     *
+     * @return the current progress
+     */
     public int getProgressPercent() {
         return (maxProcessingTime - (int) machine.getProgress()) * 100 / maxProcessingTime;
     }
 
+    /**
+     * Set the maximum processing time for the gadget.  Until this is set, the
+     * gadget will not display a value.
+     *
+     * @param processingTime the maximum processing time
+     */
     public void setMaxProgress(int processingTime) {
         maxProcessingTime = processingTime;
     }

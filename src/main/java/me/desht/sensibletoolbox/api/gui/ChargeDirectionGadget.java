@@ -13,7 +13,7 @@ import org.bukkit.material.MaterialData;
  */
 public class ChargeDirectionGadget extends CyclerGadget<ChargeDirection> {
     /**
-     * Construct a charge direction gadget.
+     * Constructs a charge direction gadget.
      *
      * @param gui the GUI that the gadget belongs to
      * @param slot the GUI slot that the gadget occupies

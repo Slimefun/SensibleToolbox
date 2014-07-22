@@ -14,6 +14,12 @@ import org.bukkit.material.MaterialData;
  * displayed and changed.
  */
 public class RedstoneBehaviourGadget extends CyclerGadget<RedstoneBehaviour> {
+    /**
+     * Constructs a redstone behaviour gadget.
+     *
+     * @param gui the GUI to add the gadget to
+     * @param slot the GUI slot to display the gadget in
+     */
     public RedstoneBehaviourGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Redstone Mode");
         add(RedstoneBehaviour.IGNORE, ChatColor.GRAY, new MaterialData(Material.SULPHUR),

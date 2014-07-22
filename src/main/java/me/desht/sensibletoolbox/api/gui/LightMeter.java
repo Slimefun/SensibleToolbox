@@ -7,6 +7,11 @@ import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
 
+/**
+ * Measures the light intensity for an STB block.  The GUI that this gadget
+ * is added to must be owned by an STB block which implements
+ * {@link me.desht.sensibletoolbox.api.LightSensitive}.
+ */
 public class LightMeter extends MonitorGadget {
     private static final ItemStack BRIGHT = GUIUtil.makeTexture(new Wool(DyeColor.LIME),
             ChatColor.RESET + "Efficiency: " + ChatColor.GREEN + "100%");
@@ -30,6 +35,11 @@ public class LightMeter extends MonitorGadget {
         }
     }
 
+    /**
+     * Constructs a new light meter gadget.
+     *
+     * @param gui the GUI which holds this gadget
+     */
     public LightMeter(InventoryGUI gui) {
         super(gui);
         Validate.isTrue(gui.getOwningBlock() instanceof LightSensitive, "Attempt to install light meter in non-light-sensitive block!");

@@ -15,6 +15,16 @@ public class ToggleButton extends ClickableGadget {
     private final ToggleListener callback;
     boolean value;
 
+    /**
+     * Constructs a toggle button gadget.
+     *
+     * @param gui the GUI to add the gadget to
+     * @param slot the GUI slot to display the gadget in
+     * @param value the initial value for the gadget
+     * @param trueTexture the icon texture to display when the gadget is set to true
+     * @param falseTexture the icon texture to display when the gadget is set to false
+     * @param callback the code to run when the gadget is changed by a player
+     */
     public ToggleButton(InventoryGUI gui, int slot, boolean value, ItemStack trueTexture, ItemStack falseTexture, ToggleListener callback) {
         super(gui, slot);
         this.trueTexture = trueTexture;
@@ -43,6 +53,11 @@ public class ToggleButton extends ClickableGadget {
         return value ? trueTexture : falseTexture;
     }
 
+    /**
+     * Update this gadget's value.
+     *
+     * @param newValue the new value to set
+     */
     public void setValue(boolean newValue) {
         value = newValue;
         updateGUI();

@@ -9,10 +9,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+/**
+ * Shows the SCU level for an STB block.  The GUI that this gadget is added to
+ * must implement {@link me.desht.sensibletoolbox.api.ChargeableBlock}.
+ */
 public class ChargeMeter extends MonitorGadget {
     private final ItemStack indicator;
     private final ChargeableBlock chargeable;
 
+    /**
+     * Constructs a charge meter gadget.
+     *
+     * @param gui the GUI which holds this gadget
+     */
     public ChargeMeter(InventoryGUI gui) {
         super(gui);
         Validate.isTrue(getOwner() instanceof ChargeableBlock, "Attempt to add charge meter to non-chargeable block!");
@@ -24,6 +33,7 @@ public class ChargeMeter extends MonitorGadget {
         indicator.setItemMeta(meta);
     }
 
+    @Override
     public void repaint() {
         ItemMeta meta = indicator.getItemMeta();
         meta.setDisplayName(STBUtil.getChargeString(chargeable));

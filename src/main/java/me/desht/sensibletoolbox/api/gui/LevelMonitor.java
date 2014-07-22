@@ -1,12 +1,22 @@
 package me.desht.sensibletoolbox.api.gui;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * Monitors an integer quantity.
+ */
 public class LevelMonitor extends MonitorGadget {
     private final LevelReporter reporter;
 
+    /**
+     * Constructs a new level monitor gadget.
+     *
+     * @param gui the GUI to add the gadget to
+     * @param reporter the level reporter object
+     */
     public LevelMonitor(InventoryGUI gui, LevelReporter reporter) {
         super(gui);
         this.reporter = reporter;
@@ -17,31 +27,60 @@ public class LevelMonitor extends MonitorGadget {
         ItemStack stack;
         int level = reporter.getLevel();
         if (reporter.getMaxLevel() > 0) {
-            stack = new ItemStack(reporter.getIcon());
+            stack = new ItemStack(reporter.getLevelIcon());
             short max = stack.getType().getMaxDurability();
             int dur = (max * level) / reporter.getMaxLevel();
             stack.setDurability((short) (max - dur));
             ItemMeta meta = stack.getItemMeta();
-            meta.setDisplayName(reporter.getMessage());
+            meta.setDisplayName(reporter.getLevelMessage());
             stack.setItemMeta(meta);
-            getGUI().getInventory().setItem(reporter.getSlot(), stack);
+            getGUI().getInventory().setItem(reporter.getLevelMonitorSlot(), stack);
         }
     }
 
     @Override
     public int[] getSlots() {
-        return new int[]{reporter.getSlot()};
+        return new int[]{reporter.getLevelMonitorSlot()};
     }
 
+    /**
+     * Represents a block that can report a level for some attribute.
+     */
     public interface LevelReporter {
+        /**
+         * Get the level of the quantity being monitored.
+         *
+         * @return an integer level
+         */
         public int getLevel();
 
+        /**
+         * Get the maximum possible level for the quantity being monitored.
+         *
+         * @return an integer level
+         */
         public int getMaxLevel();
 
-        public Material getIcon();
+        /**
+         * Get the item used to represent the level.  This item should support
+         * a durability bar (e.g. a tool or armour item).
+         *
+         * @return the item used to show the level as a durability bar
+         */
+        public Material getLevelIcon();
 
-        public int getSlot();
+        /**
+         * Get the GUI slot in which the monitor icon should be shown.
+         *
+         * @return a gui slot number
+         */
+        public int getLevelMonitorSlot();
 
-        public String getMessage();
+        /**
+         * Get the string to display as the monitor icon's tooltip.
+         *
+         * @return a message string
+         */
+        public String getLevelMessage();
     }
 }
