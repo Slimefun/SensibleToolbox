@@ -23,7 +23,7 @@ gui:
     output: stained_glass_pane:orange
     bg: stained_glass_pane:blue
     label: stained_glass_pane:green
-    button: monster_egg:52
+    button: wood_button
 items_enabled:
   advancedmoisturechecker: true
   advancedrecipebook: true
