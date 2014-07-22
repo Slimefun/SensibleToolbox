@@ -6,10 +6,10 @@ import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.PopupMessage;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import org.bukkit.*;
@@ -339,7 +339,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private boolean canReplace(Player player, Block b) {
         // we won't replace any block which can hold items, or any STB block
-        if (LocationManager.getManager().get(b.getLocation()) != null) {
+        if (SensibleToolbox.getBlockAt(b.getLocation()) != null) {
             return false;
         } else if (b.getState() instanceof InventoryHolder) {
             return false;

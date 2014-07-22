@@ -4,12 +4,12 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.IconMenu;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.PopupMessage;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.PaintCan;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -138,7 +138,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block b = event.getClickedBlock();
-            BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
             if (stb instanceof PaintCan) {
                 refillFromCan((PaintCan) stb);
             } else if (okToColor(b, stb)) {
@@ -248,7 +248,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         int painted = 0;
         for (Block b : blocks) {
             Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
-            BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
             if (stb != null && stb instanceof Colorable) {
                 ((Colorable) stb).setColor(getColour());
             } else {

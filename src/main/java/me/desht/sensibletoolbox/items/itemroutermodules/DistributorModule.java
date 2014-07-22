@@ -1,8 +1,8 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -76,7 +76,7 @@ public class DistributorModule extends DirectionalItemRouterModule {
             }
             Block b = loc.getBlock();
             Block target = b.getRelative(face);
-            BaseSTBBlock stb = LocationManager.getManager().get(target.getLocation());
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation());
             if (stb instanceof STBInventoryHolder) {
                 ItemStack toInsert = getItemRouter().getBufferItem().clone();
                 toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));

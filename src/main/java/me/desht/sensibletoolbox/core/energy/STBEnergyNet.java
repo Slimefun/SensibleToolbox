@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.core.energy;
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
+import me.desht.sensibletoolbox.api.EnergyNet;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.storage.BlockPosition;
@@ -18,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class EnergyNet {
+public class STBEnergyNet implements EnergyNet {
     public static final String STB_ENET_ID = "STB_ENet_ID";
     public static final int MAX_BLOCKS_IN_CABLE = 512;
     private static int freeID = 1;
@@ -30,19 +31,20 @@ public class EnergyNet {
     private double totalSupply;
     private final Set<ChargeableBlock> energySinks = new HashSet<ChargeableBlock>();
     private final Set<ChargeableBlock> energySources = new HashSet<ChargeableBlock>();
+    private final EnergyNetManager enetManager;
 
-    private EnergyNet(String worldName) {
+    private STBEnergyNet(String worldName, EnergyNetManager manager) {
         this.worldName = worldName;
         this.netID = getNextFreeID();
+        this.enetManager = manager;
     }
 
     private synchronized int getNextFreeID() {
         return freeID++;
     }
 
-
-    static EnergyNet buildNet(Block b) {
-        EnergyNet enet = new EnergyNet(b.getWorld().getName());
+    static STBEnergyNet buildNet(Block b, EnergyNetManager manager) {
+        STBEnergyNet enet = new STBEnergyNet(b.getWorld().getName(), manager);
 
         Set<Object> blocks = new HashSet<Object>();
         recursiveScan(b, blocks, BlockFace.SELF);
@@ -71,7 +73,7 @@ public class EnergyNet {
             return;
         }
 
-        if (!EnergyNetManager.isCable(b)) {
+        if (!STBUtil.isCable(b)) {
             BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
             if (machine != null) {
                 discovered.add(new AdjacentMachine(machine, fromDir));
@@ -87,6 +89,7 @@ public class EnergyNet {
     /**
      * Determine which machines on this net can supply energy, and which consume it.
      */
+    @Override
     public void findSourcesAndSinks() {
         energySinks.clear();
         energySources.clear();
@@ -104,6 +107,7 @@ public class EnergyNet {
                 + energySources.size() + " sources and " + energySinks.size() + " sinks");
     }
 
+    @Override
     public int getNetID() {
         return netID;
     }
@@ -150,14 +154,17 @@ public class EnergyNet {
         Debugger.getInstance().debug("Enet #" + getNetID() + " shutdown complete");
     }
 
+    @Override
     public int getCableCount() {
         return cables.size();
     }
 
+    @Override
     public int getSourceCount() {
         return energySources.size();
     }
 
+    @Override
     public int getSinkCount() {
         return energySinks.size();
     }
@@ -167,7 +174,7 @@ public class EnergyNet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        EnergyNet energyNet = (EnergyNet) o;
+        STBEnergyNet energyNet = (STBEnergyNet) o;
 
         return netID == energyNet.netID;
     }
@@ -177,10 +184,10 @@ public class EnergyNet {
         return netID;
     }
 
-    public void tick() {
+    void tick() {
         totalDemand = totalSupply = 0;
 
-        long tickRate = EnergyNetManager.getTickRate();
+        long tickRate = enetManager.getTickRate();
 
         for (ChargeableBlock machine : energySources) {
             if (machine.getCharge() > 0) {
@@ -223,21 +230,13 @@ public class EnergyNet {
         }
     }
 
-    /**
-     * Get the instantaneous energy demand per tick.  This is requested energy, not necessarily supplied.
-     *
-     * @return the demand
-     */
+    @Override
     public double getDemand() {
-        return totalDemand / EnergyNetManager.getTickRate();
+        return totalDemand / enetManager.getTickRate();
     }
 
-    /**
-     * Get the instantaneous energy supply per tick.  This is available energy, not necessarily used.
-     *
-     * @return the demand
-     */
+    @Override
     public double getSupply() {
-        return totalSupply / EnergyNetManager.getTickRate();
+        return totalSupply / enetManager.getTickRate();
     }
 }

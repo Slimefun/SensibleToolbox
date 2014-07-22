@@ -4,7 +4,6 @@ import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -96,10 +95,9 @@ public class AngelicBlock extends BaseSTBBlock {
         // the angelic block has just been hit by a player - insta-break it
         Player p = event.getPlayer();
         Block b = event.getBlock();
-        b.setType(Material.AIR);
-        STBUtil.giveItems(p, this.toItemStack());
         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-        LocationManager.getManager().unregisterLocation(b.getLocation(), this);
+        breakBlock(b, false);
+        STBUtil.giveItems(p, this.toItemStack());
         event.setCancelled(true);
     }
 

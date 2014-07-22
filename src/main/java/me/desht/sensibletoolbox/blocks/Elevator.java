@@ -1,8 +1,8 @@
 package me.desht.sensibletoolbox.blocks;
 
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -78,10 +78,8 @@ public class Elevator extends BaseSTBBlock implements Colorable {
         Elevator res = null;
         while (b.getY() > 0 && b.getY() < b.getWorld().getMaxHeight()) {
             b = b.getRelative(direction);
-
-
             if (b.getType().isSolid()) {
-                res = LocationManager.getManager().get(b.getLocation(), Elevator.class);
+                res = SensibleToolbox.getBlockAt(b.getLocation(), Elevator.class, false);
                 break;
             }
         }

@@ -7,6 +7,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.items.EnderBag;
+import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,6 +52,7 @@ public class EnderStorageManager implements Listener {
     }
 
     public GlobalHolder getGlobalInventoryHolder(int frequency) {
+        Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
         GlobalHolder h = globalInvs.get(frequency);
         if (h == null) {
             h = new GlobalHolder(this, frequency);
@@ -66,6 +68,7 @@ public class EnderStorageManager implements Listener {
     }
 
     public PlayerHolder getPlayerInventoryHolder(OfflinePlayer player, Integer frequency) {
+        Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
         Map<Integer, PlayerHolder> map = playerInvs.get(player.getUniqueId());
         if (map == null) {
             map = new HashMap<Integer, PlayerHolder>();

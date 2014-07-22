@@ -167,15 +167,15 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onCablePlace(BlockPlaceEvent event) {
-        if (EnergyNetManager.isCable(event.getBlock())) {
-            EnergyNetManager.onCablePlaced(event.getBlock());
+        if (STBUtil.isCable(event.getBlock())) {
+            plugin.getEnergyNetManager().onCablePlaced(event.getBlock());
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (EnergyNetManager.isCable(event.getBlock())) {
-            EnergyNetManager.onCableRemoved(event.getBlock());
+        if (STBUtil.isCable(event.getBlock())) {
+            plugin.getEnergyNetManager().onCableRemoved(event.getBlock());
         } else {
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getPlayer().getItemInHand());
             if (item != null) {

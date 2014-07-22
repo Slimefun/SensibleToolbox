@@ -2,12 +2,11 @@ package me.desht.sensibletoolbox.api.items;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.*;
 import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.energy.EnergyNet;
-import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
 import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import me.desht.sensibletoolbox.items.energycells.EnergyCell;
 import me.desht.sensibletoolbox.items.machineupgrades.*;
@@ -491,11 +490,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             }
             upgrades.clear();
             setGUI(null);
-            EnergyNetManager.onMachineRemoved(this);
+            SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachineRemoved(this);
         }
         super.setLocation(loc);
         if (loc != null) {
-            EnergyNetManager.onMachinePlaced(this);
+            SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced(this);
         }
     }
 
@@ -882,7 +881,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     @Override
     public void onServerTick() {
-        if (getTicksLived() % EnergyNetManager.getTickRate() == 0) {
+        if (getTicksLived() % SensibleToolboxPlugin.getInstance().getEnergyNetManager().getTickRate() == 0) {
             double transferred = 0.0;
             if (installedCell != null) {
                 switch (chargeDirection) {
@@ -917,8 +916,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         if (to.getCharge() >= to.getMaxCharge() || from.getCharge() == 0) {
             return 0;
         }
-        double toTransfer = Math.min(from.getChargeRate() * EnergyNetManager.getTickRate(), to.getMaxCharge() - to.getCharge());
-        toTransfer = Math.min(to.getChargeRate() * EnergyNetManager.getTickRate(), toTransfer);
+        long tickRate = SensibleToolboxPlugin.getInstance().getEnergyNetManager().getTickRate();
+        double toTransfer = Math.min(from.getChargeRate() * tickRate, to.getMaxCharge() - to.getCharge());
+        toTransfer = Math.min(to.getChargeRate() * tickRate, toTransfer);
         toTransfer = Math.min(from.getCharge(), toTransfer);
         to.setCharge(to.getCharge() + toTransfer);
         from.setCharge(from.getCharge() - toTransfer);

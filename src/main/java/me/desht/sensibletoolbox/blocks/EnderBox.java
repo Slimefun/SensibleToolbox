@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.blocks;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.enderstorage.EnderStorageHolder;
@@ -121,10 +122,9 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             Player player = event.getPlayer();
             if (hasAccessRights(player)) {
-                EnderStorageManager esm = SensibleToolboxPlugin.getInstance().getEnderStorageManager();
                 Inventory inv = isGlobal() ?
-                        esm.getGlobalInventory(getEnderFrequency()) :
-                        esm.getPlayerInventory(player, getEnderFrequency());
+                        SensibleToolbox.getEnderInventory(getEnderFrequency()) :
+                        SensibleToolbox.getEnderInventory(player, getEnderFrequency());
                 player.openInventory(inv);
                 player.playSound(getLocation(), Sound.CHEST_OPEN, 0.5f, 1.0f);
             } else {

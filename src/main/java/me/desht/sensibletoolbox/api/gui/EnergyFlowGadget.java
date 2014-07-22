@@ -10,6 +10,10 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
+/**
+ * A GUI gadget which allows energy flow settings for a block to be displayed
+ * and modified.
+ */
 public class EnergyFlowGadget extends CyclerGadget<EnergyFlow> {
     private final BlockFace face;
 

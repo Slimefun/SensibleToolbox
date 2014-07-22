@@ -6,6 +6,9 @@ import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -87,6 +90,20 @@ public class SensibleToolbox {
     }
 
     /**
+     * Given a location, return the STB block at that location, if any.
+     *
+     * @param location the location to check
+     * @param type the block must be an instance or a subclass of this type
+     * @param checkSign if true and the location contains a sign, then also
+     *                  check the location of the block the sign is attached
+     *                  to
+     * @return the STB block at that location, or null if there is no block of the given type
+     */
+    public static <T extends BaseSTBBlock> T getBlockAt(Location location, Class<T> type, boolean checkSign) {
+        return LocationManager.getManager().get(location, type, checkSign);
+    }
+
+    /**
      * Given a UUID, attempt to get the player name for that UUID.  This will
      * only succeed if that player has previously connected to this server,
      * in which case the last known name for the UUID will be returned.  If
@@ -142,16 +159,46 @@ public class SensibleToolbox {
     }
 
     /**
-     * Check if the player with ID id2 is a friend of player with ID id1, i.e.
-     * that id1 has added id2 as a friend.  Note that this relationship is
-     * not commutative; just because id2 is a friend of id1 does not mean that
-     * id1 is a friend of id2.
+     * Get the friend manager object,
      *
-     * @param id1 the first player's UUID
-     * @param id2 the second player's UUID
-     * @return true if id2 is a friend of id1; false otherwise
+     * @return the friend manager
      */
-    public static boolean isFriend(UUID id1, UUID id2) {
-        return getPluginInstance().getFriendManager().isFriend(id1, id2);
+    public static FriendManager getFriendManager() {
+        return getPluginInstance().getFriendManager();
+    }
+
+    /**
+     * Get the energy net for the given block.
+     *
+     * @param block the block to check
+     */
+    public static EnergyNet getEnergyNet(Block block) {
+        return getPluginInstance().getEnergyNetManager().getEnergyNet(block);
+    }
+
+    /**
+     * Get the personal ender inventory for the given player and frequency.
+     * Note that this inventory is <em>not</em> related to the inventory
+     * returned by the Bukkit
+     * {@link org.bukkit.entity.Player#getEnderChest()} method.
+     *
+     * @param player the player
+     * @param frequency the ender frequency to use
+     * @return an ender inventory
+     */
+    public static Inventory getEnderInventory(OfflinePlayer player, int frequency) {
+        return getPluginInstance().getEnderStorageManager().getPlayerInventory(player, frequency);
+    }
+
+    /**
+     * Get the global ender inventory for the given frequency.  Note that this
+     * inventory is <em>not</em> related to the inventory returned by the
+     * Bukkit {@link org.bukkit.entity.Player#getEnderChest()} method.
+     *
+     * @param frequency the ender frequency to use
+     * @return an ender inventory
+     */
+    public static Inventory getEnderInventory(int frequency) {
+        return getPluginInstance().getEnderStorageManager().getGlobalInventory(frequency);
     }
 }

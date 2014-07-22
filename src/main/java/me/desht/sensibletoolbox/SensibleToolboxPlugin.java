@@ -27,7 +27,6 @@ import me.desht.sensibletoolbox.api.FriendManager;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.util.SunlightLevels;
 import me.desht.sensibletoolbox.commands.*;
 import me.desht.sensibletoolbox.core.STBFriendManager;
 import me.desht.sensibletoolbox.core.STBItemRegistry;
@@ -37,6 +36,7 @@ import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import me.desht.sensibletoolbox.items.RecipeBook;
 import me.desht.sensibletoolbox.listeners.*;
+import me.desht.sensibletoolbox.util.SunlightLevels;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -71,6 +71,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private STBItemRegistry itemRegistry;
     private STBFriendManager friendManager;
     private Random random;
+    private EnergyNetManager enetManager;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -127,6 +128,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry = new STBItemRegistry(this);
         itemRegistry.registerItems();
         friendManager = new STBFriendManager(this);
+        enetManager = new EnergyNetManager(this);
         registerEventListeners();
         registerCommands();
 
@@ -381,13 +383,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         if (energyTask != null) {
             energyTask.cancel();
         }
-        EnergyNetManager.setTickRate(getConfig().getLong("energy.tick_rate", EnergyNetManager.DEFAULT_TICK_RATE));
+        enetManager.setTickRate(getConfig().getLong("energy.tick_rate", EnergyNetManager.DEFAULT_TICK_RATE));
         energyTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
             public void run() {
-                EnergyNetManager.tick();
+                enetManager.tick();
             }
-        }, 1L, EnergyNetManager.getTickRate());
+        }, 1L, enetManager.getTickRate());
     }
 
     public ConfigurationManager getConfigManager() {
@@ -412,5 +414,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public Random getRandom() {
         return random;
+    }
+
+    public EnergyNetManager getEnergyNetManager() {
+        return enetManager;
     }
 }

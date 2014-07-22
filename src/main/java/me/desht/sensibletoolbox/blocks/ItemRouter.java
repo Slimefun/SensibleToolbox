@@ -16,7 +16,6 @@ import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.BukkitSerialization;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import me.desht.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
 import me.desht.sensibletoolbox.items.itemroutermodules.SpeedModule;
@@ -303,7 +302,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         Block b = loc.getBlock();
         for (BlockFace face : STBUtil.directFaces) {
             Block b1 = b.getRelative(face);
-            BaseSTBBlock stb = LocationManager.getManager().get(b1.getLocation());
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b1.getLocation());
             if (stb instanceof STBInventoryHolder) {
                 neighbours.add(face);
             } else if (VanillaInventoryUtils.isVanillaInventory(b1)) {

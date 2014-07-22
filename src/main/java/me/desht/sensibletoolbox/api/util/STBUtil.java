@@ -1070,4 +1070,15 @@ public class STBUtil {
                 return 0.5;
         }
     }
+
+    /**
+     * Check if the given block can be used as cable for the purposes of
+     * transferring energy (SCU).
+     *
+     * @param block the block to check
+     * @return true if the block can be used as a cable; false otherwise
+     */
+    public static boolean isCable(Block block) {
+        return block.getType() == Material.IRON_FENCE;
+    }
 }

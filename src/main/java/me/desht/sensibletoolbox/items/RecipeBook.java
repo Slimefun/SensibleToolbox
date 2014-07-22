@@ -9,14 +9,16 @@ import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
-import me.desht.sensibletoolbox.api.gui.*;
+import me.desht.sensibletoolbox.api.gui.ButtonGadget;
+import me.desht.sensibletoolbox.api.gui.CyclerGadget;
+import me.desht.sensibletoolbox.api.gui.GUIUtil;
+import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.recipes.*;
 import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -258,7 +260,7 @@ public class RecipeBook extends BaseSTBItem {
             if (VanillaInventoryUtils.isVanillaInventory(b) && BlockProtection.isBlockAccessible(player, b)) {
                 resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
             } else {
-                BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
+                BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
                 if (stb instanceof STBInventoryHolder && stb.hasAccessRights(player)) {
                     resourceInventories.add((STBInventoryHolder) stb);
                 }

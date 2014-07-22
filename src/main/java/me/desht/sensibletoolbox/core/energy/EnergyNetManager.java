@@ -4,11 +4,11 @@ import com.google.common.base.Joiner;
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.ChargeableBlock;
+import me.desht.sensibletoolbox.api.EnergyNet;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
@@ -17,26 +17,31 @@ import java.util.*;
 public class EnergyNetManager {
     public static final long DEFAULT_TICK_RATE = 10;
 
-    private static long tickRate = DEFAULT_TICK_RATE;
+    private long tickRate = DEFAULT_TICK_RATE;
 
-    private static final Map<Integer, EnergyNet> allNets = new HashMap<Integer, EnergyNet>();
+    private final Map<Integer, STBEnergyNet> allNets = new HashMap<Integer, STBEnergyNet>();
+    private final SensibleToolboxPlugin plugin;
 
-    public static long getTickRate() {
+    public EnergyNetManager(SensibleToolboxPlugin plugin) {
+        this.plugin = plugin;
+    }
+
+    public long getTickRate() {
         return tickRate;
     }
 
-    public static void setTickRate(long tickRate) {
-        EnergyNetManager.tickRate = tickRate;
+    public void setTickRate(long tickRate) {
+        this.tickRate = tickRate;
     }
 
     /**
      * Get the energy net this block is in, if any.
      *
-     * @param b the block to check
+     * @param block the block to check
      * @return the block's energy net, or null if none
      */
-    public static EnergyNet getEnergyNet(Block b) {
-        Integer netId = (Integer) STBUtil.getMetadataValue(b, EnergyNet.STB_ENET_ID);
+    public STBEnergyNet getEnergyNet(Block block) {
+        Integer netId = (Integer) STBUtil.getMetadataValue(block, STBEnergyNet.STB_ENET_ID);
         return netId == null ? null : allNets.get(netId);
     }
 
@@ -46,7 +51,7 @@ public class EnergyNetManager {
      *
      * @param cable the newly placed cable
      */
-    public static void onCablePlaced(Block cable) {
+    public void onCablePlaced(Block cable) {
         Set<Integer> netIds = getAdjacentNets(cable);
         if (Debugger.getInstance().getLevel() > 1) {
             Debugger.getInstance().debug(2,
@@ -58,7 +63,7 @@ public class EnergyNetManager {
                 // not connected to any net, start a new one IFF there is one or more adjacent machines
                 adjacentMachines = getAdjacentMachines(cable);
                 if (!adjacentMachines.isEmpty()) {
-                    EnergyNet newNet = EnergyNet.buildNet(cable);
+                    STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
                     allNets.put(newNet.getNetID(), newNet);
                     addConnectedCables(cable, newNet);
                 }
@@ -66,7 +71,7 @@ public class EnergyNetManager {
             case 1:
                 // connected to a single net; just add this cable to that net
                 Integer[] id = netIds.toArray(new Integer[1]);
-                EnergyNet net = allNets.get(id[0]);
+                STBEnergyNet net = allNets.get(id[0]);
                 net.addCable(cable);
                 // attach any adjacent machines
                 adjacentMachines = getAdjacentMachines(cable);
@@ -82,13 +87,13 @@ public class EnergyNetManager {
                 for (int netId : netIds) {
                     deleteEnergyNet(netId);
                 }
-                EnergyNet newNet = EnergyNet.buildNet(cable);
+                STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
                 allNets.put(newNet.getNetID(), newNet);
         }
     }
 
-    public static void onCableRemoved(Block cable) {
-        EnergyNet thisNet = EnergyNetManager.getEnergyNet(cable);
+    public void onCableRemoved(Block cable) {
+        STBEnergyNet thisNet = getEnergyNet(cable);
         if (thisNet == null) {
             // cable with no net at all?
             return;
@@ -101,7 +106,7 @@ public class EnergyNetManager {
         final List<BaseSTBMachine> attachedMachines = new ArrayList<BaseSTBMachine>();
         for (BlockFace face : STBUtil.directFaces) {
             Block b = cable.getRelative(face);
-            if (isCable(b)) {
+            if (STBUtil.isCable(b)) {
                 attachedCables.add(b);
             } else {
                 BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
@@ -120,15 +125,16 @@ public class EnergyNetManager {
             if (attachedCables.size() > 0) {
                 // need a delayed task here, since the block for the cable being removed isn't
                 // actually updated to air yet...
-                Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
+                final EnergyNetManager mgr = this;
+                Bukkit.getScheduler().runTask(plugin, new Runnable() {
                     @Override
                     public void run() {
                         // rebuild energy nets for the deleted cable's neighbours
                         for (Block b : attachedCables) {
                             // those neighbours could have another path to each other
-                            EnergyNet net1 = EnergyNetManager.getEnergyNet(b);
+                            EnergyNet net1 = getEnergyNet(b);
                             if (net1 == null) {
-                                EnergyNet newNet1 = EnergyNet.buildNet(b);
+                                STBEnergyNet newNet1 = STBEnergyNet.buildNet(b, mgr);
                                 allNets.put(newNet1.getNetID(), newNet1);
                             }
                         }
@@ -138,31 +144,29 @@ public class EnergyNetManager {
         }
     }
 
-    public static void onMachinePlaced(ChargeableBlock machine) {
+    public void onMachinePlaced(ChargeableBlock machine) {
         Block b = machine.getLocation().getBlock();
         // scan adjacent blocks for cables
         for (BlockFace face : STBUtil.directFaces) {
             Block cable = b.getRelative(face);
-            if (isCable(cable)) {
-                EnergyNet net = EnergyNetManager.getEnergyNet(cable);
+            if (STBUtil.isCable(cable)) {
+                STBEnergyNet net = getEnergyNet(cable);
                 if (net == null) {
-//					System.out.println("found cable with no enet " + face + " from " + machine);
                     // cable with no net - create one!
-                    EnergyNet newNet = EnergyNet.buildNet(cable);
+                    STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
                     newNet.addMachine(machine, face);
                     allNets.put(newNet.getNetID(), newNet);
                 } else {
                     // cable on a net - add machine to it
-//					System.out.println("found cable on enet #" + net.getNetID() + ", " + face + " from " + machine);
                     net.addMachine(machine, face);
                 }
             }
         }
     }
 
-    public static void onMachineRemoved(ChargeableBlock machine) {
+    public void onMachineRemoved(ChargeableBlock machine) {
         for (EnergyNet net : machine.getAttachedEnergyNets()) {
-            net.removeMachine(machine);
+            ((STBEnergyNet) net).removeMachine(machine);
         }
     }
 
@@ -173,10 +177,10 @@ public class EnergyNetManager {
      * @param start block to scan from
      * @param net   net to add cabling to
      */
-    private static void addConnectedCables(Block start, EnergyNet net) {
+    private void addConnectedCables(Block start, STBEnergyNet net) {
         for (BlockFace face : STBUtil.directFaces) {
             Block b = start.getRelative(face);
-            if (isCable(b)) {
+            if (STBUtil.isCable(b)) {
                 EnergyNet net2 = getEnergyNet(b);
                 if (net2 == null) {
                     net.addCable(b);
@@ -204,10 +208,10 @@ public class EnergyNetManager {
      * @param startBlock the block to check
      * @return set of up to 6 integers, representing energy net IDs
      */
-    private static Set<Integer> getAdjacentNets(Block startBlock) {
+    private Set<Integer> getAdjacentNets(Block startBlock) {
         Set<Integer> res = new HashSet<Integer>();
         for (BlockFace face : STBUtil.directFaces) {
-            EnergyNet net = EnergyNetManager.getEnergyNet(startBlock.getRelative(face));
+            EnergyNet net = getEnergyNet(startBlock.getRelative(face));
             if (net != null) {
                 res.add(net.getNetID());
             }
@@ -215,20 +219,16 @@ public class EnergyNetManager {
         return res;
     }
 
-    public static void deleteEnergyNet(int netID) {
-        EnergyNet enet = allNets.get(netID);
+    private void deleteEnergyNet(int netID) {
+        STBEnergyNet enet = allNets.get(netID);
         if (enet != null) {
             enet.shutdown();
             allNets.remove(netID);
         }
     }
 
-    public static boolean isCable(Block b) {
-        return b.getType() == Material.IRON_FENCE;
-    }
-
-    public static void tick() {
-        for (EnergyNet net : allNets.values()) {
+    public void tick() {
+        for (STBEnergyNet net : allNets.values()) {
             net.tick();
         }
     }

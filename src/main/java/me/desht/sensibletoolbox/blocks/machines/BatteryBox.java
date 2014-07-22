@@ -2,12 +2,12 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.api.ChargeDirection;
 import me.desht.sensibletoolbox.api.EnergyFlow;
+import me.desht.sensibletoolbox.api.EnergyNet;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.gui.EnergyFlowGadget;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.energy.EnergyNet;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

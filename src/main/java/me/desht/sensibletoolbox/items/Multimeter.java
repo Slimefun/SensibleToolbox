@@ -1,12 +1,11 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.sensibletoolbox.api.EnergyNet;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.PopupMessage;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.energy.EnergyNet;
-import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,7 +18,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Sign;
 
 public class Multimeter extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.WATCH);
@@ -74,19 +72,12 @@ public class Multimeter extends BaseSTBItem {
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            EnergyNet net = EnergyNetManager.getEnergyNet(event.getClickedBlock());
+            EnergyNet net = SensibleToolbox.getEnergyNet(event.getClickedBlock());
             Player player = event.getPlayer();
             if (net != null) {
                 showNetInfo(player, net, event.getClickedBlock());
             } else {
-                Block b;
-                if (event.getClickedBlock().getType() == Material.WALL_SIGN) {
-                    Sign sign = (Sign) event.getClickedBlock().getState().getData();
-                    b = event.getClickedBlock().getRelative(sign.getAttachedFace());
-                } else {
-                    b = event.getClickedBlock();
-                }
-                BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
+                BaseSTBMachine machine = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), BaseSTBMachine.class, true);
                 if (machine != null && machine.getMaxCharge() > 0) {
                     showMachineInfo(player, machine, event.getClickedBlock());
                 } else {

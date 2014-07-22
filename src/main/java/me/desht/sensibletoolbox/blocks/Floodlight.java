@@ -4,9 +4,9 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.dhutils.nms.NMSHelper;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -102,7 +102,7 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
             final Cuboid c = new Cuboid(loc).outset(Cuboid.CuboidDirection.Both, 8);
             for (Block b : c) {
                 // if there are other lights within the affected area, we need to re-light them
-                Floodlight other = LocationManager.getManager().get(b.getLocation(loc2), Floodlight.class);
+                Floodlight other = SensibleToolbox.getBlockAt(b.getLocation(loc2), Floodlight.class, false);
                 if (other != null && other != this) {
                     Debugger.getInstance().debug(2, "found other light @ " + other.getLocation());
                     otherLights.add(other);

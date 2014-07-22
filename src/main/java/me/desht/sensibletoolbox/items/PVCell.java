@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.items;
 
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.machines.BasicSolarCell;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import me.desht.sensibletoolbox.items.components.SiliconWafer;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -99,7 +99,7 @@ public class PVCell extends BaseSTBItem {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
             if (event.getClickedBlock() != null) {
-                BaseSTBBlock stb = LocationManager.getManager().get(event.getClickedBlock().getLocation(), true);
+                BaseSTBBlock stb = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), true);
                 if (stb instanceof BasicSolarCell) {
                     int nInserted = ((BasicSolarCell) stb).insertItems(event.getItem(), event.getBlockFace(), false, player.getUniqueId());
                     if (nInserted > 0) {

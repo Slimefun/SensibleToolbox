@@ -12,7 +12,6 @@ import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.STBGUIHolder;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.energy.EnergyNetManager;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
@@ -214,9 +213,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             case PUBLIC:
                 return true;
             case PRIVATE:
-                return getOwner().equals(player.getUniqueId()) || PermissionUtils.isAllowedTo(player, "stb.access.any");
+                return getOwner().equals(player.getUniqueId())
+                        || PermissionUtils.isAllowedTo(player, "stb.access.any");
             case RESTRICTED:
-                return getOwner().equals(player.getUniqueId()) || PermissionUtils.isAllowedTo(player, "stb.access.any") || SensibleToolbox.isFriend(getOwner(), player.getUniqueId());
+                return getOwner().equals(player.getUniqueId())
+                        || PermissionUtils.isAllowedTo(player, "stb.access.any")
+                        || SensibleToolbox.getFriendManager().isFriend(getOwner(), player.getUniqueId());
             default:
                 return false;
         }
@@ -238,7 +240,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             case PRIVATE:
                 return uuid == null || getOwner().equals(uuid);
             case RESTRICTED:
-                return uuid == null || getOwner().equals(uuid) || SensibleToolbox.isFriend(getOwner(), uuid);
+                return uuid == null || getOwner().equals(uuid)
+                        || SensibleToolbox.getFriendManager().isFriend(getOwner(), uuid);
             default:
                 return false;
         }
@@ -515,7 +518,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
         }
         if (this instanceof ChargeableBlock) {
-            EnergyNetManager.onMachineRemoved((ChargeableBlock) this);
+            SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachineRemoved((ChargeableBlock) this);
         }
 
         persistableLocation = new PersistableLocation(newLoc);
@@ -526,7 +529,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
         }
         if (this instanceof ChargeableBlock) {
-            EnergyNetManager.onMachinePlaced((ChargeableBlock) this);
+            SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced((ChargeableBlock) this);
         }
 
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {

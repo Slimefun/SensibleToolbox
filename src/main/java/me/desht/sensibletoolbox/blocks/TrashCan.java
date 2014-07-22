@@ -2,9 +2,9 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,10 +31,9 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     public static TrashCan getTrashCan(Inventory inv) {
-        InventoryHolder h = inv.getHolder();
-        if (h instanceof Dropper) {
-            Dropper d = (Dropper) h;
-            return LocationManager.getManager().get(d.getLocation(), TrashCan.class);
+        InventoryHolder holder = inv.getHolder();
+        if (holder instanceof Dropper) {
+            return SensibleToolbox.getBlockAt(((Dropper) holder).getLocation(), TrashCan.class, false);
         }
         return null;
     }

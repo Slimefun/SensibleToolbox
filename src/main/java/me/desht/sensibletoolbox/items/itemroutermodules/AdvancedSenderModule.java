@@ -2,9 +2,9 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -92,7 +92,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             // try to link up with a receiver module
-            ItemRouter rtr = LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class, true);
+            ItemRouter rtr = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), ItemRouter.class, true);
             if (rtr != null && rtr.findModule(ReceiverModule.class) != null) {
                 linkToRouter(rtr);
                 event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
@@ -126,7 +126,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
                 return false;
             }
-            ItemRouter otherRouter = LocationManager.getManager().get(linkedLoc, ItemRouter.class);
+            ItemRouter otherRouter = SensibleToolbox.getBlockAt(linkedLoc, ItemRouter.class, false);
             if (otherRouter != null) {
                 if (!inRange(loc)) {
                     return false;

@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.api.Filtering;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.FilterTypeGadget;
 import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
@@ -12,7 +13,6 @@ import me.desht.sensibletoolbox.api.util.Filter;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
-import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -153,7 +153,9 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            ItemRouter rtr = event.getClickedBlock() == null ? null : LocationManager.getManager().get(event.getClickedBlock().getLocation(), ItemRouter.class);
+            ItemRouter rtr = event.getClickedBlock() == null ?
+                    null :
+                    SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), ItemRouter.class, true);
             if (event.getClickedBlock() == null || (rtr == null && !STBUtil.isInteractive(event.getClickedBlock().getType()))) {
                 // open module configuration GUI
                 gui = createGUI(event.getPlayer());
@@ -264,7 +266,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         int nToPull = getItemRouter().getStackSize();
         Location targetLoc = getTargetLocation(loc);
         ItemStack pulled;
-        BaseSTBBlock stb = LocationManager.getManager().get(targetLoc);
+        BaseSTBBlock stb = SensibleToolbox.getBlockAt(targetLoc);
         if (stb instanceof STBInventoryHolder) {
             pulled = ((STBInventoryHolder) stb).extractItems(from.getOppositeFace(), inBuffer, nToPull, getItemRouter().getOwner());
         } else {
