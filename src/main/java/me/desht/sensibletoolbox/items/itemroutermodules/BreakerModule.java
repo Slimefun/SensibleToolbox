@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -39,7 +40,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
         ItemStack mainDrop = drops[0];
         ItemStack inBuffer = getItemRouter().getBufferItem();
         if (inBuffer == null || inBuffer.isSimilar(mainDrop) && inBuffer.getAmount() < inBuffer.getMaxStackSize()) {
-            if (getFilter().shouldPass(mainDrop)) {
+            if (getFilter().shouldPass(mainDrop) && BlockProtection.playerCanBuild(getItemRouter().getOwner(), b, BlockProtection.Operation.BREAK)) {
                 if (inBuffer == null) {
                     getItemRouter().setBufferItem(mainDrop);
                 } else {

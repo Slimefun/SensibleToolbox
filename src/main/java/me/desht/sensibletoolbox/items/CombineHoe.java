@@ -5,6 +5,7 @@ import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -139,14 +140,14 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
         Block b = event.getBlock();
         if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
-            harvestLayer(b);
+            harvestLayer(player, b);
             if (!player.isSneaking()) {
-                harvestLayer(b.getRelative(BlockFace.UP));
-                harvestLayer(b.getRelative(BlockFace.DOWN));
+                harvestLayer(player, b.getRelative(BlockFace.UP));
+                harvestLayer(player, b.getRelative(BlockFace.DOWN));
             }
             damageHeldItem(player, (short) 1);
         } else if (STBUtil.isPlant(b.getType())) {
-            harvestLayer(b);
+            harvestLayer(player, b);
             damageHeldItem(player, (short) 1);
         }
     }
@@ -249,6 +250,9 @@ public abstract class CombineHoe extends BaseSTBItem {
         int amountLeft = getSeedAmount();
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             Block above = b1.getRelative(BlockFace.UP);
+            if (!BlockProtection.playerCanBuild(player, above, BlockProtection.Operation.PLACE)) {
+                continue;
+            }
             if (b1.getType() == Material.SOIL && above.isEmpty()) {
                 // candidate for sowing
                 above.setType(STBUtil.getCropType(getSeedType()));
@@ -268,15 +272,17 @@ public abstract class CombineHoe extends BaseSTBItem {
         player.setItemInHand(stack);
     }
 
-    private void harvestLayer(Block b) {
+    private void harvestLayer(Player player, Block b) {
         Cuboid c = new Cuboid(b.getLocation());
         c = c.outset(Cuboid.CuboidDirection.Horizontal, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
 
         for (Block b1 : c) {
             if (!b1.equals(b)) {
                 if (STBUtil.isPlant(b1.getType()) || b1.getType() == Material.LEAVES || b1.getType() == Material.LEAVES_2) {
-                    b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
-                    b1.breakNaturally();
+                    if (BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.BREAK)) {
+                        b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
+                        b1.breakNaturally();
+                    }
                 }
             }
         }
@@ -286,6 +292,9 @@ public abstract class CombineHoe extends BaseSTBItem {
         ItemStack stack = player.getItemInHand();
         short count = 0;
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
+            if (!BlockProtection.playerCanBuild(player, b1, BlockProtection.Operation.BREAK)) {
+                continue;
+            }
             Block above = b1.getRelative(BlockFace.UP);
             if ((b1.getType() == Material.DIRT || b1.getType() == Material.GRASS) && !above.getType().isSolid() && !above.isLiquid()) {
                 b1.setType(Material.SOIL);

@@ -20,6 +20,7 @@ package me.desht.sensibletoolbox;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
@@ -82,6 +83,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private STBFriendManager friendManager;
     private Random random;
     private EnergyNetManager enetManager;
+    private WorldGuardPlugin worldGuardPlugin = null;
+    private WorldGuardPlugin preciousStonesPlugin = null;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -132,6 +135,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         setupLandslide();
         setupLWC();
+        setupWorldGuard();
+        setupPreciousStones();
 
         STBInventoryGUI.buildStockTextures();
 
@@ -281,6 +286,24 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         pm.registerEvents(floodlightListener, this);
         enderStorageManager = new EnderStorageManager(this);
         pm.registerEvents(enderStorageManager, this);
+    }
+
+    private void setupWorldGuard() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+
+        if (plugin != null && plugin.isEnabled() && plugin instanceof WorldGuardPlugin) {
+            Debugger.getInstance().debug("Hooked WorldGuard v" + plugin.getDescription().getVersion());
+            worldGuardPlugin = (WorldGuardPlugin) plugin;
+        }
+    }
+
+    private void setupPreciousStones() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("PreciousStones");
+
+        if (plugin != null && plugin.isEnabled() && plugin instanceof WorldGuardPlugin) {
+            Debugger.getInstance().debug("Hooked PreciousStones v" + plugin.getDescription().getVersion());
+            preciousStonesPlugin = (WorldGuardPlugin) plugin;
+        }
     }
 
     private void setupProtocolLib() {
@@ -514,5 +537,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public EnergyNetManager getEnergyNetManager() {
         return enetManager;
+    }
+
+    public boolean isWorldGuardAvailable() {
+        return worldGuardPlugin != null && worldGuardPlugin.isEnabled();
+    }
+
+    public boolean isPreciousStonesAvailable() {
+        return preciousStonesPlugin != null && preciousStonesPlugin.isEnabled();
     }
 }

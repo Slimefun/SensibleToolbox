@@ -7,8 +7,10 @@ import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.PopupMessage;
 import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
 import me.desht.sensibletoolbox.items.energycells.TenKEnergyCell;
 import org.bukkit.*;
@@ -340,12 +342,10 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         // we won't replace any block which can hold items, or any STB block
         if (SensibleToolbox.getBlockAt(b.getLocation()) != null) {
             return false;
-        } else if (b.getState() instanceof InventoryHolder) {
+        } else if (VanillaInventoryUtils.isVanillaInventory(b)) {
             return false;
         } else {
-            BlockBreakEvent event = new BlockBreakEvent(b, player);
-            Bukkit.getPluginManager().callEvent(event);
-            return !event.isCancelled();
+            return BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.BREAK);
         }
     }
 

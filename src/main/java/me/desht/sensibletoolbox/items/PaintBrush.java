@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.PopupMessage;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.PaintCan;
@@ -146,11 +147,11 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                 // Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
                 if (player.isSneaking()) {
                     // paint a single block
-                    painted = paintBlocks(b);
+                    painted = paintBlocks(player, b);
                 } else {
                     // paint multiple blocks around the clicked block
                     Block[] blocks = findBlocksAround(b);
-                    painted = paintBlocks(blocks);
+                    painted = paintBlocks(player, blocks);
                 }
                 if (painted > 0) {
                     player.playSound(player.getLocation(), Sound.WATER, 1.0f, 1.5f);
@@ -244,9 +245,12 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         return STBUtil.isColorable(b.getType()) ? DyeColor.getByWoolData(b.getData()) : null;
     }
 
-    private int paintBlocks(Block... blocks) {
+    private int paintBlocks(Player player, Block... blocks) {
         int painted = 0;
         for (Block b : blocks) {
+            if (!BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
+                continue;
+            }
             Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
             if (stb != null && stb instanceof Colorable) {

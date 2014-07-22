@@ -4,6 +4,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.SoilSaturation;
 import org.bukkit.DyeColor;
@@ -222,7 +223,7 @@ public class WateringCan extends BaseSTBItem {
     }
 
     private void maybeGrowCrop(Player player, Block b) {
-        if (!STBUtil.isCrop(b.getType())) {
+        if (!STBUtil.isCrop(b.getType()) || !BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
             return;
         }
         if (new Random().nextInt(100) < GROW_CHANCE) {

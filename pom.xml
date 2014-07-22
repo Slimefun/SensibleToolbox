@@ -45,6 +45,10 @@
             <name>Hawkfalcon Repository</name>
             <url>http://ci.hawkfalcon.com/plugin/repository/everything</url>
         </repository>
+        <repository>
+            <id>sk89q-maven</id>
+            <url>http://maven.sk89q.com/repo</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -102,6 +106,19 @@
             <version>4.5.0-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/plugins/LWC.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.sacredlabyrinth.Phaed</groupId>
+            <artifactId>PreciousStones</artifactId>
+            <version>9.6.6</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/plugins/PreciousStones.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>5.9.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

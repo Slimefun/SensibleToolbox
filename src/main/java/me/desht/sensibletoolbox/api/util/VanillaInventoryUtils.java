@@ -84,7 +84,7 @@ public class VanillaInventoryUtils {
         if (source == null || source.getAmount() == 0) {
             return 0;
         }
-        if (!BlockProtection.isBlockAccessible(inserterId, target)) {
+        if (!BlockProtection.isInventoryAccessible(inserterId, target)) {
             return 0;
         }
         Inventory targetInv = getVanillaInventoryFor(target);
@@ -158,7 +158,7 @@ public class VanillaInventoryUtils {
      * @return the items pulled, or null if nothing was pulled
      */
     public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, UUID pullerId) {
-        if (!BlockProtection.isBlockAccessible(pullerId, target)) {
+        if (!BlockProtection.isInventoryAccessible(pullerId, target)) {
             return null;
         }
         Inventory targetInv = getVanillaInventoryFor(target);

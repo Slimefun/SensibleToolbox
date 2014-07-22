@@ -6,8 +6,10 @@ import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.ButtonGadget;
 import me.desht.sensibletoolbox.api.gui.CyclerGadget;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.LandMarker;
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
@@ -239,28 +241,37 @@ public class AutoBuilder extends BaseSTBMachine {
             double scuNeeded = 0.0;
             switch (getBuildMode()) {
                 case CLEAR:
-                    scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
-                    if (scuNeeded <= getCharge() && b.getType() != Material.AIR) {
-                        b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-                        b.setType(Material.AIR);
+                    if (BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
+                        scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
+                        if (scuNeeded <= getCharge() && b.getType() != Material.AIR) {
+                            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+                            if (stb != null) {
+                                stb.breakBlock(b, false);
+                            } else {
+                                b.setType(Material.AIR);
+                            }
+                        }
                     }
                     break;
                 case FILL:
                 case WALLS:
                 case FRAME:
-                    if (shouldBuildHere()) {
-                        scuNeeded = baseScuPerOp;
-                        if (scuNeeded <= getCharge() && (b.isEmpty() || b.isLiquid())) {
-                            ItemStack item = fetchNextBuildItem();
-                            if (item == null) {
-                                setStatus(BuilderStatus.NO_INVENTORY);
-                                return;
+                    if (BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.PLACE)) {
+                        if (shouldBuildHere()) {
+                            scuNeeded = baseScuPerOp;
+                            if (scuNeeded <= getCharge() && (b.isEmpty() || b.isLiquid())) {
+                                ItemStack item = fetchNextBuildItem();
+                                if (item == null) {
+                                    setStatus(BuilderStatus.NO_INVENTORY);
+                                    return;
+                                }
+                                b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
+                                b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                             }
-                            b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
-                            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                        } else {
+                            ParticleEffect.RED_DUST.play(b.getLocation(), 0.05f, 0.05f, 0.05f, 1.0f, 3);
                         }
-                    } else {
-                        ParticleEffect.RED_DUST.play(b.getLocation(), 0.05f, 0.05f, 0.05f, 1.0f, 3);
                     }
                     break;
             }

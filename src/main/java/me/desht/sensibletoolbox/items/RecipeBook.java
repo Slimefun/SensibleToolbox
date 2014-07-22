@@ -257,7 +257,7 @@ public class RecipeBook extends BaseSTBItem {
         }
         for (BlockFace face : STBUtil.directFaces) {
             Block b = fabricationBlock.getRelative(face);
-            if (VanillaInventoryUtils.isVanillaInventory(b) && BlockProtection.isBlockAccessible(player, b)) {
+            if (VanillaInventoryUtils.isVanillaInventory(b) && BlockProtection.isInventoryAccessible(player, b)) {
                 resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
             } else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
@@ -416,7 +416,7 @@ public class RecipeBook extends BaseSTBItem {
                 if (inv != null) {
                     vanillaInventories.add(inv);
                 }
-            } else if (h instanceof BlockState && BlockProtection.isBlockAccessible(player, ((BlockState) h).getBlock())) {
+            } else if (h instanceof BlockState && BlockProtection.isInventoryAccessible(player, ((BlockState) h).getBlock())) {
                 vanillaInventories.add(h.getInventory());
             }
         }
