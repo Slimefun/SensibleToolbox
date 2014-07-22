@@ -116,6 +116,7 @@ public class AutoBuilder extends BaseSTBMachine {
         recipe.setIngredient('O', Material.OBSIDIAN);
         recipe.setIngredient('C', ic.getMaterialData());
         recipe.setIngredient('D', Material.DISPENSER);
+        recipe.setIngredient('F', mf.getMaterialData());
         recipe.setIngredient('P', Material.DIAMOND_PICKAXE);
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
