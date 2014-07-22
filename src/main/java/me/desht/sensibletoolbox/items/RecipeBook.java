@@ -9,10 +9,7 @@ import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.api.Chargeable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
-import me.desht.sensibletoolbox.api.gui.ButtonGadget;
-import me.desht.sensibletoolbox.api.gui.ClickableGadget;
-import me.desht.sensibletoolbox.api.gui.GUIUtil;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.recipes.*;
@@ -30,10 +27,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.*;
@@ -49,18 +44,23 @@ public class RecipeBook extends BaseSTBItem {
     private static final ItemStack GO_BACK_TEXTURE = new ItemStack(Material.IRON_DOOR);
     private static final ItemStack GO_BACK_TEXTURE_2 = new ItemStack(Material.WOOD_DOOR);
     private static final ItemStack WEB_TEXTURE = new ItemStack(Material.WEB);
-    private static final int[] RECIPE_SLOTS = new int[]{10, 11, 12, 19, 20, 21, 28, 29, 30};
-    public static final int TYPE_SLOT = 23;
-    public static final int RESULT_SLOT = 25;
+    // slots for the item list page...
     public static final int PAGE_LABEL_SLOT = 45;
     public static final int FILTER_TYPE_BUTTON_SLOT = 46;
     public static final int FILTER_STRING_BUTTON_SLOT = 47;
+    public static final int PREV_PAGE_SLOT = 52;
+    public static final int NEXT_PAGE_SLOT = 53;
+    // slots for the recipe display page
+    private static final int[] RECIPE_SLOTS = new int[]{10, 11, 12, 19, 20, 21, 28, 29, 30};
+    public static final int TYPE_SLOT = 23;
+    public static final int RESULT_SLOT = 25;
     public static final int NEXT_RECIPE_SLOT = 18;
     public static final int PREV_RECIPE_SLOT = 26;
     public static final int TRAIL_BACK_SLOT = 52;
     public static final int ITEM_LIST_SLOT = 53;
     public static final String FREEFAB_PERMISSION = "stb.recipebook.freefab";
     public static final String FABRICATION_TITLE = ChatColor.BLUE + "Fabrication";
+
     private int page;
     private int viewingItem;
     private Recipe viewingRecipe;
@@ -624,21 +624,21 @@ public class RecipeBook extends BaseSTBItem {
                 gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
             }
         }
-        gui.addGadget(new ButtonGadget(gui, 52, "< Prev Page", new String[0], null, new Runnable() {
+        gui.addGadget(new ButtonGadget(gui, PREV_PAGE_SLOT, "< Prev Page", null, null, new Runnable() {
             @Override
             public void run() {
                 if (--page < 0) page = totalPages - 1;
                 drawItemsPage();
             }
         }));
-        gui.addGadget(new ButtonGadget(gui, 53, "Next Page >", new String[0], null, new Runnable() {
+        gui.addGadget(new ButtonGadget(gui, NEXT_PAGE_SLOT, "Next Page >", null, null, new Runnable() {
             @Override
             public void run() {
                 if (++page >= totalPages) page = 0;
                 drawItemsPage();
             }
         }));
-        gui.addGadget(new RecipeTypeFilter(gui, FILTER_TYPE_BUTTON_SLOT));
+        gui.addGadget(new RecipeTypeFilter(gui, FILTER_TYPE_BUTTON_SLOT, "Recipe Type"));
         if (recipeNameFilter != null && !recipeNameFilter.isEmpty()) {
             gui.addGadget(new ButtonGadget(gui, FILTER_STRING_BUTTON_SLOT, "Filter:" + ChatColor.YELLOW + " " + recipeNameFilter,
                     new String[]{"Click to clear filter "}, WEB_TEXTURE, new Runnable() {
@@ -673,51 +673,32 @@ public class RecipeBook extends BaseSTBItem {
         }
     }
 
-    public enum RecipeType {
-        ALL(STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.BLACK), "All Recipes"),
-        VANILLA(STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE), "Vanilla Recipes"),
-        STB(STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.RED), "STB Recipes");
-
-        private final MaterialData mat;
-        private final String label;
-
-        RecipeType(MaterialData mat, String label) {
-            this.mat = mat;
-            this.label = label;
-        }
-
-        public ItemStack getTexture() {
-            ItemStack res = mat.toItemStack(1);
-            ItemMeta meta = res.getItemMeta();
-            meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label);
-            res.setItemMeta(meta);
-            return res;
-        }
+    private enum RecipeType {
+        ALL,
+        VANILLA,
+        STB
     }
 
-    private class RecipeTypeFilter extends ClickableGadget {
-        private RecipeType recipeType;
-
-        protected RecipeTypeFilter(InventoryGUI gui, int slot) {
-            super(gui, slot);
-            recipeType = ((RecipeBook) getGUI().getOwningItem()).getRecipeTypeFilter();
+    private class RecipeTypeFilter extends CyclerGadget<RecipeType> {
+        protected RecipeTypeFilter(InventoryGUI gui, int slot, String label) {
+            super(gui, slot, label);
+            add(RecipeType.ALL, ChatColor.GRAY, STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.BLACK), "All Recipes");
+            add(RecipeType.VANILLA, ChatColor.WHITE, STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE), "Vanilla Recipes");
+            add(RecipeType.STB, ChatColor.YELLOW, STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.YELLOW), "STB Recipes");
+            setInitialValue(((RecipeBook)getGUI().getOwningItem()).getRecipeTypeFilter());
         }
 
         @Override
-        public void onClicked(InventoryClickEvent event) {
-            int n = (recipeType.ordinal() + 1) % RecipeType.values().length;
-            recipeType = RecipeType.values()[n];
-            event.setCurrentItem(recipeType.getTexture());
-            RecipeBook book = (RecipeBook) getGUI().getOwningItem();
-            book.setRecipeTypeFilter(recipeType);
+        protected boolean ownerOnly() {
+            return false;
+        }
+
+        @Override
+        protected void apply(BaseSTBItem stbItem, RecipeType newValue) {
+            RecipeBook book = (RecipeBook) stbItem;
+            book.setRecipeTypeFilter(newValue);
             book.buildFilteredList();
             book.drawItemsPage();
         }
-
-        @Override
-        public ItemStack getTexture() {
-            return recipeType.getTexture();
-        }
     }
-
 }
