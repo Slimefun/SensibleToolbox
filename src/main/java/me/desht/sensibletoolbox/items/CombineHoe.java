@@ -29,6 +29,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     private Material seedType;
     private int seedAmount;
     private InventoryGUI gui;
+    private short durability;
 
     public static String getInventoryTitle() {
         return ChatColor.DARK_GREEN + "Seed Bag";
@@ -105,6 +106,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
+        durability = event.getItem().getDurability();
         Block b = event.getClickedBlock();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (b.getType() == Material.SOIL) {
@@ -220,7 +222,9 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
         setSeedAmount(count);
         setSeedType(seedType);
-        player.setItemInHand(toItemStack());
+        ItemStack stack = toItemStack();
+        stack.setDurability(durability);
+        player.setItemInHand(stack);
     }
 
     private void populateSeedBag(InventoryGUI gui) {
@@ -259,7 +263,9 @@ public abstract class CombineHoe extends BaseSTBItem {
             setSeedAmount(amountLeft);
             player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
         }
-        player.setItemInHand(toItemStack());
+        ItemStack stack = toItemStack();
+        stack.setDurability(durability);
+        player.setItemInHand(stack);
     }
 
     private void harvestLayer(Block b) {
