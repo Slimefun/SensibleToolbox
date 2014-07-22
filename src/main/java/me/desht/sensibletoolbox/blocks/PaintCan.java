@@ -30,7 +30,7 @@ import org.bukkit.material.Wool;
 
 import java.util.HashMap;
 
-public class PaintCan extends BaseSTBBlock {
+public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {
     public static final int MAX_PAINT_LEVEL = 200;
     private static final int PAINT_PER_DYE = 25;
     private static final int[] ITEM_SLOTS = new int[]{0, 1};
@@ -160,35 +160,35 @@ public class PaintCan extends BaseSTBBlock {
                 emptyPaintCan();
             }
         }));
-        levelMonitorId = gui.addMonitor(new LevelMonitor(gui, new LevelMonitor.LevelReporter() {
-            @Override
-            public int getLevel() {
-                return getPaintLevel();
-            }
-
-            @Override
-            public int getMaxLevel() {
-                return MAX_PAINT_LEVEL;
-            }
-
-            @Override
-            public Material getIcon() {
-                return Material.DIAMOND_LEGGINGS;
-            }
-
-            @Override
-            public int getSlot() {
-                return 6;
-            }
-
-            @Override
-            public String getMessage() {
-                ChatColor cc = STBUtil.dyeColorToChatColor(getColour());
-                return ChatColor.WHITE + "Paint Level: " + getPaintLevel() + "/" + MAX_PAINT_LEVEL + " " + cc + getColour();
-            }
-        }));
+        levelMonitorId = gui.addMonitor(new LevelMonitor(gui, this));
         gui.addGadget(new AccessControlGadget(gui, 8));
         return gui;
+    }
+
+    @Override
+    public int getLevel() {
+        return getPaintLevel();
+    }
+
+    @Override
+    public int getMaxLevel() {
+        return MAX_PAINT_LEVEL;
+    }
+
+    @Override
+    public Material getLevelIcon() {
+        return Material.DIAMOND_LEGGINGS;
+    }
+
+    @Override
+    public int getLevelMonitorSlot() {
+        return 6;
+    }
+
+    @Override
+    public String getLevelMessage() {
+        ChatColor cc = STBUtil.dyeColorToChatColor(getColour());
+        return ChatColor.WHITE + "Paint Level: " + getPaintLevel() + "/" + MAX_PAINT_LEVEL + " " + cc + getColour();
     }
 
     private void emptyPaintCan() {
