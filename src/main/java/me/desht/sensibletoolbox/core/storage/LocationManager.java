@@ -101,18 +101,6 @@ public class LocationManager {
         Debugger.getInstance().debug(2, "Added ticking block " + stb);
     }
 
-    private void removeTicker(BaseSTBBlock stb) {
-        Location loc = stb.getLocation();
-        World w = loc.getWorld();
-        Set<BaseSTBBlock> tickerSet = allTickers.get(w.getUID());
-        if (tickerSet != null) {
-            tickerSet.remove(stb);
-            Debugger.getInstance().debug(2, "Removed ticking block " + stb);
-        } else {
-            LogUtils.warning("attempt to remove ticker " + stb + ", but no tickers are loaded for world: " + w.getName() + " ?");
-        }
-    }
-
     private Map<String, BaseSTBBlock> getWorldIndex(World w) {
         Map<String,BaseSTBBlock> index = blockIndex.get(w.getUID());
         if (index == null) {
@@ -129,10 +117,12 @@ public class LocationManager {
             return;
         }
 
+//        stb.onBlockPreRegister(loc, isPlacing);
         stb.setLocation(loc);
-        loc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
+
         String locStr = MiscUtil.formatLocation(loc);
         getWorldIndex(loc.getWorld()).put(locStr, stb);
+        stb.preRegister(loc, isPlacing);
 
         if (isPlacing) {
             addPendingDBOperation(loc, locStr, UpdateRecord.Operation.INSERT);
@@ -151,14 +141,11 @@ public class LocationManager {
 
     public void unregisterLocation(Location loc, BaseSTBBlock stb) {
         if (stb != null) {
-            if (stb.getTickRate() > 0) {
-                removeTicker(stb);
-            }
-            stb.setLocation(null);
-            loc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
+            stb.onBlockUnregistered(loc);
             String locStr = MiscUtil.formatLocation(loc);
             addPendingDBOperation(loc, locStr, UpdateRecord.Operation.DELETE);
             getWorldIndex(loc.getWorld()).remove(locStr);
+//            stb.onBlockUnregistered(loc);
             Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
         } else {
             LogUtils.warning("Attempt to unregister non-existent STB block @ " + loc);
@@ -309,16 +296,35 @@ public class LocationManager {
         for (World w : Bukkit.getWorlds()) {
             Set<BaseSTBBlock> tickerSet = allTickers.get(w.getUID());
             if (tickerSet != null) {
-                for (BaseSTBBlock stb : tickerSet) {
-                    PersistableLocation pLoc = stb.getPersistableLocation();
-                    int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
-                    if (w.isChunkLoaded(x >> 4, z >> 4)) {
-                        stb.tick();
-                        if (stb.getTicksLived() % stb.getTickRate() == 0) {
-                            stb.onServerTick();
+                Iterator<BaseSTBBlock> iter = tickerSet.iterator();
+                while (iter.hasNext()) {
+                    BaseSTBBlock stb = iter.next();
+                    if (stb.isPendingRemoval()) {
+                        Debugger.getInstance().debug("Removing block " + stb + " from tickers list");
+                        iter.remove();
+                    } else {
+                        PersistableLocation pLoc = stb.getPersistableLocation();
+                        int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
+                        if (w.isChunkLoaded(x >> 4, z >> 4)) {
+                            stb.tick();
+                            if (stb.getTicksLived() % stb.getTickRate() == 0) {
+                                stb.onServerTick();
+                            }
                         }
                     }
                 }
+//                for (BaseSTBBlock stb : tickerSet) {
+//                    PersistableLocation pLoc = stb.getPersistableLocation();
+//                    if (pLoc != null) {
+//                        int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
+//                        if (w.isChunkLoaded(x >> 4, z >> 4)) {
+//                            stb.tick();
+//                            if (stb.getTicksLived() % stb.getTickRate() == 0) {
+//                                stb.onServerTick();
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
         totalTicks++;

@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.Debugger;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
@@ -17,7 +16,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -267,10 +265,14 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     @Override
-    public void onBlockPlace(BlockPlaceEvent event) {
-        Block above = event.getBlock().getRelative(BlockFace.UP);
-        Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", event.getPlayer());
-        skull.update();
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        if (isPlacing) {
+            Block above = location.getBlock().getRelative(BlockFace.UP);
+            Skull skull = STBUtil.setSkullHead(above, "MHF_OakLog", getFacing());
+            skull.update();
+        }
+
+        super.onBlockRegistered(location, isPlacing);
     }
 
     @Override

@@ -3,7 +3,6 @@ package me.desht.sensibletoolbox.items;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.IconMenu;
 import me.desht.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;

@@ -247,7 +247,7 @@ public class AutoBuilder extends BaseSTBMachine {
                             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
                             if (stb != null) {
-                                stb.breakBlock(b, false);
+                                stb.breakBlock(false);
                             } else {
                                 b.setType(Material.AIR);
                             }
@@ -377,8 +377,8 @@ public class AutoBuilder extends BaseSTBMachine {
         LandMarker lm2 = SensibleToolbox.getItemRegistry().fromItemStack(getInventoryItem(LANDMARKER_SLOT_2), LandMarker.class);
 
         if (lm1 != null && lm2 != null) {
-            Location loc1 = lm1.getLocation();
-            Location loc2 = lm2.getLocation();
+            Location loc1 = lm1.getMarkedLocation();
+            Location loc2 = lm2.getMarkedLocation();
             if (!loc1.getWorld().equals(loc2.getWorld())) {
                 return BuilderStatus.LM_WORLDS_DIFFERENT;
             }
@@ -418,7 +418,7 @@ public class AutoBuilder extends BaseSTBMachine {
                     getGUI().getInventory().setItem(slot, null);
                 }
             }
-            return false;
+            return false; // we just put a copy of the land marker into the builder
         } else {
             return super.onSlotClick(player, slot, click, inSlot, onCursor);
         }
@@ -435,7 +435,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
         if (item instanceof LandMarker && getStatus() != BuilderStatus.RUNNING) {
             insertLandMarker(toInsert);
-            return 0;
+            return 0;  // we just put a copy of the land marker into the builder
         } else {
             return super.onShiftClickInsert(player, slot, toInsert);
         }
@@ -455,6 +455,7 @@ public class AutoBuilder extends BaseSTBMachine {
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
         if ((slot == LANDMARKER_SLOT_1 || slot == LANDMARKER_SLOT_2) && getStatus() != BuilderStatus.RUNNING) {
             setInventoryItem(slot, null);
+            setStatus(BuilderStatus.NO_WORKAREA);
             return false;
         } else {
             return super.onShiftClickExtract(player, slot, toExtract);

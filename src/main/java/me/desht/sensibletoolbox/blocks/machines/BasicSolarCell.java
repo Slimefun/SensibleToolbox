@@ -20,7 +20,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -249,17 +248,19 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
-    public void onBlockPlace(BlockPlaceEvent event) {
-        drawPVLayer(event.getBlock().getRelative(BlockFace.UP));
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        if (isPlacing) {
+            drawPVLayer(location.getBlock().getRelative(BlockFace.UP));
+        }
+        super.onBlockRegistered(location, isPlacing);
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null) {
-            // remove any pv cell in the gui; pv level is stored as separately
-            getGUI().setItem(PV_CELL_SLOT, null);
-        }
-        super.setLocation(loc);
+    public void onBlockUnregistered(Location location) {
+        // remove any pv cell in the gui; pv level is stored separately
+        getGUI().setItem(PV_CELL_SLOT, null);
+
+        super.onBlockUnregistered(location);
     }
 
     protected DyeColor getCapColour() {

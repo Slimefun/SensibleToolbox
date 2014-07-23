@@ -479,26 +479,27 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null) {
-            getGUI().ejectItems(getInputSlots());
-            getGUI().ejectItems(getOutputSlots());
-            getGUI().ejectItems(getUpgradeSlots());
-            if (installedCell != null) {
-                getGUI().ejectItems(getEnergyCellSlot());
-                installedCell = null;
-            }
-            upgrades.clear();
-            setGUI(null);
-            SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachineRemoved(this);
-        }
-        super.setLocation(loc);
-        if (loc != null) {
-            SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced(this);
-        }
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced(this);
+
+        super.onBlockRegistered(location, isPlacing);
     }
 
+    @Override
+    public void onBlockUnregistered(Location loc) {
+        getGUI().ejectItems(getInputSlots());
+        getGUI().ejectItems(getOutputSlots());
+        getGUI().ejectItems(getUpgradeSlots());
+        if (installedCell != null) {
+            getGUI().ejectItems(getEnergyCellSlot());
+            installedCell = null;
+        }
+        upgrades.clear();
+        setGUI(null);
+        SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachineRemoved(this);
 
+        super.onBlockUnregistered(loc);
+    }
     /**
      * Find a candidate slot for item insertion; this will look for an empty slot, or a slot containing the
      * same kind of item as the candidate item.  It will NOT check item amounts (see #insertItem() for that)

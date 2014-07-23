@@ -116,12 +116,12 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null && getProcessing() != null) {
+    public void onBlockUnregistered(Location loc) {
+        if (getProcessing() != null) {
             // any item being processed is lost, hard luck!
             setProcessing(null);
         }
-        super.setLocation(loc);
+        super.onBlockUnregistered(loc);
     }
 
     @Override

@@ -5,7 +5,6 @@ import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,7 +13,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.material.MaterialData;
 
@@ -64,13 +62,15 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public void onBlockPlace(BlockPlaceEvent event) {
-        setInventoryTitle(event, ChatColor.DARK_RED + "!!! " + getItemName() + " !!!");
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        if (isPlacing) {
+            // put a skull on top of the main block
+            Block above = location.getBlock().getRelative(BlockFace.UP);
+            Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", getFacing());
+            skull.update();
+        }
 
-        // put a skull on top of the main block
-        Block above = event.getBlock().getRelative(BlockFace.UP);
-        Skull skull = STBUtil.setSkullHead(above, "MHF_Exclamation", event.getPlayer());
-        skull.update();
+        super.onBlockRegistered(location, isPlacing);
     }
 
     @Override

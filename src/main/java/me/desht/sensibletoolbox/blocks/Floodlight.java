@@ -82,16 +82,19 @@ public class Floodlight extends BaseSTBBlock implements Colorable {
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null) {
-            ((SensibleToolboxPlugin) getProviderPlugin()).getFloodlightListener().unregisterFloodlight(this);
-            removeLighting(getLocation());
-        }
-        super.setLocation(loc);
-        if (loc != null) {
-            ((SensibleToolboxPlugin) getProviderPlugin()).getFloodlightListener().registerFloodlight(this);
-            addLighting(getLocation());
-        }
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        ((SensibleToolboxPlugin) getProviderPlugin()).getFloodlightListener().registerFloodlight(this);
+        addLighting(location);
+
+        super.onBlockRegistered(location, isPlacing);
+    }
+
+    @Override
+    public void onBlockUnregistered(Location loc) {
+        ((SensibleToolboxPlugin) getProviderPlugin()).getFloodlightListener().unregisterFloodlight(this);
+        removeLighting(loc);
+
+        super.onBlockUnregistered(loc);
     }
 
     private void removeLighting(Location loc) {

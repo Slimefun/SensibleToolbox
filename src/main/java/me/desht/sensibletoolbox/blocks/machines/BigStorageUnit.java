@@ -2,7 +2,6 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.ToggleButton;
@@ -329,34 +328,36 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null && getProcessing() != null) {
-            if (dropsItemsOnBreak()) {
-                // dump contents on floor (could make a big mess)
-                Location current = getLocation();
-                storageAmount = Math.min(4096, storageAmount);  // max 64 stacks will be dropped
-                while (storageAmount > 0) {
-                    ItemStack stack = stored.clone();
-                    stack.setAmount(Math.min(storageAmount, stored.getMaxStackSize()));
-                    current.getWorld().dropItemNaturally(current, stack);
-                    storageAmount -= stored.getMaxStackSize();
-                }
-                setStoredItemType(null);
-                setStorageAmount(0);
+    public void onBlockUnregistered(Location location) {
+        if (getProcessing() != null && dropsItemsOnBreak()) {
+            // dump contents on floor (could make a big mess)
+            Location current = getLocation();
+            storageAmount = Math.min(4096, storageAmount);  // max 64 stacks will be dropped
+            while (storageAmount > 0) {
+                ItemStack stack = stored.clone();
+                stack.setAmount(Math.min(storageAmount, stored.getMaxStackSize()));
+                current.getWorld().dropItemNaturally(current, stack);
+                storageAmount -= stored.getMaxStackSize();
             }
+            setStoredItemType(null);
+            setStorageAmount(0);
         }
-        super.setLocation(loc);
-        if (loc != null) {
-            getProgressMeter().setMaxProgress(maxCapacity);
-            setProcessing(stored);
-            setProgress(maxCapacity - storageAmount);
-            ItemStack output = getOutputItem();
-            outputAmount = output == null ? 0 : output.getAmount();
-            oldTotalAmount += outputAmount;
-            updateSignQuantityLine();
-            updateSignItemLines();
-            updateAttachedLabelSigns();
-        }
+        super.onBlockUnregistered(location);
+    }
+
+    @Override
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        getProgressMeter().setMaxProgress(maxCapacity);
+        setProcessing(stored);
+        setProgress(maxCapacity - storageAmount);
+        ItemStack output = getOutputItem();
+        outputAmount = output == null ? 0 : output.getAmount();
+        oldTotalAmount += outputAmount;
+        updateSignQuantityLine();
+        updateSignItemLines();
+        updateAttachedLabelSigns();
+
+        super.onBlockRegistered(location, isPlacing  );
     }
 
     @Override

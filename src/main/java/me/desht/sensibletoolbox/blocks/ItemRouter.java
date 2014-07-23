@@ -228,30 +228,31 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null) {
-            // eject any items in the buffer and/or module slots
-            getGUI().ejectItems(BUFFER_DISPLAY_SLOT);
-            setBufferItem(null);
-            for (int modSlot = MOD_SLOT_START; modSlot < MOD_SLOT_END; modSlot++) {
-                getGUI().ejectItems(modSlot);
+    public void onBlockRegistered(Location loc, boolean isPlacing) {
+        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                findNeighbourInventories();
             }
-            clearModules();
+        });
+        if (updateNeeded) {
+            update(false);
+            updateNeeded = false;
         }
-        super.setLocation(loc);
-        if (loc != null) {
-            // defer this so we can be sure all neighbouring STB blocks are actually created first
-            Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    findNeighbourInventories();
-                }
-            });
-            if (updateNeeded) {
-                update(false);
-                updateNeeded = false;
-            }
+        super.onBlockRegistered(loc, isPlacing);
+    }
+
+    @Override
+    public void onBlockUnregistered(Location loc) {
+        // eject any items in the buffer and/or module slots
+        getGUI().ejectItems(BUFFER_DISPLAY_SLOT);
+        setBufferItem(null);
+        for (int modSlot = MOD_SLOT_START; modSlot < MOD_SLOT_END; modSlot++) {
+            getGUI().ejectItems(modSlot);
         }
+        clearModules();
+
+        super.onBlockUnregistered(loc);
     }
 
     @Override

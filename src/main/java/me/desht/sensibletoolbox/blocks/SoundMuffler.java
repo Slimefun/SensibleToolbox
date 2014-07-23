@@ -15,8 +15,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -58,22 +56,6 @@ public class SoundMuffler extends BaseSTBBlock {
         return conf;
     }
 
-    @Override
-    public void setLocation(Location loc) {
-        SensibleToolboxPlugin plugin = (SensibleToolboxPlugin) getProviderPlugin();
-        if (plugin.isProtocolLibEnabled()) {
-            if (loc == null && getLocation() != null) {
-                plugin.getSoundMufflerListener().unregisterMuffler(this);
-            }
-            super.setLocation(loc);
-            if (loc != null) {
-                plugin.getSoundMufflerListener().registerMuffler(this);
-            }
-        } else {
-            super.setLocation(loc);
-        }
-    }
-
     public int getVolume() {
         return volume;
     }
@@ -112,13 +94,17 @@ public class SoundMuffler extends BaseSTBBlock {
     }
 
     @Override
-    public void onBlockPlace(BlockPlaceEvent event) {
+    public void onBlockRegistered(Location loc, boolean isPlacing) {
         ((SensibleToolboxPlugin) getProviderPlugin()).getSoundMufflerListener().registerMuffler(this);
+
+        super.onBlockRegistered(loc, isPlacing);
     }
 
     @Override
-    public void onBlockBreak(BlockBreakEvent event) {
+    public void onBlockUnregistered(Location loc) {
         ((SensibleToolboxPlugin) getProviderPlugin()).getSoundMufflerListener().unregisterMuffler(this);
+
+        super.onBlockUnregistered(loc);
     }
 
     @Override

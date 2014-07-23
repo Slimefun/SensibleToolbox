@@ -15,7 +15,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -81,13 +80,10 @@ public class AngelicBlock extends BaseSTBBlock {
                 b.setType(getMaterial());
                 placeBlock(b, event.getPlayer(), STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
             }
-            event.setCancelled(true);
+        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            // no direct placing but we need to ensure the player's inventory looks OK
+            hackyDelayedInvUpdate(event.getPlayer());
         }
-    }
-
-    @Override
-    public void onBlockPlace(BlockPlaceEvent event) {
-        // we don't allow normal placing of angelic blocks
         event.setCancelled(true);
     }
 
@@ -98,8 +94,8 @@ public class AngelicBlock extends BaseSTBBlock {
         Block b = event.getBlock();
         if (BlockProtection.playerCanBuild(p, b, BlockProtection.Operation.BREAK)) {
             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-            breakBlock(b, false);
-            STBUtil.giveItems(p, this.toItemStack());
+            breakBlock(false);
+            STBUtil.giveItems(p, toItemStack());
         }
         event.setCancelled(true);
     }

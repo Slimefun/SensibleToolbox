@@ -131,7 +131,6 @@ public class GeneralListener extends STBBaseListener {
             // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
             Validate.isTrue(stb instanceof BaseSTBBlock, "trying to place a non-block STB item? " + stb.getItemTypeID());
             ((BaseSTBBlock) stb).placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
-            ((BaseSTBBlock) stb).onBlockPlace(event);
             if (event.isCancelled()) {
                 throw new IllegalStateException("You must not change the cancellation status of a STB block place event!");
             }
@@ -159,7 +158,7 @@ public class GeneralListener extends STBBaseListener {
             if (!stb.isFlammable()) {
                 LogUtils.warning("Non-flammable STB block " + stb + " was not protected from flame?");
             }
-            stb.breakBlock(event.getBlock(), false);
+            stb.breakBlock(false);
             stb.onBlockBurnt(event);
         }
     }
@@ -182,8 +181,7 @@ public class GeneralListener extends STBBaseListener {
             }
             BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
             if (stb != null) {
-                stb.breakBlock(event.getBlock(), true);
-                stb.onBlockBreak(event);
+                stb.breakBlock(true);
             }
             if (event.isCancelled()) {
                 throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
@@ -258,7 +256,7 @@ public class GeneralListener extends STBBaseListener {
             BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
             if (stb != null) {
                 if (stb.onEntityExplode(event)) {
-                    stb.breakBlock(b, plugin.getRandom().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
+                    stb.breakBlock(plugin.getRandom().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
                 }
                 iter.remove();
             }
@@ -457,7 +455,7 @@ public class GeneralListener extends STBBaseListener {
                         event.setCancelled(true);
                         break LOOP; // if this one blocks, all subsequent blocks do too
                     case BREAK:
-                        stb.breakBlock(moving, true);
+                        stb.breakBlock(true);
                         break;
                 }
             }
@@ -484,7 +482,7 @@ public class GeneralListener extends STBBaseListener {
                         event.setCancelled(true);
                         break;
                     case BREAK:
-                        stb.breakBlock(event.getRetractLocation().getBlock(), true);
+                        stb.breakBlock(true);
                         break;
                 }
             }

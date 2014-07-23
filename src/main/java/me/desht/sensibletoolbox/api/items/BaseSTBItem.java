@@ -11,6 +11,7 @@ import me.desht.sensibletoolbox.api.gui.InventoryGUIListener;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.STBItemRegistry;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -450,6 +451,26 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
 
     @Override
     public void onGUIClosed(HumanEntity player) {
+    }
+
+    /**
+     * This method is needed sometimes to ensure the player's inventory is
+     * correctly updated on the client following cancellation of certain
+     * events.  Ideally these conditions should be handled by CraftBukkit,
+     * but this isn't always the case.
+     *
+     * @param player the player to update
+     * @deprecated marked deprecated to indicate that it's a hacky workaround
+     */
+    @Deprecated
+    protected void hackyDelayedInvUpdate(final Player player) {
+        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                //noinspection deprecation
+                player.updateInventory();
+            }
+        });
     }
 
     public enum ItemAction {

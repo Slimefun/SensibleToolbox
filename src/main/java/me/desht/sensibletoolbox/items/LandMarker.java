@@ -85,21 +85,21 @@ public class LandMarker extends BaseSTBItem {
         return loc == null ? null : MiscUtil.formatLocation(loc);
     }
 
-    public Location getLocation() {
+    public Location getMarkedLocation() {
         return loc;
     }
 
-    public void setLocation(Location loc) {
+    public void setMarkedLocation(Location loc) {
         this.loc = loc;
     }
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) && getLocation() != null) {
-            setLocation(null);
+        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) && getMarkedLocation() != null) {
+            setMarkedLocation(null);
             event.getPlayer().setItemInHand(toItemStack());
         } else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
-            setLocation(event.getClickedBlock().getLocation());
+            setMarkedLocation(event.getClickedBlock().getLocation());
             event.getPlayer().setItemInHand(toItemStack());
         }
         event.setCancelled(true);

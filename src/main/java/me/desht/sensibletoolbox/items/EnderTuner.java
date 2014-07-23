@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.items;
 
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.EnderTunable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
@@ -9,7 +8,6 @@ import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.apache.commons.lang.math.IntRange;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -162,24 +160,12 @@ public class EnderTuner extends BaseSTBItem {
                 if (item instanceof EnderTunable) {
                     ((NumericGadget) gui.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());
                     ((ToggleButton) gui.getGadget(GLOBAL_BUTTON_SLOT)).setValue(((EnderTunable) item).isGlobal());
-                    _hackyDelayedInvUpdate((Player) player);
+                    hackyDelayedInvUpdate((Player) player);
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    private void _hackyDelayedInvUpdate(final Player player) {
-        // this is unfortunately needed to ensure player sees the updated frequency
-        // button text after a tunable item is inserted
-        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                //noinspection deprecation
-                player.updateInventory();
-            }
-        });
     }
 
     @Override
@@ -232,7 +218,7 @@ public class EnderTuner extends BaseSTBItem {
             ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
             if (stack != null) {
                 STBUtil.giveItems(player, stack);
-                _hackyDelayedInvUpdate((Player) player);
+                hackyDelayedInvUpdate((Player) player);
             }
         }
     }

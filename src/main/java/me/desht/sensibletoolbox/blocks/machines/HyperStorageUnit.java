@@ -129,16 +129,14 @@ public class HyperStorageUnit extends BigStorageUnit {
     }
 
     @Override
-    public void setLocation(Location loc) {
-        if (loc == null) {
-            // move all output items into storage so they don't get dropped
-            ItemStack output = getOutputItem();
-            if (output != null) {
-                setStorageAmount(getStorageAmount() + output.getAmount());
-                setOutputAmount(0);
-                setOutputItem(null);
-            }
+    public void onBlockUnregistered(Location loc) {
+        // move all output items into storage so they don't get dropped
+        ItemStack output = getOutputItem();
+        if (output != null) {
+            setStorageAmount(getStorageAmount() + output.getAmount());
+            setOutputAmount(0);
+            setOutputItem(null);
         }
-        super.setLocation(loc);
+        super.onBlockUnregistered(loc);
     }
 }

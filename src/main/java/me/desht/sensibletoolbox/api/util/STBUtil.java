@@ -377,10 +377,22 @@ public class STBUtil {
      *
      * @param b      block in which to create the skull
      * @param name   name of the skin
-     * @param player if not null, skull will face the opposite direction the player face
+     * @param player skull will face the opposite direction the player faces
      * @return the skull (the caller should call skull.update() when ready)
      */
     public static Skull setSkullHead(Block b, String name, Player player) {
+        return setSkullHead(b, name, getFaceFromYaw(player.getLocation().getYaw()).getOppositeFace());
+    }
+
+    /**
+     * Create a skull with the given player skin
+     *
+     * @param b      block in which to create the skull
+     * @param name   name of the skin
+     * @param direction direction the skull should face
+     * @return the skull (the caller should call skull.update() when ready)
+     */
+    public static Skull setSkullHead(Block b, String name, BlockFace direction) {
         b.setType(Material.SKULL);
         Skull skull = (Skull) b.getState();
         skull.setSkullType(SkullType.PLAYER);
@@ -388,9 +400,7 @@ public class STBUtil {
         org.bukkit.material.Skull sk = (org.bukkit.material.Skull) skull.getData();
         sk.setFacingDirection(BlockFace.SELF);
         skull.setData(sk);
-        if (player != null) {
-            skull.setRotation(getFaceFromYaw(player.getLocation().getYaw()).getOppositeFace());
-        }
+        skull.setRotation(direction);
         return skull;
     }
 

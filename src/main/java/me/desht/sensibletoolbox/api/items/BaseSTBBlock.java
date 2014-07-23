@@ -26,7 +26,6 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.ChatPaginator;
 
@@ -52,6 +51,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     private UUID owner;
     private int lastPower;
     private boolean pulsing;
+    private boolean pendingRemoval;
 
     protected BaseSTBBlock() {
         super();
@@ -192,7 +192,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     /**
      * Get the number of ticks since this block was placed in the world.  This
-     * will return 0 if called on an object which has not yet been placed.
+     * will return 0 if called on a block which has not yet been placed, or
+     * on a block whose {@link #getTickRate()} method returns 0.
      *
      * @return the number of ticks lived
      */
@@ -435,40 +436,19 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Set the location of the base block of this STB block.  This should only
-     * be called when the block is first placed, or when deserialized.
+     * Set the location of the base block of this STB block.  This method
+     * should not be called directly; it is implicitly called when a block is
+     * placed, either by player or by the
+     * {@link #placeBlock(org.bukkit.block.Block, org.bukkit.entity.Player,
+     * org.bukkit.block.BlockFace)} method.
      *
      * @param loc the base block location
-     * @throws IllegalStateException if the caller attempts to set a non-null location when the object already has a location set
+     * @throws IllegalArgumentException if the new location is null or the block's current location is non-null
      */
-    public void setLocation(Location loc) {
-        if (loc != null) {
-            if (persistableLocation != null && !loc.equals(persistableLocation.getLocation())) {
-                throw new IllegalStateException("Attempt to change the location of existing STB block @ " + persistableLocation);
-            }
-            persistableLocation = new PersistableLocation(loc);
-            for (RelativePosition pos : getBlockStructure()) {
-                Block b1 = getMultiBlock(loc, pos);
-                Debugger.getInstance().debug(2, "Multiblock for " + this + " -> " + b1);
-                b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
-            }
-            reattachLabelSigns(loc);
-            if (needToScanSigns) {
-                scanForAttachedLabelSigns();
-                needToScanSigns = false;
-            }
-            setGUI(createGUI());
-        } else {
-            if (persistableLocation != null) {
-                Location l = getLocation();
-                for (RelativePosition pos : getBlockStructure()) {
-                    Block b1 = getMultiBlock(l, pos);
-                    b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
-                }
-            }
-            persistableLocation = null;
-            setGUI(null);
-        }
+    public final void setLocation(Location loc) {
+        Validate.notNull(loc, "Location must not be null");
+        Validate.isTrue(persistableLocation == null, "Attempt to change the location of existing STB block @ " + persistableLocation);
+        persistableLocation = new PersistableLocation(loc);
     }
 
     private void reattachLabelSigns(Location loc) {
@@ -488,7 +468,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
     }
 
-    private Block getMultiBlock(Location loc, RelativePosition pos) {
+    private Block getAuxiliaryBlock(Location loc, RelativePosition pos) {
         Block b = loc.getBlock();
         int dx = 0, dz = 0;
         switch (getFacing()) {
@@ -514,7 +494,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     public final void moveTo(final Location oldLoc, final Location newLoc) {
         for (RelativePosition pos : getBlockStructure()) {
-            Block b1 = getMultiBlock(oldLoc, pos);
+            Block b1 = getAuxiliaryBlock(oldLoc, pos);
             b1.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
         }
         if (this instanceof ChargeableBlock) {
@@ -524,7 +504,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         persistableLocation = new PersistableLocation(newLoc);
 
         for (RelativePosition pos : getBlockStructure()) {
-            Block b1 = getMultiBlock(newLoc, pos);
+            Block b1 = getAuxiliaryBlock(newLoc, pos);
             Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + b1);
             b1.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
         }
@@ -563,34 +543,25 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Called when an STB block has been placed.  The physical block has not
-     * yet been placed in the world, but the block is already registered as an
-     * STB block, and placement will definitely happen at this point.  This
-     * method is called after {@link #placeBlock(org.bukkit.block.Block, org.bukkit.entity.Player, org.bukkit.block.BlockFace)}
-     * <p>
-     * This event is called with MONITOR priority; do not change the outcome
-     * of the event!
+     * Don't call this method directly; it is implicitly called when a block
+     * is registered with STB.  Override {@link #onBlockRegistered(org.bukkit.Location, boolean)}
+     * if you need to run a specific task on registration.
      *
-     * @param event the block place event
+     * @param location the location where the block has been registered
+     * @param isPlacing if true, this is being called because the block is
+     *                  being placed by a player; if false, because the block
+     *                  is being restored from persisted data
      */
-    public void onBlockPlace(BlockPlaceEvent event) {
-    }
+    public final void preRegister(Location location, boolean isPlacing) {
+        location.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
+        for (RelativePosition pos : getBlockStructure()) {
+            Block auxBlock = getAuxiliaryBlock(location, pos);
+            Debugger.getInstance().debug(2, "Multiblock for " + this + " -> " + auxBlock);
+            auxBlock.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
+        }
 
-    /**
-     * Do the basic initialisation for a newly-place STB block.  This method
-     * does not actually place the physical block in the world.  This should
-     * not normally need to be called directly (STB's built-in BlockPlaceEvent
-     * handler usually deals with this), but may be useful where a block is
-     * placed via some other means.
-     *
-     * @param block the block which is being placed
-     * @param player the player placing the block
-     * @param facing the direction that the block should face
-     */
-    public final void placeBlock(final Block block, Player player, BlockFace facing) {
-        setFacing(facing);
-        setOwner(player.getUniqueId());
-        LocationManager.getManager().registerLocation(block.getLocation(), this, true);
+        setGUI(createGUI());
+
         // defer this so it's done after the block is actually placed in the world
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
             @Override
@@ -598,6 +569,105 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 lastPower = getLocation().getBlock().getBlockPower();
             }
         });
+
+        onBlockRegistered(location, isPlacing);
+    }
+
+    /**
+     * Called when an STB block has been registered with the location manager
+     * after being placed.  The physical block has not necessarily been drawn
+     * in the world at this point, but {@link #getLocation()} will return the
+     * block's location.
+     *
+     * @param location the location where the block has been registered
+     * @param isPlacing if true, this is being called because the block is
+     *                  being placed by a player; if false, because the block
+     *                  is being restored from persisted data
+     */
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+    }
+
+    /**
+     * Do the basic initialisation for a newly-placed STB block.  This method
+     * does not actually place the physical block in the world.  This does
+     * not normally need to be called directly (STB's built-in BlockPlaceEvent
+     * handler usually deals with this), but it may be useful where a block is
+     * placed by some other means.
+     *
+     * @param block the world block where this STB block is being placed
+     * @param player the player placing the block
+     * @param facing the direction that the block should face
+     */
+    public final void placeBlock(final Block block, Player player, BlockFace facing) {
+        setFacing(facing);
+        setOwner(player.getUniqueId());
+
+        Location loc = block.getLocation();
+
+        // register the block (preRegister()/onBlockRegister() will be called from here)
+        LocationManager.getManager().registerLocation(loc, this, true);
+
+        reattachLabelSigns(loc);
+        if (needToScanSigns) {
+            scanForAttachedLabelSigns();
+            needToScanSigns = false;
+        }
+
+    }
+
+    /**
+     * Cause this STB block to break, removing it, any auxiliary blocks and
+     * any attached label signs from the world.  This is automatically called
+     * when a block is broken by a player, but can be called directly if the
+     * block should be broken by some other means.
+     *
+     * @param dropItem if true, drop the block's item form as a collectable
+     *                 item
+     */
+    public final void breakBlock(boolean dropItem) {
+        Location baseLoc = this.getLocation();
+        Block origin = baseLoc.getBlock();
+
+        pendingRemoval = true;
+
+        // remove any attached label signs
+        scanForAttachedLabelSigns();
+        for (int rotation = 0; rotation < 4; rotation++) {
+            if (labelSigns.get(rotation)) {
+                origin.getRelative(STBUtil.getRotatedFace(getFacing(), rotation)).setType(Material.AIR);
+            }
+        }
+
+        // clear block metadata and set block(s) to AIR
+        for (RelativePosition pos : getBlockStructure()) {
+            Block auxBlock = getAuxiliaryBlock(baseLoc, pos);
+            auxBlock.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
+            auxBlock.setType(Material.AIR);
+        }
+        origin.removeMetadata(BaseSTBBlock.STB_BLOCK, SensibleToolboxPlugin.getInstance());
+        origin.setType(Material.AIR);
+
+        // unregister the block (onBlockUnregister() will be called from here)
+        LocationManager.getManager().unregisterLocation(baseLoc, this);
+
+        setGUI(null);
+        setFacing(BlockFace.SELF);
+        setOwner(null);
+
+        if (dropItem) {
+            origin.getWorld().dropItemNaturally(baseLoc, toItemStack());
+        }
+    }
+
+    /**
+     * Called when an STB block has been broken and is being unregistered. The
+     * block's location and GUI (if any) are still valid at this point, but
+     * all physical blocks have been set to AIR.  Use this method to perform
+     * any block-specific shutdown tasks, e.g. drop items from inventory.
+     *
+     * @param location location of the base (primary) block of this STB block
+     */
+    public void onBlockUnregistered(Location location) {
     }
 
     /**
@@ -609,45 +679,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public final boolean validatePlaceable(Location baseLoc) {
         for (RelativePosition rPos : getBlockStructure()) {
-            Block b = getMultiBlock(baseLoc, rPos);
+            Block b = getAuxiliaryBlock(baseLoc, rPos);
             if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.STATIONARY_WATER) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * Called when an STB block is actually broken.  At the point of calling,
-     * the block (and any possible auxiliary blocks) will have already been
-     * set to AIR and the STB block will have been unregistered.
-     * <p>
-     * The event handler runs with MONITOR priority; you must not alter the
-     * outcome of this event!
-     *
-     * @param event the block break event
-     */
-    public void onBlockBreak(BlockBreakEvent event) {
-    }
-
-    public final void breakBlock(Block b, boolean dropItem) {
-        Location baseLoc = this.getLocation();
-        Block origin = baseLoc.getBlock();
-        scanForAttachedLabelSigns();
-        for (int rotation = 0; rotation < 4; rotation++) {
-            if (labelSigns.get(rotation)) {
-                origin.getRelative(STBUtil.getRotatedFace(getFacing(), rotation)).setType(Material.AIR);
-            }
-        }
-        LocationManager.getManager().unregisterLocation(baseLoc, this);
-        for (RelativePosition pos : getBlockStructure()) {
-            Block auxBlock = getMultiBlock(baseLoc, pos);
-            auxBlock.setType(Material.AIR);
-        }
-        origin.setType(Material.AIR);
-        if (dropItem) {
-            b.getWorld().dropItemNaturally(b.getLocation(), toItemStack());
-        }
     }
 
     @Override
@@ -854,36 +891,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Temporarily override the item display name, just before the item is
-     * placed.  The item display name is used as the inventory title for
-     * blocks such as the dropper.
-     *
-     * @param event the block place event
-     */
-    protected void setInventoryTitle(BlockPlaceEvent event, final String tempTitle) {
-        ItemStack inHand = event.getItemInHand();
-        final Player player = event.getPlayer();
-        ItemMeta meta = inHand.getItemMeta();
-        meta.setDisplayName(tempTitle);
-        inHand.setItemMeta(meta);
-        if (inHand.getAmount() > 1) {
-            // any remaining items need to have their proper title restored
-            Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    ItemStack inHand = player.getItemInHand();
-                    if (inHand.getType() == getMaterial()) {
-                        ItemMeta meta = inHand.getItemMeta();
-                        if (meta.getDisplayName().equals(tempTitle)) {
-                            player.setItemInHand(toItemStack(inHand.getAmount()));
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    /**
      * Builds the inventory-based GUI for this block.  Override in subclasses.
      *
      * @return the GUI object (may be null if this block doesn't have a GUI)
@@ -910,6 +917,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public boolean isFlammable() {
         return false;
+    }
+
+    /**
+     * Check if this block is due to be removed.  This will be set to true by
+     * the {@link #breakBlock(boolean)} method to indicate that the block will
+     * be removed by the end of this server tick.
+     *
+     * @return true if the block is due to be removed; false otherwise
+     */
+    public boolean isPendingRemoval() {
+        return pendingRemoval;
     }
 
     /**

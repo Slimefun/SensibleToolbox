@@ -333,8 +333,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private void setupHoloAPI() {
         Plugin plugin = getServer().getPluginManager().getPlugin("HoloAPI");
         if (plugin != null && plugin.isEnabled()) {
-            holoAPIenabled = true;
-            Debugger.getInstance().debug("Hooked HoloAPI v" + plugin.getDescription().getVersion());
+            if (!plugin.getDescription().getVersion().startsWith("1.")) {
+                LogUtils.warning("Found HoloAPI " + plugin.getDescription().getVersion() +
+                        ", but only HoloAPI v1.x is supported by SensibleToolbox at this time - disabling HoloAPI support");
+            } else {
+                holoAPIenabled = true;
+                Debugger.getInstance().debug("Hooked HoloAPI v" + plugin.getDescription().getVersion());
+            }
         }
     }
 
