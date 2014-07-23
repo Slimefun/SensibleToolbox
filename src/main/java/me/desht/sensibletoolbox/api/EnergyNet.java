@@ -1,5 +1,9 @@
 package me.desht.sensibletoolbox.api;
 
+/**
+ * Represents an energy net; a collection of chargeable blocks connected by
+ * cabling.
+ */
 public interface EnergyNet {
     void findSourcesAndSinks();
 

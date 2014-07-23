@@ -13,6 +13,9 @@ import org.bukkit.inventory.Recipe;
 
 import java.util.*;
 
+/**
+ * Collection of miscellaneous recipe-related utility methods.
+ */
 public class RecipeUtil {
     private static final Set<Material> vanillaSmelts = Sets.newHashSet();
     private static final Map<ItemStack, List<ItemStack>> reverseCustomSmelts = Maps.newHashMap();
@@ -43,6 +46,18 @@ public class RecipeUtil {
         }
     }
 
+    public static void findVanillaFurnaceMaterials() {
+        Iterator<Recipe> iter = Bukkit.recipeIterator();
+        while (iter.hasNext()) {
+            Recipe r = iter.next();
+            if (r instanceof FurnaceRecipe) {
+                Material mat = ((FurnaceRecipe) r).getInput().getType();
+                vanillaSmelts.add(mat);
+                recordReverseSmelt(r.getResult(), ((FurnaceRecipe) r).getInput());
+            }
+        }
+    }
+
     private static void recordReverseSmelt(ItemStack result, ItemStack ingredient) {
         if (!reverseCustomSmelts.containsKey(result)) {
             reverseCustomSmelts.put(result, new ArrayList<ItemStack>());
@@ -61,18 +76,6 @@ public class RecipeUtil {
     public static List<ItemStack> getSmeltingIngredientsFor(ItemStack stack) {
         List<ItemStack> res = reverseCustomSmelts.get(stack);
         return res == null ? Collections.<ItemStack>emptyList() : res;
-    }
-
-    public static void findVanillaFurnaceMaterials() {
-        Iterator<Recipe> iter = Bukkit.recipeIterator();
-        while (iter.hasNext()) {
-            Recipe r = iter.next();
-            if (r instanceof FurnaceRecipe) {
-                Material mat = ((FurnaceRecipe) r).getInput().getType();
-                vanillaSmelts.add(mat);
-                recordReverseSmelt(r.getResult(), ((FurnaceRecipe) r).getInput());
-            }
-        }
     }
 
     /**

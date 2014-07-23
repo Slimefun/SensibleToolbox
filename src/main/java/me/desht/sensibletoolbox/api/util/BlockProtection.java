@@ -126,8 +126,17 @@ public class BlockProtection {
         }
     }
 
+    /**
+     * The operation being checked.
+     */
     public enum Operation {
+        /**
+         * Placing a block.
+         */
         PLACE,
+        /**
+         * Breaking a block.
+         */
         BREAK,
     }
 }

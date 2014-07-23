@@ -411,8 +411,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slot where an charge meter gadget will be
-     * displayed.  The default is slot 26; right-hand edge of the third row.
+     * Get the inventory slot where a charge meter gadget will be displayed.
+     * The default is slot 26; right-hand edge of the third row.
      *
      * @return an inventory slot number, or -1 for no gadget
      */
@@ -431,7 +431,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slot for an charge direction slot; where the energy
+     * Get the inventory slot for an charge direction gadget; where the energy
      * flow between machine and energy cell can be changed.  The default is
      * -1; no gadget.  If a gadget is added, it is recommended to place it
      * adjacent to the energy cell slot defined with
@@ -869,7 +869,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 " power=" + getPowerMultiplier() + " eject=" + getAutoEjectDirection());
     }
 
-    public void installEnergyCell(EnergyCell cell) {
+    private void installEnergyCell(EnergyCell cell) {
         installedCell = cell;
         Debugger.getInstance().debug("installed energy cell " + cell + " in " + this);
         update(false);

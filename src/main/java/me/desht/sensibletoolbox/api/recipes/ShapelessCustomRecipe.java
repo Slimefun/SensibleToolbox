@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Represents a shapeless recipe with potentially multiple ingredients and
+ * multiple results, with a definable chance for each result to be produced.
+ */
 public class ShapelessCustomRecipe implements CustomRecipe {
     private final List<SupplementaryResult> extra = Lists.newArrayList();
     private final Map<String,Integer> ingredients = Maps.newHashMap();
@@ -40,6 +44,11 @@ public class ShapelessCustomRecipe implements CustomRecipe {
         return result;
     }
 
+    /**
+     * Add an ingredient to this recipe.
+     *
+     * @param ingredient the ingredient to add
+     */
     public void addIngredient(ItemStack ingredient) {
         String key = RecipeUtil.makeRecipeKey(ingredient);
         int val = ingredients.containsKey(key) ? ingredients.get(key) : 0;
@@ -74,6 +83,7 @@ public class ShapelessCustomRecipe implements CustomRecipe {
 //        return true;
 //    }
 
+    @Override
     public void addSupplementaryResult(SupplementaryResult result) {
         extra.add(result);
     }
