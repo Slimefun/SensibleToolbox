@@ -303,8 +303,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             Block[] affectedBlocks = Arrays.copyOfRange(blocks, 0, nAffected);
 
             List<ItemStack> items = new ArrayList<ItemStack>();
+            ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE);  // ensure we can mine anything
             for (Block b : affectedBlocks) {
-                items.addAll(STBUtil.calculateDrops(b, inHand));
+                items.addAll(STBUtil.calculateDrops(b, tool));
             }
             HashMap<Integer, ItemStack> excess = player.getInventory().addItem(items.toArray(new ItemStack[items.size()]));
             for (ItemStack stack : excess.values()) {
@@ -323,7 +324,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     private int howMuchDoesPlayerHave(Player p, MaterialData mat) {
         int amount = 0;
         for (ItemStack stack : p.getInventory()) {
-            if (stack != null && stack.getType() == mat.getItemType() &&
+            if (stack != null && !stack.hasItemMeta() && stack.getType() == mat.getItemType() &&
                     (losesDataWhenBroken(mat.getItemType()) || stack.getData().getData() == mat.getData())) {
                 amount += stack.getAmount();
             }
@@ -392,7 +393,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         if (getCharge() >= chargeNeeded) {
             setCharge(getCharge() - chargeNeeded);
-            ItemCost cost = new ItemCost(source.getType(), source.getData(), actualBlocks.size());
+//            ItemCost cost = new ItemCost(source.getType(), source.getData(), actualBlocks.size());
+            ItemCost cost = new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
             cost.apply(player);
             for (Block b : actualBlocks) {
                 b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
