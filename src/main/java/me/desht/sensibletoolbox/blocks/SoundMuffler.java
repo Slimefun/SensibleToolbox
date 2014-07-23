@@ -131,11 +131,8 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public String[] getSignLabel(BlockFace face) {
-        return new String[]{
-                makeItemLabel(face),
-                ChatColor.DARK_RED + "Volume " + ChatColor.RESET + getVolume(),
-                "",
-                ""
-        };
+        String[] label = super.getSignLabel(face);
+        label[1] = ChatColor.DARK_RED + "Volume " + ChatColor.RESET + getVolume();
+        return label;
     }
 }

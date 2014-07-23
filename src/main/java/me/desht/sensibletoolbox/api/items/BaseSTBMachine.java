@@ -495,11 +495,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             installedCell = null;
         }
         upgrades.clear();
-        setGUI(null);
         SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachineRemoved(this);
 
         super.onBlockUnregistered(loc);
     }
+
     /**
      * Find a candidate slot for item insertion; this will look for an empty slot, or a slot containing the
      * same kind of item as the candidate item.  It will NOT check item amounts (see #insertItem() for that)

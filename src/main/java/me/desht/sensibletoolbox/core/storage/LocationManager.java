@@ -18,7 +18,6 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.Sign;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,9 +36,9 @@ public class LocationManager {
     private int saveInterval;  // ms
     private long totalTicks;
     private long totalTime;
-    private final SensibleToolboxPlugin plugin;
     private final DBStorage dbStorage;
     private final Thread updaterTask;
+    private static final BlockAccess blockAccess = new BlockAccess();
 
     // tracks those blocks (on a per-world basis) which need to do something on a server tick
     private final Map<UUID, Set<BaseSTBBlock>> allTickers = new HashMap<UUID, Set<BaseSTBBlock>>();
@@ -51,7 +50,6 @@ public class LocationManager {
     private final BlockingQueue<UpdateRecord> updateQueue = new LinkedBlockingQueue<UpdateRecord>();
 
     private LocationManager(SensibleToolboxPlugin plugin) throws SQLException {
-        this.plugin = plugin;
         saveInterval = plugin.getConfig().getInt("save_interval", 30) * 1000;
         lastSave = System.currentTimeMillis();
         try {
@@ -117,12 +115,11 @@ public class LocationManager {
             return;
         }
 
-//        stb.onBlockPreRegister(loc, isPlacing);
-        stb.setLocation(loc);
+        stb.setLocation(blockAccess, loc);
 
         String locStr = MiscUtil.formatLocation(loc);
         getWorldIndex(loc.getWorld()).put(locStr, stb);
-        stb.preRegister(loc, isPlacing);
+        stb.preRegister(blockAccess, loc, isPlacing);
 
         if (isPlacing) {
             addPendingDBOperation(loc, locStr, UpdateRecord.Operation.INSERT);
@@ -145,7 +142,6 @@ public class LocationManager {
             String locStr = MiscUtil.formatLocation(loc);
             addPendingDBOperation(loc, locStr, UpdateRecord.Operation.DELETE);
             getWorldIndex(loc.getWorld()).remove(locStr);
-//            stb.onBlockUnregistered(loc);
             Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
         } else {
             LogUtils.warning("Attempt to unregister non-existent STB block @ " + loc);
@@ -163,14 +159,12 @@ public class LocationManager {
 
         // TODO: translate multi-block structures
 
-        oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, plugin);
         String locStr = MiscUtil.formatLocation(oldLoc);
         addPendingDBOperation(oldLoc, locStr, UpdateRecord.Operation.DELETE);
         getWorldIndex(oldLoc.getWorld()).remove(locStr);
 
-        stb.moveTo(oldLoc, newLoc);
+        stb.moveTo(blockAccess, oldLoc, newLoc);
 
-        newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(plugin, stb));
         locStr = MiscUtil.formatLocation(newLoc);
         addPendingDBOperation(newLoc, locStr, UpdateRecord.Operation.INSERT);
         getWorldIndex(newLoc.getWorld()).put(locStr, stb);
@@ -313,18 +307,6 @@ public class LocationManager {
                         }
                     }
                 }
-//                for (BaseSTBBlock stb : tickerSet) {
-//                    PersistableLocation pLoc = stb.getPersistableLocation();
-//                    if (pLoc != null) {
-//                        int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
-//                        if (w.isChunkLoaded(x >> 4, z >> 4)) {
-//                            stb.tick();
-//                            if (stb.getTicksLived() % stb.getTickRate() == 0) {
-//                                stb.onServerTick();
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
         totalTicks++;
@@ -507,5 +489,11 @@ public class LocationManager {
 
     UpdateRecord getUpdateRecord() throws InterruptedException {
         return updateQueue.take();
+    }
+
+    public static class BlockAccess {
+        // this is a little naughty, but it lets us call public methods
+        // in BaseSTBBlock which we don't want everyone else to call
+        private BlockAccess() { }
     }
 }
