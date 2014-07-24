@@ -185,8 +185,8 @@ public class AutoBuilder extends BaseSTBMachine {
         baseScuPerOp = getItemConfig().getInt("scu_per_op");
         if (workArea == null) {
             BuilderStatus bs = setupWorkArea();
-            setStatus(bs);
             if (bs != BuilderStatus.READY) {
+                setStatus(bs);
                 return;
             }
         }
@@ -241,37 +241,41 @@ public class AutoBuilder extends BaseSTBMachine {
             double scuNeeded = 0.0;
             switch (getBuildMode()) {
                 case CLEAR:
-                    if (BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
-                        scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
-                        if (scuNeeded <= getCharge() && b.getType() != Material.AIR) {
-                            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-                            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
-                            if (stb != null) {
-                                stb.breakBlock(false);
-                            } else {
-                                b.setType(Material.AIR);
-                            }
+                    if (!BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
+                        setStatus(BuilderStatus.NO_PERMISSION);
+                        return;
+                    }
+                    scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
+                    if (scuNeeded <= getCharge() && b.getType() != Material.AIR) {
+                        b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                        BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+                        if (stb != null) {
+                            stb.breakBlock(false);
+                        } else {
+                            b.setType(Material.AIR);
                         }
                     }
                     break;
                 case FILL:
                 case WALLS:
                 case FRAME:
-                    if (BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.PLACE)) {
-                        if (shouldBuildHere()) {
-                            scuNeeded = baseScuPerOp;
-                            if (scuNeeded <= getCharge() && (b.isEmpty() || b.isLiquid())) {
-                                ItemStack item = fetchNextBuildItem();
-                                if (item == null) {
-                                    setStatus(BuilderStatus.NO_INVENTORY);
-                                    return;
-                                }
-                                b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
-                                b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                    if (!BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.PLACE)) {
+                        setStatus(BuilderStatus.NO_PERMISSION);
+                        return;
+                    }
+                    if (shouldBuildHere()) {
+                        scuNeeded = baseScuPerOp;
+                        if (scuNeeded <= getCharge() && (b.isEmpty() || b.isLiquid())) {
+                            ItemStack item = fetchNextBuildItem();
+                            if (item == null) {
+                                setStatus(BuilderStatus.NO_INVENTORY);
+                                return;
                             }
-                        } else {
-                            ParticleEffect.RED_DUST.play(b.getLocation(), 0.05f, 0.05f, 0.05f, 1.0f, 3);
+                            b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
+                            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                         }
+                    } else {
+                        ParticleEffect.RED_DUST.play(b.getLocation(), 0.05f, 0.05f, 0.05f, 1.0f, 3);
                     }
                     break;
             }
@@ -417,6 +421,7 @@ public class AutoBuilder extends BaseSTBMachine {
                 } else if (inSlot != null) {
                     getGUI().getInventory().setItem(slot, null);
                 }
+                setStatus(setupWorkArea());
             }
             return false; // we just put a copy of the land marker into the builder
         } else {
@@ -446,8 +451,10 @@ public class AutoBuilder extends BaseSTBMachine {
         stack.setAmount(1);
         if (getInventoryItem(LANDMARKER_SLOT_1) == null) {
             setInventoryItem(LANDMARKER_SLOT_1, stack);
+            setStatus(setupWorkArea());
         } else if (getInventoryItem(LANDMARKER_SLOT_2) == null) {
             setInventoryItem(LANDMARKER_SLOT_2, stack);
+            setStatus(setupWorkArea());
         }
     }
 
@@ -532,15 +539,16 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     public enum BuilderStatus {
-        READY(DyeColor.CYAN, "Ready to Operate!"),
+        READY(DyeColor.LIME, "Ready to Operate!"),
         NO_WORKAREA(DyeColor.YELLOW, "No work area has", "been defined yet"),
         NO_INVENTORY(DyeColor.RED, "Out of building material!", "Place more blocks in", "the inventory and", "press Start"),
+        NO_PERMISSION(DyeColor.RED, "Builder doesn't have", "building rights in", "this area"),
         TOO_NEAR(DyeColor.RED, "Auto Builder is inside", "the work area!"),
         TOO_FAR(DyeColor.RED, "Auto Builder is too far", "away from the work area!", "Place it " + MAX_DISTANCE + " blocks or less from", "the edge of the work area"),
         LM_WORLDS_DIFFERENT(DyeColor.RED, "Land Markers are", "from different worlds!"),
-        RUNNING(DyeColor.LIME, "Builder is running", "Press Start button to pause"),
+        RUNNING(DyeColor.LIGHT_BLUE, "Builder is running", "Press Start button to pause"),
         PAUSED(DyeColor.ORANGE, "Builder has been paused", "Press Start button to resume"),
-        FINISHED(DyeColor.GREEN, "Builder has finished!", "Ready for next operation");
+        FINISHED(DyeColor.WHITE, "Builder has finished!", "Ready for next operation");
 
         private final DyeColor color;
         private final String[] text;
