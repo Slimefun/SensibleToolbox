@@ -3,7 +3,6 @@ package me.desht.sensibletoolbox.api.items;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.recipes.ProcessingResult;
-import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -32,7 +31,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
     }
 
     @Override
-    protected void playOutOfChargeSound() {
+    protected void onOutOfCharge() {
         getLocation().getWorld().playSound(getLocation(), Sound.ENDERDRAGON_HIT, 1.0f, 0.5f);
     }
 
@@ -120,10 +119,10 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         stack.setAmount(stack.getAmount() - 1);
         setInventoryItem(inputSlot, stack);
 
-        if (stack == null) {
-            // workaround to avoid leaving ghost items in the input slot
-            STBUtil.forceInventoryRefresh(getInventory());
-        }
+//        if (stack == null) {
+//            // workaround to avoid leaving ghost items in the input slot
+//            STBUtil.forceInventoryRefresh(getInventory());
+//        }
 
         update(false);
     }
@@ -134,7 +133,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         return CustomRecipeManager.getManager().hasRecipe(this, item);
     }
 
-    protected ProcessingResult getCustomRecipeFor(ItemStack stack) {
+    private ProcessingResult getCustomRecipeFor(ItemStack stack) {
         return CustomRecipeManager.getManager().getRecipe(this, stack);
     }
 

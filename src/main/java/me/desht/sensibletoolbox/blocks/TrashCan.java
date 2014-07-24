@@ -85,7 +85,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
      */
     public void emptyTrash(boolean noisy) {
         Location l = getLocation();
-        if (l != null && l.getBlock().getType() == getMaterial()) {
+        if (l != null && l.getBlock().getType() == getMaterialData().getItemType()) {
             Dropper d = (Dropper) l.getBlock().getState();
             if (noisy) {
                 for (ItemStack stack : d.getInventory()) {
@@ -126,7 +126,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     public Inventory getInventory() {
         Location l = getLocation();
-        if (l != null && l.getBlock().getType() == getMaterial()) {
+        if (l != null && l.getBlock().getType() == getMaterialData().getItemType()) {
             Dropper d = (Dropper) getLocation().getBlock().getState();
             return d.getInventory();
         } else {

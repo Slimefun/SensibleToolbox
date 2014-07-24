@@ -131,6 +131,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         update(false);
     }
 
+    /**
+     * You should not need to call this method directly; it is used to link the item's
+     * inventory GUI with the item itself.
+     *
+     * @return the item's GUI holder object
+     */
     public final STBGUIHolder getGuiHolder() {
         return guiHolder;
     }
@@ -155,7 +161,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * An STB block's initial facing direction is determined by the
      * direction that the player who placed it was facing at the time.
      *
-     * @return the facing direction of the block
+     * @return the facing direction of the block, or SELF if the block has not been placed
      */
     public final BlockFace getFacing() {
         return facing;
@@ -176,7 +182,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Get the UUID of the player who owns this block.  The initial owner of
      * an STB block is the player who placed it.
      *
-     * @return the owning player's UUID
+     * @return the owning player's UUID, or null if the block has not been placed yet
      */
     public final UUID getOwner() {
         return owner;
@@ -614,10 +620,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     /**
      * Do the basic initialisation for a newly-placed STB block.  This method
-     * does not actually place the physical block in the world.  This does
-     * not normally need to be called directly (STB's built-in BlockPlaceEvent
-     * handler usually deals with this), but it may be useful where a block is
-     * placed by some other means.
+     * does not actually place the physical block in the world.  This is
+     * automatically called when a block is placed by a player, but it can be
+     * directly if a block should be placed by some other means.
      *
      * @param block the world block where this STB block is being placed
      * @param player the player placing the block
@@ -743,11 +748,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public void repaint(Block block) {
         // maybe one day Bukkit will have a block set method which takes a MaterialData
-        block.setTypeIdAndData(getMaterial().getId(), getMaterialData().getData(), true);
+        block.setTypeIdAndData(getMaterialData().getItemTypeId(), getMaterialData().getData(), true);
     }
 
     /**
-     * Check if this STB block can be pushed or pulled by a piston, and if
+     * Define whether this STB block can be pushed or pulled by a piston, and if
      * doing so would break it.  The default behaviour is to allow movement;
      * override this in subclasses to modify the behaviour.
      *
@@ -758,7 +763,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Check if this block supports the given redstone behaviour mode.
+     * Define whether this block supports the given redstone behaviour mode.
      *
      * @param behaviour the mode to check
      * @return true if the block supports this behaviour; false otherwise
@@ -777,9 +782,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Check if this block is flammable.  This can be used to override the
+     * Define whether this block is flammable.  This can be used to override the
      * flammability of blocks, i.e. to make an STB block non-flammable even
-     * if its base material is flammable.
+     * if its base material is flammable.  The default behaviour is to return
+     * false; i.e. STB blocks are <em>not</em> flammable by default.
      *
      * @return true if the block should be flammable; false otherwise
      */

@@ -33,21 +33,21 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     }
 
     /**
-     * Get the inventory slot where the item currently being processed can be displayed.
+     * Define the inventory slot where the item currently being processed can be displayed.
      *
      * @return the slot number, or -1 if no item should be displayed
      */
     public abstract int getProgressItemSlot();
 
     /**
-     * Get the inventory slot where the progress bar should be displayed.
+     * Define the inventory slot where the progress bar should be displayed.
      *
      * @return the slot number, or -1 if no bar should be displayed
      */
     public abstract int getProgressCounterSlot();
 
     /**
-     * Get the material used to display the progress bar.  This material must have a durability,
+     * Define the material used to display the progress bar.  This material must have a durability,
      * e.g. a tool or armour item.
      *
      * @return the material used to display the progress bar
@@ -60,7 +60,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      *
      * @return the ticks remaining
      */
-    public double getProgress() {
+    public final double getProgress() {
         return progress;
     }
 
@@ -70,7 +70,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      *
      * @param progress the ticks remaining until completion
      */
-    public void setProgress(double progress) {
+    public final void setProgress(double progress) {
         this.progress = Math.max(0, progress);
         getProgressMeter().repaintNeeded();
     }
@@ -80,7 +80,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      *
      * @return the item being processed, or null if nothing is being processed
      */
-    public ItemStack getProcessing() {
+    public final ItemStack getProcessing() {
         return processing;
     }
 
@@ -89,13 +89,13 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      *
      * @param item the item to be processed, or null to process nothing
      */
-    public void setProcessing(ItemStack item) {
+    public final void setProcessing(ItemStack item) {
         this.processing = item;
         getProgressMeter().repaintNeeded();
     }
 
     /**
-     * Return a string to display as a tooltip on the progress counter icon.
+     * Define a tooltip to be displayed on the progress counter icon.
      *
      * @return a progress message tooltip
      */
@@ -103,10 +103,22 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
         return "Progress: " + getProgressMeter().getProgressPercent() + "%";
     }
 
-    protected ProgressMeter getProgressMeter() {
+    /**
+     * Get the progress meter gadget for this machine.
+     *
+     * @return a progress meter gadget, or null if no gadget has been added
+     */
+    protected final ProgressMeter getProgressMeter() {
         return (ProgressMeter) getGUI().getMonitor(progressMeterId);
     }
 
+    /**
+     * Get the ejection interval, in server ticks, for this machine.  Machines
+     * which have difficulty ejecting items may automatically raise this interval
+     * to avoid wasting CPU cycles on repeated futile attempts.
+     *
+     * @return the ejection interval
+     */
     protected int getEjectionInterval() {
         return ejectionInterval;
     }
@@ -141,6 +153,10 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
         super.onServerTick();
     }
 
+    /**
+     * Handle auto ejecting items from the output slot(s).  This is typically called
+     * by implementing subclasses at the end of their onServerTick() implementation.
+     */
     protected void handleAutoEjection() {
         if (getTicksLived() % getEjectionInterval() != 0) {
             return;
@@ -166,12 +182,6 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
         setEjectionInterval(ejectFailed ? 20 : 1);
     }
 
-    /**
-     * Attempt to auto-eject one item from an output slot.
-     *
-     * @param result the item to eject
-     * @return true if an item was ejected, false otherwise
-     */
     private boolean autoEject(ItemStack result) {
         Location loc = getRelativeLocation(getAutoEjectDirection());
         Block target = loc.getBlock();

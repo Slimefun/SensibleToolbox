@@ -44,22 +44,26 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     public static final String SUFFIX_SEPARATOR = " \uff1a ";
 
     private final String typeID;
-//    private final String providerName;
     private final Plugin providerPlugin;
     private Map<Enchantment, Integer> enchants;
 
     protected BaseSTBItem() {
         typeID = getClass().getSimpleName().toLowerCase();
         providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
-//        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
     }
 
     protected BaseSTBItem(ConfigurationSection conf) {
         typeID = getClass().getSimpleName().toLowerCase();
         providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
-//        providerName = SensibleToolboxPlugin.getInstance().getItemRegistry().getProviderName(this);
     }
 
+    /**
+     * You should not need to call this method directly.  It is used internally to ensure
+     * enchantments on an item stack are preserved when the STB item is converted
+     * back to the item stack.
+     *
+     * @param stack an item stack
+     */
     public void storeEnchants(ItemStack stack) {
         enchants = stack.getEnchantments();
     }
@@ -98,7 +102,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      */
     protected final void registerCustomIngredients(BaseSTBItem... items) {
         for (BaseSTBItem item : items) {
-            SensibleToolboxPlugin.getInstance().getItemRegistry().addCraftingRestriction(this, item.getMaterial(), item.getClass());
+            SensibleToolboxPlugin.getInstance().getItemRegistry().addCraftingRestriction(this, item.getMaterialData().getItemType(), item.getClass());
         }
     }
 
@@ -113,26 +117,26 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         if (item == null) {
             return false;
         }
-        Class<? extends BaseSTBItem> c = item.getCraftingRestriction(getMaterial());
+        Class<? extends BaseSTBItem> c = item.getCraftingRestriction(getMaterialData().getItemType());
         return c == getClass();
     }
 
     /**
-     * Get the material and data used to represent this item.
+     * Define the material and data used to represent this item.
      *
      * @return the material data
      */
     public abstract MaterialData getMaterialData();
 
     /**
-     * Get the item's displayed name.
+     * Define the item's displayed name.
      *
      * @return the item name
      */
     public abstract String getItemName();
 
     /**
-     * Get the base lore to display for the item.
+     * Define the base lore to display for the item.
      *
      * @return the item lore
      */
@@ -142,26 +146,28 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * Get the material used to represent this item.
      *
      * @return the material
+     * @deprecated use getMaterialData().getType()
      */
+    @Deprecated
     public final Material getMaterial() {
         return getMaterialData().getItemType();
     }
 
     /**
-     * Get any suffix to be appended to the item's displayed name.  Override this in
+     * Define a suffix to be appended to the item's displayed name.  Override this in
      * implementing classes where you wish to represent some or all of the item's state
      * in the display name.
      *
-     * @return the display suffix, or null if there is no suffix
+     * @return the display suffix, or null for be no suffix
      */
     public String getDisplaySuffix() {
         return null;
     }
 
     /**
-     * Get extra lore to be appended to the base lore.  Override this in
-     * implementing classes where you wish to represent some or all of the item's state
-     * in the item lore.
+     * Define extra lore to be appended to the base lore.  Override this in
+     * implementing classes where you wish to represent some or all of the item's
+     * state in the item lore.
      *
      * @return the extra item lore
      */
@@ -170,14 +176,14 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Get the vanilla crafting recipe used to create the item.
+     * Define the vanilla crafting recipe used to create the item.
      *
      * @return the recipe, or null if the item does not have a vanilla crafting recipe
      */
     public abstract Recipe getRecipe();
 
     /**
-     * Get any alternative vanilla crafting recipes used to create the item.
+     * Define any alternative vanilla crafting recipes used to create the item.
      *
      * @return an array of recipes
      */
@@ -186,7 +192,9 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Check if the item should glow.  This will only work if ProtocolLib is installed.
+     * Define whether the item should glow.  The default is for items not to glow.
+     * <p/>
+     * This will only work if ProtocolLib is installed.
      *
      * @return true if the item should glow
      */
@@ -227,7 +235,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Get the item into which this item would be smelted in a vanilla
+     * Define the item into which this item would be smelted in a vanilla
      * furnace, if any.
      *
      * @return the resulting item stack, or null if this object does not smelt
@@ -237,7 +245,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Check if this item can be enchanted normally in a vanilla enchanting
+     * Define whether this item can be enchanted normally in a vanilla enchanting
      * table.
      *
      * @return true if the item can be enchanted; false otherwise
@@ -258,7 +266,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Get an ItemStack with one item from this STB item, serializing any item-specific data into the ItemStack.
+     * Create an ItemStack with one item from this STB item, serializing any item-specific data into the ItemStack.
      *
      * @return the new ItemStack
      */
@@ -267,7 +275,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Get an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
+     * Create an ItemStack from this STB item, serializing any item-specific data into the ItemStack.
      *
      * @param amount number of items in the stack
      * @return the new ItemStack
@@ -314,7 +322,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         String[] lore = getLore();
         String[] lore2 = getExtraLore();
         List<String> res = new ArrayList<String>(lore.length + lore2.length + 1);
-        res.add(STBItemRegistry.LORE_PREFIX + getProviderName() + " (STB) item");
+        res.add(STBItemRegistry.LORE_PREFIX + getProviderPlugin().getName() + " (STB) item");
         for (String l : lore) {
             res.add(LORE_COLOR + l);
         }
@@ -330,24 +338,24 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @return the item's type ID
      */
     public String getItemTypeID() {
-        return typeID; // getClass().getSimpleName().toLowerCase();
+        return typeID;
     }
 
     /**
-     * Check if this item is wearable.  By default, any armour item will be
+     * Define whether this item is wearable.  By default, any armour item will be
      * wearable, but if you wish to use an armour material for a non-wearable
-     * item, then override this method.
+     * item, then override this method to return false.
      *
      * @return true if the item is wearable
      */
     public boolean isWearable() {
-        return STBUtil.isWearable(getMaterial());
+        return STBUtil.isWearable(getMaterialData().getItemType());
     }
 
     /**
-     * Check whether this item is stackable in an inventory.  This can be
-     * overridden to false for STB items which should not stack, but use a
-     * vanilla material that does stack.
+     * Define whether this item is stackable in an inventory.  This can be
+     * overridden to false for STB items which should not stack, but which
+     * use a vanilla material that does stack.
      *
      * @return true if the item should be stackable; false otherwise
      */
@@ -356,20 +364,22 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Return the name of the plugin which registered this STB item.
+     * Get the name of the plugin which registered this STB item.
      *
      * @return a plugin name
+     * @deprecated use getPlugin().getName()
      */
-    public String getProviderName() {
+    @Deprecated
+    public final String getProviderName() {
         return providerPlugin.getName();
     }
 
     /**
-     * Return the instance of the plugin which registered this STB item.
+     * Get the instance of the plugin which registered this STB item.
      *
      * @return the plugin which registered this item
      */
-    public Plugin getProviderPlugin() {
+    public final Plugin getProviderPlugin() {
         return providerPlugin;
     }
 

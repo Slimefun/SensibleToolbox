@@ -123,7 +123,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slots which may be used for placing items into this
+     * Define the inventory slots which may be used for placing items into this
      * machine.
      *
      * @return an array of inventory slot numbers; may be empty
@@ -131,7 +131,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     public abstract int[] getInputSlots();
 
     /**
-     * Get the inventory slots which may be used for taking items out of this
+     * Define the inventory slots which may be used for taking items out of this
      * machine.
      *
      * @return an array of inventory slot numbers; may be empty
@@ -139,7 +139,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     public abstract int[] getOutputSlots();
 
     /**
-     * Get the inventory slots which may be used for storing machine upgrade
+     * Define the inventory slots which may be used for storing machine upgrade
      * items.
      *
      * @return an array of inventory slot numbers; may be empty
@@ -147,7 +147,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     public abstract int[] getUpgradeSlots();
 
     /**
-     * Get the inventory slot to use to draw a label for the upgrade slots.
+     * Define the inventory slot to use to draw a label for the upgrade slots.
      *
      * @return an inventory slot number; may be -1 to indicate no label
      */
@@ -157,7 +157,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Check whether this machine requires shaped recipes.  By default,
+     * Define whether this machine requires shaped recipes.  By default,
      * machines use shapeless recipes (of possibly only one item), but this
      * can be overridden by machines if shaped recipes will be used.
      *
@@ -168,8 +168,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Add any custom recipes for this machine.  By default this method does
-     * nothing; override if necessary to add any custom recipes.
+     * Define any custom recipes for this machine.  By default this method does
+     * nothing; override if necessary to add custom recipes.
      *
      * @param crm the recipe manager object
      */
@@ -226,7 +226,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     /**
      * Get the direction that the machine should attempt to eject any items in
-     * the output slot(s).
+     * the output slot(s), due to any installed upgrades.
      *
      * @return the auto-eject direction
      */
@@ -270,7 +270,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             return;
         }
         if (charge <= 0 && this.charge > 0 && getLocation() != null) {
-            playOutOfChargeSound();
+            onOutOfCharge();
         }
         this.charge = Math.min(getMaxCharge(), Math.max(0, charge));
         if (getGUI() != null && chargeMeterId >= 0) {
@@ -323,14 +323,17 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Called when a machine starts processing an item.
+     * Called when a machine starts processing an item.  The default
+     * behaviour is to do nothing.
      */
     protected void onMachineStartup() {
-        // override in subclasses
     }
 
-    protected void playOutOfChargeSound() {
-        // override in subclasses
+    /**
+     * Called when a machine runs out of SCU while processing something.
+     * The default behaviour is to do nothing.
+     */
+    protected void onOutOfCharge() {
     }
 
     @Override
@@ -338,10 +341,23 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return getGUI().getInventory();
     }
 
+    /**
+     * Get the item stack currently the given inventory GUI slot.
+     *
+     * @param slot the slot
+     * @return the item stack in the slot
+     */
     protected ItemStack getInventoryItem(int slot) {
         return getInventory().getItem(slot);
     }
 
+    /**
+     * Set the given slot of this machine's GUI to hold the given item stack.
+     *
+     * @param slot the slot
+     * @param item the item to insert
+     * @throws java.lang.IllegalArgumentException if the given slot has not previously been configured to hold items
+     */
     protected void setInventoryItem(int slot, ItemStack item) {
         Validate.isTrue(getGUI().getSlotType(slot) == InventoryGUI.SlotType.ITEM, "Attempt to insert item into non-item slot");
         getInventory().setItem(slot, item != null && item.getAmount() > 0 ? item : null);
@@ -390,12 +406,19 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return gui;
     }
 
+    /**
+     * Define whether the GUI should paint around its input and output slots.
+     * By default, input/output slots surrounds are painted; override this
+     * method to return false if you don't want this behaviour.
+     *
+     * @return true if input/output slot surrounds should be painted; false otherwise
+     */
     protected boolean shouldPaintSlotSurrounds() {
         return true;
     }
 
     /**
-     * Get the inventory slot where a redstone behaviour gadget will be
+     * Define the inventory slot where a redstone behaviour gadget will be
      * displayed.  The default is slot 8; right-hand edge of the top row.
      *
      * @return an inventory slot number, or -1 for no gadget
@@ -405,7 +428,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slot where an access control gadget will be
+     * Define the inventory slot where an access control gadget will be
      * displayed.  The default is slot 17; right-hand edge of the second row.
      *
      * @return an inventory slot number, or -1 for no gadget
@@ -415,7 +438,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slot where a charge meter gadget will be displayed.
+     * Define the inventory slot where a charge meter gadget will be displayed.
      * The default is slot 26; right-hand edge of the third row.
      *
      * @return an inventory slot number, or -1 for no gadget
@@ -425,7 +448,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slot for an energy cell slot, where an energy cell
+     * Define the inventory slot for an energy cell slot, where an energy cell
      * can be inserted.  The default is -1; no energy cell slot.
      *
      * @return an inventory slot number, or -1 for no energy cell
@@ -435,7 +458,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the inventory slot for an charge direction gadget; where the energy
+     * Define the inventory slot for an charge direction gadget; where the energy
      * flow between machine and energy cell can be changed.  The default is
      * -1; no gadget.  If a gadget is added, it is recommended to place it
      * adjacent to the energy cell slot defined with
@@ -448,7 +471,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Get the size for this machine's GUI, in slots.  The size must be a
+     * Define the size for this machine's GUI, in slots.  The size must be a
      * multiple of 9.  The default size is 54 slots (6 rows).
      *
      * @return the number of inventory slots in this machine's GUI
@@ -457,6 +480,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return 54;
     }
 
+    /**
+     * Get the number of regulator upgrades installed in this machine.
+     *
+     * @return the number of regulator upgrades
+     */
     protected int getRegulatorAmount() {
         return regulatorAmount;
     }
@@ -465,6 +493,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         this.regulatorAmount = regulatorAmount;
     }
 
+    /**
+     * Get the number of thoroughness upgrades installed in this machine.
+     *
+     * @return the number of thoroughness upgrades
+     */
     protected int getThoroughnessAmount() {
         return thoroughnessAmount;
     }
@@ -522,6 +555,12 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return -1;
     }
 
+    /**
+     * Find a suitable output slot for the given item.
+     *
+     * @param item the item to place into the machine's output
+     * @return an output slot, or -1 if no output slot is available
+     */
     protected int findOutputSlot(ItemStack item) {
         for (int slot : getOutputSlots()) {
             ItemStack outSlot = getInventoryItem(slot);
@@ -535,8 +574,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Check if the given item would be accepted as input to this machine.  By default, every item type
-     * is accepted, but this can be overridden in subclasses.
+     * Define whether the given item should be accepted as input to this machine.
+     * By default, every item type is accepted, but this can be overridden in subclasses.
      *
      * @param item the item to check
      * @return true if the item is accepted, false otherwise
@@ -546,33 +585,33 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Check if the given slot accepts items as input.
+     * Check whether the given slot accepts items as input.
      *
      * @param slot the slot to check
      * @return true if this is an input slot, false otherwise
      */
-    public boolean isInputSlot(int slot) {
+    public final boolean isInputSlot(int slot) {
         return isSlotIn(slot, getInputSlots());
     }
 
     /**
-     * Check if the given slot can be used to extract items.
+     * Check whether the given slot can be used to extract items.
      *
      * @param slot the slot to check
      * @return true if this is an output slot, false otherwise
      */
-    public boolean isOutputSlot(int slot) {
+    public final boolean isOutputSlot(int slot) {
         return isSlotIn(slot, getOutputSlots());
     }
 
     /**
-     * Check if the given slot can be used to install upgrades, i.e. STB items
+     * Check whether the given slot can be used to install upgrades, i.e. STB items
      * which subclass {@link me.desht.sensibletoolbox.items.machineupgrades.MachineUpgrade}
      *
      * @param slot the slot to check
      * @return true if this is an upgrade slot, false otherwise
      */
-    public boolean isUpgradeSlot(int slot) {
+    public final boolean isUpgradeSlot(int slot) {
         return isSlotIn(slot, getUpgradeSlots());
     }
 
@@ -762,6 +801,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         return remaining;
     }
 
+    /**
+     * Define whether the given STB item is a valid upgrade for the machine.
+     *
+     * @param player the player involved in installing the upgrade
+     * @param item the upgrade to install
+     * @return true if this item is a valid upgrade, false otherwise
+     */
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem item) {
         if (!(item instanceof MachineUpgrade)) {
             return false;

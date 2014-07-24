@@ -170,7 +170,7 @@
                 <version>2.9.1</version>
                 <configuration>
                     <aggregate>true</aggregate>
-                    <show>public</show>
+                    <show>protected</show>
                     <nohelp>true</nohelp>
                     <header>Sensible Toolbox, ${project.version}</header>
                     <footer>Sensible Toolbox, ${project.version}</footer>
