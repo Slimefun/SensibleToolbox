@@ -732,26 +732,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             return 1;
         }
 
-//        int insertionSlot = findAvailableInputSlot(toInsert, BlockFace.SELF);
-//        if (insertionSlot >= 0 && acceptsItemType(toInsert)) {
-//            ItemStack inMachine = getInventoryItem(insertionSlot);
-//            if (inMachine == null) {
-//                // insert the whole stack
-//                setInventoryItem(insertionSlot, toInsert);
-//                update(false);
-//                return toInsert.getAmount();
-//            } else {
-//                // insert as much as possible
-//                int nToInsert = Math.min(inMachine.getMaxStackSize() - inMachine.getAmount(), toInsert.getAmount());
-//                if (nToInsert > 0) {
-//                    inMachine.setAmount(inMachine.getAmount() + nToInsert);
-//                    setInventoryItem(insertionSlot, inMachine);
-//                    update(false);
-//                }
-//                return nToInsert;
-//            }
-//        }
-        int remaining = doInsertion(toInsert);
+        int remaining = doInsertion(toInsert.clone());
 
         return toInsert.getAmount() - remaining;
     }
