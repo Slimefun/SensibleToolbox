@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api.util;
 
 import me.desht.dhutils.Debugger;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -84,7 +85,7 @@ public class VanillaInventoryUtils {
         if (source == null || source.getAmount() == 0) {
             return 0;
         }
-        if (!BlockProtection.isInventoryAccessible(inserterId, target)) {
+        if (!SensibleToolbox.getBlockProtection().isInventoryAccessible(inserterId, target)) {
             return 0;
         }
         Inventory targetInv = getVanillaInventoryFor(target);
@@ -158,7 +159,7 @@ public class VanillaInventoryUtils {
      * @return the items pulled, or null if nothing was pulled
      */
     public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, UUID pullerId) {
-        if (!BlockProtection.isInventoryAccessible(pullerId, target)) {
+        if (!SensibleToolbox.getBlockProtection().isInventoryAccessible(pullerId, target)) {
             return null;
         }
         Inventory targetInv = getVanillaInventoryFor(target);

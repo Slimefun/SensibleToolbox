@@ -12,6 +12,8 @@ energy:
   tick_rate: 10
 noisy_machines: true
 explode_item_drop_chance: 50
+inventory_protection: best
+block_protection: best
 gui:
   texture:
     input: stained_glass_pane:cyan

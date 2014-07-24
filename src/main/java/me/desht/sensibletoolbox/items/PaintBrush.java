@@ -247,7 +247,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     private int paintBlocks(Player player, Block... blocks) {
         int painted = 0;
         for (Block b : blocks) {
-            if (!BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
+            if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
                 continue;
             }
             Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());

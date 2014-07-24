@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
@@ -69,7 +70,7 @@ public class AngelicBlock extends BaseSTBBlock {
             Vector v = p.getLocation().getDirection().normalize().multiply(2.0);
             Location loc = p.getEyeLocation().add(v);
             Block b = loc.getBlock();
-            if (b.isEmpty() && BlockProtection.playerCanBuild(p, b, BlockProtection.Operation.PLACE)) {
+            if (b.isEmpty() && SensibleToolbox.getBlockProtection().playerCanBuild(p, b, BlockProtection.Operation.PLACE)) {
                 ItemStack stack = p.getItemInHand();
                 if (stack.getAmount() > 1) {
                     stack.setAmount(stack.getAmount() - 1);
@@ -92,7 +93,7 @@ public class AngelicBlock extends BaseSTBBlock {
         // the angelic block has just been hit by a player - insta-break it
         Player p = event.getPlayer();
         Block b = event.getBlock();
-        if (BlockProtection.playerCanBuild(p, b, BlockProtection.Operation.BREAK)) {
+        if (SensibleToolbox.getBlockProtection().playerCanBuild(p, b, BlockProtection.Operation.BREAK)) {
             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
             breakBlock(false);
             STBUtil.giveItems(p, toItemStack());

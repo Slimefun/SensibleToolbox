@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.items;
 
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cuboid.Cuboid;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
@@ -250,7 +251,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         int amountLeft = getSeedAmount();
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             Block above = b1.getRelative(BlockFace.UP);
-            if (!BlockProtection.playerCanBuild(player, above, BlockProtection.Operation.PLACE)) {
+            if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, above, BlockProtection.Operation.PLACE)) {
                 continue;
             }
             if (b1.getType() == Material.SOIL && above.isEmpty()) {
@@ -279,7 +280,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         for (Block b1 : c) {
             if (!b1.equals(b)) {
                 if (STBUtil.isPlant(b1.getType()) || b1.getType() == Material.LEAVES || b1.getType() == Material.LEAVES_2) {
-                    if (BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.BREAK)) {
+                    if (SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.BREAK)) {
                         b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
                         b1.breakNaturally();
                     }
@@ -292,7 +293,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         ItemStack stack = player.getItemInHand();
         short count = 0;
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-            if (!BlockProtection.playerCanBuild(player, b1, BlockProtection.Operation.BREAK)) {
+            if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b1, BlockProtection.Operation.BREAK)) {
                 continue;
             }
             Block above = b1.getRelative(BlockFace.UP);

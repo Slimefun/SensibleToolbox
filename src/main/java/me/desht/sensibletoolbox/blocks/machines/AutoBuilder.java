@@ -241,7 +241,7 @@ public class AutoBuilder extends BaseSTBMachine {
             double scuNeeded = 0.0;
             switch (getBuildMode()) {
                 case CLEAR:
-                    if (!BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
+                    if (!SensibleToolbox.getBlockProtection().playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }
@@ -259,7 +259,7 @@ public class AutoBuilder extends BaseSTBMachine {
                 case FILL:
                 case WALLS:
                 case FRAME:
-                    if (!BlockProtection.playerCanBuild(getOwner(), b, BlockProtection.Operation.PLACE)) {
+                    if (!SensibleToolbox.getBlockProtection().playerCanBuild(getOwner(), b, BlockProtection.Operation.PLACE)) {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }

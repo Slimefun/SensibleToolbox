@@ -16,7 +16,6 @@ import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.recipes.*;
-import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import org.bukkit.*;
@@ -257,7 +256,7 @@ public class RecipeBook extends BaseSTBItem {
         }
         for (BlockFace face : STBUtil.directFaces) {
             Block b = fabricationBlock.getRelative(face);
-            if (VanillaInventoryUtils.isVanillaInventory(b) && BlockProtection.isInventoryAccessible(player, b)) {
+            if (VanillaInventoryUtils.isVanillaInventory(b) && SensibleToolbox.getBlockProtection().isInventoryAccessible(player, b)) {
                 resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
             } else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
@@ -416,7 +415,7 @@ public class RecipeBook extends BaseSTBItem {
                 if (inv != null) {
                     vanillaInventories.add(inv);
                 }
-            } else if (h instanceof BlockState && BlockProtection.isInventoryAccessible(player, ((BlockState) h).getBlock())) {
+            } else if (h instanceof BlockState && SensibleToolbox.getBlockProtection().isInventoryAccessible(player, ((BlockState) h).getBlock())) {
                 vanillaInventories.add(h.getInventory());
             }
         }

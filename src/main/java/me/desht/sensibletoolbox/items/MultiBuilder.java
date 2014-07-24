@@ -344,7 +344,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         } else if (VanillaInventoryUtils.isVanillaInventory(b)) {
             return false;
         } else {
-            return BlockProtection.playerCanBuild(player, b, BlockProtection.Operation.BREAK);
+            return SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.BREAK);
         }
     }
 

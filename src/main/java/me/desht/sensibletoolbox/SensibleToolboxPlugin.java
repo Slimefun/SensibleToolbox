@@ -27,6 +27,7 @@ import me.desht.dhutils.nms.NMSHelper;
 import me.desht.sensibletoolbox.api.FriendManager;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.*;
@@ -59,6 +60,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.MetricsLite;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Random;
 
@@ -85,6 +88,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private EnergyNetManager enetManager;
     private WorldGuardPlugin worldGuardPlugin = null;
     private WorldGuardPlugin preciousStonesPlugin = null;
+    private BlockProtection blockProtection;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -108,6 +112,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         MiscUtil.init(this);
         MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
+        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
+
         Debugger.getInstance().setPrefix("[STB] ");
         Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
         if (getConfig().getInt("debug_level") > 0) {
@@ -121,22 +127,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             LogUtils.warning("  Floodlight will not cast light (but will still prevent mob spawns");
         }
 
-        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
-
+        // try to hook other plugins
         setupHoloAPI();
-
         setupProtocolLib();
-        if (protocolLibEnabled) {
-            ItemGlow.init(this);
-        } else {
-            LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
-            LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
-        }
-
         setupLandslide();
         setupLWC();
         setupWorldGuard();
         setupPreciousStones();
+
+        blockProtection = new BlockProtection(this);
 
         STBInventoryGUI.buildStockTextures();
 
@@ -312,6 +311,12 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             protocolLibEnabled = true;
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
         }
+        if (protocolLibEnabled) {
+            ItemGlow.init(this);
+        } else {
+            LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
+            LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
+        }
     }
 
     private void setupLWC() {
@@ -396,8 +401,36 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             DHValidate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
         } else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
+        } else if (key.equals("inventory_protection")) {
+            validateEnumValue(newVal.toString().toUpperCase(), BlockProtection.InvProtectionType.class);
+//            try {
+//                BlockProtection.ChestProtectionType.valueOf(newVal.toString().toUpperCase());
+//            } catch (IllegalArgumentException e) {
+//                throw new DHUtilsException(e.getMessage());
+//            }
+        } else if (key.equals("block_protection")) {
+            validateEnumValue(newVal.toString().toUpperCase(), BlockProtection.BlockProtectionType.class);
+//            try {
+//                BlockProtection.BlockProtectionType.valueOf(newVal.toString().toUpperCase());
+//            } catch (IllegalArgumentException e) {
+//                throw new DHUtilsException(e.getMessage());
+//            }
         }
         return newVal;
+    }
+
+    private void validateEnumValue(String value, Class<? extends Enum> c) {
+        try {
+            Method m = c.getMethod("valueOf", String.class);
+            m.invoke(null, value);
+        } catch (Exception e) {
+            if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
+                e.printStackTrace();
+                throw new DHUtilsException(e.getMessage());
+            } else {
+                throw new DHUtilsException("Unknown value: " + value);
+            }
+        }
     }
 
     @Override
@@ -416,6 +449,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             scheduleEnergyNetTicker();
         } else if (key.startsWith("gui.texture.")) {
             STBInventoryGUI.buildStockTextures();
+        } else if (key.equals("inventory_protection")) {
+            blockProtection.setInvProtectionType(BlockProtection.InvProtectionType.valueOf(newVal.toString().toUpperCase()));
+        } else if (key.equals("block_protection")) {
+            blockProtection.setBlockProtectionType(BlockProtection.BlockProtectionType.valueOf(newVal.toString().toUpperCase()));
         }
     }
 
@@ -550,5 +587,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public boolean isPreciousStonesAvailable() {
         return preciousStonesPlugin != null && preciousStonesPlugin.isEnabled();
+    }
+
+    public BlockProtection getBlockProtection() {
+        return blockProtection;
     }
 }

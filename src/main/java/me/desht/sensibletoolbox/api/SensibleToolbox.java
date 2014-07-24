@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.api;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
+import me.desht.sensibletoolbox.api.util.BlockProtection;
 import me.desht.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -174,4 +175,10 @@ public class SensibleToolbox {
         return getPluginInstance().getEnergyNetManager().getEnergyNet(block);
     }
 
+    /**
+     * Get the block protection handler.
+     */
+    public static BlockProtection getBlockProtection() {
+        return getPluginInstance().getBlockProtection();
+    }
 }
