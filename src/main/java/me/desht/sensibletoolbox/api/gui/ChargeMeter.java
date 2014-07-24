@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.api.gui;
 
-import me.desht.sensibletoolbox.api.ChargeableBlock;
+import me.desht.sensibletoolbox.api.energy.ChargeableBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
  * Shows the SCU level for an STB block.  The GUI that this gadget is added to
- * must implement {@link me.desht.sensibletoolbox.api.ChargeableBlock}.
+ * must implement {@link me.desht.sensibletoolbox.api.energy.ChargeableBlock}.
  */
 public class ChargeMeter extends MonitorGadget {
     private final ItemStack indicator;

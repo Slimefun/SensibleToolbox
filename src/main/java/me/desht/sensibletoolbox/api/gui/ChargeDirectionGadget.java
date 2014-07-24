@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.api.gui;
 
-import me.desht.sensibletoolbox.api.ChargeDirection;
+import me.desht.sensibletoolbox.api.energy.ChargeDirection;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import org.bukkit.ChatColor;

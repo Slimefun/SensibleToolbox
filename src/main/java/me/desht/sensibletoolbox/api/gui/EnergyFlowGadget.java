@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.api.gui;
 
-import me.desht.sensibletoolbox.api.EnergyFlow;
+import me.desht.sensibletoolbox.api.energy.EnergyFlow;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.machines.BatteryBox;

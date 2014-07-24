@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.api;
+package me.desht.sensibletoolbox.api.energy;
 
 /**
  * Represents an energy net; a collection of chargeable blocks connected by

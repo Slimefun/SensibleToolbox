@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.ChargeDirection;
+import me.desht.sensibletoolbox.api.energy.ChargeDirection;
 import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.SensibleToolbox;

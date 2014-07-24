@@ -6,7 +6,7 @@ import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
-import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.ButtonGadget;

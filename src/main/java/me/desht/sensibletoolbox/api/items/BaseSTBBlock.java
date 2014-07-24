@@ -6,7 +6,7 @@ import me.desht.dhutils.PermissionUtils;
 import me.desht.dhutils.PersistableLocation;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.AccessControl;
-import me.desht.sensibletoolbox.api.ChargeableBlock;
+import me.desht.sensibletoolbox.api.energy.ChargeableBlock;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;

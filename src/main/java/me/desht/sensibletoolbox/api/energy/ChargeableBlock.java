@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.api;
+package me.desht.sensibletoolbox.api.energy;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;

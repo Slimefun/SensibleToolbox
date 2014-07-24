@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.energy.EnergyNet;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.BlockProtection;

@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.api;
+package me.desht.sensibletoolbox.api.energy;
 
 /**
  * Represents an STB item or block which can hold energy, meansured in units

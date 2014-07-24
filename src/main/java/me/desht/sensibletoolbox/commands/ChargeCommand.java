@@ -4,7 +4,7 @@ import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
-import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;

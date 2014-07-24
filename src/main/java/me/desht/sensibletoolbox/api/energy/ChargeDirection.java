@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.api;
+package me.desht.sensibletoolbox.api.energy;
 
 /**
  * Represents the direction of charging selected for this machine.

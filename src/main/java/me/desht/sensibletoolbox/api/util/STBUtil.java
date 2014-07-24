@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import me.desht.dhutils.*;
 import me.desht.dhutils.block.BlockUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;

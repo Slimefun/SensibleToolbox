@@ -5,7 +5,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUIListener;
 import me.desht.sensibletoolbox.api.util.STBUtil;

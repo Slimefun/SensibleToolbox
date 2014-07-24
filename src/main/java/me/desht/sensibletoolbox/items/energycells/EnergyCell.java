@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.items.energycells;
 
-import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;

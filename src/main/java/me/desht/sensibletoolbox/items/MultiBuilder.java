@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cost.ItemCost;
-import me.desht.sensibletoolbox.api.Chargeable;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.BlockProtection;

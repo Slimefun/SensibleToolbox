@@ -17,7 +17,7 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.desht.sensibletoolbox.api;
+package me.desht.sensibletoolbox.api.energy;
 
 /**
  * Represents the direction of energy (SCU) flow into or out
