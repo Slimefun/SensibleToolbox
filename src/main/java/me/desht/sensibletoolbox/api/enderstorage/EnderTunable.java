@@ -1,4 +1,4 @@
-package me.desht.sensibletoolbox.api;
+package me.desht.sensibletoolbox.api.enderstorage;
 
 /**
  * Represents an STB item or block which has an ender frequency
