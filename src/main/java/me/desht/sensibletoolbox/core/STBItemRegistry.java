@@ -52,10 +52,10 @@ public class STBItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public void registerItem(BaseSTBItem item, Plugin plugin, String configNode, String permissionNode) {
+    public void registerItem(BaseSTBItem item, Plugin plugin, String configPrefix, String permissionPrefix) {
         String id = item.getItemTypeID();
 
-        if (configNode != null && !plugin.getConfig().getBoolean(configNode + "." + item.getItemTypeID())) {
+        if (configPrefix != null && !plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) {
             return;
         }
 
@@ -63,18 +63,21 @@ public class STBItemRegistry implements ItemRegistry {
         id2class.put(id, item.getClass());
         id2plugin.put(id, plugin);
 
-        if (permissionNode == null) {
-            permissionNode = "stb";
+        if (permissionPrefix == null) {
+            permissionPrefix = "stb";
         }
-        permissionPrefix.put(id, permissionNode);
+        this.permissionPrefix.put(id, permissionPrefix);
 
-        Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".craft." + id, PermissionDefault.TRUE));
-        Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".interact." + id, PermissionDefault.TRUE));
+        // parent permission node
+        Bukkit.getPluginManager().addPermission(new Permission(permissionPrefix + ".allow." + id, PermissionDefault.TRUE));
+
+        registerPermission(permissionPrefix, BaseSTBItem.ItemAction.CRAFT, id);
+        registerPermission(permissionPrefix, BaseSTBItem.ItemAction.INTERACT, id);
 
         if (item instanceof BaseSTBBlock) {
-            Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".place." + id, PermissionDefault.TRUE));
-            Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".break." + id, PermissionDefault.TRUE));
-            Bukkit.getPluginManager().addPermission(new Permission(permissionNode + ".interact_block." + id, PermissionDefault.TRUE));
+            registerPermission(permissionPrefix, BaseSTBItem.ItemAction.PLACE, id);
+            registerPermission(permissionPrefix, BaseSTBItem.ItemAction.BREAK, id);
+            registerPermission(permissionPrefix, BaseSTBItem.ItemAction.INTERACT_BLOCK, id);
             try {
                 LocationManager.getManager().loadDeferredBlocks(id);
             } catch (SQLException e) {
@@ -82,6 +85,12 @@ public class STBItemRegistry implements ItemRegistry {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void registerPermission(String permissionPrefix, BaseSTBItem.ItemAction action, String id) {
+        Permission perm = new Permission(permissionPrefix + "." + action.getNode() + "." + id, PermissionDefault.TRUE);
+        perm.addParent(permissionPrefix + ".allow." + id, true);
+        Bukkit.getPluginManager().addPermission(perm);
     }
 
     @Override
