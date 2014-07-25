@@ -138,7 +138,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
     @Override
     public int getMaxCharge() {
-        return 5000;
+        return 10000;
     }
 
     @Override
