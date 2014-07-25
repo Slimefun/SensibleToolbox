@@ -782,6 +782,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     private int doInsertion(ItemStack stack) {
+        if (!acceptsItemType(stack)) {
+            return stack.getAmount();
+        }
         int remaining = stack.getAmount();
         for (int slot : getInputSlots()) {
             ItemStack inInventory = getInventoryItem(slot);
