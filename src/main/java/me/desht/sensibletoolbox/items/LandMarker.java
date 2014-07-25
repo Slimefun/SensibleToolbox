@@ -3,12 +3,10 @@ package me.desht.sensibletoolbox.items;
 import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
@@ -95,12 +93,15 @@ public class LandMarker extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
         if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) && getMarkedLocation() != null) {
             setMarkedLocation(null);
-            event.getPlayer().setItemInHand(toItemStack());
+            player.setItemInHand(toItemStack());
+            player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.6f);
         } else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
             setMarkedLocation(event.getClickedBlock().getLocation());
-            event.getPlayer().setItemInHand(toItemStack());
+            player.setItemInHand(toItemStack());
+            player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0f, 1.5f);
         }
         event.setCancelled(true);
     }
