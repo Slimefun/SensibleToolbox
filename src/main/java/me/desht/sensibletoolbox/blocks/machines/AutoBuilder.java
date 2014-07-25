@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.ParticleEffect;
 import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
@@ -150,7 +151,7 @@ public class AutoBuilder extends BaseSTBMachine {
         InventoryGUI gui = super.createGUI();
 
         gui.setSlotType(LANDMARKER_SLOT_1, InventoryGUI.SlotType.ITEM);
-        gui.addLabel("Land Markers", 11, null, "Place two Land Markers", "in these slots, set", "to two opposite corners", "of the area to work.");
+        setupLandMarkerLabel(gui, null, null);
         gui.setSlotType(LANDMARKER_SLOT_2, InventoryGUI.SlotType.ITEM);
 
         gui.addGadget(new AutoBuilderGadget(gui, MODE_SLOT));
@@ -239,6 +240,7 @@ public class AutoBuilder extends BaseSTBMachine {
         if (isRedstoneActive() && getStatus() == BuilderStatus.RUNNING && workArea != null) {
             Block b = getLocation().getWorld().getBlockAt(buildX, buildY, buildZ);
             double scuNeeded = 0.0;
+            boolean advanceBuildPos = true;
             switch (getBuildMode()) {
                 case CLEAR:
                     if (!SensibleToolbox.getBlockProtection().playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
@@ -246,7 +248,9 @@ public class AutoBuilder extends BaseSTBMachine {
                         return;
                     }
                     scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
-                    if (scuNeeded <= getCharge() && b.getType() != Material.AIR) {
+                    if (scuNeeded > getCharge()) {
+                        advanceBuildPos = false;
+                    } else if (b.getType() != Material.AIR) {
                         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                         BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
                         if (stb != null) {
@@ -265,33 +269,41 @@ public class AutoBuilder extends BaseSTBMachine {
                     }
                     if (shouldBuildHere()) {
                         scuNeeded = baseScuPerOp;
-                        if (scuNeeded <= getCharge() && (b.isEmpty() || b.isLiquid())) {
+                        if (scuNeeded > getCharge()) {
+                            advanceBuildPos = false;
+                        } else if (b.isEmpty() || b.isLiquid()) {
                             ItemStack item = fetchNextBuildItem();
                             if (item == null) {
                                 setStatus(BuilderStatus.NO_INVENTORY);
-                                return;
+                                advanceBuildPos = false;
+                            } else {
+                                b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
+                                b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                             }
-                            b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
-                            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                         }
                     } else {
                         ParticleEffect.RED_DUST.play(b.getLocation(), 0.05f, 0.05f, 0.05f, 1.0f, 3);
                     }
                     break;
             }
-            setCharge(getCharge() - scuNeeded);
 
-            buildX++;
-            if (buildX > workArea.getUpperX()) {
-                buildX = workArea.getLowerX();
-                buildZ++;
-                if (buildZ > workArea.getUpperZ()) {
-                    buildZ = workArea.getLowerZ();
-                    buildY += getBuildMode().getYDirection();
-                    if (getBuildMode().getYDirection() < 0 && buildY < workArea.getLowerY()
-                            || getBuildMode().getYDirection() > 0 && buildY > workArea.getUpperY()) {
-                        // finished!
-                        stop(true);
+            if (scuNeeded <= getCharge()) {
+                setCharge(getCharge() - scuNeeded);
+            }
+
+            if (advanceBuildPos) {
+                buildX++;
+                if (buildX > workArea.getUpperX()) {
+                    buildX = workArea.getLowerX();
+                    buildZ++;
+                    if (buildZ > workArea.getUpperZ()) {
+                        buildZ = workArea.getLowerZ();
+                        buildY += getBuildMode().getYDirection();
+                        if (getBuildMode().getYDirection() < 0 && buildY < workArea.getLowerY()
+                                || getBuildMode().getYDirection() > 0 && buildY > workArea.getUpperY()) {
+                            // finished!
+                            stop(true);
+                        }
                     }
                 }
             }
@@ -395,9 +407,22 @@ public class AutoBuilder extends BaseSTBMachine {
                 return BuilderStatus.TOO_FAR;
             }
             workArea = w;
+            setupLandMarkerLabel(getGUI(), loc1, loc2);
             return BuilderStatus.READY;
         } else {
+            setupLandMarkerLabel(getGUI(), null, null);
             return BuilderStatus.NO_WORKAREA;
+        }
+    }
+
+    private void setupLandMarkerLabel(InventoryGUI gui, Location loc1, Location loc2) {
+        if (workArea == null) {
+            gui.addLabel("Land Markers", 11, null, "Place two Land Markers", "in these slots, set", "to two opposite corners", "of the area to work.");
+        } else {
+            int v = workArea.volume();
+            String s = v == 1 ? "" : "s";
+            gui.addLabel("Land Markers", 11, null, "Work Area:",
+                    MiscUtil.formatLocation(loc1), MiscUtil.formatLocation(loc2), v + " block" + s);
         }
     }
 
@@ -439,7 +464,11 @@ public class AutoBuilder extends BaseSTBMachine {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(toInsert);
 
         if (item instanceof LandMarker && getStatus() != BuilderStatus.RUNNING) {
-            insertLandMarker(toInsert);
+            if (((LandMarker) item).getMarkedLocation() != null) {
+                insertLandMarker(toInsert);
+            } else {
+                STBUtil.complain((Player) player, "Land Marker doesn't have a location set!");
+            }
             return 0;  // we just put a copy of the land marker into the builder
         } else {
             return super.onShiftClickInsert(player, slot, toInsert);

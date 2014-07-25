@@ -24,7 +24,7 @@ gui:
 item_settings:
   paintcan:
     paint_per_dye: 25
-  auto_builder:
+  autobuilder:
     scu_per_op: 30
   multibuilder:
     scu_per_op: 30

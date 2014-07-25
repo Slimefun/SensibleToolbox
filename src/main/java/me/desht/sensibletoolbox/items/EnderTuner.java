@@ -1,8 +1,8 @@
 package me.desht.sensibletoolbox.items;
 
-import me.desht.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
+import me.desht.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;

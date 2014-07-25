@@ -1,7 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
-import me.desht.sensibletoolbox.api.energy.EnergyNet;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.energy.EnergyNet;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.PopupMessage;

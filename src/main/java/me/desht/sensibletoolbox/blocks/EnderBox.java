@@ -1,9 +1,9 @@
 package me.desht.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
 import me.desht.sensibletoolbox.api.enderstorage.EnderStorageHolder;
+import me.desht.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.Bukkit;

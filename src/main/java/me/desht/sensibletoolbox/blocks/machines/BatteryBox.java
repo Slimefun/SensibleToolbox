@@ -1,9 +1,9 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.energy.ChargeDirection;
 import me.desht.sensibletoolbox.api.energy.EnergyFlow;
 import me.desht.sensibletoolbox.api.energy.EnergyNet;
-import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.gui.EnergyFlowGadget;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;

@@ -5,8 +5,8 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.gui.InventoryGUIListener;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.STBItemRegistry;
@@ -405,7 +405,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @return the configuration section for this item's config
      */
     public ConfigurationSection getItemConfig() {
-        return getProviderPlugin().getConfig().getConfigurationSection("item_settings");
+        return getProviderPlugin().getConfig().getConfigurationSection("item_settings").getConfigurationSection(getItemTypeID());
     }
 
     @Override

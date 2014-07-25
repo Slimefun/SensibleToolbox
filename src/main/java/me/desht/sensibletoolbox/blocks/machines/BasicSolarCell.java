@@ -1,10 +1,10 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.sensibletoolbox.api.energy.ChargeDirection;
 import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.energy.ChargeDirection;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.LightMeter;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
