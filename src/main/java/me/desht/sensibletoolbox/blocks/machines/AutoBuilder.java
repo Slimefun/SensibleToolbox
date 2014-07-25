@@ -247,16 +247,19 @@ public class AutoBuilder extends BaseSTBMachine {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }
-                    scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
-                    if (scuNeeded > getCharge()) {
-                        advanceBuildPos = false;
-                    } else if (b.getType() != Material.AIR) {
-                        b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-                        BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
-                        if (stb != null) {
-                            stb.breakBlock(false);
-                        } else {
-                            b.setType(Material.AIR);
+                    // just skip over any "unbreakable" blocks (bedrock, ender portal etc.)
+                    if (STBUtil.getMaterialHardness(b.getType()) < Double.MAX_VALUE) {
+                        scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
+                        if (scuNeeded > getCharge()) {
+                            advanceBuildPos = false;
+                        } else if (b.getType() != Material.AIR) {
+                            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+                            if (stb != null) {
+                                stb.breakBlock(false);
+                            } else {
+                                b.setType(Material.AIR);
+                            }
                         }
                     }
                     break;

@@ -1075,9 +1075,21 @@ public class STBUtil {
                 return 0.7;
             case CLAY: case SOIL: case GRASS: case GRAVEL: case MYCEL: case WATER_LILY: case SPONGE:
                 return 0.6;
-            // TODO: more to enter here
-            default:
+            case WOOD_BUTTON: case STONE_BUTTON: case CAKE_BLOCK:case DIRT: case HAY_BLOCK: case ICE:
+            case LEVER: case PACKED_ICE: case PISTON_BASE: case SAND: case SOUL_SAND: case STONE_PLATE:
+                case IRON_PLATE: case GOLD_PLATE: case WOOD_PLATE:
                 return 0.5;
+            case CACTUS: case LADDER: case NETHERRACK:
+                return 0.4;
+            case GLASS: case THIN_GLASS: case GLOWSTONE: case REDSTONE_LAMP_OFF: case REDSTONE_LAMP_ON:
+                return 0.3;
+            case BED: case COCOA: case DAYLIGHT_DETECTOR: case HUGE_MUSHROOM_1: case HUGE_MUSHROOM_2:
+                case LEAVES: case LEAVES_2: case SNOW_BLOCK:
+                return 0.2;
+            case CARPET: case SNOW:
+                return 0.1;
+            default:
+                return 0.0;
         }
     }
 
