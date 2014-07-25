@@ -573,7 +573,7 @@ public class AutoBuilder extends BaseSTBMachine {
     public enum BuilderStatus {
         READY(DyeColor.LIME, "Ready to Operate!"),
         NO_WORKAREA(DyeColor.YELLOW, "No work area has", "been defined yet"),
-        NO_INVENTORY(DyeColor.RED, "Out of building material!", "Place more blocks in", "the inventory and", "press Start"),
+        NO_INVENTORY(DyeColor.RED, "Out of building material!", "Place more blocks in", "the inventory and", "press Start to resume"),
         NO_PERMISSION(DyeColor.RED, "Builder doesn't have", "building rights in", "this area"),
         TOO_NEAR(DyeColor.RED, "Auto Builder is inside", "the work area!"),
         TOO_FAR(DyeColor.RED, "Auto Builder is too far", "away from the work area!", "Place it " + MAX_DISTANCE + " blocks or less from", "the edge of the work area"),
