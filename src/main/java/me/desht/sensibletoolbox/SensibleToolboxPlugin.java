@@ -24,7 +24,9 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.nms.NMSHelper;
+import me.desht.sensibletoolbox.api.AccessControl;
 import me.desht.sensibletoolbox.api.FriendManager;
+import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.recipes.RecipeUtil;
 import me.desht.sensibletoolbox.api.util.BlockProtection;
@@ -89,6 +91,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private WorldGuardPlugin worldGuardPlugin = null;
     private WorldGuardPlugin preciousStonesPlugin = null;
     private BlockProtection blockProtection;
+    private ConfigCache configCache;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -108,6 +111,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         random = new Random();
 
         configManager = new ConfigurationManager(this, this);
+
+        configCache = new ConfigCache(this);
+        configCache.processConfig();
 
         MiscUtil.init(this);
         MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
@@ -402,27 +408,21 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         } else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
         } else if (key.equals("inventory_protection")) {
-            validateEnumValue(newVal.toString().toUpperCase(), BlockProtection.InvProtectionType.class);
-//            try {
-//                BlockProtection.ChestProtectionType.valueOf(newVal.toString().toUpperCase());
-//            } catch (IllegalArgumentException e) {
-//                throw new DHUtilsException(e.getMessage());
-//            }
+            getEnumValue(newVal.toString().toUpperCase(), BlockProtection.InvProtectionType.class);
         } else if (key.equals("block_protection")) {
-            validateEnumValue(newVal.toString().toUpperCase(), BlockProtection.BlockProtectionType.class);
-//            try {
-//                BlockProtection.BlockProtectionType.valueOf(newVal.toString().toUpperCase());
-//            } catch (IllegalArgumentException e) {
-//                throw new DHUtilsException(e.getMessage());
-//            }
+            getEnumValue(newVal.toString().toUpperCase(), BlockProtection.BlockProtectionType.class);
+        } else if (key.equals("default_access")) {
+            getEnumValue(newVal.toString().toUpperCase(), AccessControl.class);
+        } else if (key.equals("default_redstone")) {
+            getEnumValue(newVal.toString().toUpperCase(), RedstoneBehaviour.class);
         }
         return newVal;
     }
 
-    private void validateEnumValue(String value, Class<? extends Enum> c) {
+    private <T extends Enum> T getEnumValue(String value, Class<T> c) {
         try {
             Method m = c.getMethod("valueOf", String.class);
-            m.invoke(null, value);
+            return c.cast(m.invoke(null, value));
         } catch (Exception e) {
             if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
                 e.printStackTrace();
@@ -453,6 +453,14 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             blockProtection.setInvProtectionType(BlockProtection.InvProtectionType.valueOf(newVal.toString().toUpperCase()));
         } else if (key.equals("block_protection")) {
             blockProtection.setBlockProtectionType(BlockProtection.BlockProtectionType.valueOf(newVal.toString().toUpperCase()));
+        } else if (key.equals("default_access")) {
+            getConfigCache().setDefaultAccess(AccessControl.valueOf(newVal.toString().toUpperCase()));
+        } else if (key.equals("default_redstone")) {
+            getConfigCache().setDefaultRedstone(RedstoneBehaviour.valueOf(newVal.toString().toUpperCase()));
+        } else if (key.equals("particle_effects")) {
+            getConfigCache().setParticleLevel((Integer) newVal);
+        } else if (key.equals("noisy_machines")) {
+            getConfigCache().setNoisyMachines((Boolean) newVal);
         }
     }
 
@@ -591,5 +599,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public BlockProtection getBlockProtection() {
         return blockProtection;
+    }
+
+    public ConfigCache getConfigCache() {
+        return configCache;
     }
 }

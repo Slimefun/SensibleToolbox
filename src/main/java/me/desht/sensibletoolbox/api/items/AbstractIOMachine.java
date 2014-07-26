@@ -41,10 +41,8 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             // not doing any processing - anything in input to take?
             for (int slot : getInputSlots()) {
                 if (getInventoryItem(slot) != null) {
+                    onMachineStartup();
                     pullItemIntoProcessing(slot);
-                    if (SensibleToolboxPlugin.getInstance().getConfig().getBoolean("noisy_machines")) {
-                        onMachineStartup();
-                    }
                     break;
                 }
             }

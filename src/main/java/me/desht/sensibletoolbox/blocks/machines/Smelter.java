@@ -158,7 +158,9 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     protected void onMachineStartup() {
-        getLocation().getWorld().playSound(getLocation(), Sound.FIRE, 1.0f, 1.0f);
+        if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) {
+            getLocation().getWorld().playSound(getLocation(), Sound.FIRE, 1.0f, 1.0f);
+        }
     }
 
     @Override

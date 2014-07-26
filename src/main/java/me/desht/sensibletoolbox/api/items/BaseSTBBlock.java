@@ -56,8 +56,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     protected BaseSTBBlock() {
         super();
         setFacing(BlockFace.SELF);
-        redstoneBehaviour = RedstoneBehaviour.IGNORE;
-        accessControl = AccessControl.PUBLIC;
+        redstoneBehaviour = SensibleToolbox.getPluginInstance().getConfigCache().getDefaultRedstone();
+        accessControl = SensibleToolbox.getPluginInstance().getConfigCache().getDefaultAccess();
         ticksLived = 0;
         needToScanSigns = false;
     }

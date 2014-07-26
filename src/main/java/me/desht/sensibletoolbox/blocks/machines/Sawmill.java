@@ -2,6 +2,7 @@ package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.AbstractIOMachine;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.recipes.SimpleCustomRecipe;
@@ -86,7 +87,9 @@ public class Sawmill extends AbstractIOMachine {
 
     @Override
     protected void onMachineStartup() {
-        getLocation().getWorld().playSound(getLocation(), Sound.HORSE_WOOD, 1.0f, 0.5f);
+        if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) {
+            getLocation().getWorld().playSound(getLocation(), Sound.HORSE_WOOD, 1.0f, 0.5f);
+        }
     }
 
     @Override
