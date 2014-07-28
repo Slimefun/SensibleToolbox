@@ -1,8 +1,10 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import com.google.common.collect.Maps;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
@@ -13,9 +15,17 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 public class VacuumModule extends DirectionalItemRouterModule {
     private static final Dye md = makeDye(DyeColor.BLACK);
     private static final int RADIUS = 6;
+    private static final Map<UUID,List<Item>> recentItemCache = Maps.newHashMap();
+    private static final Map<UUID,Long> cacheTime = Maps.newHashMap();
+    public static final int CACHE_TIME = 1000;
 
     public VacuumModule() {
     }
@@ -49,13 +59,34 @@ public class VacuumModule extends DirectionalItemRouterModule {
         return recipe;
     }
 
+    private static List<Item> getItemEntities(World w) {
+        // Caching the list of item entities per-world can avoid the overhead of
+        // repeated getEntities() calls if there are many vacuum modules in operation.
+        List<Item> list = recentItemCache.get(w.getUID());
+        if (list == null) {
+            list = new ArrayList<Item>();
+            recentItemCache.put(w.getUID(), list);
+            cacheTime.put(w.getUID(), 0L);
+        }
+        if (System.currentTimeMillis() - cacheTime.get(w.getUID()) > CACHE_TIME) {
+            list.clear();
+            list.addAll(w.getEntitiesByClass(Item.class));
+            cacheTime.put(w.getUID(), System.currentTimeMillis());
+        }
+        return list;
+    }
+
     @Override
     public boolean execute(Location loc) {
         int dist = RADIUS * RADIUS;
         loc.add(0.5, 0.5, 0.5);
         ItemStack buffer = getItemRouter().getBufferItem();
         boolean acted = false;
-        for (Item item : getItemRouter().getLocation().getWorld().getEntitiesByClass(Item.class)) {
+        for (Item item : getItemEntities(loc.getWorld())) {
+            if (!item.isValid()) {
+                // important, since we're looking at entities cached in the last second
+                continue;
+            }
             double d = loc.distanceSquared(item.getLocation());
             if (d >= dist) {
                 continue;
