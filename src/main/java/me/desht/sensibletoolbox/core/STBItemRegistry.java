@@ -115,7 +115,8 @@ public class STBItemRegistry implements ItemRegistry {
     public <T extends BaseSTBItem> T fromItemStack(ItemStack stack, Class<T> type) {
         BaseSTBItem item = fromItemStack(stack);
         if (item != null && type.isAssignableFrom(item.getClass())) {
-            return type.cast(item);
+            //noinspection unchecked
+            return (T) item;
         } else {
             return null;
         }

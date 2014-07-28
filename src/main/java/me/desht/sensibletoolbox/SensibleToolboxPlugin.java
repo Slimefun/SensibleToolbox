@@ -422,7 +422,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private <T extends Enum> T getEnumValue(String value, Class<T> c) {
         try {
             Method m = c.getMethod("valueOf", String.class);
-            return c.cast(m.invoke(null, value));
+            //noinspection unchecked
+            return (T) m.invoke(null, value);
         } catch (Exception e) {
             if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
                 e.printStackTrace();

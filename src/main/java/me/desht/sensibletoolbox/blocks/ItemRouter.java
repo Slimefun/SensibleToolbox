@@ -389,7 +389,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     public <T extends ItemRouterModule> T findModule(Class <T> c) {
         for (ItemRouterModule module : modules.keySet()) {
             if (c.isAssignableFrom(module.getClass())) {
-                return c.cast(module);
+                //noinspection unchecked
+                return (T) module;
             }
         }
         return null;

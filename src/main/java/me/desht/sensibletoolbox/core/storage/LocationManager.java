@@ -262,7 +262,8 @@ public class LocationManager {
     public <T extends BaseSTBBlock> T get(Location loc, Class<T> type, boolean checkSigns) {
         BaseSTBBlock stbBlock = get(loc, checkSigns);
         if (stbBlock != null && type.isAssignableFrom(stbBlock.getClass())) {
-            return type.cast(stbBlock);
+            //noinspection unchecked
+            return (T) stbBlock;
         } else {
             return null;
         }
