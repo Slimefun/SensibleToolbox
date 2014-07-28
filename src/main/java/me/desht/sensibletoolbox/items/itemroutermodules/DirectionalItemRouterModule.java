@@ -1,13 +1,11 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
+import com.google.common.collect.Maps;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.api.Filtering;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
-import me.desht.sensibletoolbox.api.gui.FilterTypeGadget;
-import me.desht.sensibletoolbox.api.gui.GUIUtil;
-import me.desht.sensibletoolbox.api.gui.InventoryGUI;
-import me.desht.sensibletoolbox.api.gui.ToggleButton;
+import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.Filter;
 import me.desht.sensibletoolbox.api.util.STBUtil;
@@ -32,19 +30,37 @@ import org.bukkit.material.Wool;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering {
     private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
-    private static final ItemStack WHITE_BUTTON = GUIUtil.makeTexture(new Wool(DyeColor.WHITE), ChatColor.UNDERLINE + "Whitelist");
-    private static final ItemStack BLACK_BUTTON = GUIUtil.makeTexture(new Wool(DyeColor.BLACK), ChatColor.UNDERLINE + "Blacklist");
+    private static final ItemStack WHITE_BUTTON = GUIUtil.makeTexture(
+            new Wool(DyeColor.WHITE), ChatColor.RESET.toString() + ChatColor.UNDERLINE + "Whitelist",
+            "Module will only process", "items which match the filter."
+    );
+    private static final ItemStack BLACK_BUTTON = GUIUtil.makeTexture(
+            new Wool(DyeColor.BLACK), ChatColor.RESET.toString() + ChatColor.UNDERLINE + "Blacklist",
+            "Module will NOT process", "items which match the filter."
+    );
     private static final ItemStack OFF_BUTTON = GUIUtil.makeTexture(
-            STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.LIGHT_BLUE), ChatColor.UNDERLINE + "Termination OFF",
-            "Subsequent modules will", "process items even if this", "module processes items."
+            STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.LIGHT_BLUE), ChatColor.RESET.toString() + ChatColor.UNDERLINE + "Termination OFF",
+            "Subsequent modules in the", "Item Router will process items", "as normal."
     );
     private static final ItemStack ON_BUTTON = GUIUtil.makeTexture(
-            new Wool(DyeColor.ORANGE), ChatColor.UNDERLINE + "Termination ON",
-            "If this module processes an item,", "the processing sequence stops."
+            new Wool(DyeColor.ORANGE), ChatColor.RESET.toString() + ChatColor.UNDERLINE + "Termination ON",
+            "If this module processes an", "item, the Item Router will", "not process any more items", "on this tick."
     );
+    public static final int FILTER_LABEL_SLOT = 0;
+    public static final int DIRECTION_LABEL_SLOT = 5;
+    private static final Map<Integer,BlockFace> directionSlots = Maps.newHashMap();
+    static {
+        directionSlots.put(6, BlockFace.UP);
+        directionSlots.put(7, BlockFace.NORTH);
+        directionSlots.put(15, BlockFace.WEST);
+        directionSlots.put(17, BlockFace.EAST);
+        directionSlots.put(24, BlockFace.DOWN);
+        directionSlots.put(25, BlockFace.SOUTH);
+    }
     private final Filter filter;
     private BlockFace direction;
     private boolean terminator;
@@ -117,7 +133,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
     @Override
     public String getDisplaySuffix() {
-        return direction != null && direction != BlockFace.SELF ? direction.toString() : null;
+        return direction != BlockFace.SELF ? direction.toString() : null;
     }
 
     public BlockFace getDirection() {
@@ -166,9 +182,9 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     }
 
     private InventoryGUI createGUI(Player player) {
-        InventoryGUI gui = GUIUtil.createGUI(player, this, 27, ChatColor.DARK_RED + "Module Configuration");
+        final InventoryGUI theGUI = GUIUtil.createGUI(player, this, 36, ChatColor.DARK_RED + "Module Configuration");
 
-        gui.addGadget(new ToggleButton(gui, 8, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
+        theGUI.addGadget(new ToggleButton(theGUI, 28, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(boolean newValue) {
                 if (getFilter() != null) {
@@ -179,8 +195,8 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
                 }
             }
         }));
-        gui.addGadget(new FilterTypeGadget(gui, 17));
-        gui.addGadget(new ToggleButton(gui, 26, isTerminator(), ON_BUTTON, OFF_BUTTON, new ToggleButton.ToggleListener() {
+        theGUI.addGadget(new FilterTypeGadget(theGUI, 29));
+        theGUI.addGadget(new ToggleButton(theGUI, 30, isTerminator(), ON_BUTTON, OFF_BUTTON, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(boolean newValue) {
                 setTerminator(newValue);
@@ -188,13 +204,51 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             }
         }));
 
-        gui.addLabel("Filtered Items", 0, null);
+        theGUI.addLabel("Filtered Items", FILTER_LABEL_SLOT, null, "Place up to 9 items", "in the filter →");
         for (int slot : filterSlots) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            theGUI.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
-        populateFilterInventory(gui.getInventory());
+        populateFilterInventory(theGUI.getInventory());
 
-        return gui;
+        theGUI.addLabel("Module Direction", DIRECTION_LABEL_SLOT, null,
+                "Set the direction that", "the module works in", "once installed in an", "Item Router");
+        for (Map.Entry<Integer,BlockFace> e : directionSlots.entrySet()) {
+            theGUI.addGadget(makeDirectionButton(theGUI, e.getKey(), e.getValue()));
+        }
+        theGUI.addGadget(new ButtonGadget(theGUI, 16, "No Direction", null, new ItemRouter().getMaterialData().toItemStack(), new Runnable() {
+            @Override
+            public void run() {
+                setDirection(BlockFace.SELF);
+                for (int slot : directionSlots.keySet()) {
+                    ((ToggleButton) gui.getGadget(slot)).setValue(false);
+                }
+            }
+        }));
+
+        return theGUI;
+    }
+
+    private ToggleButton makeDirectionButton(final InventoryGUI gui, final int slot, final BlockFace face) {
+        ItemStack trueStack = GUIUtil.makeTexture(new Wool(DyeColor.ORANGE), ChatColor.YELLOW + face.toString());
+        ItemStack falseStack = GUIUtil.makeTexture(new Wool(DyeColor.SILVER), ChatColor.YELLOW + face.toString());
+        return new ToggleButton(gui, slot, getDirection() == face, trueStack, falseStack, new ToggleButton.ToggleListener() {
+            @Override
+            public boolean run(boolean newValue) {
+                // acts sort of like a radio button - switching one on switches all other
+                // off, but switching one off leaves all switch off
+                if (newValue) {
+                    setDirection(face);
+                    for (int otherSlot : directionSlots.keySet()) {
+                        if (slot != otherSlot) {
+                            ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
+                        }
+                    }
+                } else {
+                    setDirection(BlockFace.SELF);
+                }
+                return true;
+            }
+        });
     }
 
     private void populateFilterInventory(Inventory inv) {

@@ -59,8 +59,10 @@ public class ToggleButton extends ClickableGadget {
      * @param newValue the new value to set
      */
     public void setValue(boolean newValue) {
-        value = newValue;
-        updateGUI();
+        if (value != newValue) {
+            value = newValue;
+            updateGUI();
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -56,6 +57,9 @@ public class VacuumModule extends DirectionalItemRouterModule {
         boolean acted = false;
         for (Item item : getItemRouter().getLocation().getWorld().getEntitiesByClass(Item.class)) {
             double d = loc.distanceSquared(item.getLocation());
+            if (d >= dist) {
+                continue;
+            }
             ItemStack onGround = item.getItemStack();
             if (item.getPickupDelay() > 0 || !getFilter().shouldPass(onGround) || !rightDirection(item, loc)) {
                 continue;
@@ -78,7 +82,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
                     }
                 }
                 acted = true;
-            } else if (d < dist) {
+            } else {
                 Vector vel = loc.subtract(item.getLocation()).toVector().normalize().multiply(Math.min(d * 0.06, 1.0));
                 item.setVelocity(vel);
             }
@@ -87,7 +91,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
     }
 
     private boolean rightDirection(Item item, Location loc) {
-        if (getDirection() == null) {
+        if (getDirection() == null || getDirection() == BlockFace.SELF) {
             return true;
         }
         Location itemLoc = item.getLocation();
