@@ -211,7 +211,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             if (player.isSneaking()) {
                 // set the target material
                 mat = clicked.getType().getNewData(clicked.getData());
-                System.out.println("multibuilder target: " + mat + " - " + mat.getClass().getName());
                 done = true;
             } else if (mat != null) {
                 // replace multiple blocks
@@ -224,7 +223,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && mat != null) {
             // replace one block
-            System.out.println("exchange 1: " + mat + " - " + mat.getClass().getName());
             Block[] blocks = getReplacementCandidates(player, event.getClickedBlock(), 1);
             done = doExchange(player, blocks, clicked) > 0;
             event.setCancelled(true);
@@ -334,7 +332,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 amount += stack.getAmount();
             }
         }
-        System.out.println("player has " + amount + " of " + mat);
         return amount;
     }
 
@@ -342,7 +339,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         // If a material loses its data when in item form (i.e. the block data
         // is used to store the block's orientation), then we need to know that
         // to correctly match what the player has in inventory.
-        System.out.println(mat + "(" + mat.getClass().getName() + ") loses data? " + (mat instanceof Directional));
         return mat instanceof Directional;
     }
 
