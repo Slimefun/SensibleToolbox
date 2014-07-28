@@ -129,9 +129,11 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
 
         int b = currentValue.ordinal();
         int n = b;
+        int adjust = event.isRightClick() ? -1 : 1;
 
         do {
-            n = (n + 1) % stacks.length;
+            n = (n + adjust) % stacks.length;
+            if (n < 0) n += stacks.length;
             //noinspection unchecked
             currentValue = (T) currentValue.getClass().getEnumConstants()[n];
             if (n == b) {
