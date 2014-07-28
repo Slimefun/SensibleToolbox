@@ -35,7 +35,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Insert into an Item Router", "Sucks up items within a " + RADIUS + "-block radius "};
+        return new String[]{"Insert into an Item Router", "Sucks up items within a " + RADIUS + "-block radius"};
     }
 
     @Override
@@ -57,11 +57,11 @@ public class VacuumModule extends DirectionalItemRouterModule {
         for (Item item : getItemRouter().getLocation().getWorld().getEntitiesByClass(Item.class)) {
             double d = loc.distanceSquared(item.getLocation());
             ItemStack onGround = item.getItemStack();
-            if (!getFilter().shouldPass(onGround) || !rightDirection(item, loc)) {
+            if (item.getPickupDelay() > 0 || !getFilter().shouldPass(onGround) || !rightDirection(item, loc)) {
                 continue;
             }
             if (d < 2.0) {
-                // slurp
+                // slurp?
                 if (buffer == null) {
                     getItemRouter().setBufferItem(onGround);
                     buffer = getItemRouter().getBufferItem();
