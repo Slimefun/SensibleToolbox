@@ -19,6 +19,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -26,6 +27,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.Attachable;
 import org.bukkit.material.Directional;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -315,7 +317,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 player.getWorld().dropItemNaturally(player.getLocation(), stack);
             }
 
-            new SwapTask(player, affectedBlocks).runTaskTimer(getProviderPlugin(), 1L, 1L);
+            new SwapTask(affectedBlocks).runTaskTimer(getProviderPlugin(), 1L, 1L);
 
             player.updateInventory();
         } else if (getCharge() < chargeNeeded) {
@@ -475,19 +477,17 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private class SwapTask extends BukkitRunnable {
-        private final Player player;
         private final Block[] blocks;
         private int n = 0;
 
-        private SwapTask(Player player, Block[] blocks) {
-            this.player = player;
+        private SwapTask(Block[] blocks) {
             this.blocks = blocks;
         }
 
         @Override
         public void run() {
             Block b = blocks[n];
-            player.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
             b.setTypeIdAndData(mat.getItemTypeId(), mat.getData(), true);
             n++;
             if (n >= blocks.length) {
