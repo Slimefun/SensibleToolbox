@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api.items;
 
 import com.comphenix.attribute.AttributeStorage;
+import com.comphenix.attribute.NbtFactory;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PermissionUtils;
@@ -313,8 +314,14 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         conf.set("*TYPE", getItemTypeID());
         AttributeStorage storage = AttributeStorage.newTarget(res, STBItemRegistry.STB_ATTRIBUTE_ID);
         String data = conf.saveToString();
-        storage.setData(data);
         Debugger.getInstance().debug(3, "serialize " + this + " to itemstack:\n" + data);
+        storage.setData(data);
+
+        // maybe in 1.8...
+//        res = NbtFactory.getCraftItemStack(storage.getTarget());
+//        NbtFactory.NbtCompound compound = NbtFactory.fromItemTag(res);
+//        compound.putPath("HideFlags", 63);
+
         return storage.getTarget();
     }
 

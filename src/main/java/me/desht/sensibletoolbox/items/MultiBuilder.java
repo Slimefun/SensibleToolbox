@@ -57,9 +57,10 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private MaterialData thawMaterialData(String s) {
         String[] f = s.split(":");
-        Material mat = Material.matchMaterial(f[0]);
+//        Material mat = Material.matchMaterial(f[0]);
+        Material mat = Material.valueOf(f[0]);
         byte data = f.length > 1 ? Byte.parseByte(f[1]) : 0;
-        return new MaterialData(mat, data);
+        return mat.getNewData(data);
     }
 
     private String freezeMaterialData(MaterialData mat) {
@@ -207,7 +208,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (player.isSneaking()) {
                 // set the target material
-                mat = new MaterialData(clicked.getType(), clicked.getData());
+                mat = clicked.getType().getNewData(clicked.getData());
+                System.out.println("multibuilder target: " + mat + " - " + mat.getClass().getName());
                 done = true;
             } else if (mat != null) {
                 // replace multiple blocks
@@ -220,6 +222,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && mat != null) {
             // replace one block
+            System.out.println("exchange 1: " + mat + " - " + mat.getClass().getName());
             Block[] blocks = getReplacementCandidates(player, event.getClickedBlock(), 1);
             done = doExchange(player, blocks, clicked) > 0;
             event.setCancelled(true);
@@ -297,7 +300,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         double chargeNeeded = chargePerOp * nAffected * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         if (nAffected > 0 && getCharge() >= chargeNeeded) {
             setCharge(getCharge() - chargeNeeded);
-            ItemCost taken = new ItemCost(mat.toItemStack(nAffected));
+            ItemCost taken = losesDataWhenBroken(mat) ? new ItemCost(mat.getItemType(), nAffected) : new ItemCost(mat.toItemStack(nAffected));
             taken.apply(player);
 
             Block[] affectedBlocks = Arrays.copyOfRange(blocks, 0, nAffected);
@@ -325,16 +328,20 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         int amount = 0;
         for (ItemStack stack : p.getInventory()) {
             if (stack != null && !stack.hasItemMeta() && stack.getType() == mat.getItemType() &&
-                    (losesDataWhenBroken(mat.getItemType()) || stack.getData().getData() == mat.getData())) {
+                    (losesDataWhenBroken(mat) || stack.getData().getData() == mat.getData())) {
                 amount += stack.getAmount();
             }
         }
+        System.out.println("player has " + amount + " of " + mat);
         return amount;
     }
 
-    private boolean losesDataWhenBroken(Material mat) {
-        MaterialData md = mat.getNewData((byte) 0);
-        return md instanceof Directional;
+    private boolean losesDataWhenBroken(MaterialData mat) {
+        // If a material loses its data when in item form (i.e. the block data
+        // is used to store the block's orientation), then we need to know that
+        // to correctly match what the player has in inventory.
+        System.out.println(mat + "(" + mat.getClass().getName() + ") loses data? " + (mat instanceof Directional));
+        return mat instanceof Directional;
     }
 
     private boolean canReplace(Player player, Block b) {
@@ -353,13 +360,13 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             final List<Block> blocks = getBuildCandidates(player, event.getClickedBlock(), event.getBlockFace());
-            MaterialData m = new MaterialData(event.getClickedBlock().getType(), event.getClickedBlock().getData());
-            int nAffected = Math.min(blocks.size(), howMuchDoesPlayerHave(player, m));
+            MaterialData matData = event.getClickedBlock().getType().getNewData(event.getClickedBlock().getData());
+            int nAffected = Math.min(blocks.size(), howMuchDoesPlayerHave(player, matData));
             List<Block> actualBlocks = blocks.subList(0, nAffected);
 
             if (!actualBlocks.isEmpty()) {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    doBuild(player, event.getClickedBlock(), actualBlocks);
+                    doBuild(player, event.getClickedBlock(), actualBlocks, matData);
                 } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     showBuildPreview(player, actualBlocks);
                 }
@@ -387,14 +394,15 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }, 20L);
     }
 
-    private void doBuild(Player player, Block source, List<Block> actualBlocks) {
+    private void doBuild(Player player, Block source, List<Block> actualBlocks, MaterialData matData) {
         ItemStack inHand = player.getItemInHand();
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         if (getCharge() >= chargeNeeded) {
             setCharge(getCharge() - chargeNeeded);
-//            ItemCost cost = new ItemCost(source.getType(), source.getData(), actualBlocks.size());
-            ItemCost cost = new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
+            ItemCost cost = losesDataWhenBroken(matData) ?
+                    new ItemCost(matData.getItemType(), actualBlocks.size()) :
+                    new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
             cost.apply(player);
             for (Block b : actualBlocks) {
                 b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
