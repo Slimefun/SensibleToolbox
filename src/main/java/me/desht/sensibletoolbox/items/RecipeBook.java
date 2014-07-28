@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
@@ -13,11 +14,13 @@ import me.desht.sensibletoolbox.api.gui.ButtonGadget;
 import me.desht.sensibletoolbox.api.gui.CyclerGadget;
 import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.recipes.*;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.core.STBItemRegistry;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -30,10 +33,16 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.*;
 
+/**
+ * A recipe book allows browsing of all known recipes, and also fabrication of
+ * items.  Player permissions are taken into account; the player must have the
+ * stb.craft.{item-name} permission node to see the item in the recipe book.
+ */
 public class RecipeBook extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.BOOK);
     private static final int ITEMS_PER_PAGE = 45;
@@ -76,7 +85,11 @@ public class RecipeBook extends BaseSTBItem {
     private Player player;
     private int inventorySlot;
     private final List<InventoryHolder> resourceInventories = new ArrayList<InventoryHolder>();
+    private final Set<String> providerNames = Sets.newHashSet();
 
+    /**
+     * Constructs a new recipe book.
+     */
     public RecipeBook() {
         super();
         fabricationAvailable = fabricationFree = false;
@@ -88,6 +101,11 @@ public class RecipeBook extends BaseSTBItem {
         filteredItems = fullItemList;
     }
 
+    /**
+     * Constructs a recipe book from frozen data.
+     *
+     * @param conf frozen data; see {@link #freeze()}
+     */
     public RecipeBook(ConfigurationSection conf) {
         super(conf);
         fabricationAvailable = fabricationFree = false;
@@ -96,7 +114,6 @@ public class RecipeBook extends BaseSTBItem {
         recipeNumber = conf.getInt("recipeNumber");
         recipeNameFilter = conf.getString("filter", "");
         recipeTypeFilter = RecipeType.valueOf(conf.getString("typeFilter", "ALL"));
-        buildFilteredList();
     }
 
     @Override
@@ -110,6 +127,11 @@ public class RecipeBook extends BaseSTBItem {
         return conf;
     }
 
+    /**
+     * Builds the complete recipe list; all known craftable items in the game.
+     * Don't call this directly - it's called once when Sensible Toolbox
+     * initialises.
+     */
     public static void buildRecipes() {
         Iterator<Recipe> iter = Bukkit.recipeIterator();
         Set<ItemStack> itemSet = new HashSet<ItemStack>();
@@ -130,24 +152,54 @@ public class RecipeBook extends BaseSTBItem {
         }
     }
 
-    public void buildFilteredList() {
-        String f = recipeNameFilter.toLowerCase();
-        if (f.isEmpty() && recipeTypeFilter == RecipeType.ALL) {
+    private void buildFilteredList() {
+        String filterString = recipeNameFilter.toLowerCase();
+        if (filterString.isEmpty() && recipeTypeFilter == RecipeType.ALL) {
             filteredItems = fullItemList;
         } else {
             filteredItems = new ArrayList<ItemStack>();
             for (ItemStack stack : fullItemList) {
-                if (f.isEmpty() || ItemNames.lookup(stack).toLowerCase().contains(f)) {
-                    if (recipeTypeFilter == RecipeType.ALL) {
+                if (filterString.isEmpty() || ItemNames.lookup(stack).toLowerCase().contains(filterString)) {
+                    BaseSTBItem stbItem = SensibleToolbox.getItemRegistry().fromItemStack(stack);
+                    if (includeItem(stbItem)) {
                         filteredItems.add(stack);
-                    } else {
-                        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-                        if (item == null && recipeTypeFilter == RecipeType.VANILLA || item != null && recipeTypeFilter == RecipeType.STB) {
-                            filteredItems.add(stack);
-                        }
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Set a list of STB item provider plugin names to filter the list of
+     * matched items by.  Plugins can extend this class and override this
+     * method if they want to create a custom recipe book which only includes
+     * recipes provided by them.
+     * <p/>
+     * The plugin names should be strings, as returned by
+     * {@link org.bukkit.plugin.Plugin#getName()}. Passing an empty array of
+     * plugin names clears the filter.
+     *
+     * @param pluginNames zero or more provider plugin names
+     */
+    protected void setMatchProviders(String... pluginNames) {
+        providerNames.clear();
+        providerNames.addAll(Arrays.asList(pluginNames));
+    }
+
+    private boolean includeItem(BaseSTBItem stbItem) {
+        switch (recipeTypeFilter) {
+            case ALL:
+                return stbItem == null ||
+                        (stbItem.checkPlayerPermission(player, ItemAction.CRAFT) &&
+                                (providerNames.isEmpty() || providerNames.contains(stbItem.getProviderPlugin().getName())));
+            case VANILLA:
+                return stbItem == null;
+            case STB:
+                return stbItem != null &&
+                        stbItem.checkPlayerPermission(player, ItemAction.CRAFT) &&
+                        (providerNames.isEmpty() || providerNames.contains(stbItem.getProviderPlugin().getName()));
+            default:
+                return true;
         }
     }
 
@@ -230,10 +282,22 @@ public class RecipeBook extends BaseSTBItem {
         }
     }
 
+    /**
+     * Make the book go to the item list screen (leaving the recipe view
+     * screen if the book was showing that).
+     */
     public void goToItemList() {
         viewingItem = -1;
     }
 
+    /**
+     * Open this recipe book for the given player.
+     *
+     * @param player the player to show the book GUI to
+     * @param fabricationBlock a block which can be used for fabricating items,
+     *                         most commonly a workbench block; may also be
+     *                         null
+     */
     public void openBook(Player player, Block fabricationBlock) {
         this.player = player;
         fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
@@ -353,7 +417,19 @@ public class RecipeBook extends BaseSTBItem {
     private void showCustomRecipe(SimpleCustomRecipe recipe) {
         gui.getInventory().setItem(RESULT_SLOT, recipe.getResult());
         BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(recipe.getProcessorID());
-        gui.getInventory().setItem(TYPE_SLOT, item.toItemStack());
+        ItemStack processor = item.getMaterialData().toItemStack();
+        ItemMeta meta = processor.getItemMeta();
+        meta.setDisplayName(ChatColor.YELLOW + item.getItemName());
+        List<String> lore = Lists.newArrayList();
+        lore.add(STBItemRegistry.LORE_PREFIX + item.getProviderPlugin().getName() + " (STB) item");
+        if (item instanceof AbstractProcessingMachine) {
+            AbstractProcessingMachine machine = (AbstractProcessingMachine) item;
+            lore.add(ChatColor.WHITE.toString() + machine.getScuPerTick() + " SCU/t over " + recipe.getProcessingTime() / 20.0 + "s");
+            lore.add(ChatColor.WHITE.toString() + "Total SCU: " + machine.getScuPerTick() * recipe.getProcessingTime());
+        }
+        meta.setLore(lore);
+        processor.setItemMeta(meta);
+        gui.getInventory().setItem(TYPE_SLOT, processor);
         gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
     }
 
@@ -375,13 +451,6 @@ public class RecipeBook extends BaseSTBItem {
             }
         }
         return stack;
-    //        if (stack.getDurability() == 32767) {
-//            ItemStack stack2 = stack.clone();
-//            stack2.setDurability((short) 0);
-//            return stack2;
-//        } else {
-//            return stack;
-//        }
     }
 
     @Override
@@ -404,6 +473,7 @@ public class RecipeBook extends BaseSTBItem {
             return;
         }
 
+        // we only fabricate things that can be made in a vanilla crafting table
         if (!(recipe instanceof ShapedRecipe) && !(recipe instanceof ShapelessRecipe)) {
             return;
         }

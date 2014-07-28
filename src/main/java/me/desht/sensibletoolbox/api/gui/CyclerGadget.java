@@ -35,7 +35,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
      * Constructs a cycler gadget.
      * <p/>
      * The <em>item</em> parameter would typically refer to a separate STB
-     * item or block from the GUI's owner.  This allows a GUI on one item to
+     * block from the GUI's owner.  This allows a GUI on one item to
      * configure a setting in a separate block.
      *
      * @param gui the GUI to add the gadget to
@@ -132,6 +132,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
 
         do {
             n = (n + 1) % stacks.length;
+            //noinspection unchecked
             currentValue = (T) currentValue.getClass().getEnumConstants()[n];
             if (n == b) {
                 break; // avoid infinite loop due to no supported behaviour
