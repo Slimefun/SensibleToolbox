@@ -50,7 +50,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
         if (getProgress() > 0 && getCharge() > 0) {
             // currently processing....
-            double chargeNeeded = getPowerMultiplier() * getTickRate();
+            double chargeNeeded = getScuPerTick() * getPowerMultiplier() * getTickRate();
             // throttle back on the progress and charge if necessary
             int mult = chargeNeeded < getCharge() ? getTickRate() : (int) (getCharge() / getPowerMultiplier());
             setProgress(getProgress() - getSpeedMultiplier() * mult);

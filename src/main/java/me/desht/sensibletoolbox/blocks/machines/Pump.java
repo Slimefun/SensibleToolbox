@@ -17,7 +17,6 @@ import org.bukkit.material.MaterialData;
 public class Pump extends AbstractProcessingMachine {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.CYAN);
     private static final int PUMP_FILL_TIME = 40; // 40 ticks to fill a bucket
-    private static final double CHARGE_PER_TICK = 0.1 / PUMP_FILL_TIME; // 0.1 SCU to fill a bucket
     private BlockFace pumpFace = BlockFace.DOWN;  // will be configurable later
 
     public Pump() {
@@ -142,6 +141,12 @@ public class Pump extends AbstractProcessingMachine {
     }
 
     @Override
+    public double getScuPerTick() {
+        // 0.1 SCU to fill a bucket
+        return 0.1 / PUMP_FILL_TIME;
+    }
+
+    @Override
     public void onServerTick() {
         int inputSlot = getInputSlots()[0];
         ItemStack stackIn = getInventoryItem(inputSlot);
@@ -164,7 +169,7 @@ public class Pump extends AbstractProcessingMachine {
         if (getProgress() > 0 && getCharge() > 0 && STBUtil.isLiquidSourceBlock(toPump)) {
             // currently processing....
             setProgress(getProgress() - getSpeedMultiplier() * getTickRate());
-            setCharge(getCharge() - getPowerMultiplier() * CHARGE_PER_TICK * getTickRate());
+            setCharge(getCharge() - getPowerMultiplier() * getScuPerTick() * getTickRate());
             playActiveParticleEffect();
         }
 

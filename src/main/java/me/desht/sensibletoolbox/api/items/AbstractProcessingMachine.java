@@ -55,6 +55,15 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     public abstract Material getProgressIcon();
 
     /**
+     * Define the base amount of SCU consumed per server tick while this
+     * machine is actively processing.  This may be modified by upgrades
+     * installed in the machine.
+     */
+    public double getScuPerTick() {
+        return 1.0;
+    }
+
+    /**
      * Get the ticks remaining until this work cycle is complete, or 0 if the
      * machine is not currently processing anything.
      *
