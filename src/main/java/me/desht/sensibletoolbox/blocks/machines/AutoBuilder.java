@@ -179,7 +179,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
     public void setBuildMode(AutoBuilderMode buildMode) {
         this.buildMode = buildMode;
-        setStatus(BuilderStatus.READY);
+        setStatus(workArea == null ? BuilderStatus.NO_WORKAREA : BuilderStatus.READY);
     }
 
     private void startup() {
