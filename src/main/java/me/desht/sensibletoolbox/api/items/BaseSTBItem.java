@@ -1,7 +1,6 @@
 package me.desht.sensibletoolbox.api.items;
 
 import com.comphenix.attribute.AttributeStorage;
-import com.comphenix.attribute.NbtFactory;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PermissionUtils;
@@ -65,7 +64,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *
      * @param stack an item stack
      */
-    public void storeEnchants(ItemStack stack) {
+    public final void storeEnchants(ItemStack stack) {
         enchants = stack.getEnchantments();
     }
 
@@ -344,7 +343,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *
      * @return the item's type ID
      */
-    public String getItemTypeID() {
+    public final String getItemTypeID() {
         return typeID;
     }
 
@@ -399,7 +398,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @param prefix the configuration node prefix
      * @return the configuration section for this item's config
      */
-    public ConfigurationSection getItemConfig(String prefix) {
+    public final ConfigurationSection getItemConfig(String prefix) {
         return getProviderPlugin().getConfig().getConfigurationSection(prefix + "." + getItemTypeID());
     }
 
@@ -411,7 +410,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *
      * @return the configuration section for this item's config
      */
-    public ConfigurationSection getItemConfig() {
+    public final ConfigurationSection getItemConfig() {
         return getProviderPlugin().getConfig().getConfigurationSection("item_settings").getConfigurationSection(getItemTypeID());
     }
 
@@ -480,7 +479,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @deprecated marked deprecated to indicate that it's a hacky workaround
      */
     @Deprecated
-    protected void hackyDelayedInvUpdate(final Player player) {
+    protected final void hackyDelayedInvUpdate(final Player player) {
         Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
