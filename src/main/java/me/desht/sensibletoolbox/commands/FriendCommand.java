@@ -22,8 +22,7 @@ public class FriendCommand extends STBAbstractCommand {
         setPermissionNode("stb.commands.friend");
         setUsage(new String[] {
                 "/<command> friend",
-                "/<command> friend add <player-name-or-uuid>",
-                "/<command> friend remove <player-name-or-uuid>",
+                "/<command> friend <player-name-or-uuid>",
         });
         setOptions("p:s");
     }
