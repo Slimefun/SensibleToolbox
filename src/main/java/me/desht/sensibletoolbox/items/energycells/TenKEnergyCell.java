@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.items.energycells;
 
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,7 +40,7 @@ public class TenKEnergyCell extends EnergyCell {
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
         recipe.shape("WWW", "WSW", "GRG");
-        recipe.setIngredient('W', Material.WOOD);
+        recipe.setIngredient('W', STBUtil.makeWildCardMaterialData(Material.WOOD));
         recipe.setIngredient('S', Material.SUGAR);
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
