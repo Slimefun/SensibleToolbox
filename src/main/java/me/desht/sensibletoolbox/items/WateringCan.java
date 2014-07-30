@@ -30,6 +30,8 @@ import java.util.Random;
 
 public class WateringCan extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.POTION);
+    private static final MaterialData md2 = new MaterialData(Material.GLASS_BOTTLE);
+
     private static final int GROW_CHANCE = 10;
     private static final int MAX_LEVEL = 200;
     private static final int FIRE_EXTINGUISH_AMOUNT = 50;
@@ -64,7 +66,7 @@ public class WateringCan extends BaseSTBItem {
 
     @Override
     public MaterialData getMaterialData() {
-        return md;
+        return getWaterLevel() == 0 ? md2 : md;
     }
 
     @Override
