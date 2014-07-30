@@ -343,10 +343,12 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private boolean canReplace(Player player, Block b) {
-        // we won't replace any block which can hold items, or any STB block
+        // we won't replace any block which can hold items, or any STB block, or any unbreakable block
         if (SensibleToolbox.getBlockAt(b.getLocation()) != null) {
             return false;
         } else if (VanillaInventoryUtils.isVanillaInventory(b)) {
+            return false;
+        } else if (STBUtil.getMaterialHardness(b.getType()) == Double.MAX_VALUE) {
             return false;
         } else {
             return SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.BREAK);
