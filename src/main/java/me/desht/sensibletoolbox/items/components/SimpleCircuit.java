@@ -36,10 +36,9 @@ public class SimpleCircuit extends BaseSTBItem {
         CircuitBoard cb = new CircuitBoard();
         registerCustomIngredients(cb);
         ShapedRecipe recipe = new ShapedRecipe(toItemStack(2));
-        recipe.shape("CDC", "RTR", "CGC");
+        recipe.shape("CDC", "GTG", "CGC");
         recipe.setIngredient('C', cb.getMaterialData());
         recipe.setIngredient('D', Material.DIODE);
-        recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('T', Material.REDSTONE_TORCH_ON);
         recipe.setIngredient('G', Material.GOLD_NUGGET);
         return recipe;
