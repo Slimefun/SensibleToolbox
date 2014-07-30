@@ -98,11 +98,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     @Override
-    public void onLoad() {
-        RecipeUtil.findVanillaFurnaceMaterials();
-    }
-
-    @Override
     public void onEnable() {
         instance = this;
 
@@ -166,10 +161,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
 
         // do all the recipe setup on a delayed task to ensure we pick up
-        // custom recipes from any other plugins
+        // custom recipes from any plugins that may have loaded after us
         Bukkit.getScheduler().runTask(this, new Runnable() {
             @Override
             public void run() {
+                RecipeUtil.findVanillaFurnaceMaterials();
                 RecipeUtil.setupRecipes();
                 RecipeBook.buildRecipes();
             }
