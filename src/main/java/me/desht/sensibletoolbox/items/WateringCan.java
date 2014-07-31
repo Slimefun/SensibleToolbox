@@ -102,47 +102,51 @@ public class WateringCan extends BaseSTBItem {
         ItemStack newStack = null;
         floodWarning = false;
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Block b = event.getClickedBlock();
-            Block neighbour = b.getRelative(event.getBlockFace());
+            Block block = event.getClickedBlock();
+            Block neighbour = block.getRelative(event.getBlockFace());
             if ((neighbour.getType() == Material.STATIONARY_WATER || neighbour.getType() == Material.WATER) && neighbour.getData() == 0) {
                 // attempt to refill the watering can
                 player.playSound(player.getLocation(), Sound.WATER, 1.0f, 0.8f);
                 neighbour.setType(Material.AIR);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
-            } else if (STBUtil.isCrop(b.getType())) {
+            } else if (STBUtil.isCrop(block.getType())) {
                 // attempt to grow the crops in a 3x3 area, and use some water from the can
-                waterCrops(player, b);
-                irrigateSoil(player, b.getRelative(BlockFace.DOWN));
+                waterCrops(player, block);
+                irrigateSoil(player, block.getRelative(BlockFace.DOWN));
                 newStack = toItemStack();
-            } else if (b.getType() == Material.SOIL) {
-                if (STBUtil.isCrop(b.getRelative(BlockFace.UP).getType())) {
-                    waterCrops(player, b.getRelative(BlockFace.UP));
-                    irrigateSoil(player, b);
+            } else if (block.getType() == Material.SOIL) {
+                if (STBUtil.isCrop(block.getRelative(BlockFace.UP).getType())) {
+                    waterCrops(player, block.getRelative(BlockFace.UP));
+                    irrigateSoil(player, block);
                     newStack = toItemStack();
                 } else {
                     // make the soil wetter if possible
-                    waterSoil(player, b);
-                    irrigateSoil(player, b);
+                    waterSoil(player, block);
+                    irrigateSoil(player, block);
                     newStack = toItemStack();
                 }
-            } else if (b.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
+            } else if (block.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
                 if (new Random().nextBoolean()) {
-                    b.setType(Material.MOSSY_COBBLESTONE);
+                    block.setType(Material.MOSSY_COBBLESTONE);
                 }
-                useSomeWater(player, b, 10);
+                useSomeWater(player, block, 10);
                 newStack = toItemStack();
-            } else if (b.getType() == Material.SMOOTH_BRICK && b.getData() != 1 && getWaterLevel() >= 10) {
+            } else if (block.getType() == Material.SMOOTH_BRICK && block.getData() != 1 && getWaterLevel() >= 10) {
                 if (new Random().nextBoolean()) {
-                    b.setData((byte) 1);
+                    block.setData((byte) 1);
                 }
-                useSomeWater(player, b, 10);
+                useSomeWater(player, block, 10);
                 newStack = toItemStack();
-            } else if (b.getType() == Material.DIRT) {
-                if (maybeGrowGrass(b)) {
-                    useSomeWater(player, b, 1);
+            } else if (block.getType() == Material.DIRT) {
+                if (maybeGrowGrass(block)) {
+                    useSomeWater(player, block, 1);
                     newStack = toItemStack();
                 }
+            } else if (block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE_BLOCK) {
+                maybeGrowTallCrop(player, block);
+                useSomeWater(player, block, 2);
+                newStack = toItemStack();
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             Block b = player.getEyeLocation().getBlock();
@@ -162,6 +166,39 @@ public class WateringCan extends BaseSTBItem {
         if (floodWarning) {
             MiscUtil.alertMessage(player, "This soil is getting very wet!");
             floodWarning = false;
+        }
+    }
+
+    private void maybeGrowTallCrop(Player player, Block b) {
+        // check if we can make this cactus or sugar cane grow
+
+        if (getWaterLevel() < 2) {
+            STBUtil.complain(player);
+            return;
+        }
+
+        // find the bottom block of this tall plant
+        Material mat = b.getType();
+        Block b0 = b;
+        while (b0.getRelative(BlockFace.DOWN).getType() == mat) {
+            b0 = b0.getRelative(BlockFace.DOWN);
+        }
+
+        checkForFlooding(b0.getRelative(BlockFace.DOWN));
+
+        Block candidate = null;
+        if (b0.getRelative(BlockFace.UP).getType() == Material.AIR) {
+            candidate = b0;
+        } else if (b0.getRelative(BlockFace.UP, 2).getType() == Material.AIR) {
+            candidate = b0.getRelative(BlockFace.UP);
+        }
+
+        if (candidate != null && SensibleToolbox.getPluginInstance().getRandom().nextInt(100) < 50) {
+            if (candidate.getData() == 15) {
+                candidate.getRelative(BlockFace.UP).setTypeIdAndData(mat.getId(), (byte) 0, true);
+            } else {
+                candidate.setData((byte) (candidate.getData() + 1));
+            }
         }
     }
 
@@ -244,9 +281,9 @@ public class WateringCan extends BaseSTBItem {
         long delta = (now - SoilSaturation.getLastWatered(soil)) / 1000;
         saturation = Math.max(0, saturation + SATURATION_RATE - (int) delta);
         if (saturation > SoilSaturation.MAX_SATURATION && new Random().nextBoolean()) {
+            soil.breakNaturally();
             soil.setTypeIdAndData(Material.WATER.getId(), (byte) 0, true);
             SoilSaturation.clear(soil);
-            soil.getWorld().dropItemNaturally(soil.getLocation(), new ItemStack(Material.DIRT));
         } else {
             SoilSaturation.setLastWatered(soil, System.currentTimeMillis());
             SoilSaturation.setSaturationLevel(soil, saturation);
