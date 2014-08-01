@@ -54,6 +54,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private int stackSize;
     private int tickRate;
     private boolean needToProcessModules = false;
+    private boolean needToScanBufferSlot = false;
     private final List<BlockFace> neighbours = new ArrayList<BlockFace>();
     private boolean updateNeeded = false;
 
@@ -213,19 +214,28 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 36, ChatColor.DARK_RED + getItemName());
+
         gui.addLabel("Item Buffer", BUFFER_LABEL_SLOT, null,
-                "Items can't be extracted directly;", "Shift-left-click the Item Router", "to eject items from buffer.");
-        gui.getInventory().setItem(BUFFER_ITEM_SLOT, getBufferItem());
+                "Items can be extracted", "here, but not inserted.");
+        gui.setSlotType(BUFFER_ITEM_SLOT, InventoryGUI.SlotType.ITEM);
+        gui.setItem(BUFFER_ITEM_SLOT, getBufferItem());
+
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
         gui.addGadget(new AccessControlGadget(gui, 17));
+
         for (int slot = MOD_SLOT_START; slot < MOD_SLOT_END; slot++) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
-        gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null, "Insert one or more modules below", "Modules are executed in order,", "from left to right.");
+        gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null,
+                "Insert one or more modules below",
+                "When the router ticks, modules",
+                "are executed in order, from left",
+                "to right.");
         int slot = MOD_SLOT_START;
         for (Map.Entry<ItemRouterModule,Integer> e : modules.entrySet()) {
             gui.getInventory().setItem(slot++, e.getKey().toItemStack(e.getValue()));
         }
+
         return gui;
     }
 
@@ -263,6 +273,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (needToProcessModules) {
             processModules(getGUI().getInventory(), MOD_SLOT_START);
             needToProcessModules = false;
+        }
+        if (needToScanBufferSlot) {
+            bufferItem = getGUI().getItem(BUFFER_ITEM_SLOT);
+            update(false);
+            needToScanBufferSlot = false;
         }
         if (isRedstoneActive()) {
             Location loc = getLocation();
@@ -462,9 +477,19 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-        if (onCursor.getType() == Material.AIR || SensibleToolbox.getItemRegistry().isSTBItem(onCursor, ItemRouterModule.class)) {
-            needToProcessModules = true;
+        if (slot == BUFFER_ITEM_SLOT) {
+            if (inSlot == null || onCursor.getType() != Material.AIR) {
+                return false;
+            }
+            needToScanBufferSlot = true;
             return true;
+        } else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
+            if (onCursor.getType() == Material.AIR || SensibleToolbox.getItemRegistry().isSTBItem(onCursor, ItemRouterModule.class)) {
+                needToProcessModules = true;
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -504,8 +529,15 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
-        needToProcessModules = true;
-        return true;
+        if (slot == BUFFER_ITEM_SLOT && getBufferItem() != null) {
+            needToScanBufferSlot = true;
+            return true;
+        } else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
+            needToProcessModules = true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -54,7 +54,7 @@ public interface InventoryGUIListener {
      * @param player    the player who clicked
      * @param slot      the slot in the inventory GUI that was shift-clicked
      * @param toExtract the number of items being extracted
-     * @return true if items were should be extracted, false otherwise
+     * @return true if items should be extracted, false otherwise
      */
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract);
 
