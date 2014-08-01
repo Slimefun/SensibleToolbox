@@ -19,30 +19,27 @@ public class MobListener extends STBBaseListener {
 
     @EventHandler
     public void onMobDeath(EntityDeathEvent event) {
-        if (event.getEntity().getType() == EntityType.BLAZE) {
+        if (event.getEntity().getType() == EntityType.BLAZE && event.getEntity().getKiller() != null) {
             InfernalDust dust = new InfernalDust();
-            if (dust.checkPlayerPermission(event.getEntity().getKiller(), BaseSTBItem.ItemAction.CRAFT)) {
+            Player killer = event.getEntity().getKiller();
+            if (dust.checkPlayerPermission(killer, BaseSTBItem.ItemAction.CRAFT)) {
                 int chance = 20, amount = 1;
-                Random r = new Random();
-                Player killer = event.getEntity().getKiller();
-                if (killer != null) {
-                    ItemStack item = killer.getItemInHand();
-                    if (item != null) {
-                        int level = item.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
-                        switch (level) {
-                            case 1:
-                                chance = 30;
-                                amount = r.nextInt(2) + 1;
-                                break;
-                            case 2:
-                                chance = 40;
-                                amount = r.nextInt(2) + 1;
-                                break;
-                            case 3:
-                                chance = 50;
-                                amount = r.nextInt(3) + 1;
-                                break;
-                        }
+                Random r = plugin.getRandom();
+                ItemStack item = killer.getItemInHand();
+                if (item != null) {
+                    switch (item.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)) {
+                        case 1:
+                            chance = 30;
+                            amount = r.nextInt(2) + 1;
+                            break;
+                        case 2:
+                            chance = 40;
+                            amount = r.nextInt(2) + 1;
+                            break;
+                        case 3:
+                            chance = 50;
+                            amount = r.nextInt(3) + 1;
+                            break;
                     }
                 }
                 if (r.nextInt(100) < chance) {
