@@ -42,10 +42,12 @@ import java.util.*;
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
 
+    private static final int BUFFER_LABEL_SLOT = 12;
+    private static final int BUFFER_ITEM_SLOT = 13;
+    private static final int MODULE_LABEL_SLOT = 18;
     private static final int MOD_SLOT_START = 27;
     private static final int MOD_SLOT_END = 36;
     private static final int MOD_SLOT_COUNT = 9;
-    private static final int BUFFER_DISPLAY_SLOT = 1;
 
     private final Map<ItemRouterModule, Integer> modules = Maps.newLinkedHashMap();
     private ItemStack bufferItem;
@@ -194,7 +196,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             updateBufferIndicator(true);
             getGUI().show(event.getPlayer());
-            event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && getBufferItem() != null) {
             if (hasAccessRights(event.getPlayer())) {
                 Block b = getLocation().getBlock().getRelative(event.getBlockFace());
@@ -203,23 +204,24 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 update(false);
                 event.getPlayer().playSound(b.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
             }
-            event.setCancelled(true);
         } else {
             super.onInteractBlock(event);
         }
+        event.setCancelled(true);
     }
 
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 36, ChatColor.DARK_RED + getItemName());
-        gui.getInventory().setItem(BUFFER_DISPLAY_SLOT, getBufferItem());
+        gui.addLabel("Item Buffer", BUFFER_LABEL_SLOT, null,
+                "Items can't be extracted directly;", "Shift-left-click the Item Router", "to eject items from buffer.");
+        gui.getInventory().setItem(BUFFER_ITEM_SLOT, getBufferItem());
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
         gui.addGadget(new AccessControlGadget(gui, 17));
         for (int slot = MOD_SLOT_START; slot < MOD_SLOT_END; slot++) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
-        gui.addLabel("Item Buffer", 0, null, "Shift-left-click the Item Router", "with an empty hand", "to eject items from buffer");
-        gui.addLabel("Item Router Modules", 18, null, "Insert one or more modules below", "Modules are processed in order,", "left to right");
+        gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null, "Insert one or more modules below", "Modules are executed in order,", "from left to right.");
         int slot = MOD_SLOT_START;
         for (Map.Entry<ItemRouterModule,Integer> e : modules.entrySet()) {
             gui.getInventory().setItem(slot++, e.getKey().toItemStack(e.getValue()));
@@ -245,7 +247,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     public void onBlockUnregistered(Location loc) {
         // eject any items in the buffer and/or module slots
-        getGUI().ejectItems(BUFFER_DISPLAY_SLOT);
+        getGUI().ejectItems(BUFFER_ITEM_SLOT);
         setBufferItem(null);
         for (int modSlot = MOD_SLOT_START; modSlot < MOD_SLOT_END; modSlot++) {
             getGUI().ejectItems(modSlot);
@@ -352,7 +354,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     private void updateBufferIndicator(boolean force) {
         if (getGUI() != null && (getGUI().getViewers().size() > 0 || force)) {
-            getGUI().getInventory().setItem(BUFFER_DISPLAY_SLOT, bufferItem);
+            getGUI().getInventory().setItem(BUFFER_ITEM_SLOT, bufferItem);
         }
     }
 
