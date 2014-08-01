@@ -373,7 +373,7 @@ public class LocationManager {
                     Debugger.getInstance().debug("deferring load for unrecognised block type '" + type + "'");
                     deferBlockLoad(type);
                 }
-            } catch (InvalidConfigurationException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LogUtils.severe(String.format("Can't load STB block at %s,%d,%d,%d: %s", world.getName(), x, y, z, e.getMessage()));
             }
