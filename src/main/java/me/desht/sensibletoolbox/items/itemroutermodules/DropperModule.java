@@ -39,7 +39,7 @@ public class DropperModule extends DirectionalItemRouterModule {
         registerCustomIngredients(bm);
         ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
         recipe.addIngredient(bm.getMaterialData());
-        recipe.addIngredient(Material.COBBLESTONE);
+        recipe.addIngredient(Material.DROPPER);
         return recipe;
     }
 
