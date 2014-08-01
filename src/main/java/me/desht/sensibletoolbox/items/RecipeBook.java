@@ -46,8 +46,10 @@ import java.util.*;
 public class RecipeBook extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.BOOK);
     private static final int ITEMS_PER_PAGE = 45;
+
     private static final List<ItemStack> fullItemList = new ArrayList<ItemStack>();
     private static final Map<ItemStack, Integer> itemListPos = new HashMap<ItemStack, Integer>();
+
     private static final ItemStack SHAPED_ICON = STBUtil.makeStack(Material.WORKBENCH, ChatColor.YELLOW + "Shaped Recipe");
     private static final ItemStack SHAPELESS_ICON = STBUtil.makeStack(Material.WORKBENCH, ChatColor.YELLOW + "Shapeless Recipe");
     private static final ItemStack FURNACE_ICON = STBUtil.makeStack(Material.BURNING_FURNACE, ChatColor.YELLOW + "Furnace Recipe");
@@ -365,7 +367,7 @@ public class RecipeBook extends BaseSTBItem {
                 } else {
                     // drill down into the description for an item in the recipe
                     if (inSlot.getDurability() == 32767 && !itemListPos.containsKey(inSlot)) {
-                        inSlot.setDurability((short) 0);
+                        inSlot.setDurability(inSlot.getType().getMaxDurability());
                     }
                     if (itemListPos.containsKey(inSlot)) {
                         trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
