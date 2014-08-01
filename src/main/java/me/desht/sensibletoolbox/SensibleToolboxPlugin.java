@@ -83,7 +83,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private BukkitTask energyTask = null;
     private LWC lwc = null;
     private EnderStorageManager enderStorageManager;
-    private SunlightLevels sunlightLevels;
     private STBItemRegistry itemRegistry;
     private STBFriendManager friendManager;
     private Random random;
@@ -195,9 +194,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         scheduleEnergyNetTicker();
 
         setupMetrics();
-
-        sunlightLevels = new SunlightLevels();
-        Bukkit.getScheduler().runTaskTimer(this, sunlightLevels, 1L, 20L);
 
         inited = true;
     }
@@ -564,10 +560,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public EnderStorageManager getEnderStorageManager() {
         return enderStorageManager;
-    }
-
-    public SunlightLevels getSunlightLevels() {
-        return sunlightLevels;
     }
 
     public STBItemRegistry getItemRegistry() {

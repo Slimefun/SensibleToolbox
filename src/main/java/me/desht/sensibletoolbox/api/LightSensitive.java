@@ -1,5 +1,7 @@
 package me.desht.sensibletoolbox.api;
 
+import org.bukkit.inventory.ItemStack;
+
 /**
  * Represents an STB block which cares about the light level.
  */
@@ -17,4 +19,6 @@ public interface LightSensitive {
      * @return a slot number
      */
     public int getLightMeterSlot();
+
+    public ItemStack getIndicator();
 }

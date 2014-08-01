@@ -1,16 +1,17 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.LightSensitive;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.energy.ChargeDirection;
+import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
 import me.desht.sensibletoolbox.api.gui.LightMeter;
 import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.PVCell;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
+import me.desht.sensibletoolbox.util.SunlightLevels;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -26,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 
 import java.util.UUID;
 
@@ -323,7 +325,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
 
     private void calculateLightLevel() {
         Block b = getLocation().getBlock().getRelative(BlockFace.UP);
-        byte newLight = ((SensibleToolboxPlugin) getProviderPlugin()).getSunlightLevels().getSunlightLevel(b.getWorld());
+        byte newLight = SunlightLevels.getSunlightLevel(b.getWorld());
         byte lightFromSky = b.getLightFromSky();
         if (lightFromSky < 14) {
             newLight = 0;  // block is excessively shaded
@@ -340,11 +342,6 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
             getLightMeter().repaintNeeded();
             effectiveLightLevel = newLight;
         }
-    }
-
-    @Override
-    public byte getLightLevel() {
-        return effectiveLightLevel;
     }
 
     @Override
@@ -367,10 +364,27 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
+    public byte getLightLevel() {
+        return effectiveLightLevel;
+    }
+
+    @Override
     public int getLightMeterSlot() {
         return LIGHT_METER_SLOT;
     }
 
+    @Override
+    public ItemStack getIndicator() {
+        return makeIndicator(effectiveLightLevel);
+    }
+
+    /**
+     * Return the maximum SCU per tick that this solar can generate.  Note
+     * time of day, weather and sky visibilty can all reduce the actual power
+     * output.
+     *
+     * @return the maximum power output in SCU per tick
+     */
     protected double getPowerOutput() {
         return 0.5;
     }
@@ -403,5 +417,25 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     @Override
     public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
         return behaviour != RedstoneBehaviour.PULSED;
+    }
+
+    private static final DyeColor[] colors = new DyeColor[16];
+    static {
+        colors[15] = DyeColor.LIME;
+        colors[14] = DyeColor.YELLOW;
+        colors[13] = DyeColor.ORANGE;
+        colors[12] = DyeColor.RED;
+        for (int i= 0; i < 12; i++) {
+            colors[i] = DyeColor.GRAY;
+        }
+    }
+
+    private ItemStack makeIndicator(byte lightLevel) {
+        DyeColor dc = colors[lightLevel];
+        ChatColor cc = STBUtil.dyeColorToChatColor(dc);
+        double mult = getChargeMultiplier(lightLevel);
+        return GUIUtil.makeTexture(new Wool(dc),
+                ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(lightLevel) * 100) + "%",
+                ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
     }
 }

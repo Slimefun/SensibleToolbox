@@ -387,7 +387,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
         if (getUpgradeLabelSlot() >= 0) {
-            gui.addLabel("Upgrades", getUpgradeLabelSlot(), null);
+            gui.addLabel("Upgrades", getUpgradeLabelSlot(), null, "Place machine upgrades here");
         }
         for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
             gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
