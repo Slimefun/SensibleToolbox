@@ -23,7 +23,7 @@ public class ChargeDirectionGadget extends CyclerGadget<ChargeDirection> {
         add(ChargeDirection.MACHINE, ChatColor.GOLD, new MaterialData(Material.MAGMA_CREAM),
                 "Energy will transfer from", "an installed energy cell", "to this machine");
         add(ChargeDirection.CELL, ChatColor.GREEN, new MaterialData(Material.SLIME_BALL),
-                "Energy will transfer from", "this machine to", "an installed energy cell");
+                "Energy will transfer", "from this machine to", "an installed energy cell");
         setInitialValue(((BaseSTBMachine) gui.getOwningItem()).getChargeDirection());
     }
 
