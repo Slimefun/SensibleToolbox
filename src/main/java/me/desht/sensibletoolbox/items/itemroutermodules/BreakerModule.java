@@ -30,7 +30,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         Block b = getTargetLocation(loc).getBlock();
-        if (b.isEmpty() || b.isLiquid() || b.getType() == Material.BEDROCK) {
+        if (b.isEmpty() || b.isLiquid() || STBUtil.getMaterialHardness(b.getType()) == Double.MAX_VALUE) {
             return false;
         }
         List<ItemStack> d = STBUtil.calculateDrops(b, pick);
