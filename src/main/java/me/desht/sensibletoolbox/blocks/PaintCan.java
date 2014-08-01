@@ -31,7 +31,7 @@ import java.util.HashMap;
 public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {
     public static final int MAX_PAINT_LEVEL = 200;
     private static final int PAINT_PER_DYE = 25;
-    private static final int[] ITEM_SLOTS = new int[]{0, 1};
+    private static final int[] ITEM_SLOTS = new int[]{9, 10};
     private static final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLD_SPADE);
     private static final ItemStack EMPTY_TEXTURE = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE).toItemStack();
     private int paintLevel;
@@ -114,8 +114,9 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     @Override
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-        recipe.shape("ISI", "I I", "III");
+        recipe.shape("GSG", "G G", "III");
         recipe.setIngredient('S', Material.WOOD_STEP);
+        recipe.setIngredient('G', Material.GLASS);
         recipe.setIngredient('I', Material.IRON_INGOT);
         return recipe;
     }
@@ -139,11 +140,13 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
     @Override
     public InventoryGUI createGUI() {
-        InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_RED + getItemName());
+        InventoryGUI gui = GUIUtil.createGUI(this, 27, ChatColor.DARK_RED + getItemName());
+        gui.addLabel("Ingredients", 0, null, "To mix paint:", "▶ Place a milk bucket & dye", "To dye items:", "▶ Place any dyeable item");
         for (int slot : ITEM_SLOTS) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
-        gui.addGadget(new ButtonGadget(gui, 3, "Mix/Dye", null, MIX_TEXTURE, new Runnable() {
+        String[] lore = new String[] { "Combine milk & dye to make paint", "or dye any colourable item", "with existing paint"};
+        gui.addGadget(new ButtonGadget(gui, 12, "Mix or Dye", lore, MIX_TEXTURE, new Runnable() {
             @Override
             public void run() {
                 if (tryMix()) {
@@ -152,7 +155,8 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                 }
             }
         }));
-        gui.addGadget(new ButtonGadget(gui, 4, "! Empty Paint !", null, EMPTY_TEXTURE, new Runnable() {
+        lore = new String[] { "Caution: This will empty the", "paint tank and can't be undone!" };
+        gui.addGadget(new ButtonGadget(gui, 13, ChatColor.RED.toString() + ChatColor.UNDERLINE + "☠ Empty Paint ☠", lore, EMPTY_TEXTURE, new Runnable() {
             @Override
             public void run() {
                 emptyPaintCan();
@@ -180,7 +184,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
     @Override
     public int getLevelMonitorSlot() {
-        return 6;
+        return 15;
     }
 
     @Override
@@ -200,9 +204,10 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     private boolean validItem(ItemStack item) {
-        return STBUtil.isColorable(item.getType()) ||
+        return !item.hasItemMeta() &&
+                (STBUtil.isColorable(item.getType()) ||
                 item.getType() == Material.MILK_BUCKET || item.getType() == Material.INK_SACK ||
-                item.getType() == Material.GLASS || item.getType() == Material.THIN_GLASS;
+                item.getType() == Material.GLASS || item.getType() == Material.THIN_GLASS);
     }
 
     @Override
@@ -303,9 +308,9 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         for (int slot : ITEM_SLOTS) {
             ItemStack stack = inventory.getItem(slot);
             if (stack != null) {
-                if (stack.getType() == Material.MILK_BUCKET && bucketSlot == -1) {
+                if (stack.getType() == Material.MILK_BUCKET && !stack.hasItemMeta() && bucketSlot == -1) {
                     bucketSlot = slot;
-                } else if (stack.getType() == Material.INK_SACK && dyeSlot == -1) {
+                } else if (stack.getType() == Material.INK_SACK && !stack.hasItemMeta() && dyeSlot == -1) {
                     dyeSlot = slot;
                 } else if (validItem(stack) && dyeableSlot == -1) {
                     dyeableSlot = slot;

@@ -298,10 +298,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         if (this instanceof Chargeable && res.getType().getMaxDurability() > 0) {
             // encode the STB item's charge level into the itemstack's damage bar
             Chargeable ch = (Chargeable) this;
-            short max = res.getType().getMaxDurability();
-            double d = ch.getCharge() / (double) ch.getMaxCharge();
-            short dur = (short) (max * d);
-            res.setDurability((short) Math.max(1, max - dur));
+            STBUtil.levelToDurability(res, (int) ch.getCharge(), ch.getMaxCharge());
         }
 
         // any serialized data from the object goes in the ItemStack attributes

@@ -38,10 +38,7 @@ public class ChargeMeter extends MonitorGadget {
         ItemMeta meta = indicator.getItemMeta();
         meta.setDisplayName(STBUtil.getChargeString(chargeable));
         indicator.setItemMeta(meta);
-        short max = indicator.getType().getMaxDurability();
-        double d = chargeable.getCharge() / (double) chargeable.getMaxCharge();
-        short dur = (short) (max * d);
-        indicator.setDurability((short) Math.max(1, max - dur));
+        STBUtil.levelToDurability(indicator, (int) chargeable.getCharge(), chargeable.getMaxCharge());
         getGUI().getInventory().setItem(chargeable.getChargeMeterSlot(), indicator);
     }
 

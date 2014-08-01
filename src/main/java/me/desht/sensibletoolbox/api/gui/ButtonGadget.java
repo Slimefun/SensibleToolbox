@@ -20,9 +20,9 @@ public class ButtonGadget extends ClickableGadget {
      * @param slot the GUI slot that this button should be displayed in
      * @param text the button text
      * @param lore the extended button tooltip
-     * @param texture the item to use as the button's texture
-     * @param callback the code which should be run when the button is
-     *                 clicked
+     * @param texture the item to use as the button's texture, may be null for
+     *                the default button texture
+     * @param callback code which should be run when the button is clicked
      */
     public ButtonGadget(InventoryGUI owner, int slot, String text, String[] lore, ItemStack texture, Runnable callback) {
         super(owner, slot);
@@ -34,6 +34,21 @@ public class ButtonGadget extends ClickableGadget {
             meta.setLore(GUIUtil.makeLore(lore));
         }
         labelTexture.setItemMeta(meta);
+    }
+
+    /**
+     * Constructs a button gadget.
+     *
+     * @param owner the GUI which this button belongs to
+     * @param slot the GUI slot that this button should be displayed in
+     * @param texture the item to use as the button's texture, with label and
+     *                lore already set; may not be null
+     * @param callback code which should be run when the button is clicked
+     */
+    public ButtonGadget(InventoryGUI owner, int slot, ItemStack texture, Runnable callback) {
+        super(owner, slot);
+        this.callback = callback;
+        this.labelTexture = texture.clone();
     }
 
     @Override

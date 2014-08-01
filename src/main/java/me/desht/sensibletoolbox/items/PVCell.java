@@ -48,7 +48,7 @@ public class PVCell extends BaseSTBItem {
     }
 
     public void setLifespan(int lifespan) {
-        this.lifespan = lifespan;
+        this.lifespan = Math.max(0, Math.min(MAX_LIFESPAN, lifespan));
     }
 
     public void reduceLifespan(int amount) {
@@ -121,9 +121,7 @@ public class PVCell extends BaseSTBItem {
             ((LeatherArmorMeta) meta).setColor(Color.NAVY);
             res.setItemMeta(meta);
         }
-        short maxDurability = res.getType().getMaxDurability();
-        int dur = Math.max(1, maxDurability - ((maxDurability * lifespan) / MAX_LIFESPAN));
-        res.setDurability((short) dur);
+        STBUtil.levelToDurability(res, lifespan, MAX_LIFESPAN);
         return res;
     }
 

@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api.gui;
 
 import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
@@ -38,9 +39,7 @@ public class ProgressMeter extends MonitorGadget {
             double progress = machine.getProgress();
             if (progress > 0 && maxProcessingTime > 0) {
                 stack = new ItemStack(progressIcon);
-                short max = stack.getType().getMaxDurability();
-                int dur = (max * (int) machine.getProgress()) / maxProcessingTime;
-                stack.setDurability((short) dur);
+                STBUtil.levelToDurability(stack, (int) (maxProcessingTime - progress), maxProcessingTime);
                 ItemMeta meta = stack.getItemMeta();
                 meta.setDisplayName(machine.getProgressMessage());
                 stack.setItemMeta(meta);

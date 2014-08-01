@@ -1,5 +1,6 @@
 package me.desht.sensibletoolbox.api.gui;
 
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,9 +28,7 @@ public class LevelMonitor extends MonitorGadget {
         int level = reporter.getLevel();
         if (reporter.getMaxLevel() > 0) {
             stack = new ItemStack(reporter.getLevelIcon());
-            short max = stack.getType().getMaxDurability();
-            int dur = (max * level) / reporter.getMaxLevel();
-            stack.setDurability((short) (max - dur));
+            STBUtil.levelToDurability(stack, level, reporter.getMaxLevel());
             ItemMeta meta = stack.getItemMeta();
             meta.setDisplayName(reporter.getLevelMessage());
             stack.setItemMeta(meta);

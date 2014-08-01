@@ -510,7 +510,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     @Override
     public void onInteractBlock(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
-            getGUI().show(event.getPlayer());
+            if (getGUI() != null) {
+                // gui shouldn't ever be null, but let's be defensive
+                getGUI().show(event.getPlayer());
+            }
             event.setCancelled(true);
         }
         super.onInteractBlock(event);

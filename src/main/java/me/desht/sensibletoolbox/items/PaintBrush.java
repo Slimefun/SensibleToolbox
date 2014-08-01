@@ -108,10 +108,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     @Override
     public ItemStack toItemStack(int amount) {
         ItemStack stack = super.toItemStack(amount);
-        short max = stack.getType().getMaxDurability();
-        float d = getPaintLevel() / (float) getMaxPaintLevel();
-        short dur = (short) (max * d);
-        stack.setDurability((short) (max - dur));
+        STBUtil.levelToDurability(stack, getPaintLevel(), getMaxPaintLevel());
         return stack;
     }
 
@@ -138,7 +135,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block b = event.getClickedBlock();
-            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation(), true);
             if (stb instanceof PaintCan) {
                 refillFromCan((PaintCan) stb);
             } else if (okToColor(b, stb)) {

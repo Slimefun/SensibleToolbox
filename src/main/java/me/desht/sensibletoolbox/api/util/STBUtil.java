@@ -1103,4 +1103,21 @@ public class STBUtil {
     public static boolean isCable(Block block) {
         return block.getType() == Material.IRON_FENCE;
     }
+
+    /**
+     * Encode the given level as a proportion of the given maximum as an item
+     * durability; useful for displaying in the item's durability bar.
+     *
+     * @param stack the item stack
+     * @param val the value to encode, between 0 and <em>max</em>
+     * @param max the maximum value
+     */
+    public static void levelToDurability(ItemStack stack, int val, int max) {
+        short maxDur = stack.getType().getMaxDurability();
+        Validate.isTrue(maxDur > 0, "Item stack " + stack + " does not have a durability bar!");
+        Validate.isTrue(val >= 0 && val <= max, "Value " + val + " out of range 0.." + max);
+        float d = val / (float) max;
+        short dur = (short) (maxDur * d);
+        stack.setDurability((short) (Math.max(1, maxDur - dur)));
+    }
 }
