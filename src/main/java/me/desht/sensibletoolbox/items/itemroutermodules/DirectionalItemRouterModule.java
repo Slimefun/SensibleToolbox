@@ -320,7 +320,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         int nToPull = getItemRouter().getStackSize();
         Location targetLoc = getTargetLocation(loc);
         ItemStack pulled;
-        BaseSTBBlock stb = SensibleToolbox.getBlockAt(targetLoc);
+        BaseSTBBlock stb = SensibleToolbox.getBlockAt(targetLoc, true);
         if (stb instanceof STBInventoryHolder) {
             pulled = ((STBInventoryHolder) stb).extractItems(from.getOppositeFace(), inBuffer, nToPull, getItemRouter().getOwner());
         } else {
