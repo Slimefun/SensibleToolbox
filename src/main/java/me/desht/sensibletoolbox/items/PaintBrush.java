@@ -19,6 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -196,11 +197,10 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             return;
         }
         Entity e = event.getRightClicked();
+        int paintUsed = 0;
         if (e instanceof Colorable) {
             ((Colorable) e).setColor(getColour());
-            setPaintLevel(getPaintLevel() - 1);
-            event.getPlayer().setItemInHand(toItemStack());
-            event.getPlayer().playSound(e.getLocation(), Sound.WATER, 1.0f, 1.5f);
+            paintUsed = 1;
         } else if (e instanceof Painting) {
             Art a = ((Painting) e).getArt();
             if (getPaintLevel() >= a.getBlockHeight() * a.getBlockWidth()) {
@@ -210,8 +210,17 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                 Location loc = e.getLocation().add(0, -a.getBlockHeight() / 2.0, 0);
                 PopupMessage.quickMessage(event.getPlayer(), loc, ChatColor.RED + "Not enough paint!");
             }
+        } else if (e instanceof Wolf) {
+            Wolf wolf = (Wolf) e;
+            wolf.setCollarColor(getColour());
+            paintUsed = 1;
         }
 
+        if (paintUsed > 0) {
+            setPaintLevel(getPaintLevel() - paintUsed);
+            event.getPlayer().setItemInHand(toItemStack());
+            event.getPlayer().playSound(e.getLocation(), Sound.WATER, 1.0f, 1.5f);
+        }
     }
 
     private Block[] findBlocksAround(Block b) {
