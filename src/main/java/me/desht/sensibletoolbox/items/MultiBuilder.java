@@ -344,7 +344,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private boolean canReplace(Player player, Block b) {
         // we won't replace any block which can hold items, or any STB block, or any unbreakable block
-        if (SensibleToolbox.getBlockAt(b.getLocation()) != null) {
+        if (SensibleToolbox.getBlockAt(b.getLocation(), true) != null) {
             return false;
         } else if (VanillaInventoryUtils.isVanillaInventory(b)) {
             return false;

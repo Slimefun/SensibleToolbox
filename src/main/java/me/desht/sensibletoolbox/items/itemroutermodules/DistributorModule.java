@@ -76,7 +76,7 @@ public class DistributorModule extends DirectionalItemRouterModule {
             }
             Block b = loc.getBlock();
             Block target = b.getRelative(face);
-            BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation());
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
             if (stb instanceof STBInventoryHolder) {
                 ItemStack toInsert = getItemRouter().getBufferItem().clone();
                 toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));

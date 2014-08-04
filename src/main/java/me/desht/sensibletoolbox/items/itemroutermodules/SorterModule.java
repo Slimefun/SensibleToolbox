@@ -66,7 +66,7 @@ public class SorterModule extends DirectionalItemRouterModule {
             Debugger.getInstance().debug(2, "sorter in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
             Location targetLoc = getTargetLocation(loc);
             int nToInsert = getItemRouter().getStackSize();
-            BaseSTBBlock stb = SensibleToolbox.getBlockAt(targetLoc);
+            BaseSTBBlock stb = SensibleToolbox.getBlockAt(targetLoc, true);
             int nInserted;
             if (stb instanceof STBInventoryHolder) {
                 ItemStack toInsert = getItemRouter().getBufferItem().clone();

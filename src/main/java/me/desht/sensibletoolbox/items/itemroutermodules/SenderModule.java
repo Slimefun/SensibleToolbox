@@ -87,7 +87,7 @@ public class SenderModule extends DirectionalItemRouterModule {
                     return nReceived > 0;
                 }
             } else {
-                BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation());
+                BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
                 if (stb instanceof STBInventoryHolder) {
                     ItemStack toInsert = getItemRouter().getBufferItem().clone();
                     toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
