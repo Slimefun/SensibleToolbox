@@ -1,10 +1,8 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import com.google.common.collect.Maps;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
@@ -13,6 +11,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
     private static final Map<UUID,List<Item>> recentItemCache = Maps.newHashMap();
     private static final Map<UUID,Long> cacheTime = Maps.newHashMap();
     public static final int CACHE_TIME = 1000;
+    private static final String STB_VACUUMED = "STB_Vacuumed";
 
     public VacuumModule() {
     }
@@ -78,67 +78,81 @@ public class VacuumModule extends DirectionalItemRouterModule {
 
     @Override
     public boolean execute(Location loc) {
-        int dist = RADIUS * RADIUS;
+        int thresholdDist = RADIUS * RADIUS;
         loc.add(0.5, 0.5, 0.5);
-        ItemStack buffer = getItemRouter().getBufferItem();
-        boolean acted = false;
-        for (Item item : getItemEntities(loc.getWorld())) {
+        for (final Item item : getItemEntities(loc.getWorld())) {
             if (!item.isValid()) {
                 // important, since we're looking at entities cached in the last second
                 continue;
             }
-            double d = loc.distanceSquared(item.getLocation());
-            if (d >= dist) {
+            double dist = loc.distanceSquared(item.getLocation());
+            if (dist >= thresholdDist) {
                 continue;
             }
-            ItemStack onGround = item.getItemStack();
-            if (item.getPickupDelay() > 0 || !getFilter().shouldPass(onGround) || !rightDirection(item, loc)) {
-                continue;
-            }
-            if (d < 2.0) {
-                // slurp?
-                if (buffer == null) {
-                    getItemRouter().setBufferItem(onGround);
-                    buffer = getItemRouter().getBufferItem();
-                    item.remove();
-                } else if (buffer.isSimilar(onGround)) {
-                    int toSlurp = Math.min(onGround.getAmount(), buffer.getType().getMaxStackSize() - buffer.getAmount());
-                    getItemRouter().setBufferAmount(buffer.getAmount() + toSlurp);
-                    buffer = getItemRouter().getBufferItem();
-                    onGround.setAmount(onGround.getAmount() - toSlurp);
-                    if (onGround.getAmount() == 0) {
-                        item.remove();
-                    } else {
-                        item.setItemStack(onGround);
-                    }
+            final ItemStack onGround = item.getItemStack();
+            ItemStack buffer = getItemRouter().getBufferItem();
+            Location itemLoc = item.getLocation();
+            if (item.getPickupDelay() <= 0
+                    && getFilter().shouldPass(onGround)
+                    && rightDirection(itemLoc, loc)
+                    && (buffer == null || buffer.isSimilar(onGround))
+                    && STBUtil.getMetadataValue(item, STB_VACUUMED) == null) {
+                double rtrY = loc.getY();
+                Vector vel = loc.subtract(itemLoc).toVector().normalize().multiply(Math.min(dist * 0.06, 0.7));
+                if (itemLoc.getY() < rtrY) {
+                    vel.setY(vel.getY() + (rtrY - itemLoc.getY()) / 10);
                 }
-                acted = true;
-            } else {
-                Vector vel = loc.subtract(item.getLocation()).toVector().normalize().multiply(Math.min(d * 0.06, 1.0));
+                item.setMetadata(STB_VACUUMED, new FixedMetadataValue(getProviderPlugin(), getItemRouter()));
                 item.setVelocity(vel);
+                Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (item.isValid()) {
+                            ItemStack newBuffer = getItemRouter().getBufferItem();
+                            int toSlurp = 0;
+                            if (newBuffer == null) {
+                                toSlurp = onGround.getAmount();
+                                getItemRouter().setBufferItem(onGround);
+                                item.remove();
+                            } else if (newBuffer.isSimilar(onGround)) {
+                                toSlurp = Math.min(onGround.getAmount(), newBuffer.getType().getMaxStackSize() - newBuffer.getAmount());
+                                getItemRouter().setBufferAmount(newBuffer.getAmount() + toSlurp);
+                                onGround.setAmount(onGround.getAmount() - toSlurp);
+                                if (onGround.getAmount() == 0) {
+                                    item.remove();
+                                } else {
+                                    item.setItemStack(onGround);
+                                }
+                            }
+                            if (toSlurp > 0) {
+                                getItemRouter().playParticles();
+                                getItemRouter().update(false);
+                            }
+                        }
+                    }
+                }, (long) (dist / 3));
             }
         }
-        return acted;
+        return false; // any work done is deferred
     }
 
-    private boolean rightDirection(Item item, Location loc) {
+    private boolean rightDirection(Location itemLoc, Location rtrLoc) {
         if (getDirection() == null || getDirection() == BlockFace.SELF) {
             return true;
         }
-        Location itemLoc = item.getLocation();
         switch (getDirection()) {
             case NORTH:
-                return itemLoc.getZ() < loc.getZ();
+                return itemLoc.getZ() < rtrLoc.getZ();
             case EAST:
-                return itemLoc.getX() > loc.getX();
+                return itemLoc.getX() > rtrLoc.getX();
             case SOUTH:
-                return itemLoc.getZ() > loc.getZ();
+                return itemLoc.getZ() > rtrLoc.getZ();
             case WEST:
-                return itemLoc.getX() > loc.getX();
+                return itemLoc.getX() > rtrLoc.getX();
             case UP:
-                return itemLoc.getY() > loc.getY();
+                return itemLoc.getY() > rtrLoc.getY();
             case DOWN:
-                return itemLoc.getY() < loc.getY();
+                return itemLoc.getY() < rtrLoc.getY();
             default:
                 return true;
         }
