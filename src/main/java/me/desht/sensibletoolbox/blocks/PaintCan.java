@@ -371,8 +371,8 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             ItemStack undyed = inventory.getItem(dyeableSlot).getData().toItemStack(inventory.getItem(dyeableSlot).getAmount());
             ItemStack dyed = STBUtil.makeColouredMaterial(undyed.getType(), getColour()).toItemStack(Math.min(canDye, undyed.getAmount()));
             undyed.setAmount(undyed.getAmount() - dyed.getAmount());
-            inventory.setItem(0, dyed.getAmount() > 0 ? dyed : null);
-            inventory.setItem(1, undyed.getAmount() > 0 ? undyed : null);
+            inventory.setItem(ITEM_SLOTS[0], dyed.getAmount() > 0 ? dyed : null);
+            inventory.setItem(ITEM_SLOTS[1], undyed.getAmount() > 0 ? undyed : null);
             setPaintLevel(getPaintLevel() - canDye);
             Location loc = getLocation();
             loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
