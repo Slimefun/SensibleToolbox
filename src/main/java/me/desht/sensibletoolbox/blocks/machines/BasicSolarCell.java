@@ -1,6 +1,6 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
-import me.desht.sensibletoolbox.api.LightSensitive;
+import me.desht.sensibletoolbox.api.LightMeterHolder;
 import me.desht.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.energy.ChargeDirection;
@@ -31,7 +31,7 @@ import org.bukkit.material.Wool;
 
 import java.util.UUID;
 
-public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
+public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
 
     private static final int PV_CELL_SLOT = 1;
@@ -363,7 +363,6 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
         return false;
     }
 
-    @Override
     public byte getLightLevel() {
         return effectiveLightLevel;
     }
@@ -374,8 +373,19 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
     }
 
     @Override
-    public ItemStack getIndicator() {
-        return makeIndicator(effectiveLightLevel);
+    public ItemStack getLightMeterIndicator() {
+        if (pvCellLife == 0) {
+            return GUIUtil.makeTexture(new Wool(DyeColor.BLACK),
+                    ChatColor.WHITE + "No PV Cell inserted!",
+                    ChatColor.GRAY + "Insert a PV Cell in the top left");
+        } else {
+            DyeColor dc = colors[effectiveLightLevel];
+            ChatColor cc = STBUtil.dyeColorToChatColor(dc);
+            double mult = getChargeMultiplier(effectiveLightLevel);
+            return GUIUtil.makeTexture(new Wool(dc),
+                    ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(effectiveLightLevel) * 100) + "%",
+                    ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
+        }
     }
 
     /**
@@ -428,14 +438,5 @@ public class BasicSolarCell extends BaseSTBMachine implements LightSensitive {
         for (int i= 0; i < 12; i++) {
             colors[i] = DyeColor.GRAY;
         }
-    }
-
-    private ItemStack makeIndicator(byte lightLevel) {
-        DyeColor dc = colors[lightLevel];
-        ChatColor cc = STBUtil.dyeColorToChatColor(dc);
-        double mult = getChargeMultiplier(lightLevel);
-        return GUIUtil.makeTexture(new Wool(dc),
-                ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(lightLevel) * 100) + "%",
-                ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
     }
 }

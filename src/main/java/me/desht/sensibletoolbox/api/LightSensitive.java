@@ -1,10 +1,11 @@
 package me.desht.sensibletoolbox.api;
 
-import org.bukkit.inventory.ItemStack;
-
 /**
  * Represents an STB block which cares about the light level.
+ *
+ * @deprecated use {@link me.desht.sensibletoolbox.api.LightMeterHolder}
  */
+@Deprecated
 public interface LightSensitive {
     /**
      * Get the current ambient light level.
@@ -19,6 +20,4 @@ public interface LightSensitive {
      * @return a slot number
      */
     public int getLightMeterSlot();
-
-    public ItemStack getIndicator();
 }
