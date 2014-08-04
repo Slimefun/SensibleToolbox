@@ -150,6 +150,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
                     boolean doRedraw = pvl == 0 || pvCellLife == 0;
                     pvCellLife = pvl;
                     update(doRedraw);
+                    getLightMeter().repaintNeeded();
                 }
             }
         });
