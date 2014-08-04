@@ -21,7 +21,7 @@ gui:
     input: stained_glass_pane:cyan
     output: stained_glass_pane:orange
     bg: stained_glass_pane:blue
-    label: stained_glass_pane:green
+    label: book
     button: wood_button
 item_settings:
   paintcan:
