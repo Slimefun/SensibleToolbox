@@ -43,7 +43,7 @@ public class MobListener extends STBBaseListener {
                     }
                 }
                 if (r.nextInt(100) < chance) {
-                    event.getDrops().add(new InfernalDust().toItemStack(amount));
+                    event.getDrops().add(dust.toItemStack(amount));
                 }
             }
         }
