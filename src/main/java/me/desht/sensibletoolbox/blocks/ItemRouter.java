@@ -197,6 +197,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             updateBufferIndicator(true);
             getGUI().show(event.getPlayer());
+            event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && getBufferItem() != null) {
             if (hasAccessRights(event.getPlayer())) {
                 Block b = getLocation().getBlock().getRelative(event.getBlockFace());
@@ -205,10 +206,10 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 update(false);
                 event.getPlayer().playSound(b.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
             }
+            event.setCancelled(true);
         } else {
             super.onInteractBlock(event);
         }
-        event.setCancelled(true);
     }
 
     @Override

@@ -331,6 +331,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * behaviour allows for the block to be labelled by left-clicking it with
      * a sign in hand.  If you override this method and want to keep this
      * behaviour, be sure to call super.onInteractBlock().
+     * <p/>
+     * Note that cancelling this event will also prevent the block from being
+     * broken by normal means.
      *
      * @param event the interaction event
      */
