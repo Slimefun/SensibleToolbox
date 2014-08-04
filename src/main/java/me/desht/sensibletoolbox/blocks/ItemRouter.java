@@ -330,7 +330,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
-    private void playParticles() {
+    public void playParticles() {
         if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
             Location loc = getLocation().add(0.5, 0.5, 0.5);
             ParticleEffect.WITCH_MAGIC.play(loc, 0.25f, 0.25f, 0.25f, 0, 12);
