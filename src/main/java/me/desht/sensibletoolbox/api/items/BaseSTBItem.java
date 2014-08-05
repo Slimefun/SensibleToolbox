@@ -416,27 +416,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         return "STB Item [" + getItemName() + "]";
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BaseSTBItem that = (BaseSTBItem) o;
-
-        if (!providerPlugin.equals(that.providerPlugin)) return false;
-        if (!typeID.equals(that.typeID)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = typeID.hashCode();
-        result = 31 * result + providerPlugin.hashCode();
-        return result;
-    }
-
     /**
      * Freeze this object's state into a YamlConfiguration object.  If you
      * override this method to freeze additional object fields, your
