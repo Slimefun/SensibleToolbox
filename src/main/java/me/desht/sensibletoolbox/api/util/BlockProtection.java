@@ -15,8 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.UUID;
 
@@ -59,7 +57,7 @@ public class BlockProtection {
                 } else if (SensibleToolbox.getPluginInstance().isPreciousStonesAvailable()) {
                     this.blockProtectionType = BlockProtectionType.PRECIOUS_STONES;
                 } else {
-                    this.blockProtectionType = BlockProtectionType.BUKKIT;
+                    this.blockProtectionType = BlockProtectionType.NONE;
                 }
                 break;
             default:
@@ -67,7 +65,7 @@ public class BlockProtection {
                     this.blockProtectionType = blockProtectionType;
                 } else {
                     LogUtils.warning("Block protection type " + blockProtectionType + " is not available");
-                    this.blockProtectionType = BlockProtectionType.BUKKIT;
+                    this.blockProtectionType = BlockProtectionType.NONE;
                 }
                 break;
         }
@@ -210,19 +208,19 @@ public class BlockProtection {
                     default:
                         return false;
                 }
-            case BUKKIT:
-                switch (op) {
-                    case PLACE:
-                        BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, player.getItemInHand(), player, true);
-                        Bukkit.getPluginManager().callEvent(placeEvent);
-                        return !placeEvent.isCancelled();
-                    case BREAK:
-                        BlockBreakEvent breakEvent = new BlockBreakEvent(block, player);
-                        Bukkit.getPluginManager().callEvent(breakEvent);
-                        return !breakEvent.isCancelled();
-                    default:
-                        return false;
-                }
+//            case BUKKIT:
+//                switch (op) {
+//                    case PLACE:
+//                        BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, player.getItemInHand(), player, true);
+//                        Bukkit.getPluginManager().callEvent(placeEvent);
+//                        return !placeEvent.isCancelled();
+//                    case BREAK:
+//                        BlockBreakEvent breakEvent = new BlockBreakEvent(block, player);
+//                        Bukkit.getPluginManager().callEvent(breakEvent);
+//                        return !breakEvent.isCancelled();
+//                    default:
+//                        return false;
+//                }
             case BEST:
                 throw new IllegalArgumentException("should never get here!");
             default:
@@ -251,13 +249,13 @@ public class BlockProtection {
          * fallback.
          */
         PRECIOUS_STONES,
-        /**
-         * Fire Bukkit BlockBreakEvent/BlockPlaceEvent to check for protected
-         * regions.  No extra plugin is needed for this to work, but this may
-         * cause significant extra data if you use you use a block logging
-         * plugin.
-         */
-        BUKKIT,
+//        /**
+//         * Fire Bukkit BlockBreakEvent/BlockPlaceEvent to check for protected
+//         * regions.  No extra plugin is needed for this to work, but this may
+//         * cause significant extra data if you use you use a block logging
+//         * plugin.
+//         */
+//        BUKKIT,
         /**
          * No block protection at all (recommended only for single-player
          * or highly trusted player-base).
