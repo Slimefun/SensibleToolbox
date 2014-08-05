@@ -93,7 +93,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             // try to link up with a receiver module
             ItemRouter rtr = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), ItemRouter.class, true);
-            if (rtr != null && rtr.findModule(ReceiverModule.class) != null) {
+            if (rtr != null && rtr.getReceiver() != null) {
                 linkToRouter(rtr);
                 event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             } else {
@@ -131,7 +131,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
                 if (!inRange(loc)) {
                     return false;
                 }
-                ReceiverModule mod = otherRouter.findModule(ReceiverModule.class);
+                ReceiverModule mod = otherRouter.getReceiver();
                 if (mod != null) {
                     return sendItems(mod) > 0;
                 }

@@ -122,7 +122,7 @@ public class SenderModule extends DirectionalItemRouterModule {
             }
         }
         ItemRouter rtr = SensibleToolbox.getBlockAt(b.getLocation(), ItemRouter.class, false);
-        return rtr == null ? null : rtr.findModule(ReceiverModule.class);
+        return rtr == null ? null : rtr.getReceiver();
     }
 
     private boolean allowsItemsThrough(Material mat) {
@@ -138,6 +138,8 @@ public class SenderModule extends DirectionalItemRouterModule {
             case ICE:
             case WALL_SIGN:
             case SIGN_POST:
+            case FENCE: case FENCE_GATE:
+            case IRON_FENCE: case NETHER_FENCE:
                 return true;
         }
         return false;
