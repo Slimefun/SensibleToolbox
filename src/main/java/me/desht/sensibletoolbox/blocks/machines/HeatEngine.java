@@ -76,7 +76,7 @@ public class HeatEngine extends Generator {
 
     @Override
     public int getUpgradeLabelSlot() {
-        return -1;
+        return 42;
     }
 
     @Override
