@@ -208,39 +208,46 @@ public class STBInventoryGUI implements InventoryGUI {
 
     public void receiveEvent(InventoryClickEvent event) {
         boolean shouldCancel = true;
-        if (containsSlot(event.getRawSlot())) {
-            // clicking inside the GUI
-            switch (getSlotType(event.getRawSlot())) {
-                case GADGET:
-                    if (gadgets[event.getRawSlot()] != null && gadgets[event.getRawSlot()].isEnabled()) {
-                        gadgets[event.getRawSlot()].onClicked(event);
+
+        // try/finally here ensures the event always gets cancelled, even if
+        // a listener's code throws an exception; we don't want bugs in
+        // listeners allowing players to take items out of a GUI
+        try {
+            if (containsSlot(event.getRawSlot())) {
+                // clicking inside the GUI
+                switch (getSlotType(event.getRawSlot())) {
+                    case GADGET:
+                        if (gadgets[event.getRawSlot()] != null && gadgets[event.getRawSlot()].isEnabled()) {
+                            gadgets[event.getRawSlot()].onClicked(event);
+                        }
+                        break;
+                    case ITEM:
+                        shouldCancel = !processGUIInventoryAction(event);
+                        Debugger.getInstance().debug("handled click for " + event.getWhoClicked().getName() + " in item slot " + event.getRawSlot() + " of " + getOwningItem() + ": cancelled = " + shouldCancel);
+                        break;
+                    default:
+                        break;
+                }
+            } else if (event.getRawSlot() > 0) {
+                // clicking inside the player's inventory
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                    int nInserted = listener.onShiftClickInsert(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
+                    if (nInserted > 0) {
+                        ItemStack stack = event.getCurrentItem();
+                        stack.setAmount(stack.getAmount() - nInserted);
+                        event.setCurrentItem(stack.getAmount() > 0 ? stack : null);
                     }
-                    break;
-                case ITEM:
-                    shouldCancel = !processGUIInventoryAction(event);
-                    Debugger.getInstance().debug("handled click for " + event.getWhoClicked().getName() + " in item slot " + event.getRawSlot() + " of " + getOwningItem() + ": cancelled = " + shouldCancel);
-                    break;
-                default:
-                    break;
-            }
-        } else if (event.getRawSlot() > 0) {
-            // clicking inside the player's inventory
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                int nInserted = listener.onShiftClickInsert(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
-                if (nInserted > 0) {
-                    ItemStack stack = event.getCurrentItem();
-                    stack.setAmount(stack.getAmount() - nInserted);
-                    event.setCurrentItem(stack.getAmount() > 0 ? stack : null);
+                } else {
+                    shouldCancel = !listener.onPlayerInventoryClick(event.getWhoClicked(), event.getSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
                 }
             } else {
-                shouldCancel = !listener.onPlayerInventoryClick(event.getWhoClicked(), event.getSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
+                // clicking outside the inventory entirely
+                shouldCancel = !listener.onClickOutside(event.getWhoClicked());
             }
-        } else {
-            // clicking outside the inventory entirely
-            shouldCancel = !listener.onClickOutside(event.getWhoClicked());
-        }
-        if (shouldCancel) {
-            event.setCancelled(true);
+        } finally {
+            if (shouldCancel) {
+                event.setCancelled(true);
+            }
         }
     }
 
