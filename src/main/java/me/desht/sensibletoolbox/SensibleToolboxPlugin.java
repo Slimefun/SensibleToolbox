@@ -51,6 +51,7 @@ import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import me.desht.sensibletoolbox.listeners.*;
 import me.desht.sensibletoolbox.util.SunlightLevels;
+import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -88,7 +89,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private Random random;
     private EnergyNetManager enetManager;
     private WorldGuardPlugin worldGuardPlugin = null;
-    private WorldGuardPlugin preciousStonesPlugin = null;
+    private PreciousStones preciousStonesPlugin = null;
     private BlockProtection blockProtection;
     private ConfigCache configCache;
 
@@ -297,9 +298,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private void setupPreciousStones() {
         Plugin plugin = getServer().getPluginManager().getPlugin("PreciousStones");
 
-        if (plugin != null && plugin.isEnabled() && plugin instanceof WorldGuardPlugin) {
+        if (plugin != null && plugin.isEnabled() && plugin instanceof PreciousStones) {
             Debugger.getInstance().debug("Hooked PreciousStones v" + plugin.getDescription().getVersion());
-            preciousStonesPlugin = (WorldGuardPlugin) plugin;
+            preciousStonesPlugin = (PreciousStones) plugin;
         }
     }
 
