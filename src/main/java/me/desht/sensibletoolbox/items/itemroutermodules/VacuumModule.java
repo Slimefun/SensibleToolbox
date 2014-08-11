@@ -137,10 +137,10 @@ public class VacuumModule extends DirectionalItemRouterModule {
     }
 
     private boolean rightDirection(Location itemLoc, Location rtrLoc) {
-        if (getDirection() == null || getDirection() == BlockFace.SELF) {
+        if (getFacing() == null || getFacing() == BlockFace.SELF) {
             return true;
         }
-        switch (getDirection()) {
+        switch (getFacing()) {
             case NORTH:
                 return itemLoc.getZ() < rtrLoc.getZ();
             case EAST:

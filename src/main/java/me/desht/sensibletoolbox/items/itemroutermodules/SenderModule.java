@@ -69,7 +69,7 @@ public class SenderModule extends DirectionalItemRouterModule {
             }
             Debugger.getInstance().debug(2, "sender in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
             Block b = loc.getBlock();
-            Block target = b.getRelative(getDirection());
+            Block target = b.getRelative(getFacing());
             int nToInsert = getItemRouter().getStackSize();
             if (allowsItemsThrough(target.getType())) {
                 // search for a visible Item Router with an installed Receiver Module
@@ -91,12 +91,12 @@ public class SenderModule extends DirectionalItemRouterModule {
                 if (stb instanceof STBInventoryHolder) {
                     ItemStack toInsert = getItemRouter().getBufferItem().clone();
                     toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
-                    int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getDirection().getOppositeFace(), false, getItemRouter().getOwner());
+                    int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), false, getItemRouter().getOwner());
                     getItemRouter().reduceBuffer(nInserted);
                     return nInserted > 0;
                 } else {
                     // vanilla inventory holder?
-                    return vanillaInsertion(target, nToInsert, getDirection().getOppositeFace());
+                    return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
                 }
             }
         }
@@ -116,7 +116,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 
     private ReceiverModule findReceiver(Block b) {
         for (int i = 0; i < MAX_SENDER_DISTANCE; i++) {
-            b = b.getRelative(getDirection());
+            b = b.getRelative(getFacing());
             if (!allowsItemsThrough(b.getType())) {
                 break;
             }

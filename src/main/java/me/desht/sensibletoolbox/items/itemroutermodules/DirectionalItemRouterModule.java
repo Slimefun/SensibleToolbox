@@ -26,13 +26,14 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Directional;
 import org.bukkit.material.Wool;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering {
+public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
     private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
     private static final ItemStack WHITE_BUTTON = GUIUtil.makeTexture(
             new Wool(DyeColor.WHITE), ChatColor.RESET.toString() + ChatColor.UNDERLINE + "Whitelist",
@@ -77,12 +78,12 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
     public DirectionalItemRouterModule() {
         filter = new Filter();  // default filter: blacklist, no items
-        setDirection(BlockFace.SELF);
+        setFacingDirection(BlockFace.SELF);
     }
 
     public DirectionalItemRouterModule(ConfigurationSection conf) {
         super(conf);
-        setDirection(BlockFace.valueOf(conf.getString("direction")));
+        setFacingDirection(BlockFace.valueOf(conf.getString("direction")));
         setTerminator(conf.getBoolean("terminator", false));
         if (conf.contains("filtered")) {
             boolean isWhite = conf.getBoolean("filterWhitelist", true);
@@ -97,7 +98,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
-        conf.set("direction", getDirection().toString());
+        conf.set("direction", getFacing().toString());
         conf.set("terminator", isTerminator());
         if (filter != null) {
             conf.set("filtered", filter.listFiltered());
@@ -136,13 +137,24 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         return direction != BlockFace.SELF ? direction.toString() : null;
     }
 
-    public BlockFace getDirection() {
+
+    @Override
+    public void setFacingDirection(BlockFace blockFace) {
+        direction = blockFace;
+    }
+
+    @Override
+    public BlockFace getFacing() {
         return direction;
     }
 
-    public void setDirection(BlockFace direction) {
-        this.direction = direction;
-    }
+//    public BlockFace getDirection() {
+//        return direction;
+//    }
+//
+//    public void setDirection(BlockFace direction) {
+//        this.direction = direction;
+//    }
 
     public Filter getFilter() {
         return filter;
@@ -160,12 +172,12 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             // set module direction based on clicked block face
-            setDirection(event.getBlockFace().getOppositeFace());
+            setFacingDirection(event.getBlockFace().getOppositeFace());
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
             // unset module direction
-            setDirection(BlockFace.SELF);
+            setFacingDirection(BlockFace.SELF);
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -218,7 +230,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         theGUI.addGadget(new ButtonGadget(theGUI, 16, "No Direction", null, new ItemRouter().getMaterialData().toItemStack(), new Runnable() {
             @Override
             public void run() {
-                setDirection(BlockFace.SELF);
+                setFacingDirection(BlockFace.SELF);
                 for (int slot : directionSlots.keySet()) {
                     ((ToggleButton) gui.getGadget(slot)).setValue(false);
                 }
@@ -231,20 +243,20 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     private ToggleButton makeDirectionButton(final InventoryGUI gui, final int slot, final BlockFace face) {
         ItemStack trueStack = GUIUtil.makeTexture(new Wool(DyeColor.ORANGE), ChatColor.YELLOW + face.toString());
         ItemStack falseStack = GUIUtil.makeTexture(new Wool(DyeColor.SILVER), ChatColor.YELLOW + face.toString());
-        return new ToggleButton(gui, slot, getDirection() == face, trueStack, falseStack, new ToggleButton.ToggleListener() {
+        return new ToggleButton(gui, slot, getFacing() == face, trueStack, falseStack, new ToggleButton.ToggleListener() {
             @Override
             public boolean run(boolean newValue) {
                 // acts sort of like a radio button - switching one on switches all other
                 // off, but switching one off leaves all switch off
                 if (newValue) {
-                    setDirection(face);
+                    setFacingDirection(face);
                     for (int otherSlot : directionSlots.keySet()) {
                         if (slot != otherSlot) {
                             ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
                         }
                     }
                 } else {
-                    setDirection(BlockFace.SELF);
+                    setFacingDirection(BlockFace.SELF);
                 }
                 return true;
             }
@@ -351,7 +363,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     }
 
     protected Location getTargetLocation(Location loc) {
-        BlockFace face = getDirection();
+        BlockFace face = getFacing();
         return loc.clone().add(face.getModX(), face.getModY(), face.getModZ());
     }
 }

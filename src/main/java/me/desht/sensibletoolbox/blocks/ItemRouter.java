@@ -350,8 +350,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
         if (module instanceof DirectionalItemRouterModule) {
             DirectionalItemRouterModule dm = (DirectionalItemRouterModule) module;
-            if (dm.getDirection() == null) {
-                dm.setDirection(BlockFace.SELF);
+            if (dm.getFacing() == null) {
+                dm.setFacingDirection(BlockFace.SELF);
             }
         } else if (module instanceof StackModule) {
             setStackSize(getStackSize() * (int) Math.pow(2, count));

@@ -46,6 +46,6 @@ public class PullerModule extends DirectionalItemRouterModule {
 
     @Override
     public boolean execute(Location loc) {
-        return getItemRouter() != null && doPull(getDirection(), loc);
+        return getItemRouter() != null && doPull(getFacing(), loc);
     }
 }

@@ -66,12 +66,12 @@ public class DistributorModule extends DirectionalItemRouterModule {
             return false; // shouldn't happen...
         }
 
-        doPull(getDirection(), loc);
+        doPull(getFacing(), loc);
 
         if (getItemRouter().getNeighbours().size() > 1 && getItemRouter().getBufferItem() != null) {
             int nToInsert = getItemRouter().getStackSize();
             BlockFace face = getNextNeighbour();
-            if (face == getDirection()) {
+            if (face == getFacing()) {
                 return false;  // shouldn't happen...
             }
             Block b = loc.getBlock();
@@ -85,7 +85,7 @@ public class DistributorModule extends DirectionalItemRouterModule {
                 return nInserted > 0;
             } else {
                 // vanilla inventory holder?
-                return vanillaInsertion(target, nToInsert, getDirection().getOppositeFace());
+                return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
             }
         }
 
@@ -95,7 +95,7 @@ public class DistributorModule extends DirectionalItemRouterModule {
     private BlockFace getNextNeighbour() {
         List<BlockFace> neighbours = getItemRouter().getNeighbours();
         nextNeighbour = (nextNeighbour + 1) % neighbours.size();
-        if (neighbours.get(nextNeighbour) == getDirection()) {
+        if (neighbours.get(nextNeighbour) == getFacing()) {
             nextNeighbour = (nextNeighbour + 1) % neighbours.size();
         }
         return neighbours.get(nextNeighbour);

@@ -819,7 +819,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         if (!(item instanceof MachineUpgrade)) {
             return false;
         }
-        if (item instanceof EjectorUpgrade && ((EjectorUpgrade) item).getDirection() == BlockFace.SELF) {
+        if (item instanceof EjectorUpgrade && ((EjectorUpgrade) item).getFacing() == BlockFace.SELF) {
             STBUtil.complain(player, "Ejector upgrade must have a direction configured.");
             return false;
         } else {
@@ -890,7 +890,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             if (upgrade instanceof SpeedUpgrade) {
                 nSpeed += upgrade.getAmount();
             } else if (upgrade instanceof EjectorUpgrade) {
-                ejectDirection = ((EjectorUpgrade) upgrade).getDirection();
+                ejectDirection = ((EjectorUpgrade) upgrade).getFacing();
             } else if (upgrade instanceof RegulatorUpgrade) {
                 nRegulator += upgrade.getAmount();
             } else if (upgrade instanceof ThoroughnessUpgrade) {
