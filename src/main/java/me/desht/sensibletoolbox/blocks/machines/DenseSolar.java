@@ -43,7 +43,7 @@ public class DenseSolar extends BasicSolarCell {
 
     @Override
     public int getMaxCharge() {
-        return 240;
+        return 800;
     }
 
     @Override
