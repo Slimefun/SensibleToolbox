@@ -254,23 +254,26 @@ public class STBInventoryGUI implements InventoryGUI {
     public void receiveEvent(InventoryDragEvent event) {
         boolean inGUI = false;
         boolean shouldCancel = true;
-        for (int slot : event.getRawSlots()) {
-            if (containsSlot(slot)) {
-                inGUI = true;
+        try {
+            for (int slot : event.getRawSlots()) {
+                if (containsSlot(slot)) {
+                    inGUI = true;
+                }
             }
-        }
-        if (inGUI) {
-            // we only allow drags with a single slot involved, and we fake that as a left-click on the slot
-            if (event.getRawSlots().size() == 1) {
-                int slot = (event.getRawSlots().toArray(new Integer[1]))[0];
-                shouldCancel = !listener.onSlotClick(event.getWhoClicked(), slot, ClickType.LEFT, inventory.getItem(slot), event.getOldCursor());
+            if (inGUI) {
+                // we only allow drags with a single slot involved, and we fake that as a left-click on the slot
+                if (event.getRawSlots().size() == 1) {
+                    int slot = (event.getRawSlots().toArray(new Integer[1]))[0];
+                    shouldCancel = !listener.onSlotClick(event.getWhoClicked(), slot, ClickType.LEFT, inventory.getItem(slot), event.getOldCursor());
+                }
+            } else {
+                // drag is purely in the player's inventory; allow it
+                shouldCancel = false;
             }
-        } else {
-            // drag is purely in the player's inventory; allow it
-            shouldCancel = false;
-        }
-        if (shouldCancel) {
-            event.setCancelled(true);
+        } finally {
+            if (shouldCancel) {
+                event.setCancelled(true);
+            }
         }
     }
 
