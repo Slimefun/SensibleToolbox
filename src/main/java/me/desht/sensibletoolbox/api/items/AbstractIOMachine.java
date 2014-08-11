@@ -1,15 +1,17 @@
 package me.desht.sensibletoolbox.api.items;
 
-import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Random;
 
 /**
@@ -17,6 +19,8 @@ import java.util.Random;
  * an internal processing store, and places resulting items in its output slots.
  */
 public abstract class AbstractIOMachine extends AbstractProcessingMachine {
+    // a stack of items which can't be placed into output due to lack of space
+    private final Deque<ItemStack> pendingItems = new ArrayDeque<ItemStack>();
 
     protected AbstractIOMachine() {
         super();
@@ -38,7 +42,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
     @Override
     public void onServerTick() {
-        if (getProcessing() == null && isRedstoneActive()) {
+        if (getProcessing() == null && isRedstoneActive() && pendingItems.isEmpty()) {
             // not doing any processing - anything in input to take?
             for (int slot : getInputSlots()) {
                 if (getInventoryItem(slot) != null) {
@@ -59,12 +63,14 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             playActiveParticleEffect();
         }
 
-        if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
-            // done processing - try to move item into output
-            ProcessingResult recipe = getCustomRecipeFor(getProcessing());
-            if (recipe != null) {
-                // shouldn't ever be null, but let's be paranoid here
-                pushItemIntoOutput(recipe.getResult());
+        if (!isJammed()) {
+            if (!pendingItems.isEmpty()) {
+                // try to move previously jammed items into output
+                pushItemIntoOutput(pendingItems.pop(), false);
+            } else if (getProcessing() != null && getProgress() <= 0) {
+                // done processing - try to move new items into output
+                ProcessingResult recipe = getCustomRecipeFor(getProcessing());
+                pushItemIntoOutput(recipe.getResult(), true);
             }
         }
 
@@ -73,27 +79,47 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         super.onServerTick();
     }
 
-    private void pushItemIntoOutput(ItemStack result) {
-        if (result != null && result.getAmount() > 0) {
-            int slot = findOutputSlot(result);
+    @Override
+    public void onBlockUnregistered(Location loc) {
+        for (ItemStack stack : pendingItems) {
+            loc.getWorld().dropItemNaturally(loc, stack);
+        }
+        super.onBlockUnregistered(loc);
+    }
+
+    private void pushItemIntoOutput(ItemStack result, boolean addBonus) {
+        if (result == null) {
+            return;
+        }
+
+        if (addBonus) {
+            Random rnd = SensibleToolbox.getPluginInstance().getRandom();
+            if (rnd.nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
+                // bonus item(s), yay!
+                int bonus = rnd.nextInt(result.getAmount()) + 1;
+                result.setAmount(Math.min(result.getMaxStackSize(), result.getAmount() + bonus));
+            }
+        }
+
+        while (result.getAmount() > 0) {
+            int slot = findOutputSlot(result, true);
             if (slot >= 0) {
-                // good, there's space to move it out of processing
-                Random rnd = SensibleToolbox.getPluginInstance().getRandom();
-                if (rnd.nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
-                    // bonus item(s), yay!
-                    int bonus = rnd.nextInt(result.getAmount()) + 1;
-                    result.setAmount(Math.min(result.getMaxStackSize(), result.getAmount() + bonus));
-                }
-                ItemStack stack = getInventoryItem(slot);
-                if (stack == null) {
-                    stack = result;
+                // good, there's space to move (at least some of) the item
+                ItemStack inOutput = getInventoryItem(slot);
+                if (inOutput == null) {
+                    inOutput = result.clone();
+                    result.setAmount(0);
                 } else {
-                    stack.setAmount(stack.getAmount() + result.getAmount());
+                    int toAdd = Math.min(result.getAmount(), inOutput.getMaxStackSize() - inOutput.getAmount());
+                    inOutput.setAmount(inOutput.getAmount() + toAdd);
+                    result.setAmount(result.getAmount() - toAdd);
                 }
-                setInventoryItem(slot, stack);
+                setInventoryItem(slot, inOutput);
             } else {
                 // no space!
                 setJammed(true);
+                pendingItems.push(result);
+                break;
             }
         }
 
@@ -142,4 +168,5 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
     public boolean suppliesEnergy(BlockFace face) {
         return false;
     }
+
 }

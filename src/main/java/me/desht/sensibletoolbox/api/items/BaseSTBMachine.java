@@ -560,21 +560,34 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     /**
-     * Find a suitable output slot for the given item.
+     * Find a suitable output slot for the given item stack.
+     *
+     * @param item the item to place into the machine's output
+     * @param partialOK true if it's OK to place part of the item stack; false
+     *                  if we must have space to place the entire stack
+     * @return an output slot, or -1 if no output slot is available
+     */
+    protected int findOutputSlot(ItemStack item, boolean partialOK) {
+        for (int slot : getOutputSlots()) {
+            ItemStack outSlot = getInventoryItem(slot);
+            int amount = partialOK ? 1 : item.getAmount();
+            if (outSlot == null) {
+                return slot;
+            } else if (outSlot.isSimilar(item) && outSlot.getAmount() + amount <= item.getType().getMaxStackSize()) {
+                return slot;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Find a suitable output slot for the given item stack.
      *
      * @param item the item to place into the machine's output
      * @return an output slot, or -1 if no output slot is available
      */
     protected int findOutputSlot(ItemStack item) {
-        for (int slot : getOutputSlots()) {
-            ItemStack outSlot = getInventoryItem(slot);
-            if (outSlot == null) {
-                return slot;
-            } else if (outSlot.isSimilar(item) && outSlot.getAmount() + item.getAmount() <= item.getType().getMaxStackSize()) {
-                return slot;
-            }
-        }
-        return -1;
+        return findOutputSlot(item, false);
     }
 
     /**
