@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api.items;
 
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.desht.sensibletoolbox.api.recipes.ProcessingResult;
 import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
@@ -77,9 +78,11 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             int slot = findOutputSlot(result);
             if (slot >= 0) {
                 // good, there's space to move it out of processing
-                if (new Random().nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
-                    // bonus item, yay!
-                    result.setAmount(Math.min(result.getMaxStackSize(), result.getAmount() * 2));
+                Random rnd = SensibleToolbox.getPluginInstance().getRandom();
+                if (rnd.nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
+                    // bonus item(s), yay!
+                    int bonus = rnd.nextInt(result.getAmount()) + 1;
+                    result.setAmount(Math.min(result.getMaxStackSize(), result.getAmount() + bonus));
                 }
                 ItemStack stack = getInventoryItem(slot);
                 if (stack == null) {
@@ -116,11 +119,6 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         setProgress(recipe.getProcessingTime());
         stack.setAmount(stack.getAmount() - 1);
         setInventoryItem(inputSlot, stack);
-
-//        if (stack == null) {
-//            // workaround to avoid leaving ghost items in the input slot
-//            STBUtil.forceInventoryRefresh(getInventory());
-//        }
 
         update(false);
     }
