@@ -169,7 +169,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
     private EnderStorageHolder getInventoryHolderFor(UUID uuid) {
         return isGlobal() ?
-                EnderStorage.getEnderStorageHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency()) :
-                EnderStorage.getEnderStorageHolder(getEnderFrequency());
+                EnderStorage.getEnderStorageHolder(getEnderFrequency()) :
+                EnderStorage.getEnderStorageHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
     }
 }

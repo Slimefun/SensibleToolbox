@@ -37,8 +37,11 @@ public interface EnderStorageHolder extends STBInventoryHolder {
 
     /**
      * Mark this ender holder as having been changed and in need of saving.
-     * This method should be called after you modify an ender inventory via
-     * Bukkit inventory API to ensure any changes get persisted.
+     * This method should be called if you modify an ender inventory via
+     * the Bukkit inventory API to ensure any changes get persisted.  It is
+     * automatically called when items are inserted/extracted via direct
+     * player manipulation or via inventory manipulation methods in
+     * {@link me.desht.sensibletoolbox.api.STBInventoryHolder}.
      */
     void setChanged();
 }

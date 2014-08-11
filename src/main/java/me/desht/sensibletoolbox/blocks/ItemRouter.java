@@ -45,7 +45,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private static final int MOD_SLOT_END = 36;
     private static final int MOD_SLOT_COUNT = 9;
 
-//    private final Map<ItemRouterModule, Integer> modules = Maps.newLinkedHashMap();
     private final List<ModuleAndAmount> modules = Lists.newArrayList();
     private ItemStack bufferItem;
     private int stackSize;
@@ -156,7 +155,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         } else {
             List<String> lore = Lists.newArrayListWithCapacity(modules.size());
             for (ModuleAndAmount e : modules) {
-//            for (Map.Entry<ItemRouterModule,Integer> e : modules.entrySet()) {
                 String s = e.module.getDisplaySuffix() == null ? "" : ": " + e.module.getDisplaySuffix();
                 lore.add(ChatColor.GREEN + e.module.getItemName() + s);
             }
@@ -237,7 +235,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 "to right.");
         int slot = MOD_SLOT_START;
         for (ModuleAndAmount e : modules) {
-//        for (Map.Entry<ItemRouterModule,Integer> e : modules.entrySet()) {
             gui.getInventory().setItem(slot++, e.module.toItemStack(e.amount));
         }
 
@@ -287,7 +284,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (isRedstoneActive()) {
             Location loc = getLocation();
             for (ModuleAndAmount e : modules) {
-//            for (ItemRouterModule module : modules.keySet()) {
                 if (e.module instanceof DirectionalItemRouterModule) {
                     DirectionalItemRouterModule dmod = (DirectionalItemRouterModule) e.module;
                     if (dmod.execute(loc.clone())) {
@@ -365,12 +361,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             receiver = (ReceiverModule) module;
         }
         modules.add(new ModuleAndAmount(module, count));
-
-//        if (modules.containsKey(module)) {
-//            modules.put(module, modules.get(module) + count);
-//        } else {
-//            modules.put(module, count);
-//        }
     }
 
     public ItemStack getBufferItem() {
@@ -421,13 +411,6 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 return (T) e.module;
             }
         }
-//
-//        for (ItemRouterModule module : modules.keySet()) {
-//            if (c.isAssignableFrom(module.getClass())) {
-//                //noinspection unchecked
-//                return (T) module;
-//            }
-//        }
         return null;
     }
 
