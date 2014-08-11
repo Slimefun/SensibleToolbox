@@ -24,6 +24,10 @@ gui:
     label: book
     button: wood_button
 item_settings:
+  paintbrush:
+    wood_staining: true
+  paintroller:
+    wood_staining: true
   paintcan:
     paint_per_dye: 25
   autobuilder:

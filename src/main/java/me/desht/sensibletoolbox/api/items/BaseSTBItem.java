@@ -396,7 +396,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @return the configuration section for this item's config
      */
     public final ConfigurationSection getItemConfig(String prefix) {
-        return getProviderPlugin().getConfig().getConfigurationSection(prefix + "." + getItemTypeID());
+        return getProviderPlugin().getConfig().getConfigurationSection(prefix).getConfigurationSection(getItemTypeID());
     }
 
     /**
@@ -408,7 +408,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @return the configuration section for this item's config
      */
     public final ConfigurationSection getItemConfig() {
-        return getProviderPlugin().getConfig().getConfigurationSection("item_settings").getConfigurationSection(getItemTypeID());
+        return getItemConfig("item_settings");
     }
 
     @Override

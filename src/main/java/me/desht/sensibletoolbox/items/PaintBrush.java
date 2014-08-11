@@ -77,6 +77,10 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         return false;
     }
 
+    public boolean allowWoodStaining() {
+        return getItemConfig() != null && getItemConfig().getBoolean("wood_staining");
+    }
+
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration res = super.freeze();
@@ -97,13 +101,23 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Paints colourable blocks:",
-                " Wool, carpet, stained clay/glass",
-                "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
-                "⇧ + R-click block: paint block",
-                "⇧ + R-click air: empty brush",
-        };
+        return allowWoodStaining() ?
+                new String[] {
+                        "Paints colourable blocks:",
+                        " - wool, carpet, stained clay/glass",
+                        "And planks/wood slabs:",
+                        " - grey/white/brown/pink/orange/black",
+                        "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
+                        "⇧ + R-click block: paint block",
+                        "⇧ + R-click air: empty brush",
+                } :
+                new String[] {
+                        "Paints colourable blocks:",
+                        " Wool, carpet, stained clay/glass",
+                        "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
+                        "⇧ + R-click block: paint block",
+                        "⇧ + R-click air: empty brush",
+                };
     }
 
     @Override
@@ -166,8 +180,32 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             // we don't want blocks which happen to use a Colorable material to be paintable
             return false;
         }
-        return (STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.THIN_GLASS)
-                && getBlockColour(b) != getColour() && getPaintLevel() > 0;
+        if (getBlockColour(b) == getColour() || getPaintLevel() <= 0) {
+            return false;
+        }
+        return STBUtil.isColorable(b.getType())
+                || b.getType() == Material.GLASS
+                || b.getType() == Material.THIN_GLASS
+                || allowWoodStaining() && isStainableWood(b.getType()) && okWoodStain(getColour());
+    }
+
+    private boolean isStainableWood(Material mat) {
+        switch (mat) {
+            case WOOD: case WOOD_STEP: case WOOD_DOUBLE_STEP:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean okWoodStain(DyeColor colour) {
+        switch (colour) {
+            case BLACK: case WHITE: case GRAY:
+            case PINK: case ORANGE: case BROWN:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void refillFromCan(PaintCan can) {
@@ -239,14 +277,28 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         }
         blocks.add(b);
         find(b.getRelative(BlockFace.UP), mat, blocks, max);
-        find(b.getRelative(BlockFace.DOWN), mat, blocks, max);
         find(b.getRelative(BlockFace.EAST), mat, blocks, max);
         find(b.getRelative(BlockFace.NORTH), mat, blocks, max);
-        find(b.getRelative(BlockFace.WEST), mat, blocks, max);
         find(b.getRelative(BlockFace.SOUTH), mat, blocks, max);
+        find(b.getRelative(BlockFace.WEST), mat, blocks, max);
+        find(b.getRelative(BlockFace.DOWN), mat, blocks, max);
     }
 
     private DyeColor getBlockColour(Block b) {
+        if (STBUtil.isColorable(b.getType())) {
+            return DyeColor.getByWoolData(b.getData());
+        } else if (isStainableWood(b.getType())) {
+            switch (b.getData() & 0x07) {
+                case 0: return DyeColor.GRAY; // Oak
+                case 1: return DyeColor.BROWN; // Spruce
+                case 2: return DyeColor.WHITE; // Birch
+                case 3: return DyeColor.PINK; // Jungle
+                case 4: return DyeColor.ORANGE; // Acacia
+                case 5: return DyeColor.BLACK; // Dark Oak
+            }
+        } else {
+            return null;
+        }
         return STBUtil.isColorable(b.getType()) ? DyeColor.getByWoolData(b.getData()) : null;
     }
 
@@ -260,6 +312,10 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
             if (stb != null && stb instanceof Colorable) {
                 ((Colorable) stb).setColor(getColour());
+            } else if (isStainableWood(b.getType())) {
+                int data = b.getData() & 0xf8;
+                data |= getWoodType(getColour()).getData();
+                b.setData((byte) data);
             } else {
                 if (b.getType() == Material.GLASS) {
                     b.setType(Material.STAINED_GLASS);
@@ -275,6 +331,18 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             }
         }
         return painted;
+    }
+
+    private TreeSpecies getWoodType(DyeColor colour) {
+        switch (colour) {
+            case GRAY: return TreeSpecies.GENERIC; // oak
+            case BROWN: return TreeSpecies.REDWOOD; // spruce
+            case WHITE: return TreeSpecies.BIRCH;
+            case PINK: return TreeSpecies.JUNGLE;
+            case ORANGE: return TreeSpecies.ACACIA;
+            case BLACK: return TreeSpecies.DARK_OAK;
+            default: return TreeSpecies.GENERIC;
+        }
     }
 
     @Override
