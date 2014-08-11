@@ -22,6 +22,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
@@ -178,8 +179,12 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     @Override
-    public Material getLevelIcon() {
-        return Material.DIAMOND_LEGGINGS;
+    public ItemStack getLevelIcon() {
+        ItemStack stack = new ItemStack(Material.LEATHER_LEGGINGS);
+        LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
+        meta.setColor(getColour().getColor());
+        stack.setItemMeta(meta);
+        return stack;
     }
 
     @Override

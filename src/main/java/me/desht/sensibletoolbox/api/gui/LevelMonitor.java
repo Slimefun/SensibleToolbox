@@ -27,7 +27,7 @@ public class LevelMonitor extends MonitorGadget {
         ItemStack stack;
         int level = reporter.getLevel();
         if (reporter.getMaxLevel() > 0) {
-            stack = new ItemStack(reporter.getLevelIcon());
+            stack = reporter.getLevelIcon();
             STBUtil.levelToDurability(stack, level, reporter.getMaxLevel());
             ItemMeta meta = stack.getItemMeta();
             meta.setDisplayName(reporter.getLevelMessage());
@@ -65,7 +65,7 @@ public class LevelMonitor extends MonitorGadget {
          *
          * @return the item used to show the level as a durability bar
          */
-        public Material getLevelIcon();
+        public ItemStack getLevelIcon();
 
         /**
          * Get the GUI slot in which the monitor icon should be shown.
