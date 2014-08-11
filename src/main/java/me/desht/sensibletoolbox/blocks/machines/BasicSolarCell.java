@@ -305,7 +305,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             double toAdd = getPowerOutput() * getTickRate() * getChargeMultiplier(getLightLevel());
             if (toAdd > 0) {
                 setCharge(getCharge() + toAdd);
-                pvCellLife = Math.max(0, pvCellLife - getTickRate());
+                pvCellLife = Math.min(PVCell.MAX_LIFESPAN, Math.max(0, pvCellLife - getTickRate()));
                 if (pvCellLife == 0) {
                     update(true);
                 }
