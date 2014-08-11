@@ -1,11 +1,16 @@
 package me.desht.sensibletoolbox.items.machineupgrades;
 
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.DirectionGadget;
 import me.desht.sensibletoolbox.api.gui.GUIUtil;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
+import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
+import me.desht.sensibletoolbox.api.items.BaseSTBMachine;
+import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.items.components.SimpleCircuit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -85,9 +90,13 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
             event.setCancelled(true);
         } else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             // open ejector configuration GUI
-            InventoryGUI gui = createGUI(event.getPlayer());
-            gui.show(event.getPlayer());
-            event.setCancelled(true);
+            Block b = event.getClickedBlock();
+            BaseSTBMachine machine = b == null ? null : SensibleToolbox.getBlockAt(b.getLocation(), BaseSTBMachine.class, true);
+            if (b == null || machine == null && !STBUtil.isInteractive(b.getType())) {
+                InventoryGUI gui = createGUI(event.getPlayer());
+                gui.show(event.getPlayer());
+                event.setCancelled(true);
+            }
         }
     }
 
