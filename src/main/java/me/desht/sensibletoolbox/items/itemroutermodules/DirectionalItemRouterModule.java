@@ -1,6 +1,5 @@
 package me.desht.sensibletoolbox.items.itemroutermodules;
 
-import com.google.common.collect.Maps;
 import me.desht.dhutils.ItemNames;
 import me.desht.sensibletoolbox.api.Filtering;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
@@ -31,7 +30,6 @@ import org.bukkit.material.Wool;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
     private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
@@ -53,15 +51,6 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     );
     public static final int FILTER_LABEL_SLOT = 0;
     public static final int DIRECTION_LABEL_SLOT = 5;
-    private static final Map<Integer,BlockFace> directionSlots = Maps.newHashMap();
-    static {
-        directionSlots.put(6, BlockFace.UP);
-        directionSlots.put(7, BlockFace.NORTH);
-        directionSlots.put(15, BlockFace.WEST);
-        directionSlots.put(17, BlockFace.EAST);
-        directionSlots.put(24, BlockFace.DOWN);
-        directionSlots.put(25, BlockFace.SOUTH);
-    }
     private final Filter filter;
     private BlockFace direction;
     private boolean terminator;
@@ -137,7 +126,6 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         return direction != BlockFace.SELF ? direction.toString() : null;
     }
 
-
     @Override
     public void setFacingDirection(BlockFace blockFace) {
         direction = blockFace;
@@ -147,14 +135,6 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     public BlockFace getFacing() {
         return direction;
     }
-
-//    public BlockFace getDirection() {
-//        return direction;
-//    }
-//
-//    public void setDirection(BlockFace direction) {
-//        this.direction = direction;
-//    }
 
     public Filter getFilter() {
         return filter;
@@ -224,43 +204,11 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
         theGUI.addLabel("Module Direction", DIRECTION_LABEL_SLOT, null,
                 "Set the direction that", "the module works in", "once installed in an", "Item Router");
-        for (Map.Entry<Integer,BlockFace> e : directionSlots.entrySet()) {
-            theGUI.addGadget(makeDirectionButton(theGUI, e.getKey(), e.getValue()));
-        }
-        theGUI.addGadget(new ButtonGadget(theGUI, 16, "No Direction", null, new ItemRouter().getMaterialData().toItemStack(), new Runnable() {
-            @Override
-            public void run() {
-                setFacingDirection(BlockFace.SELF);
-                for (int slot : directionSlots.keySet()) {
-                    ((ToggleButton) gui.getGadget(slot)).setValue(false);
-                }
-            }
-        }));
+        ItemStack texture = new ItemRouter().getMaterialData().toItemStack();
+        GUIUtil.setDisplayName(texture, "No Direction");
+        theGUI.addGadget(new DirectionGadget(theGUI, 16, texture));
 
         return theGUI;
-    }
-
-    private ToggleButton makeDirectionButton(final InventoryGUI gui, final int slot, final BlockFace face) {
-        ItemStack trueStack = GUIUtil.makeTexture(new Wool(DyeColor.ORANGE), ChatColor.YELLOW + face.toString());
-        ItemStack falseStack = GUIUtil.makeTexture(new Wool(DyeColor.SILVER), ChatColor.YELLOW + face.toString());
-        return new ToggleButton(gui, slot, getFacing() == face, trueStack, falseStack, new ToggleButton.ToggleListener() {
-            @Override
-            public boolean run(boolean newValue) {
-                // acts sort of like a radio button - switching one on switches all other
-                // off, but switching one off leaves all switch off
-                if (newValue) {
-                    setFacingDirection(face);
-                    for (int otherSlot : directionSlots.keySet()) {
-                        if (slot != otherSlot) {
-                            ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
-                        }
-                    }
-                } else {
-                    setFacingDirection(BlockFace.SELF);
-                }
-                return true;
-            }
-        });
     }
 
     private void populateFilterInventory(Inventory inv) {
