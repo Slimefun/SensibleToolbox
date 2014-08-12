@@ -12,10 +12,8 @@ import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.Sign;
 
@@ -324,11 +322,13 @@ public class LocationManager {
             // TODO: may want to do this over a few ticks to reduce the risk of lag spikes
             for (UpdateRecord rec : pendingUpdates.values()) {
                 BaseSTBBlock stb = get(rec.getLocation());
+                if (stb == null && rec.getOp() != UpdateRecord.Operation.DELETE) {
+                    LogUtils.severe("STB block @ " + rec.getLocation() + " is null, but should not be!");
+                    continue;
+                }
                 if (stb != null) {
                     rec.setType(stb.getItemTypeID());
                     rec.setData(stb.freeze().saveToString());
-                } else {
-                    Validate.isTrue(rec.getOp() == UpdateRecord.Operation.DELETE, "Found null STB block @ " + rec.getLocation() + " with op = " + rec.getOp());
                 }
                 updateQueue.add(rec);
             }
