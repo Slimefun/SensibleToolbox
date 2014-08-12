@@ -442,7 +442,7 @@ public class STBUtil {
     public static List<ItemStack> calculateDrops(Block b, ItemStack tool) {
         List<ItemStack> res = new ArrayList<ItemStack>();
         if (tool != null && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1 && isObtainable(b.getType())) {
-            res.add(b.getState().getData().toItemStack());
+            res.add(b.getState().getData().toItemStack(1));
         } else {
             Random r = new Random();
             Collection<ItemStack> res2 = tool == null ? b.getDrops() : b.getDrops(tool);
