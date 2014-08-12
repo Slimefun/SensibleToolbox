@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.items;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cost.ItemCost;
@@ -19,26 +20,26 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.Attachable;
 import org.bukkit.material.Directional;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class MultiBuilder extends BaseSTBItem implements Chargeable {
     private static final MaterialData md = new MaterialData(Material.GOLD_AXE);
-    private static final int MAX_REPLACED = 21;
     public static final int MAX_BUILD_BLOCKS = 9;
     public static final int DEF_SCU_PER_OPERATION = 40;
+    private static final Map<UUID, LinkedBlockingQueue<SwapRecord>> swapQueues = Maps.newHashMap();
     private Mode mode;
     private double charge;
     private MaterialData mat;
@@ -59,7 +60,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private MaterialData thawMaterialData(String s) {
         String[] f = s.split(":");
-//        Material mat = Material.matchMaterial(f[0]);
         Material mat = Material.valueOf(f[0]);
         byte data = f.length > 1 ? Byte.parseByte(f[1]) : 0;
         return mat.getNewData(data);
@@ -204,124 +204,41 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private void handleExchangeMode(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        boolean done = false;
-
         Block clicked = event.getClickedBlock();
+
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (player.isSneaking()) {
                 // set the target material
                 mat = clicked.getType().getNewData(clicked.getData());
-                done = true;
+                player.setItemInHand(toItemStack());
             } else if (mat != null) {
                 // replace multiple blocks
                 int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-                int max = (int) (MAX_REPLACED * Math.pow(1.2, sharpness));
-                Block[] blocks = getReplacementCandidates(player, event.getClickedBlock(), max);
-                Debugger.getInstance().debug(this + ": replacing " + blocks.length + " blocks");
-                done = doExchange(player, blocks, clicked) > 0;
+                int layers = 3 + sharpness;
+                startSwap(event.getPlayer(), this, clicked, mat, layers);
+                Debugger.getInstance().debug(this + ": replacing " + layers + " layers of blocks");
             }
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && mat != null) {
-            // replace one block
-            Block[] blocks = getReplacementCandidates(player, event.getClickedBlock(), 1);
-            done = doExchange(player, blocks, clicked) > 0;
+            // replace a single block
+            startSwap(event.getPlayer(), this, clicked, mat, 0);
             event.setCancelled(true);
-        } else {
-            return;
-        }
-
-        if (done) {
-            player.setItemInHand(toItemStack());
-        } else {
-            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 0.5f);
         }
     }
 
-    private Block[] getReplacementCandidates(Player player, Block b, int max) {
-        if (!canReplace(player, b) || mat == null || mat.getItemType() == b.getType() && mat.getData() == b.getData()) {
-            return new Block[0];
+    private void startSwap(Player player, MultiBuilder builder, Block origin, MaterialData target, int maxBlocks) {
+        LinkedBlockingQueue<SwapRecord> queue = swapQueues.get(player.getWorld().getUID());
+        if (queue == null) {
+            queue = new LinkedBlockingQueue<SwapRecord>();
+            swapQueues.put(player.getWorld().getUID(), queue);
+        }
+        if (queue.isEmpty()) {
+            new QueueSwapper(queue).runTaskTimer(SensibleToolbox.getPluginInstance(), 1L, 1L);
         }
 
-        if (max <= 1) {
-            return new Block[]{b};
-        } else {
-            Set<Block> res = new HashSet<Block>(max * 4 / 3, 0.75f);
-            recursiveExchangeScan(player, b, b.getType(), b.getData(), res, max, BlockFace.SELF);
-            return res.toArray(new Block[res.size()]);
-        }
-    }
-
-
-    private void recursiveExchangeScan(Player player, Block b, Material mat, byte data, Set<Block> blocks, int max, BlockFace fromDirection) {
-        if (b.getType() != mat || b.getData() != data || blocks.size() > max || blocks.contains(b)
-                || !STBUtil.isExposed(b) || !canReplace(player, b)) {
-            return;
-        }
-        blocks.add(b);
-        for (BlockFace toDirection : getExchangeDirections(fromDirection)) {
-            recursiveExchangeScan(player, b.getRelative(toDirection), mat, data, blocks, max, toDirection);
-        }
-    }
-
-    private BlockFace[] getExchangeDirections(BlockFace face) {
-        switch (face) {
-            case UP:
-                return ExchangeFaces.up;
-            case DOWN:
-                return ExchangeFaces.down;
-            case EAST:
-                return ExchangeFaces.east;
-            case WEST:
-                return ExchangeFaces.west;
-            case NORTH:
-                return ExchangeFaces.north;
-            case SOUTH:
-                return ExchangeFaces.south;
-            case SELF:
-                return STBUtil.directFaces;
-            default:
-                throw new IllegalArgumentException("invalid direction " + face);
-        }
-    }
-
-    private int doExchange(Player player, Block[] blocks, Block clicked) {
-        // the blocks have already been validated as suitable for replacement at this point
-
-        ItemStack inHand = player.getItemInHand();
-
-        int howMuch = howMuchDoesPlayerHave(player, mat);
-        if (howMuch == 0) {
-            PopupMessage.quickMessage(player, clicked.getLocation(),
-                    ChatColor.RED + "Out of " + ItemNames.lookup(mat.toItemStack(1)) + "!");
-            return 0;
-        }
-        int nAffected = Math.min(blocks.length, howMuch);
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
-        double chargeNeeded = chargePerOp * nAffected * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
-        if (nAffected > 0 && getCharge() >= chargeNeeded) {
-            setCharge(getCharge() - chargeNeeded);
-            ItemCost taken = losesDataWhenBroken(mat) ? new ItemCost(mat.getItemType(), nAffected) : new ItemCost(mat.toItemStack(nAffected));
-            taken.apply(player);
-
-            Block[] affectedBlocks = Arrays.copyOfRange(blocks, 0, nAffected);
-
-            List<ItemStack> items = new ArrayList<ItemStack>();
-            ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE);  // ensure we can mine anything
-            for (Block b : affectedBlocks) {
-                items.addAll(STBUtil.calculateDrops(b, tool));
-            }
-            HashMap<Integer, ItemStack> excess = player.getInventory().addItem(items.toArray(new ItemStack[items.size()]));
-            for (ItemStack stack : excess.values()) {
-                player.getWorld().dropItemNaturally(player.getLocation(), stack);
-            }
-
-            new SwapTask(affectedBlocks).runTaskTimer(getProviderPlugin(), 1L, 1L);
-
-            player.updateInventory();
-        } else if (getCharge() < chargeNeeded) {
-            PopupMessage.quickMessage(player, clicked.getLocation(), ChatColor.RED + "Not enough power!");
-        }
-        return nAffected;
+        double chargeNeeded = chargePerOp * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        queue.offer(new SwapRecord(player, origin, origin.getType().getNewData(origin.getData()), target, maxBlocks, builder, -1, chargeNeeded));
     }
 
     private int howMuchDoesPlayerHave(Player p, MaterialData mat) {
@@ -465,32 +382,125 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         private static final BlockFace[] ud = {BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH};
     }
 
-    private static class ExchangeFaces {
-        private static final BlockFace[] north = {BlockFace.EAST, BlockFace.DOWN, BlockFace.WEST, BlockFace.UP, BlockFace.NORTH};
-        private static final BlockFace[] east = {BlockFace.DOWN, BlockFace.SOUTH, BlockFace.UP, BlockFace.NORTH, BlockFace.EAST};
-        private static final BlockFace[] down = {BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN};
-        private static final BlockFace[] south = {BlockFace.WEST, BlockFace.UP, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH};
-        private static final BlockFace[] west = {BlockFace.UP, BlockFace.NORTH, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST};
-        private static final BlockFace[] up = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP};
-    }
+    private class QueueSwapper extends BukkitRunnable {
+        private final LinkedBlockingQueue<SwapRecord> queue;
+        private final ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE);  // ensure we can mine anything
 
-    private class SwapTask extends BukkitRunnable {
-        private final Block[] blocks;
-        private int n = 0;
-
-        private SwapTask(Block[] blocks) {
-            this.blocks = blocks;
+        public QueueSwapper(LinkedBlockingQueue<SwapRecord> queue) {
+            this.queue = queue;
         }
 
         @Override
         public void run() {
-            Block b = blocks[n];
-            b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-            b.setTypeIdAndData(mat.getItemTypeId(), mat.getData(), true);
-            n++;
-            if (n >= blocks.length) {
-                cancel();
+            boolean didWork = false;
+
+            while (!didWork) {
+                // first, some validation & sanity checking...
+                SwapRecord rec = queue.poll();
+                if (rec == null) {
+                    cancel();
+                    return;
+                }
+
+                if (!rec.player.isOnline()) {
+                    continue;
+                }
+                Block b = rec.block;
+                if (b.getType() == rec.target.getItemType() && b.getData() == rec.target.getData()
+                        || rec.builder.getCharge() < rec.chargeNeeded
+                        || !canReplace(rec.player, rec.block)) {
+                    continue;
+                }
+
+                // (hopefully) take materials from the player...
+                int slot = rec.slot;
+                PlayerInventory inventory = rec.player.getInventory();
+                if (slot < 0 || inventory.getItem(slot) == null) {
+                    slot = getSlotForItem(rec.player, rec.target);
+                    if (slot == -1) {
+                        // player is out of materials to swap: scan the queue and remove any other
+                        // records for this player & material, to avoid constant inventory rescanning
+                        Iterator<SwapRecord> iter = queue.iterator();
+                        while (iter.hasNext()) {
+                            SwapRecord r = iter.next();
+                            if (r.player.equals(rec.player) && r.target.equals(rec.target)) {
+                                iter.remove();
+                            }
+                        }
+                        continue;
+                    }
+                }
+                ItemStack item = inventory.getItem(slot);
+                item.setAmount(item.getAmount() - 1);
+                inventory.setItem(slot, item.getAmount() > 0 ? item : null);
+
+                // take SCU from the multibuilder...
+                rec.builder.setCharge(rec.builder.getCharge() - rec.chargeNeeded);
+                ItemStack builderItem = rec.builder.toItemStack();
+                rec.player.setItemInHand(builderItem);
+
+                // give materials to the player...
+                if (builderItem.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1) {
+                    tool.addEnchantment(Enchantment.SILK_TOUCH, 1);
+                } else {
+                    tool.removeEnchantment(Enchantment.SILK_TOUCH);
+                }
+                for (ItemStack stack : STBUtil.calculateDrops(b, tool)) {
+                    STBUtil.giveItems(rec.player, stack);
+                }
+
+                // make the actual in-world swap
+                b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                b.setTypeIdAndData(rec.target.getItemTypeId(), rec.target.getData(), true);
+
+                // queue up the next set of blocks
+                if (rec.layersLeft > 0) {
+                    for (int x = -1; x <= 1; x++) {
+                        for (int y = -1; y <= 1; y++) {
+                            for (int z = -1; z <= 1; z++) {
+                                Block b1 = b.getRelative(x, y, z);
+                                if ((x != 0 || y != 0 || z != 0) && b1.getType() == rec.source.getItemType() && b1.getData() == rec.source.getData() && STBUtil.isExposed(b1)) {
+                                    queue.offer(new SwapRecord(rec.player, b1, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                didWork = true;
             }
+        }
+
+        private int getSlotForItem(Player player, MaterialData from) {
+            for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+                ItemStack stack = player.getInventory().getItem(slot);
+                if (stack != null && stack.getType() == from.getItemType() && (losesDataWhenBroken(from) || stack.getDurability() == from.getData()) && !stack.hasItemMeta()) {
+                    return slot;
+                }
+            }
+            return -1;
+        }
+    }
+
+    private class SwapRecord {
+        private final Player player;
+        private final Block block;
+        private final MaterialData source;
+        private final MaterialData target;
+        private final int layersLeft;
+        private final MultiBuilder builder;
+        private final int slot;
+        private final double chargeNeeded;
+
+        private SwapRecord(Player player, Block block, MaterialData source, MaterialData target, int layersLeft, MultiBuilder builder, int slot, double chargeNeeded) {
+            this.player = player;
+            this.block = block;
+            this.source = source;
+            this.target = target;
+            this.layersLeft = layersLeft;
+            this.builder = builder;
+            this.slot = slot;
+            this.chargeNeeded = chargeNeeded;
         }
     }
 }
