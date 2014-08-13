@@ -621,7 +621,9 @@ public class RecipeBook extends BaseSTBItem {
             }
         }));
         if (!trail.isEmpty()) {
-            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, "< Back to Last Recipe", new String[0], GO_BACK_TEXTURE_2, new Runnable() {
+            ItemStack prevStack = fullItemList.get(trail.peek().item);
+            String label = "< Back to Last Recipe";
+            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, label, new String[] { ItemNames.lookup(prevStack) }, GO_BACK_TEXTURE_2, new Runnable() {
                 @Override
                 public void run() {
                     ItemAndRecipeNumber ir = trail.pop();
@@ -632,9 +634,10 @@ public class RecipeBook extends BaseSTBItem {
             }));
         }
 
+        String lore = "for " + ItemNames.lookup(result);
         final int nRecipes = recipes.size();
         if (nRecipes > 1) {
-            gui.addGadget(new ButtonGadget(gui, NEXT_RECIPE_SLOT, "< Prev Recipe", new String[0], null, new Runnable() {
+            gui.addGadget(new ButtonGadget(gui, NEXT_RECIPE_SLOT, "< Prev Recipe", new String[] { lore }, null, new Runnable() {
                 @Override
                 public void run() {
                     recipeNumber--;
@@ -642,7 +645,7 @@ public class RecipeBook extends BaseSTBItem {
                     drawRecipePage();
                 }
             }));
-            gui.addGadget(new ButtonGadget(gui, PREV_RECIPE_SLOT, "Next Recipe >", new String[0], null, new Runnable() {
+            gui.addGadget(new ButtonGadget(gui, PREV_RECIPE_SLOT, "Next Recipe >", new String[] { lore }, null, new Runnable() {
                 @Override
                 public void run() {
                     recipeNumber++;
