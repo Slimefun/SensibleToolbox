@@ -1,15 +1,15 @@
 package me.desht.sensibletoolbox.items;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.block.BlockUtil;
 import me.desht.dhutils.cost.ItemCost;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.sensibletoolbox.api.util.BlockProtection;
-import me.desht.sensibletoolbox.api.util.PopupMessage;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
@@ -276,23 +276,19 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         final Player player = event.getPlayer();
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            final List<Block> blocks = getBuildCandidates(player, event.getClickedBlock(), event.getBlockFace());
-            MaterialData matData = event.getClickedBlock().getType().getNewData(event.getClickedBlock().getData());
-            int nAffected = Math.min(blocks.size(), howMuchDoesPlayerHave(player, matData));
-            List<Block> actualBlocks = blocks.subList(0, nAffected);
-
-            if (!actualBlocks.isEmpty()) {
+            final Set<Block> blocks = getBuildCandidates(player, event.getClickedBlock(), event.getBlockFace());
+            if (!blocks.isEmpty()) {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    doBuild(player, event.getClickedBlock(), actualBlocks, matData);
+                    doBuild(player, event.getClickedBlock(), blocks);
                 } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                    showBuildPreview(player, actualBlocks);
+                    showBuildPreview(player, blocks);
                 }
             }
             event.setCancelled(true);
         }
     }
 
-    private void showBuildPreview(final Player player, final List<Block> blocks) {
+    private void showBuildPreview(final Player player, final Set<Block> blocks) {
         Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
@@ -311,62 +307,106 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }, 20L);
     }
 
-    private void doBuild(Player player, Block source, List<Block> actualBlocks, MaterialData matData) {
+    private void doBuild(Player player, Block source, Set<Block> actualBlocks) {
+        MaterialData matData = source.getType().getNewData(source.getData());
         ItemStack inHand = player.getItemInHand();
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
-        if (getCharge() >= chargeNeeded) {
-            setCharge(getCharge() - chargeNeeded);
-            ItemCost cost = losesDataWhenBroken(matData) ?
-                    new ItemCost(matData.getItemType(), actualBlocks.size()) :
-                    new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
-            cost.apply(player);
-            for (Block b : actualBlocks) {
-                b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
-            }
-            player.setItemInHand(toItemStack());
-            player.playSound(player.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
-        } else {
-            PopupMessage.quickMessage(player, source.getLocation(), ChatColor.RED + "Not enough power!");
-            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 0.5f);
+        // we know at this point that the tool has sufficient charge and that the player has sufficient material
+        setCharge(getCharge() - chargeNeeded);
+        ItemCost cost = losesDataWhenBroken(matData) ?
+                new ItemCost(matData.getItemType(), actualBlocks.size()) :
+                new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
+        cost.apply(player);
+        for (Block b : actualBlocks) {
+            b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
         }
+        player.setItemInHand(toItemStack());
+        player.playSound(player.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
     }
 
-    private List<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
+    private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
         int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-        int max = MAX_BUILD_BLOCKS + sharpness * 2;
-        if (player.isSneaking()) {
-            max = 1;
+        int max = MAX_BUILD_BLOCKS + sharpness * 3;
+        MaterialData matData = clickedBlock.getType().getNewData(clickedBlock.getData());
+        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        int ch = (int) (getCharge() / chargePerOp);
+        if (ch == 0) {
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 0.5f);
+            return Collections.emptySet();
         }
-        Set<Block> blocks = new HashSet<Block>(max * 4 / 3, 0.75f);
-        floodFill2D(player, clickedBlock.getRelative(blockFace),
-                new MaterialData(clickedBlock.getType(), clickedBlock.getData()),
-                blockFace.getOppositeFace(), getBuildFaces(blockFace), max, blocks);
-        return Lists.newArrayList(blocks);
+        max = Math.min(Math.min(max, howMuchDoesPlayerHave(player, matData)), ch);
+        return floodFill(player, clickedBlock.getRelative(blockFace), blockFace.getOppositeFace(), getBuildFaces(blockFace), max);
     }
 
-    private void floodFill2D(Player player, Block b, MaterialData target, BlockFace face, BlockFace[] faces, int max, Set<Block> blocks) {
-        Block b0 = b.getRelative(face);
-        if (!b.isEmpty() && !b.isLiquid() || b0.getType() != target.getItemType() || b0.getData() != target.getData()
-                || blocks.size() > max || blocks.contains(b) || !canReplace(player, b)) {
-            return;
+    private Set<Block> floodFill(Player player, Block origin, BlockFace face, BlockFace[] faces, int max) {
+        Block b = origin.getRelative(face);
+        LinkedBlockingQueue<Block> queue = new LinkedBlockingQueue<Block>();
+        queue.add(origin);
+        Set<Block> result = Sets.newHashSet();
+        while (!queue.isEmpty()) {
+            Block b0 = queue.poll();
+            Block b1 = b0.getRelative(face);
+            if (result.size() >= max) {
+                break;
+            }
+            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.LONG_GRASS) && b1.getType() == b.getType() && b1.getData() == b.getData() && !result.contains(b0) && canReplace(player, b0)) {
+                result.add(b0);
+                for (BlockFace f : faces) {
+                    if (!player.isSneaking() || filterFace(player, face, f))
+                    queue.add(b0.getRelative(f));
+                }
+            }
         }
-        blocks.add(b);
-        for (BlockFace dir : faces) {
-            floodFill2D(player, b.getRelative(dir), target, face, faces, max, blocks);
+
+        return result;
+    }
+
+    private boolean filterFace(Player player, BlockFace clickedFace, BlockFace face) {
+        switch (clickedFace) {
+            case NORTH: case SOUTH: case EAST: case WEST:
+                BlockUtil.BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
+                double frac = pos.point.getY() % 1;
+                if (frac > 0.85 || frac < 0.15) {
+                    return face.getModY() != 0;
+                } else {
+                    return face.getModY() == 0;
+                }
+            case UP: case DOWN:
+                BlockFace playerFace = getRotation(player.getLocation());
+                switch (playerFace) {
+                    case EAST: case WEST: return face.getModZ() == 0;
+                    case NORTH: case SOUTH: return face.getModX() == 0;
+                }
+        }
+        return true;
+    }
+
+    private BlockFace getRotation(Location loc) {
+        double rot = (loc.getYaw() - 90) % 360;
+        if (rot < 0) {
+            rot += 360;
+        }
+        if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
+            return BlockFace.NORTH;
+        } else if (45 <= rot && rot < 135) {
+            return BlockFace.EAST;
+        } else if (135 <= rot && rot < 225) {
+            return BlockFace.SOUTH;
+        } else if (225 <= rot && rot < 315) {
+            return BlockFace.WEST;
+        } else {
+            throw new IllegalArgumentException("impossible rotation: " + rot);
         }
     }
 
     private BlockFace[] getBuildFaces(BlockFace face) {
         switch (face) {
-            case NORTH:
-            case SOUTH:
+            case NORTH: case SOUTH:
                 return BuildFaces.ns;
-            case EAST:
-            case WEST:
+            case EAST: case WEST:
                 return BuildFaces.ew;
-            case UP:
-            case DOWN:
+            case UP: case DOWN:
                 return BuildFaces.ud;
         }
         throw new IllegalArgumentException("invalid face: " + face);
