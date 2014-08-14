@@ -34,7 +34,10 @@ permissions:
     description: Allow viewing/modification of other players' friend data
     default: op
   stb.recipebook.freefab:
-    description: Allow any item in the Recipe Book to be fabricated freely
+    description: Allow any item in the Recipe Book to be fabricated with no ingredient cost
+    default: op
+  stb.enderleash.captureany:
+    description: Allow capturing of animals owned by other players
     default: op
   stb.commands.charge:
     description: Allow the SCU values for blocks/items to be modified with /stb charge
