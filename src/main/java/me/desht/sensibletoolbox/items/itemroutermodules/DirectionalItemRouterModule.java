@@ -9,6 +9,7 @@ import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.Filter;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.desht.sensibletoolbox.blocks.EnderBox;
 import me.desht.sensibletoolbox.blocks.ItemRouter;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -313,5 +314,11 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     protected Location getTargetLocation(Location loc) {
         BlockFace face = getFacing();
         return loc.clone().add(face.getModX(), face.getModY(), face.getModZ());
+    }
+
+    protected boolean creativeModeBlocked(BaseSTBBlock stb, Location loc) {
+        return stb instanceof EnderBox
+                && STBUtil.isCreativeWorld(loc.getWorld())
+                && !SensibleToolbox.getPluginInstance().getConfigCache().isCreativeEnderAccess();
     }
 }

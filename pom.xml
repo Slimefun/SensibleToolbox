@@ -4,7 +4,7 @@
     <groupId>me.desht</groupId>
     <artifactId>sensibletoolbox</artifactId>
     <packaging>jar</packaging>
-    <version>0.99.0</version>
+    <version>0.99.1-SNAPSHOT</version>
     <name>SensibleToolbox</name>
     <url>http://maven.apache.org</url>
 
@@ -48,6 +48,10 @@
         <repository>
             <id>sk89q-maven</id>
             <url>http://maven.sk89q.com/repo</url>
+        </repository>
+        <repository>
+            <id>OnARandomBox</id>
+            <url>http://repo.onarandombox.com/content/repositories/multiverse</url>
         </repository>
     </repositories>
 
@@ -118,6 +122,12 @@
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
             <version>5.9.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.5</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

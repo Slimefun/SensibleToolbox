@@ -1,15 +1,14 @@
 package me.desht.sensibletoolbox.blocks;
 
+import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.api.STBInventoryHolder;
 import me.desht.sensibletoolbox.api.enderstorage.EnderStorage;
 import me.desht.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import me.desht.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -119,14 +118,16 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             Player player = event.getPlayer();
-            if (hasAccessRights(player)) {
+            if (!hasAccessRights(player)) {
+                STBUtil.complain(player, "That " + getItemName() + " is private!");
+            } else if (EnderStorage.isCreativeAccessBlocked(player)) {
+                STBUtil.complain(player, "No creative-mode access to ender boxes!");
+            } else {
                 Inventory inv = isGlobal() ?
                         EnderStorage.getEnderInventory(getEnderFrequency()) :
                         EnderStorage.getEnderInventory(player, getEnderFrequency());
                 player.openInventory(inv);
                 player.playSound(getLocation(), Sound.CHEST_OPEN, 0.5f, 1.0f);
-            } else {
-                STBUtil.complain(player, "That " + getItemName() + " is private!");
             }
             event.setCancelled(true);
         }

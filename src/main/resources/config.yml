@@ -16,6 +16,7 @@ inventory_protection: best
 block_protection: best
 default_access: public
 default_redstone: ignore
+creative_ender_access: false
 gui:
   texture:
     input: stained_glass_pane:cyan

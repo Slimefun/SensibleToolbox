@@ -132,10 +132,14 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
                 }
             }
 
-            Inventory inv = isGlobal() ?
-                    EnderStorage.getEnderInventory(getEnderFrequency()) :
-                    EnderStorage.getEnderInventory(player, getEnderFrequency());
-            player.openInventory(inv);
+            if (EnderStorage.isCreativeAccessBlocked(player)) {
+                STBUtil.complain(player, "No creative-mode access to ender bags!");
+            } else {
+                Inventory inv = isGlobal() ?
+                        EnderStorage.getEnderInventory(getEnderFrequency()) :
+                        EnderStorage.getEnderInventory(player, getEnderFrequency());
+                player.openInventory(inv);
+            }
             event.setCancelled(true);
         }
     }

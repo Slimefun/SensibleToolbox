@@ -13,6 +13,7 @@ public class ConfigCache {
     private AccessControl defaultAccess;
     private boolean noisyMachines;
     private int particleLevel;
+    private boolean creativeEnderAccess;
 
     public ConfigCache(SensibleToolboxPlugin plugin) {
         this.plugin = plugin;
@@ -33,6 +34,7 @@ public class ConfigCache {
         }
         noisyMachines = plugin.getConfig().getBoolean("noisy_machines");
         particleLevel = plugin.getConfig().getInt("particle_effects");
+        creativeEnderAccess = plugin.getConfig().getBoolean("creative_ender_access");
     }
 
     public RedstoneBehaviour getDefaultRedstone() {
@@ -65,5 +67,13 @@ public class ConfigCache {
 
     void setParticleLevel(int particleLevel) {
         this.particleLevel = particleLevel;
+    }
+
+    public boolean isCreativeEnderAccess() {
+        return creativeEnderAccess;
+    }
+
+    public void setCreativeEnderAccess(boolean creativeEnderAccess) {
+        this.creativeEnderAccess = creativeEnderAccess;
     }
 }

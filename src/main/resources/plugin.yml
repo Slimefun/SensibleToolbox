@@ -3,7 +3,7 @@ description: A collection of generally useful tools and utilites
 author: desht
 main: me.desht.sensibletoolbox.SensibleToolboxPlugin
 version: ${project.version}
-softdepend: [ ProtocolLib, Landslide, HoloAPI, WorldGuard, PreciousStones, LWC ]
+softdepend: [ ProtocolLib, Landslide, HoloAPI, WorldGuard, PreciousStones, LWC, Multiverse-Core ]
 
 commands:
   stb:
@@ -38,6 +38,9 @@ permissions:
     default: op
   stb.enderleash.captureany:
     description: Allow capturing of animals owned by other players
+    default: op
+  stb.enderaccess.creative:
+    description: Allow players to access ender inventories in creative mode, even if config denies it
     default: op
   stb.commands.charge:
     description: Allow the SCU values for blocks/items to be modified with /stb charge

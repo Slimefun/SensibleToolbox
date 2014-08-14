@@ -1,7 +1,15 @@
 package me.desht.sensibletoolbox.api.enderstorage;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import me.desht.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.blocks.EnderBox;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 /**
@@ -62,4 +70,20 @@ public class EnderStorage {
     public static EnderStorageHolder getEnderStorageHolder(int frequency) {
         return SensibleToolbox.getPluginInstance().getEnderStorageManager().getGlobalInventoryHolder(frequency);
     }
+
+    /**
+     * Check if the player's access to ender inventories is blocked due to
+     * being in creative mode.  Creative-mode access to ender inventories
+     * poses a risk, since it could be used to easily obtain items in a
+     * creative world and move them to a survival world.
+     *
+     * @param player the player to check
+     * @return true if access should be blocked for this player; false otherwise
+     */
+    public static boolean isCreativeAccessBlocked(Player player) {
+        return (player.getGameMode() == GameMode.CREATIVE || STBUtil.isCreativeWorld(player.getWorld()))
+                && !SensibleToolbox.getPluginInstance().getConfigCache().isCreativeEnderAccess()
+                && !PermissionUtils.isAllowedTo(player, "stb.enderaccess.creative");
+    }
+
 }

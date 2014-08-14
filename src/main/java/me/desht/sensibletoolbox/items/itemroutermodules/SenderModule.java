@@ -11,6 +11,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -89,6 +90,10 @@ public class SenderModule extends DirectionalItemRouterModule {
             } else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
                 if (stb instanceof STBInventoryHolder) {
+                    if (creativeModeBlocked(stb, loc)) {
+                        getItemRouter().ejectBuffer(getItemRouter().getFacing());
+                        return false;
+                    }
                     ItemStack toInsert = getItemRouter().getBufferItem().clone();
                     toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
                     int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), false, getItemRouter().getOwner());

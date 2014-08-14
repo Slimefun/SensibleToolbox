@@ -3,9 +3,12 @@ package me.desht.sensibletoolbox.api.util;
 import com.comphenix.attribute.Attributes;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import me.desht.dhutils.*;
 import me.desht.dhutils.block.BlockUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
+import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.energy.Chargeable;
 import me.desht.sensibletoolbox.api.items.BaseSTBItem;
 import org.apache.commons.lang.StringUtils;
@@ -1119,5 +1122,22 @@ public class STBUtil {
         float d = val / (float) max;
         short dur = (short) (maxDur * d);
         stack.setDurability((short) (Math.max(1, maxDur - dur)));
+    }
+
+    /**
+     * Check if the given world is a creative world.  This requires an
+     * external plugin to check; currently, only Multiverse is supported.
+     *
+     * @param world the world to check
+     * @return true if the world is a creative world
+     */
+    public static boolean isCreativeWorld(World world) {
+        if (SensibleToolbox.getPluginInstance().getMultiverseCore() != null) {
+            MultiverseCore mvc = SensibleToolbox.getPluginInstance().getMultiverseCore();
+            MultiverseWorld mvw = mvc.getMVWorldManager().getMVWorld(world);
+            return mvw.getGameMode() == GameMode.CREATIVE;
+        } else {
+            return false;
+        }
     }
 }

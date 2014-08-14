@@ -20,6 +20,8 @@ package me.desht.sensibletoolbox;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MultiversePlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
@@ -50,7 +52,6 @@ import me.desht.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.desht.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import me.desht.sensibletoolbox.listeners.*;
-import me.desht.sensibletoolbox.util.SunlightLevels;
 import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -92,6 +93,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private PreciousStones preciousStonesPlugin = null;
     private BlockProtection blockProtection;
     private ConfigCache configCache;
+    private MultiverseCore multiverseCore = null;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -135,6 +137,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         setupLWC();
         setupWorldGuard();
         setupPreciousStones();
+        setupMultiverse();
 
         blockProtection = new BlockProtection(this);
 
@@ -318,6 +321,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
     }
 
+    private void setupMultiverse() {
+        Plugin mvPlugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
+        System.out.println("mv plugin: " + mvPlugin.getClass());
+        if (mvPlugin != null && mvPlugin.isEnabled() && mvPlugin instanceof MultiverseCore) {
+            multiverseCore = (MultiverseCore) mvPlugin;
+            Debugger.getInstance().debug("Hooked Multiverse-Core v" + mvPlugin.getDescription().getVersion());
+        }
+    }
+
     private void setupLWC() {
         Plugin lwcPlugin = getServer().getPluginManager().getPlugin("LWC");
         if (lwcPlugin != null && lwcPlugin.isEnabled() && lwcPlugin instanceof LWCPlugin) {
@@ -455,6 +467,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             getConfigCache().setParticleLevel((Integer) newVal);
         } else if (key.equals("noisy_machines")) {
             getConfigCache().setNoisyMachines((Boolean) newVal);
+        } else if (key.equals("creative_ender_access")) {
+            getConfigCache().setCreativeEnderAccess((Boolean) newVal);
         }
     }
 
@@ -593,5 +607,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public ConfigCache getConfigCache() {
         return configCache;
+    }
+
+    public MultiverseCore getMultiverseCore() {
+        return multiverseCore;
     }
 }
