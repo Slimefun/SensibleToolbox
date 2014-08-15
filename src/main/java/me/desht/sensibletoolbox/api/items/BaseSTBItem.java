@@ -487,6 +487,17 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
+     * Called when an item is newly crafted.  This method can be used to set
+     * up some dynamic property of the item which would not otherwise be known
+     * at construction time.
+     *
+     * @return true if this method changed a property of the item; false otherwise
+     */
+    public boolean onCrafted() {
+        return false;
+    }
+
+    /**
      * An action that can be taken on or with an STB item.
      */
     public enum ItemAction {

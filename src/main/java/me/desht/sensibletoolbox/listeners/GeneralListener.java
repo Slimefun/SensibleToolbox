@@ -315,6 +315,9 @@ public class GeneralListener extends STBBaseListener {
                     }
                 }
             }
+            if (result.onCrafted()) {
+                event.getInventory().setResult(result.toItemStack(event.getInventory().getResult().getAmount()));
+            }
         }
         Debugger.getInstance().debug("resulting item now: " + event.getInventory().getResult());
     }

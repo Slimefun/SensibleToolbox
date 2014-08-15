@@ -270,22 +270,26 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         if (charge == this.charge) {
             return;
         }
-        if (charge <= 0 && this.charge > 0 && getLocation() != null) {
-            onOutOfCharge();
-        }
-        this.charge = Math.min(getMaxCharge(), Math.max(0, charge));
-        if (getGUI() != null && chargeMeterId >= 0) {
-            getGUI().getMonitor(chargeMeterId).repaintNeeded();
-        }
 
-        // does the charge indicator label need updating?
-        int c8 = (int) ((getCharge() * 8) / getMaxCharge());
-        if (c8 != charge8) {
-            charge8 = c8;
-            buildChargeLabel();
-            updateAttachedLabelSigns();
+        this.charge = Math.min(getMaxCharge(), Math.max(0, charge));
+
+        if (isPlaced()) {
+            if (this.charge == 0) {
+                onOutOfCharge();
+            }
+            if (getGUI() != null && chargeMeterId >= 0) {
+                getGUI().getMonitor(chargeMeterId).repaintNeeded();
+            }
+
+            // does the charge indicator label need updating?
+            int c8 = (int) ((getCharge() * 8) / getMaxCharge());
+            if (c8 != charge8) {
+                charge8 = c8;
+                buildChargeLabel();
+                updateAttachedLabelSigns();
+            }
+            update(false);
         }
-        update(false);
     }
 
     private String getChargeLabel() {

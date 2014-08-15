@@ -563,6 +563,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new LandMarker(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new PVCell(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new AutoBuilder(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new UnlinkedSCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
         if (isProtocolLibEnabled()) {
             itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
         }

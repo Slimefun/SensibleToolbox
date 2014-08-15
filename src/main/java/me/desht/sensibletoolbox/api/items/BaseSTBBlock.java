@@ -860,6 +860,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
     }
 
+    /**
+     * Check if this block is actually placed, or currently in item form.
+     *
+     * @return true if this object is a placed STB block; false if it's in item form
+     */
+    public final boolean isPlaced() {
+        return persistableLocation != null;
+    }
+
     private void reattachLabelSigns(Location loc) {
         Block b = loc.getBlock();
         boolean rescanNeeded = false;
