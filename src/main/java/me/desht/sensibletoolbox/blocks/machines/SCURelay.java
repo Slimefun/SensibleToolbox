@@ -1,10 +1,9 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
-import com.google.common.collect.Maps;
 import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.PersistableLocation;
-import me.desht.sensibletoolbox.api.SensibleToolbox;
+import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.util.STBUtil;
+import me.desht.sensibletoolbox.core.IDTracker;
 import me.desht.sensibletoolbox.items.components.UnlinkedSCURelay;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -20,11 +19,9 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public class SCURelay extends BatteryBox {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.CYAN);
-    private static final Map<Integer, RelayData> relayMap = Maps.newHashMap();
 
     private int relayId;
 
@@ -35,11 +32,16 @@ public class SCURelay extends BatteryBox {
     public SCURelay(ConfigurationSection conf) {
         super(conf);
         relayId = conf.getInt("relayId");
-        if (!relayMap.containsKey(relayId)) {
+        IDTracker tracker = getTracker();
+        if (!tracker.contains(relayId)) {
             RelayData relayData = new RelayData();
             relayData.chargeLevel = super.getCharge();
-            relayMap.put(relayId, relayData);
+            tracker.add(relayId, relayData);
         }
+    }
+
+    private IDTracker getTracker() {
+        return ((SensibleToolboxPlugin) getProviderPlugin()).getScuRelayIDTracker();
     }
 
     @Override
@@ -95,13 +97,13 @@ public class SCURelay extends BatteryBox {
 
     @Override
     public double getCharge() {
-        RelayData relayData = relayMap.get(relayId);
+        RelayData relayData = (RelayData) getTracker().get(relayId);
         return relayData == null ? 0 : relayData.chargeLevel;
     }
 
     @Override
     public void setCharge(double charge) {
-        RelayData relayData = relayMap.get(relayId);
+        RelayData relayData = (RelayData) getTracker().get(relayId);
         if (relayData != null) {
             relayData.chargeLevel = charge;
             if (relayData.block1 != null) {
@@ -141,12 +143,7 @@ public class SCURelay extends BatteryBox {
 
     @Override
     public boolean onCrafted() {
-        int id;
-        do {
-            id = SensibleToolbox.getPluginInstance().getRandom().nextInt();
-        } while (relayMap.containsKey(id));
-        relayId = id;
-        relayMap.put(relayId, new RelayData());
+        relayId = getTracker().add(new RelayData());
         return true;
     }
 
@@ -160,7 +157,7 @@ public class SCURelay extends BatteryBox {
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
         super.onBlockRegistered(location, isPlacing);
-        RelayData relayData = relayMap.get(relayId);
+        RelayData relayData = (RelayData) getTracker().get(relayId);
         if (relayData.block1 == null) {
             relayData.block1 = this;
         } else if (relayData.block2 == null) {
@@ -174,9 +171,8 @@ public class SCURelay extends BatteryBox {
     @Override
     public void onBlockUnregistered(Location loc) {
         super.onBlockUnregistered(loc);
-        RelayData relayData = relayMap.get(relayId);
+        RelayData relayData = (RelayData) getTracker().get(relayId);
         if (relayData != null) {
-            PersistableLocation ourLoc = getPersistableLocation();
             if (this.equals(relayData.block1)) {
                 relayData.block1 = null;
             } else if (this.equals(relayData.block2)) {
@@ -191,7 +187,7 @@ public class SCURelay extends BatteryBox {
         }
     }
 
-    private static class RelayData {
+    private class RelayData {
         SCURelay block1;
         SCURelay block2;
         double chargeLevel;

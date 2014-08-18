@@ -36,6 +36,7 @@ import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.blocks.*;
 import me.desht.sensibletoolbox.blocks.machines.*;
 import me.desht.sensibletoolbox.commands.*;
+import me.desht.sensibletoolbox.core.IDTracker;
 import me.desht.sensibletoolbox.core.STBFriendManager;
 import me.desht.sensibletoolbox.core.STBItemRegistry;
 import me.desht.sensibletoolbox.core.enderstorage.EnderStorageManager;
@@ -94,6 +95,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private BlockProtection blockProtection;
     private ConfigCache configCache;
     private MultiverseCore multiverseCore = null;
+    private IDTracker scuRelayIDTracker;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
@@ -138,6 +140,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         setupWorldGuard();
         setupPreciousStones();
         setupMultiverse();
+
+        scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
 
         blockProtection = new BlockProtection(this);
 
@@ -613,5 +617,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public MultiverseCore getMultiverseCore() {
         return multiverseCore;
+    }
+
+    public IDTracker getScuRelayIDTracker() {
+        return scuRelayIDTracker;
     }
 }
