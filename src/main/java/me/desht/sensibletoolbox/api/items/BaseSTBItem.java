@@ -159,7 +159,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * implementing classes where you wish to represent some or all of the item's state
      * in the display name.
      *
-     * @return the display suffix, or null for be no suffix
+     * @return the display suffix, or null for no suffix
      */
     public String getDisplaySuffix() {
         return null;
