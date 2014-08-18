@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -495,6 +496,19 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      */
     public boolean onCrafted() {
         return false;
+    }
+
+    /**
+     * Perform any extra crafting validation steps needed to craft this item.
+     * For example, check if a certain ingredient has a specific enchantment.
+     * By default this method returns true to allow crafting to continue, but
+     * you may override this method for specific items.
+     *
+     * @param inventory crafting inventory for this crafting event
+     * @return true if crafting should continue; false if it should be stopped
+     */
+    public boolean validateCrafting(CraftingInventory inventory) {
+        return true;
     }
 
     /**

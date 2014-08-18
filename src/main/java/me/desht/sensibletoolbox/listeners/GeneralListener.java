@@ -276,6 +276,10 @@ public class GeneralListener extends STBBaseListener {
                     return;
                 }
             }
+            if (!result.validateCrafting(event.getInventory())) {
+                event.getInventory().setResult(null);
+                return;
+            }
         }
 
         double finalSCU = 0.0;

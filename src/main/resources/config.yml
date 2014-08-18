@@ -96,6 +96,7 @@ items_enabled:
   scurelay: true
   sendermodule: true
   siliconwafer: true
+  silkybreakermodule: true
   simplecircuit: true
   smelter: true
   sortermodule: true

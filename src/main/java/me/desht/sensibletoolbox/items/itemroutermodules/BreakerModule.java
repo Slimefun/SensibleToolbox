@@ -33,7 +33,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
         if (b.isEmpty() || b.isLiquid() || STBUtil.getMaterialHardness(b.getType()) == Double.MAX_VALUE) {
             return false;
         }
-        List<ItemStack> d = STBUtil.calculateDrops(b, pick);
+        List<ItemStack> d = STBUtil.calculateDrops(b, getBreakerTool());
         if (d.isEmpty()) {
             return false;
         }
@@ -88,5 +88,9 @@ public class BreakerModule extends DirectionalItemRouterModule {
         recipe.addIngredient(Material.DIAMOND_PICKAXE);
         recipe.addIngredient(Material.HOPPER);
         return recipe;
+    }
+
+    protected ItemStack getBreakerTool() {
+        return pick;
     }
 }
