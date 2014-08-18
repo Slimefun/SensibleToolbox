@@ -44,7 +44,7 @@ public class IDTracker {
         }
     }
 
-    public int getNextID() {
+    private int getNextID() {
         int id = nextID++;
         save();
         return id;

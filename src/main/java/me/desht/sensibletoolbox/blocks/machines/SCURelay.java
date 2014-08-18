@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.blocks.machines;
 
 import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.sensibletoolbox.api.SensibleToolbox;
 import me.desht.sensibletoolbox.api.gui.InventoryGUI;
@@ -26,10 +27,10 @@ import java.util.UUID;
 
 public class SCURelay extends BatteryBox {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.CYAN);
-    private static final int TRANSPONDER_LABEL_SLOT = 0;
-    private static final int TRANSPONDER_SLOT = 1;
+    private static final int TRANSPONDER_LABEL_SLOT = 43;
+    private static final int TRANSPONDER_SLOT = 44;
     private UUID worldID = null;
-    private int relayId;
+    private int relayId = 0;
     private boolean hasTransponder;
 
     public SCURelay() {
@@ -71,15 +72,21 @@ public class SCURelay extends BatteryBox {
     }
 
     @Override
+    public String getDisplaySuffix() {
+        return relayId > 0 ? "#" + relayId : null;
+    }
+
+    @Override
     public String[] getExtraLore() {
         String[] lore = super.getExtraLore();
         if (relayId == 0) {
             return lore;
         }
-        String[] res = Arrays.copyOf(lore, lore.length + 3);
-        res[lore.length] = String.format("ID: " + ChatColor.DARK_AQUA + "%08x", relayId);
-        res[lore.length + 1] = "Displayed charge may be out of date";
-        res[lore.length + 2] = "L-Click to refresh";
+        String[] res = Arrays.copyOf(lore, lore.length + 4);
+        res[lore.length] = "Comes in pairs: both partners";
+        res[lore.length + 1] = "always have the same SCU level.";
+        res[lore.length + 2] = "Displayed charge may be out of date";
+        res[lore.length + 3] = "L-Click to refresh";
         return res;
     }
 
@@ -101,7 +108,7 @@ public class SCURelay extends BatteryBox {
 
     @Override
     public int getChargeRate() {
-        if (!isRedstoneActive()) {
+        if (!isRedstoneActive() || relayId == 0) {
             return 0;
         }
         RelayData relayData = (RelayData) getTracker().get(relayId);
@@ -239,7 +246,7 @@ public class SCURelay extends BatteryBox {
         Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
             @Override
             public void run() {
-                SubspaceTransponder str = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(1), SubspaceTransponder.class);
+                SubspaceTransponder str = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(TRANSPONDER_SLOT), SubspaceTransponder.class);
                 hasTransponder = str != null;
             }
         });
@@ -249,12 +256,34 @@ public class SCURelay extends BatteryBox {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = super.createGUI();
 
-        gui.addLabel("Subspace Transponder", TRANSPONDER_LABEL_SLOT, null, "Place a Subspace Transponder", "here if the relay partner will", "be on a different world");
+        gui.addLabel("Subspace Transponder", TRANSPONDER_LABEL_SLOT, null, "Insert a Subspace Transponder", "here if the relay partner will", "be on a different world");
         gui.setSlotType(TRANSPONDER_SLOT, InventoryGUI.SlotType.ITEM);
 
         drawTransponder(gui);
 
         return gui;
+    }
+
+    @Override
+    protected boolean shouldPaintSlotSurrounds() {
+        return false;
+    }
+
+    private void updateInfoLabel(RelayData data) {
+        String locStr = "(unknown)";
+        if (this.equals(data.block1)) {
+            locStr = data.block2 == null ? "(not placed)" : MiscUtil.formatLocation(data.block2.getLocation());
+        } else if (this.equals(data.block2)) {
+            locStr = data.block1 == null ? "(not placed)" : MiscUtil.formatLocation(data.block1.getLocation());
+        }
+        getGUI().addLabel("SCU Relay : #" + relayId, 0, null,
+                ChatColor.DARK_AQUA + "Partner Location: " + locStr,
+                "Relay will only accept/supply power", "when both partners are placed");
+    }
+
+    @Override
+    public int getInventoryGUISize() {
+        return 45;
     }
 
     @Override
@@ -266,7 +295,7 @@ public class SCURelay extends BatteryBox {
     @Override
     protected String[] getSignLabel(BlockFace face) {
         String[] label = super.getSignLabel(face);
-        label[1] = String.format(ChatColor.DARK_RED + "%08x", relayId);
+        label[1] = ChatColor.DARK_RED + "ID #" + relayId;
         return label;
     }
 
@@ -282,12 +311,14 @@ public class SCURelay extends BatteryBox {
             // shouldn't happen!
             LogUtils.warning("trying to register more than 2 SCU relays of ID " + relayId);
         }
+        updateInfoLabels(relayData);
         worldID = location.getWorld().getUID();
     }
 
     @Override
     public void onBlockUnregistered(Location loc) {
-        super.onBlockUnregistered(loc);
+        getGUI().setItem(TRANSPONDER_SLOT, null);
+
         RelayData relayData = (RelayData) getTracker().get(relayId);
         if (relayData != null) {
             if (this.equals(relayData.block1)) {
@@ -298,11 +329,23 @@ public class SCURelay extends BatteryBox {
                 // shouldn't happen!
                 LogUtils.warning("relay loc for ID " + relayId + " doesn't match placed relays");
             }
+            updateInfoLabels(relayData);
         } else {
             // shouldn't happen!
             LogUtils.warning("can't find any register SCU relay of ID " + relayId);
         }
         worldID = null;
+
+        super.onBlockUnregistered(loc);
+    }
+
+    private void updateInfoLabels(RelayData relayData) {
+        if (relayData.block1 != null) {
+            relayData.block1.updateInfoLabel(relayData);
+        }
+        if (relayData.block2 != null) {
+            relayData.block2.updateInfoLabel(relayData);
+        }
     }
 
     private class RelayData {
