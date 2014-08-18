@@ -104,6 +104,7 @@ items_enabled:
   speedmodule: true
   speedupgrade: true
   stackmodule: true
+  subspacetransponder: true
   tapemeasure: true
   tenkbatterybox: true
   tenkenergycell: true

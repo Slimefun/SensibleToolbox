@@ -2,12 +2,14 @@ package me.desht.sensibletoolbox.items.itemroutermodules;
 
 import me.desht.sensibletoolbox.items.components.EnergizedGoldIngot;
 import me.desht.sensibletoolbox.items.components.IntegratedCircuit;
+import me.desht.sensibletoolbox.items.components.SubspaceTransponder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
@@ -46,15 +48,12 @@ public class HyperSenderModule extends AdvancedSenderModule {
 
     @Override
     public Recipe getRecipe() {
-        AdvancedSenderModule sm = new AdvancedSenderModule();
-        IntegratedCircuit sc = new IntegratedCircuit();
-        EnergizedGoldIngot eg = new EnergizedGoldIngot();
-        registerCustomIngredients(sm, sc, eg);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
-        recipe.shape(" C ", "GSG");
-        recipe.setIngredient('S', sm.getMaterialData());
-        recipe.setIngredient('C', sc.getMaterialData());
-        recipe.setIngredient('G', eg.getMaterialData());
+        SenderModule sm = new SenderModule();
+        SubspaceTransponder st = new SubspaceTransponder();
+        registerCustomIngredients(sm, st);
+        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+        recipe.addIngredient(sm.getMaterialData());
+        recipe.addIngredient(st.getMaterialData());
         return recipe;
     }
 
