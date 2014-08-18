@@ -364,7 +364,7 @@ public class RecipeBook extends BaseSTBItem {
                     if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {
                         tryFabrication(viewingRecipe);
                     }
-                } else {
+                } else if (inSlot != null) {
                     // drill down into the description for an item in the recipe
                     if (inSlot.getDurability() == 32767 && !itemListPos.containsKey(inSlot)) {
                         inSlot.setDurability(inSlot.getType().getMaxDurability());
