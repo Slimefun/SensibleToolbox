@@ -179,6 +179,16 @@ public class SCURelay extends BatteryBox {
     }
 
     @Override
+    public int getEnergyCellSlot() {
+        return 36;
+    }
+
+    @Override
+    public int getChargeDirectionSlot() {
+        return 37;
+    }
+
+    @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         boolean res = super.onSlotClick(player, slot, click, inSlot, onCursor);
         if (res) {
