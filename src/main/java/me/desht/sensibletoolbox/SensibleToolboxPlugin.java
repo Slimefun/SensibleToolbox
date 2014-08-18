@@ -323,7 +323,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     private void setupMultiverse() {
         Plugin mvPlugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
-        System.out.println("mv plugin: " + mvPlugin.getClass());
         if (mvPlugin != null && mvPlugin.isEnabled() && mvPlugin instanceof MultiverseCore) {
             multiverseCore = (MultiverseCore) mvPlugin;
             Debugger.getInstance().debug("Hooked Multiverse-Core v" + mvPlugin.getDescription().getVersion());
