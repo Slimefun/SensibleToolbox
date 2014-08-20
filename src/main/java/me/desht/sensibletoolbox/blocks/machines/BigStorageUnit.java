@@ -353,11 +353,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         ItemStack output = getOutputItem();
         outputAmount = output == null ? 0 : output.getAmount();
         oldTotalAmount += outputAmount;
-        updateSignQuantityLine();
-        updateSignItemLines();
-        updateAttachedLabelSigns();
-
-        super.onBlockRegistered(location, isPlacing  );
+        super.onBlockRegistered(location, isPlacing);
     }
 
     @Override
