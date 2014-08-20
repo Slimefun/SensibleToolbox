@@ -48,8 +48,8 @@ public class Pump extends AbstractProcessingMachine {
     }
 
     @Override
-    public Material getProgressIcon() {
-        return Material.DIAMOND_BOOTS;
+    public ItemStack getProgressIcon() {
+        return new ItemStack(Material.DIAMOND_BOOTS);
     }
 
     @Override

@@ -76,8 +76,8 @@ public class Smelter extends AbstractIOMachine {
     }
 
     @Override
-    public Material getProgressIcon() {
-        return Material.FLINT_AND_STEEL;
+    public ItemStack getProgressIcon() {
+        return new ItemStack(Material.FLINT_AND_STEEL);
     }
 
     @Override

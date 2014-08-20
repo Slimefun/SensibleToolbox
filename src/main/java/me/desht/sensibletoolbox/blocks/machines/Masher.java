@@ -141,8 +141,8 @@ public class Masher extends AbstractIOMachine {
     }
 
     @Override
-    public Material getProgressIcon() {
-        return Material.GOLD_PICKAXE;
+    public ItemStack getProgressIcon() {
+        return new ItemStack(Material.GOLD_PICKAXE);
     }
 
     @Override

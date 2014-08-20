@@ -4,7 +4,6 @@ import me.desht.sensibletoolbox.api.items.AbstractProcessingMachine;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import me.desht.sensibletoolbox.core.gui.STBInventoryGUI;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -13,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  * {@link me.desht.sensibletoolbox.api.items.AbstractProcessingMachine}.
  */
 public class ProgressMeter extends MonitorGadget {
-    private final Material progressIcon;
+    private final ItemStack progressIcon;
     private final AbstractProcessingMachine machine;
     private int maxProcessingTime = 0;
 
@@ -28,8 +27,8 @@ public class ProgressMeter extends MonitorGadget {
                 "Attempt to install progress meter in non-processing machine " + getGUI().getOwningBlock());
         machine = (AbstractProcessingMachine) getGUI().getOwningBlock();
         Validate.isTrue(machine.getProgressCounterSlot() > 0 || machine.getProgressItemSlot() > 0, "At least one of counter slot and item slot must be >= 0!");
-        this.progressIcon = machine.getProgressIcon();
-        Validate.isTrue(progressIcon != null && progressIcon.getMaxDurability() > 0, "Material " + progressIcon + " doesn't have a durability!");
+        this.progressIcon = machine.getProgressIcon().clone();
+        Validate.isTrue(progressIcon != null && progressIcon.getType().getMaxDurability() > 0, "Material " + progressIcon + " doesn't have a durability!");
     }
 
     @Override
@@ -38,10 +37,14 @@ public class ProgressMeter extends MonitorGadget {
             ItemStack stack;
             double progress = machine.getProgress();
             if (progress > 0 && maxProcessingTime > 0) {
-                stack = new ItemStack(progressIcon);
+                stack = progressIcon;
                 STBUtil.levelToDurability(stack, (int) (maxProcessingTime - progress), maxProcessingTime);
                 ItemMeta meta = stack.getItemMeta();
                 meta.setDisplayName(machine.getProgressMessage());
+                String[] lore = machine.getProgressLore();
+                if (lore.length > 0) {
+                    meta.setLore(GUIUtil.makeLore(lore));
+                }
                 stack.setItemMeta(meta);
             } else {
                 stack = STBInventoryGUI.BG_TEXTURE;

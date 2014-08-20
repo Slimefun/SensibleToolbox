@@ -54,8 +54,8 @@ public class Sawmill extends AbstractIOMachine {
     }
 
     @Override
-    public Material getProgressIcon() {
-        return Material.GOLD_AXE;
+    public ItemStack getProgressIcon() {
+        return new ItemStack(Material.GOLD_AXE);
     }
 
     @Override

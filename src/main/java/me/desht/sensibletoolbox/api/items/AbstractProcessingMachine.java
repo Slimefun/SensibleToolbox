@@ -47,12 +47,12 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     public abstract int getProgressCounterSlot();
 
     /**
-     * Define the material used to display the progress bar.  This material must have a durability,
-     * e.g. a tool or armour item.
+     * Define the item used to display the progress bar.  This material must
+     * have a durability, e.g. a tool or armour item.
      *
-     * @return the material used to display the progress bar
+     * @return the item stack used to display the progress bar
      */
-    public abstract Material getProgressIcon();
+    public abstract ItemStack getProgressIcon();
 
     /**
      * Define the base amount of SCU consumed per server tick while this
@@ -110,6 +110,16 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      */
     public String getProgressMessage() {
         return "Progress: " + getProgressMeter().getProgressPercent() + "%";
+    }
+
+    /**
+     * Define extended lore information for the tooltip on the progress
+     * counter icon.
+     *
+     * @return a string array with progress lore information
+     */
+    public String[] getProgressLore() {
+        return new String[0];
     }
 
     /**

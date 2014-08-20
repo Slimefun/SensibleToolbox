@@ -459,8 +459,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     @Override
-    public Material getProgressIcon() {
-        return Material.DIAMOND_CHESTPLATE;
+    public ItemStack getProgressIcon() {
+        return new ItemStack(Material.DIAMOND_CHESTPLATE);
     }
 
     public boolean isFull() {
@@ -469,7 +469,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public String getProgressMessage() {
-        return ChatColor.YELLOW + "Stored: " + getStorageAmount() + "/" + maxCapacity;
+        return ChatColor.YELLOW + "In Storage: " + getStorageAmount() + "/" + maxCapacity;
+    }
+
+    @Override
+    public String[] getProgressLore() {
+        return new String[] { "Total: " + (getStorageAmount() + getOutputAmount()) };
     }
 
     @Override
