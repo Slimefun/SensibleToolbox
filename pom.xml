@@ -53,6 +53,10 @@
             <id>OnARandomBox</id>
             <url>http://repo.onarandombox.com/content/repositories/multiverse</url>
         </repository>
+        <repository>
+            <id>njol-maven</id>
+            <url>http://maven.njol.ch/repo</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -112,17 +116,22 @@
             <systemPath>${project.basedir}/lib/plugins/LWC.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>net.sacredlabyrinth.Phaed</groupId>
-            <artifactId>PreciousStones</artifactId>
-            <version>9.6.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/plugins/PreciousStones.jar</systemPath>
+            <groupId>net.sacredlabyrinth.phaed</groupId>
+            <artifactId>preciousstones</artifactId>
+            <version>9.5.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
             <version>5.9.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
