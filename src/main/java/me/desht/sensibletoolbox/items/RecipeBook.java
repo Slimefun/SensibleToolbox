@@ -52,7 +52,7 @@ public class RecipeBook extends BaseSTBItem {
 
     private static final ItemStack SHAPED_ICON = STBUtil.makeStack(Material.WORKBENCH, ChatColor.YELLOW + "Shaped Recipe");
     private static final ItemStack SHAPELESS_ICON = STBUtil.makeStack(Material.WORKBENCH, ChatColor.YELLOW + "Shapeless Recipe");
-    private static final ItemStack FURNACE_ICON = STBUtil.makeStack(Material.BURNING_FURNACE, ChatColor.YELLOW + "Furnace Recipe");
+    private static final ItemStack FURNACE_ICON = STBUtil.makeStack(Material.FURNACE, ChatColor.YELLOW + "Furnace Recipe");
     private static final ItemStack GO_BACK_TEXTURE = new ItemStack(Material.IRON_DOOR);
     private static final ItemStack GO_BACK_TEXTURE_2 = new ItemStack(Material.WOOD_DOOR);
     private static final ItemStack WEB_TEXTURE = new ItemStack(Material.WEB);
@@ -86,8 +86,9 @@ public class RecipeBook extends BaseSTBItem {
     private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
     private Player player;
     private int inventorySlot;
-    private final List<InventoryHolder> resourceInventories = new ArrayList<InventoryHolder>();
+    private final List<InventoryHolder> resourceInventories = Lists.newArrayList();
     private final Set<String> providerNames = Sets.newHashSet();
+    private final List<ItemStack> currentIngredients = Lists.newArrayList();
 
     /**
      * Constructs a new recipe book.
@@ -390,12 +391,14 @@ public class RecipeBook extends BaseSTBItem {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(recipe.getResult());
         String[] shape = recipe.getShape();
         Map<Character, ItemStack> map = recipe.getIngredientMap();
+        currentIngredients.clear();
         for (int i = 0; i < shape.length; i++) {
             for (int j = 0; j < shape[i].length(); j++) {
                 char c = shape[i].charAt(j);
                 int slot = 10 + i * 9 + j;
                 ItemStack ingredient = getIngredient(item, map.get(c));
-                gui.getInventory().setItem(slot, ingredient);
+                currentIngredients.add(ingredient);
+                gui.getInventory().setItem(slot, makeGuiIngredient(ingredient));
             }
         }
         gui.getInventory().setItem(TYPE_SLOT, SHAPED_ICON);
@@ -404,11 +407,26 @@ public class RecipeBook extends BaseSTBItem {
     private void showShapelessRecipe(ShapelessRecipe recipe) {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(recipe.getResult());
         List<ItemStack> ingredients = recipe.getIngredientList();
+        currentIngredients.clear();
         for (int i = 0; i < ingredients.size(); i++) {
             ItemStack ingredient = getIngredient(item, ingredients.get(i));
-            gui.getInventory().setItem(RECIPE_SLOTS[i], ingredient);
+            currentIngredients.add(ingredient);
+            gui.getInventory().setItem(RECIPE_SLOTS[i], makeGuiIngredient(ingredient));
         }
         gui.getInventory().setItem(TYPE_SLOT, SHAPELESS_ICON);
+    }
+
+    private ItemStack makeGuiIngredient(ItemStack ingredient) {
+        // work around MC 1.8 which doesn't render item stacks with wildcard data
+        if (ingredient == null) {
+            return null;
+        } else if (ingredient.getDurability() == 32767) {
+            ItemStack ingredient2 = ingredient.clone();
+            ingredient2.setDurability((short) 0);
+            return ingredient2;
+        } else {
+            return ingredient;
+        }
     }
 
     private void showFurnaceRecipe(STBFurnaceRecipe recipe) {
@@ -435,12 +453,12 @@ public class RecipeBook extends BaseSTBItem {
         gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
     }
 
-    private ItemStack getIngredient(BaseSTBItem item, ItemStack stack) {
+    private ItemStack getIngredient(BaseSTBItem resultingItem, ItemStack stack) {
         if (stack == null) {
             return null;
         }
-        if (item != null) {
-            Class<? extends BaseSTBItem> c = item.getCraftingRestriction(stack.getType());
+        if (resultingItem != null) {
+            Class<? extends BaseSTBItem> c = resultingItem.getCraftingRestriction(stack.getType());
             if (c != null) {
                 try {
                     BaseSTBItem item2 = c.getDeclaredConstructor().newInstance();
@@ -557,8 +575,10 @@ public class RecipeBook extends BaseSTBItem {
 
     private List<ItemStack> mergeIngredients() {
         Map<ItemStack, Integer> amounts = new HashMap<ItemStack, Integer>();
-        for (int slot : RECIPE_SLOTS) {
-            ItemStack stack = gui.getInventory().getItem(slot);
+
+        for (ItemStack stack : currentIngredients) {
+//        for (int slot : RECIPE_SLOTS) {
+//            ItemStack stack = gui.getInventory().getItem(slot);
             if (stack != null) {
                 Integer existing = amounts.get(stack);
                 if (existing == null) {
@@ -675,6 +695,11 @@ public class RecipeBook extends BaseSTBItem {
             showShapelessRecipe((ShapelessRecipe) viewingRecipe);
         } else if (viewingRecipe instanceof SimpleCustomRecipe) {
             showCustomRecipe((SimpleCustomRecipe) viewingRecipe);
+        }
+
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(result);
+        if (item != null && item.getCraftingNotes() != null) {
+            gui.addLabel(item.getCraftingNotes(), 2, null);
         }
 
         if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {

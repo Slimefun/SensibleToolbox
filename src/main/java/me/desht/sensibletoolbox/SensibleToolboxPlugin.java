@@ -21,7 +21,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MultiversePlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.desht.dhutils.*;
 import me.desht.dhutils.commands.CommandManager;
@@ -390,6 +389,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         cmds.registerCommand(new RedrawCommand());
         cmds.registerCommand(new FriendCommand());
         cmds.registerCommand(new UnfriendCommand());
+        cmds.registerCommand(new ValidateCommand());
     }
 
     @Override

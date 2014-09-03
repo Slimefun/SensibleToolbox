@@ -1,6 +1,7 @@
 package me.desht.sensibletoolbox.api.items;
 
 import com.comphenix.attribute.AttributeStorage;
+import com.comphenix.attribute.NbtFactory;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.PermissionUtils;
@@ -256,6 +257,14 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
+     * Define any additional crafting hints for this item.  This information
+     * can be displayed in a recipe book, for example.
+     *
+     * @return some crafting notes, or null for no notes
+     */
+    public String getCraftingNotes() { return null; }
+
+    /**
      * Called when a block is broken while holding an STB item.  If the block being broken is an STB
      * block, this event handler will be called before the event handler for the block being broken.
      * The handler is called with EventPriority.MONITOR, so the event outcome must not be altered by
@@ -314,10 +323,10 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         Debugger.getInstance().debug(3, "serialize " + this + " to itemstack:\n" + data);
         storage.setData(data);
 
-        // maybe in 1.8...
-//        res = NbtFactory.getCraftItemStack(storage.getTarget());
-//        NbtFactory.NbtCompound compound = NbtFactory.fromItemTag(res);
-//        compound.putPath("HideFlags", 63);
+        // needs MC 1.8
+        res = NbtFactory.getCraftItemStack(storage.getTarget());
+        NbtFactory.NbtCompound compound = NbtFactory.fromItemTag(res);
+        compound.putPath("HideFlags", 63);
 
         return storage.getTarget();
     }

@@ -54,11 +54,7 @@ public class GeneralListener extends STBBaseListener {
         }
         Block clicked = event.getClickedBlock();
         if (!event.isCancelled() && clicked != null) {
-            if (clicked.getType() == Material.SIGN_POST || clicked.getType() == Material.WALL_SIGN) {
-                Sign sign = (Sign) clicked.getState().getData();
-                clicked = clicked.getRelative(sign.getAttachedFace());
-            }
-            BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation());
+            BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation(), true);
             if (stb != null) {
                 if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT_BLOCK)) {
                     stb.onInteractBlock(event);

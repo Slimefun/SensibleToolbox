@@ -1140,4 +1140,23 @@ public class STBUtil {
             return false;
         }
     }
+
+    /**
+     * Get the data byte for various items which have a direction: ladders,
+     * wall signs, chests, furnaces, droppers, hoppers, dispensers, banners.
+     *
+     * @param face the direction the block is facing
+     * @return the data byte to use for that direction
+     */
+    public static byte getDirectionData(BlockFace face) {
+        switch (face) {
+            case SELF: case DOWN: return 0;
+            case UP: return 1;
+            case NORTH: return 2;
+            case SOUTH: return 3;
+            case WEST: return 4;
+            case EAST: return 5;
+            default: throw new IllegalArgumentException("invalid direction " + face);
+        }
+    }
 }

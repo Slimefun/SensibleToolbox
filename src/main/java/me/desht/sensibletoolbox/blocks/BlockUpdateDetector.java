@@ -6,10 +6,7 @@ import me.desht.sensibletoolbox.api.gui.*;
 import me.desht.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.sensibletoolbox.api.util.STBUtil;
 import org.apache.commons.lang.math.IntRange;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,10 +20,11 @@ import org.bukkit.material.MaterialData;
 
 public class BlockUpdateDetector extends BaseSTBBlock {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.PURPLE);
+    private static final MaterialData md2 = new MaterialData(Material.REDSTONE_BLOCK);
     private long lastPulse;
     private int duration;
-
     private int quiet;
+    private boolean active = false;
 
     public BlockUpdateDetector() {
         quiet = 1;
@@ -67,7 +65,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     @Override
     public MaterialData getMaterialData() {
-        return md;
+        return active ? md2 : md;
     }
 
     @Override
@@ -111,12 +109,13 @@ public class BlockUpdateDetector extends BaseSTBBlock {
         if (timeNow - lastPulse > getDuration() + getQuiet() && isRedstoneActive()) {
             // emit a signal for one or more ticks
             lastPulse = timeNow;
-            final BlockState state = b.getState();
-            b.setType(Material.REDSTONE_BLOCK);
+            active = true;
+            repaint(b);
             Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    state.update(true, false);
+                    active = false;
+                    repaint(b);
                 }
             }, duration);
         }
@@ -126,6 +125,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
     public void onInteractBlock(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             getGUI().show(event.getPlayer());
+            event.setCancelled(true);
         }
         super.onInteractBlock(event);
     }
@@ -150,6 +150,13 @@ public class BlockUpdateDetector extends BaseSTBBlock {
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
         gui.addGadget(new AccessControlGadget(gui, 7));
         return gui;
+    }
+
+    @Override
+    public void onBlockUnregistered(Location location) {
+        // ensure the non-active form of the item is always dropped
+        active = false;
+        super.onBlockUnregistered(location);
     }
 
     @Override

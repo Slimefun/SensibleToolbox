@@ -479,7 +479,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         persistableLocation = new PersistableLocation(loc);
     }
 
-    private Block getAuxiliaryBlock(Location loc, RelativePosition pos) {
+    public Block getAuxiliaryBlock(RelativePosition pos) {
+        return getAuxiliaryBlock(getLocation(), pos);
+    }
+
+    public Block getAuxiliaryBlock(Location loc, RelativePosition pos) {
         Block b = loc.getBlock();
         int dx = 0, dz = 0;
         switch (getFacing()) {
@@ -913,9 +917,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         // ok, player is allowed to put a sign here
         placeLabelSign(signBlock, event.getBlockFace());
 
-        ItemStack stack = player.getItemInHand();
-        stack.setAmount(stack.getAmount() - 1);
-        player.setItemInHand(stack.getAmount() <= 0 ? null : stack);
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            ItemStack stack = player.getItemInHand();
+            stack.setAmount(stack.getAmount() - 1);
+            player.setItemInHand(stack.getAmount() <= 0 ? null : stack);
+        }
 
         player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
 

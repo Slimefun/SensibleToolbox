@@ -218,6 +218,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     @Override
+    public String getCraftingNotes() {
+        return "Any type of log or slab may be used";
+    }
+
+    @Override
     public boolean acceptsEnergy(BlockFace face) {
         return false;
     }

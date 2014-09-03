@@ -21,8 +21,10 @@ import org.bukkit.material.MaterialData;
 
 public class RedstoneClock extends BaseSTBBlock {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
+    private static final MaterialData md2 = new MaterialData(Material.REDSTONE_BLOCK);
     private int interval;
     private int onDuration;
+    private boolean active = false;
 
     public RedstoneClock() {
         interval = 20;
@@ -33,6 +35,7 @@ public class RedstoneClock extends BaseSTBBlock {
         super(conf);
         setInterval(conf.contains("interval") ? conf.getInt("interval") : conf.getInt("frequency"));
         setOnDuration(conf.getInt("onDuration"));
+        active = conf.getBoolean("active", false);
     }
 
     @Override
@@ -88,12 +91,13 @@ public class RedstoneClock extends BaseSTBBlock {
         YamlConfiguration conf = super.freeze();
         conf.set("interval", interval);
         conf.set("onDuration", onDuration);
+        conf.set("active", active);
         return conf;
     }
 
     @Override
     public MaterialData getMaterialData() {
-        return md;
+        return active ? md2 : md;
     }
 
     @Override
@@ -140,11 +144,15 @@ public class RedstoneClock extends BaseSTBBlock {
         long time = getTicksLived();
         if (time % getInterval() == 0 && isRedstoneActive()) {
             // power up
-            b.setType(Material.REDSTONE_BLOCK);
+            active = true;
+            repaint(b);
         } else if (time % getInterval() == getOnDuration()) {
             // power down
-            b.setTypeIdAndData(getMaterialData().getItemTypeId(), getMaterialData().getData(), true);
-        } else if (time % 50 == 10) {
+            active = false;
+            repaint(b);
+        }
+
+        if (time % 50 == 10) {
             if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
                 ParticleEffect.RED_DUST.play(loc.add(0.5, 0.5, 0.5), 0.7f, 0.7f, 0.7f, 0.0f, 10);
             } else {
@@ -160,6 +168,13 @@ public class RedstoneClock extends BaseSTBBlock {
             getGUI().show(event.getPlayer());
         }
         super.onInteractBlock(event);
+    }
+
+    @Override
+    public void onBlockUnregistered(Location location) {
+        // ensure the non-active form of the item is always dropped
+        active = false;
+        super.onBlockUnregistered(location);
     }
 
     @Override

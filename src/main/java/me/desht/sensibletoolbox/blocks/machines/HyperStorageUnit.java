@@ -59,6 +59,11 @@ public class HyperStorageUnit extends BigStorageUnit {
     }
 
     @Override
+    public String getCraftingNotes() {
+        return null;
+    }
+
+    @Override
     public int getMaxCharge() {
         return 1000;
     }

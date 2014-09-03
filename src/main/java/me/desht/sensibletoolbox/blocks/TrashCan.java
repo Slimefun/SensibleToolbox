@@ -19,7 +19,6 @@ import org.bukkit.material.MaterialData;
 import java.util.UUID;
 
 public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
-    private static final MaterialData md = new MaterialData(Material.DROPPER);
 
     public TrashCan() {
     }
@@ -38,7 +37,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public MaterialData getMaterialData() {
-        return md;
+        return new MaterialData(Material.DROPPER, STBUtil.getDirectionData(getFacing()));
     }
 
     @Override

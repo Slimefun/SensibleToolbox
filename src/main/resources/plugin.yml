@@ -21,8 +21,9 @@ permissions:
       stb.commands.getcfg: true
       stb.commands.rename.free: true
       stb.commands.save: true
-      stb.commands.setcfg: true
       stb.commands.show: true
+      stb.commands.setcfg: true
+      stb.commands.validate: true
       stb.recipebook.freefab: true
   stb.access.any:
     description: Allow a block's access control settings to be ignored
@@ -78,3 +79,9 @@ permissions:
   stb.commands.friend:
     description: Allow friend information to be viewed/modified with /stb friend
     default: true
+  stb.commands.unfriend:
+    description: Allow friends to be removed with /stb unfriend
+    default: true
+  stb.commands.validate:
+    description: Allow STB block data to be validated/fixed with /stb validate
+    default: op
