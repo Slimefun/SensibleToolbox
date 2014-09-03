@@ -33,7 +33,7 @@ public class GUIUtil {
      * @return a new item stack with the desired texture
      */
     public static ItemStack makeTexture(MaterialData material, String title, String... lore) {
-        ItemStack res = material.toItemStack();
+        ItemStack res = material.toItemStack(1);
         ItemMeta meta = res.getItemMeta();
         meta.setDisplayName(title);
         if (lore.length > 0) {

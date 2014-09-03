@@ -726,7 +726,7 @@ public class STBUtil {
      * @return a new ItemStack with the given title and lore
      */
     public static ItemStack makeStack(MaterialData materialData, String title, String... lore) {
-        ItemStack stack = materialData.toItemStack();
+        ItemStack stack = materialData.toItemStack(1);
         if (title != null) {
             ItemMeta meta = stack.getItemMeta();
             meta.setDisplayName(title);

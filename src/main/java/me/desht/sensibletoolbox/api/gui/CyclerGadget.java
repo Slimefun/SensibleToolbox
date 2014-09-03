@@ -157,7 +157,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
     }
 
     private ItemStack makeTexture(T what, MaterialData md, ChatColor color, String... lore) {
-        ItemStack stack = md.toItemStack();
+        ItemStack stack = md.toItemStack(1);
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label + ":" + color + " " + what.toString());
         if (lore.length > 0) {
