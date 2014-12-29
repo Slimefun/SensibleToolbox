@@ -1,0 +1,117 @@
+coloured_console: true
+rename_level_cost: 5
+particle_effects: 2
+debug_level: 0
+save_interval: 30
+database:
+  table_prefix: "stb_"
+holo_messages:
+   enabled: true
+   duration_per_line: 2.0
+energy:
+  tick_rate: 10
+noisy_machines: true
+explode_item_drop_chance: 50
+inventory_protection: best
+block_protection: best
+default_access: public
+default_redstone: ignore
+creative_ender_access: false
+gui:
+  texture:
+    input: stained_glass_pane:cyan
+    output: stained_glass_pane:orange
+    bg: stained_glass_pane:blue
+    label: book
+    button: wood_button
+item_settings:
+  paintbrush:
+    wood_staining: true
+  paintroller:
+    wood_staining: true
+  paintcan:
+    paint_per_dye: 25
+  autobuilder:
+    scu_per_op: 30
+  multibuilder:
+    scu_per_op: 30
+items_enabled:
+  advancedmoisturechecker: true
+  advancedrecipebook: true
+  advancedsendermodule: true
+  angelicblock: true
+  autobuilder: true
+  bagofholding: true
+  basicsolarcell: true
+  bigstorageunit: true
+  blankmodule: true
+  blockupdatedetector: true
+  breakermodule: true
+  circuitboard: true
+  densesolar: true
+  diamondcombinehoe: true
+  distributormodule: true
+  droppermodule: true
+  ejectorupgrade: true
+  elevator: true
+  energizedirondust: true
+  energizedgolddust: true
+  energizedironingot: true
+  energizedgoldingot: true
+  enderbag: true
+  enderbox: true
+  enderleash: true
+  endertuner: true
+  fiftykbatterybox: true
+  fiftykenergycell: true
+  floodlight: true
+  goldcombinehoe: true
+  golddust: true
+  heatengine: true
+  hypersendermodule: true
+  hyperstorageunit: true
+  infernaldust: true
+  integratedcircuit: true
+  ironcombinehoe: true
+  irondust: true
+  itemrouter: true
+  landmarker: true
+  machineframe: true
+  masher: true
+  moisturechecker: true
+  multibuilder: true
+  multimeter: true
+  paintbrush: true
+  paintcan: true
+  paintroller: true
+  pullermodule: true
+  pump: true
+  pvcell: true
+  quartzdust: true
+  receivermodule: true
+  recipebook: true
+  redstoneclock: true
+  regulatorupgrade: true
+  sawmill: true
+  scurelay: true
+  sendermodule: true
+  siliconwafer: true
+  silkybreakermodule: true
+  simplecircuit: true
+  smelter: true
+  sortermodule: true
+  soundmuffler: true
+  speedmodule: true
+  speedupgrade: true
+  stackmodule: true
+  subspacetransponder: true
+  tapemeasure: true
+  tenkbatterybox: true
+  tenkenergycell: true
+  thoroughnessupgrade: true
+  toughmachineframe: true
+  trashcan: true
+  unlinkedscurelay: true
+  vacuummodule: true
+  wateringcan: true
+  woodcombinehoe: true
