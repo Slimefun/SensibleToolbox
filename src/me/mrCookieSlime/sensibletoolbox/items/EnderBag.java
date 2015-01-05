@@ -1,12 +1,12 @@
 package me.mrCookieSlime.sensibletoolbox.items;
 
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorage;
 import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.blocks.EnderBox;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;

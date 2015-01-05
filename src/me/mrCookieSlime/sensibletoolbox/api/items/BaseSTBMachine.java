@@ -33,6 +33,7 @@ import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.MachineUpgrade;
 import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -326,9 +327,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     private void buildChargeLabel() {
-        StringBuilder s = new StringBuilder("âŒ�").append(ChatColor.DARK_RED.toString()).append("â—¼");
+        StringBuilder s = new StringBuilder(UnicodeSymbol.ELECTRICITY.toUnicode()).append(ChatColor.DARK_RED.toString()).append(UnicodeSymbol.SQUARE.toUnicode());
         for (int i = 0; i < charge8; i++) {
-            s.append("â—¼");
+            s.append(UnicodeSymbol.SQUARE.toUnicode());
             if (i == 0) {
                 s.append(ChatColor.GOLD.toString());
             } else if (i == 2) {

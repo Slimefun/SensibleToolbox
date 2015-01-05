@@ -1,7 +1,6 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeDirection;
 import me.mrCookieSlime.sensibletoolbox.api.energy.EnergyFlow;
 import me.mrCookieSlime.sensibletoolbox.api.energy.EnergyNet;
@@ -9,6 +8,7 @@ import me.mrCookieSlime.sensibletoolbox.api.gui.EnergyFlowGadget;
 import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;

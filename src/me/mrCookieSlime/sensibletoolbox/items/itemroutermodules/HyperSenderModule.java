@@ -1,7 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.items.components.SubspaceTransponder;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;

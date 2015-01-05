@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 public class AnvilListener extends STBBaseListener {
+	
     public AnvilListener(SensibleToolboxPlugin plugin) {
         super(plugin);
     }
