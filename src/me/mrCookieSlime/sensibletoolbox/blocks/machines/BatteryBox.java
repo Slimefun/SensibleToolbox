@@ -1,6 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeDirection;
 import me.mrCookieSlime.sensibletoolbox.api.energy.EnergyFlow;
 import me.mrCookieSlime.sensibletoolbox.api.energy.EnergyNet;
@@ -84,7 +85,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Stores up to \u2301 " + getMaxCharge() + " SCU"};
+        return new String[]{"Stores up to " + UnicodeSymbol.ELECTRICITY + " " + getMaxCharge() + " SCU"};
     }
 
     @Override

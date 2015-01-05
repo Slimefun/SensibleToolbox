@@ -1,6 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
 import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
@@ -23,6 +22,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 
 public class SoundMuffler extends BaseSTBBlock {
+	
     private static final MaterialData md = new Wool(DyeColor.WHITE);
     public static final int DISTANCE = 8;
     private int volume; // 0-100
@@ -119,15 +119,6 @@ public class SoundMuffler extends BaseSTBBlock {
     @Override
     public int getTickRate() {
         return 40;
-    }
-
-    @Override
-    public void onServerTick() {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
-            Location loc = getLocation();
-            ParticleEffect.NOTE.play(loc.add(0.5, 1.0, 0.5), 0.2f, 0.5f, 0.2f, 0f, 3);
-        }
-        super.onServerTick();
     }
 
     @Override

@@ -39,11 +39,12 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 
 public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {
-    public static final int MAX_PAINT_LEVEL = 200;
-    private static final int PAINT_PER_DYE = 25;
-    private static final int[] ITEM_SLOTS = new int[]{9, 10};
-    private static final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLD_SPADE);
-    private static final ItemStack EMPTY_TEXTURE = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE).toItemStack();
+	
+    private static final int MAX_PAINT_LEVEL = 200;
+    private final int PAINT_PER_DYE = 25;
+    private final int[] ITEM_SLOTS = new int[]{9, 10};
+    private final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLD_SPADE);
+    private final ItemStack EMPTY_TEXTURE = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE).toItemStack();
     private int paintLevel;
     private DyeColor colour;
     private int levelMonitorId;

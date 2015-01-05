@@ -26,7 +26,10 @@ public class AdvancedRecipeBook extends RecipeBook {
 
     @Override
     public String[] getExtraLore() {
-        return new String[] { "Can pull items from adjacent","inventories during fabrication"};
+        return new String[] { 
+        		"Can pull items from adjacent",
+        		"inventories during fabrication"
+        };
     }
 
     @Override

@@ -1,6 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.items;
 
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorage;
 import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
@@ -67,7 +68,10 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
 
     @Override
     public String[] getLore() {
-        return new String[]{"R-click: open bag","⇧ + R-click ender box: sync ƒ"};
+        return new String[]{
+        		"R-click: open bag",
+        		UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click ender box: sync ƒ"
+        };
     }
 
     @Override

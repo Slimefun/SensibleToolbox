@@ -31,7 +31,11 @@ public class DropperModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return makeDirectionalLore("Insert into an Item Router", "Drops items onto the ground", "in the configured direction");
+        return makeDirectionalLore(
+        		"Insert into an Item Router", 
+        		"Drops items onto the ground", 
+        		"in the configured direction"
+        );
     }
 
     @Override

@@ -29,8 +29,9 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class RedstoneClock extends BaseSTBBlock {
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
-    private static final MaterialData md2 = new MaterialData(Material.REDSTONE_BLOCK);
+	
+    private final MaterialData inactive_texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
+    private final MaterialData active_texture = new MaterialData(Material.REDSTONE_BLOCK);
     private int interval;
     private int onDuration;
     private boolean active = false;
@@ -106,7 +107,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
     @Override
     public MaterialData getMaterialData() {
-        return active ? md2 : md;
+        return active ? active_texture : inactive_texture;
     }
 
     @Override

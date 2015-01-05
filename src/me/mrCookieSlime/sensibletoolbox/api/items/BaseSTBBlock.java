@@ -48,6 +48,7 @@ import org.bukkit.util.ChatPaginator;
  * world.
  */
 public abstract class BaseSTBBlock extends BaseSTBItem {
+	
     public static final String STB_BLOCK = "STB_Block";
     public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
     private boolean needToScanSigns;

@@ -1,6 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.items.energycells;
 
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
@@ -43,7 +44,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Stores up to \u2301 " + getMaxCharge() + " SCU"};
+        return new String[]{"Stores up to " + UnicodeSymbol.ELECTRICITY.toUnicode() + " " + getMaxCharge() + " SCU"};
     }
 
     @Override

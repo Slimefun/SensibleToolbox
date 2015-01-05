@@ -2,6 +2,7 @@ package me.mrCookieSlime.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 
 import org.bukkit.ChatColor;
@@ -57,7 +58,7 @@ public class TapeMeasure extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"⇧ + R-click block: set anchor", "R-click block: get measurement"};
+        return new String[]{UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: set anchor", "R-click block: get measurement"};
     }
 
     @Override

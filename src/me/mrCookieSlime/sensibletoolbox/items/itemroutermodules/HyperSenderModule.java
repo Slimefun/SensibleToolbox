@@ -1,5 +1,6 @@
 package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.items.components.SubspaceTransponder;
 
 import org.bukkit.ChatColor;
@@ -40,7 +41,7 @@ public class HyperSenderModule extends AdvancedSenderModule {
                 "anywhere on any world",
                 "L-Click item router with installed",
                 " Receiver Module: " + ChatColor.RESET + " Link Hyper Sender",
-                "⇧ + L-Click anywhere: " + ChatColor.RESET + " Unlink Hyper Sender"
+                UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click anywhere: " + ChatColor.RESET + " Unlink Hyper Sender"
         };
     }
 

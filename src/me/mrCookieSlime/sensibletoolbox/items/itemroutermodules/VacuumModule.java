@@ -48,7 +48,10 @@ public class VacuumModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Insert into an Item Router", "Sucks up items within a " + RADIUS + "-block radius"};
+        return new String[]{
+        		"Insert into an Item Router", 
+        		"Sucks up items within a " + RADIUS + "-block radius"
+        };
     }
 
     @Override

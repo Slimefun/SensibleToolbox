@@ -9,6 +9,7 @@ import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.IconMenu;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
@@ -115,15 +116,15 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                         "And planks/wood slabs:",
                         " - grey/white/brown/pink/orange/black",
                         "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
-                        "⇧ + R-click block: paint block",
-                        "⇧ + R-click air: empty brush",
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block",
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush",
                 } :
                 new String[] {
                         "Paints colourable blocks:",
                         " Wool, carpet, stained clay/glass",
                         "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
-                        "⇧ + R-click block: paint block",
-                        "⇧ + R-click air: empty brush",
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block",
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush",
                 };
     }
 

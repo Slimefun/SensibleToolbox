@@ -35,7 +35,11 @@ public class SpeedUpgrade extends MachineUpgrade {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Place in a machine block", "Speed: x1.4", "Power Usage: x1.6"};
+        return new String[]{
+        	"Place in a machine block",
+        	"Speed: x1.4",
+        	"Power Usage: x1.6"
+        };
     }
 
     @Override

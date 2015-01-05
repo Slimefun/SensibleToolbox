@@ -43,6 +43,7 @@ import org.bukkit.plugin.Plugin;
  * Represents an STB item.  This is the superclass for all STB items.
  */
 public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryGUIListener {
+	
     public static final ChatColor LORE_COLOR = ChatColor.GRAY;
     public static final ChatColor DISPLAY_COLOR = ChatColor.YELLOW;
     public static final String SUFFIX_SEPARATOR = " \uff1a ";

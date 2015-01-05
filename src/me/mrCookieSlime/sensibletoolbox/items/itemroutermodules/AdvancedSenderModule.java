@@ -3,6 +3,7 @@ package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.blocks.ItemRouter;
 
@@ -69,7 +70,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
                 " (line of sight is not needed)",
                 "L-Click item router with installed",
                 " Receiver Module: " + ChatColor.RESET + " Link Adv. Sender",
-                "⇧ + L-Click: " + ChatColor.RESET + " Unlink Adv. Sender"
+                UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click: " + ChatColor.RESET + " Unlink Adv. Sender"
         };
     }
 
