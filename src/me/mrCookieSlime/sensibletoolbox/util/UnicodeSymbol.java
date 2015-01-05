@@ -1,4 +1,4 @@
-package me.mrCookieSlime.sensibletoolbox.api;
+package me.mrCookieSlime.sensibletoolbox.util;
 
 public enum UnicodeSymbol {
 	
@@ -8,7 +8,9 @@ public enum UnicodeSymbol {
 	ARROW_DOWN("\u21E9"),
 	
 	ELECTRICITY("\u2301"),
-	CENTERED_POINT("\u2022");
+	
+	CENTERED_POINT("\u2022"),
+	SQUARE("\u2588");
 	
 	String code;
 	

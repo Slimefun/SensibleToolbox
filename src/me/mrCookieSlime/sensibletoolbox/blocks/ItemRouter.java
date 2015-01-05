@@ -9,8 +9,6 @@ import java.util.UUID;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.gui.AccessControlGadget;
@@ -349,10 +347,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     public void playParticles() {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
-            Location loc = getLocation().add(0.5, 0.5, 0.5);
-            ParticleEffect.WITCH_MAGIC.play(loc, 0.25f, 0.25f, 0.25f, 0, 12);
-        }
+    	// TODO: Google how to use Particles in 1.8 (Im lazy...)
+//        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
+//            Location loc = getLocation().add(0.5, 0.5, 0.5);
+//            ParticleEffect.WITCH_MAGIC.play(loc, 0.25f, 0.25f, 0.25f, 0, 12);
+//        }
     }
 
     private void clearModules() {

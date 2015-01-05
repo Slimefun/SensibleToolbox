@@ -2,8 +2,8 @@ package me.mrCookieSlime.sensibletoolbox.items;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

@@ -7,7 +7,6 @@ import me.desht.sensibletoolbox.dhutils.ItemNames;
 import me.mrCookieSlime.sensibletoolbox.api.Filtering;
 import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.gui.DirectionGadget;
 import me.mrCookieSlime.sensibletoolbox.api.gui.FilterTypeGadget;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
@@ -19,6 +18,7 @@ import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.mrCookieSlime.sensibletoolbox.blocks.EnderBox;
 import me.mrCookieSlime.sensibletoolbox.blocks.ItemRouter;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;

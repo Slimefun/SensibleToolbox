@@ -9,13 +9,13 @@ import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.IconMenu;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
 import me.mrCookieSlime.sensibletoolbox.api.util.PopupMessage;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.blocks.PaintCan;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Art;

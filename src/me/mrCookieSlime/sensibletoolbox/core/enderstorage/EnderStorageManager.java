@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class EnderStorageManager implements Listener {
+	
     public static final int MAX_ENDER_FREQUENCY = 1000;
     public static final int BAG_SIZE = 54;
     private static final String ENDER_STORAGE_DIR = "enderstorage";

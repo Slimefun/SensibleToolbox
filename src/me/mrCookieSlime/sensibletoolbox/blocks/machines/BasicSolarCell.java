@@ -5,7 +5,6 @@ import java.util.UUID;
 import me.mrCookieSlime.sensibletoolbox.api.LightMeterHolder;
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeDirection;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
 import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
@@ -15,6 +14,7 @@ import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.PVCell;
 import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
 import me.mrCookieSlime.sensibletoolbox.util.SunlightLevels;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

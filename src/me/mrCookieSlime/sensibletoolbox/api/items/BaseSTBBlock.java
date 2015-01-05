@@ -16,6 +16,7 @@ import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
 import me.mrCookieSlime.sensibletoolbox.api.gui.STBGUIHolder;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -997,13 +998,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         update(false);
     }
 
-    private static final String[] faceSymbols = { "▣", "▶", "▼", "◀" };
+    private static final UnicodeSymbol[] faceSymbols = {UnicodeSymbol.SQUARE, UnicodeSymbol.ARROW_RIGHT, UnicodeSymbol.ARROW_DOWN, UnicodeSymbol.ARROW_LEFT};
 
     private String makeItemLabel(BlockFace face) {
         int rotation = STBUtil.getFaceRotation(getFacing(), face);
         return rotation == 1 ?
-                ChatColor.DARK_BLUE + getItemName() + faceSymbols[rotation] :
-                ChatColor.DARK_BLUE + faceSymbols[rotation] + getItemName();
+                ChatColor.DARK_BLUE + getItemName() + faceSymbols[rotation].toUnicode() :
+                ChatColor.DARK_BLUE + faceSymbols[rotation].toUnicode() + getItemName();
     }
 
     /**

@@ -12,7 +12,6 @@ import me.desht.sensibletoolbox.dhutils.ItemNames;
 import me.desht.sensibletoolbox.dhutils.block.BlockUtil;
 import me.desht.sensibletoolbox.dhutils.cost.ItemCost;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
@@ -20,6 +19,7 @@ import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
 import me.mrCookieSlime.sensibletoolbox.items.components.IntegratedCircuit;
 import me.mrCookieSlime.sensibletoolbox.items.energycells.TenKEnergyCell;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
