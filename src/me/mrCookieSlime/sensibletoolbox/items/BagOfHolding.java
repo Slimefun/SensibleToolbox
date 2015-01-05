@@ -32,7 +32,10 @@ public class BagOfHolding extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Place in a crafting grid", "to get an Ender Bag"};
+        return new String[]{
+        		"Place in a crafting grid",
+        		"to get an Ender Bag"
+        };
     }
 
     @Override

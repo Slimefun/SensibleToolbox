@@ -72,6 +72,7 @@ import com.google.common.collect.Sets;
  * stb.craft.{item-name} permission node to see the item in the recipe book.
  */
 public class RecipeBook extends BaseSTBItem {
+	
     private static final MaterialData md = new MaterialData(Material.BOOK);
     private static final int ITEMS_PER_PAGE = 45;
 

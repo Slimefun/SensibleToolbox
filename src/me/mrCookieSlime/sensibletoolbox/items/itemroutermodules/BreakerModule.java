@@ -77,7 +77,12 @@ public class BreakerModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Insert into an Item Router", "Breaks the block in its", "configured direction and", "pulls it into the item router"};
+        return new String[] { 
+        		"Insert into an Item Router", 
+        		"Breaks the block in its", 
+        		"configured direction and", 
+        		"pulls it into the item router"
+        };
     }
 
     @Override

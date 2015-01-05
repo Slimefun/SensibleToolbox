@@ -310,9 +310,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
                 p.closeInventory();
             }
         }
-        if (soundMufflerListener != null) {
-            soundMufflerListener.clear();
-        }
+        if (soundMufflerListener != null) soundMufflerListener.clear();
         LocationManager.getManager().save();
         LocationManager.getManager().shutdown();
 
@@ -322,19 +320,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         instance = null;
     }
-
-    public LWC getLWC() {
-        return lwc;
-    }
-
-    public SoundMufflerListener getSoundMufflerListener() {
-        return soundMufflerListener;
-    }
-
-    public PlayerUUIDTracker getUuidTracker() {
-        return uuidTracker;
-    }
-
     private void registerEventListeners() {
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new GeneralListener(this), this);
@@ -539,9 +524,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     private void scheduleEnergyNetTicker() {
-        if (energyTask != null) {
-            energyTask.cancel();
-        }
+        if (energyTask != null) energyTask.cancel();
         enetManager.setTickRate(getConfig().getLong("energy.tick_rate", EnergyNetManager.DEFAULT_TICK_RATE));
         energyTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
@@ -636,51 +619,19 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     }
 
-    public ConfigurationManager getConfigManager() {
-        return configManager;
-    }
-
-    public EnderStorageManager getEnderStorageManager() {
-        return enderStorageManager;
-    }
-
-    public STBItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
-
-    public FriendManager getFriendManager() {
-        return friendManager;
-    }
-
-    public Random getRandom() {
-        return random;
-    }
-
-    public EnergyNetManager getEnergyNetManager() {
-        return enetManager;
-    }
-
-    public boolean isWorldGuardAvailable() {
-        return worldGuardPlugin != null && worldGuardPlugin.isEnabled();
-    }
-
-    public boolean isPreciousStonesAvailable() {
-        return preciousStonesPlugin != null && preciousStonesPlugin.isEnabled();
-    }
-
-    public BlockProtection getBlockProtection() {
-        return blockProtection;
-    }
-
-    public ConfigCache getConfigCache() {
-        return configCache;
-    }
-
-    public MultiverseCore getMultiverseCore() {
-        return multiverseCore;
-    }
-
-    public IDTracker getScuRelayIDTracker() {
-        return scuRelayIDTracker;
-    }
+    public ConfigurationManager getConfigManager() 			{			return configManager;														}
+    public EnderStorageManager getEnderStorageManager() 	{			return enderStorageManager;													}
+    public STBItemRegistry getItemRegistry() 				{			return itemRegistry;														}
+    public FriendManager getFriendManager() 				{			return friendManager;														}
+    public Random getRandom() 								{			return random;																}
+    public EnergyNetManager getEnergyNetManager() 			{			return enetManager;															}
+    public boolean isWorldGuardAvailable() 					{			return worldGuardPlugin != null && worldGuardPlugin.isEnabled();			}
+    public boolean isPreciousStonesAvailable() 				{			return preciousStonesPlugin != null && preciousStonesPlugin.isEnabled(); 	}
+    public BlockProtection getBlockProtection() 			{			return blockProtection;														}
+    public ConfigCache getConfigCache() 					{			return configCache;															}
+    public MultiverseCore getMultiverseCore() 				{			return multiverseCore;														}
+	public IDTracker getScuRelayIDTracker() 				{			return scuRelayIDTracker;													}
+    public LWC getLWC()									 	{			return lwc;																	}
+    public SoundMufflerListener getSoundMufflerListener() 	{			return soundMufflerListener;												}
+    public PlayerUUIDTracker getUuidTracker() 				{			return uuidTracker;															}
 }

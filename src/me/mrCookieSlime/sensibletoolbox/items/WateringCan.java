@@ -3,8 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.items;
 import java.util.Random;
 
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
@@ -12,7 +10,7 @@ import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.api.util.SoilSaturation;
 
 import org.bukkit.DyeColor;
-import org.bukkit.Location;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -28,8 +26,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
-
-import com.comphenix.protocol.reflect.FieldAccessException;
 
 public class WateringCan extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.POTION);
@@ -306,13 +302,6 @@ public class WateringCan extends BaseSTBItem {
     private void useSomeWater(Player p, Block b, int amount) {
         setWaterLevel(Math.max(0, getWaterLevel() - amount));
         p.playSound(p.getLocation(), Sound.WATER, 1.0f, 2.0f);
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
-            Location loc = b.getLocation();
-            try {
-            	ParticleEffect.SPLASH.play(loc.add(0.5, 0.5, 0.5), 0.2f, 0.2f, 0.2f, 1.0f, 10);
-            } catch(FieldAccessException x) {
-            	
-            }
-        }
+        p.playEffect(b.getLocation(), Effect.STEP_SOUND, Material.WATER);
     }
 }

@@ -51,14 +51,15 @@ import org.bukkit.material.MaterialData;
 import com.google.common.collect.Lists;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
+	
+    private final MaterialData texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
 
-    private static final int BUFFER_LABEL_SLOT = 12;
-    private static final int BUFFER_ITEM_SLOT = 13;
-    private static final int MODULE_LABEL_SLOT = 18;
-    private static final int MOD_SLOT_START = 27;
-    private static final int MOD_SLOT_END = 36;
-    private static final int MOD_SLOT_COUNT = 9;
+    private final int BUFFER_LABEL_SLOT = 12;
+    private final int BUFFER_ITEM_SLOT = 13;
+    private final int MODULE_LABEL_SLOT = 18;
+    private final int MOD_SLOT_START = 27;
+    private final int MOD_SLOT_END = 36;
+    private final int MOD_SLOT_COUNT = 9;
 
     private final List<ModuleAndAmount> modules = Lists.newArrayList();
     private ItemStack bufferItem;
@@ -83,9 +84,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (conf.contains("modules")) {
             loadOldStyleModules(conf);
             updateNeeded = true;
-        } else {
-            loadNewStyleModules(conf);
-        }
+        } else loadNewStyleModules(conf);
         try {
             if (conf.contains("buffer")) {
                 Inventory inv = BukkitSerialization.fromBase64(conf.getString("buffer"));
@@ -134,9 +133,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 modInv.setItem(i, getGUI().getItem(MOD_SLOT_START + i));
             }
             conf.set("moduleList", BukkitSerialization.toBase64(modInv));
-        } else {
-            conf.set("moduleList", "");
         }
+        else conf.set("moduleList", "");
 
         Inventory bufferInv = Bukkit.createInventory(null, 9);
         bufferInv.setItem(0, getBufferItem());
@@ -146,7 +144,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public MaterialData getMaterialData() {
-        return md;
+        return texture;
     }
 
     @Override

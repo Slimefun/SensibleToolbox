@@ -32,7 +32,10 @@ public class BlankModule extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Used for crafting active", " Item Router Modules "};
+        return new String[]{
+        		"Used for crafting active", 
+        		" Item Router Modules "
+        };
     }
 
     @Override

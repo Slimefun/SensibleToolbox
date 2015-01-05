@@ -12,6 +12,7 @@ import me.desht.sensibletoolbox.dhutils.ItemNames;
 import me.desht.sensibletoolbox.dhutils.block.BlockUtil;
 import me.desht.sensibletoolbox.dhutils.cost.ItemCost;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
@@ -129,15 +130,15 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 return new String[]{
                         "L-click block: " + ChatColor.RESET + "preview",
                         "R-click block: " + ChatColor.RESET + "build",
-                        "⇧ + R-click block: " + ChatColor.RESET + "build one",
-                        "⇧ + mouse-wheel: " + ChatColor.RESET + "EXCHANGE mode"
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "build one",
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "EXCHANGE mode"
                 };
             case EXCHANGE:
                 return new String[]{
                         "L-click block: " + ChatColor.RESET + "exchange one block",
                         "R-click block: " + ChatColor.RESET + "exchange many blocks",
-                        "⇧ + R-click block: " + ChatColor.RESET + "set target block",
-                        "⇧ + mouse-wheel: " + ChatColor.RESET + "BUILD mode"
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "set target block",
+                        UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "BUILD mode"
                 };
             default:
                 return new String[0];

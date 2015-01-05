@@ -1,7 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
@@ -115,12 +113,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
     @Override
     public void onServerTick() {
-        Location loc = getLocation();
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
-            ParticleEffect.CLOUD.play(loc.add(0.5, 0.5, 0.5), 0f, 0f, 0f, 0.05f, 10);
-        } else {
-            loc.getWorld().playEffect(loc.add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
-        }
+    	getLocation().getWorld().playEffect(getLocation().add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
         super.onServerTick();
     }
 }

@@ -1,8 +1,11 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
+import java.util.UUID;
+
 import me.mrCookieSlime.sensibletoolbox.api.LightMeterHolder;
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeDirection;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
 import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
@@ -13,7 +16,12 @@ import me.mrCookieSlime.sensibletoolbox.items.PVCell;
 import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
 import me.mrCookieSlime.sensibletoolbox.util.SunlightLevels;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,8 +37,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
-
-import java.util.UUID;
 
 public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
@@ -184,7 +190,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", "⇧ + L-click block (empty hand): ",  ChatColor.RESET +"  - extract PV cell"};
+        return new String[]{"Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ",  ChatColor.RESET +"  - extract PV cell"};
     }
 
     @Override

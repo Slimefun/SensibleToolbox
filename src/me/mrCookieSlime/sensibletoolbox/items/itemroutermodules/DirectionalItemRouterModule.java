@@ -7,6 +7,7 @@ import me.desht.sensibletoolbox.dhutils.ItemNames;
 import me.mrCookieSlime.sensibletoolbox.api.Filtering;
 import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.UnicodeSymbol;
 import me.mrCookieSlime.sensibletoolbox.api.gui.DirectionGadget;
 import me.mrCookieSlime.sensibletoolbox.api.gui.FilterTypeGadget;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
@@ -38,7 +39,8 @@ import org.bukkit.material.Directional;
 import org.bukkit.material.Wool;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
-    private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.AQUA;
+	
+    private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + UnicodeSymbol.CENTERED_POINT.toUnicode() + " " + ChatColor.AQUA;
     private static final ItemStack WHITE_BUTTON = GUIUtil.makeTexture(
             new Wool(DyeColor.WHITE), ChatColor.RESET.toString() + ChatColor.UNDERLINE + "Whitelist",
             "Module will only process", "items which match the filter."
@@ -202,7 +204,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             }
         }));
 
-        theGUI.addLabel("Filtered Items", FILTER_LABEL_SLOT, null, "Place up to 9 items", "in the filter →");
+        theGUI.addLabel("Filtered Items", FILTER_LABEL_SLOT, null, "Place up to 9 items", "in the filter " + UnicodeSymbol.ARROW_RIGHT.toUnicode());
         for (int slot : filterSlots) {
             theGUI.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
@@ -230,7 +232,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     protected String[] makeDirectionalLore(String... lore) {
         String[] newLore = Arrays.copyOf(lore, lore.length + 2);
         newLore[lore.length] = "L-click Block: " + ChatColor.RESET + " Set direction";
-        newLore[lore.length + 1] = "⇧ + L-click Air: " + ChatColor.RESET + " Unset direction";
+        newLore[lore.length + 1] = UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click Air: " + ChatColor.RESET + " Unset direction";
         return newLore;
     }
 
