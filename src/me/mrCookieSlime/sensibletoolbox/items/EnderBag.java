@@ -63,14 +63,14 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
 
     @Override
     public String getDisplaySuffix() {
-        return (isGlobal() ? "Global" : "Personal") + " ƒ" + getEnderFrequency();
+        return (isGlobal() ? "Global" : "Personal") + " " + UnicodeSymbol.NUMBER.toUnicode() + getEnderFrequency();
     }
 
     @Override
     public String[] getLore() {
         return new String[]{
         		"R-click: open bag",
-        		UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click ender box: sync ƒ"
+        		UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click ender box: sync " + UnicodeSymbol.NUMBER.toUnicode()
         };
     }
 

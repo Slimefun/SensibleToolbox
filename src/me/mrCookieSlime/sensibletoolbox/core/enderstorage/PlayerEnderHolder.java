@@ -1,5 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.core.enderstorage;
 
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
+
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
@@ -45,7 +47,7 @@ public class PlayerEnderHolder extends STBEnderStorageHolder {
 
     @Override
     public String getInventoryTitle() {
-        return ChatColor.DARK_PURPLE + "E-Storage " + ChatColor.DARK_RED + "[Personal ƒ" + getFrequency() + "]";
+        return ChatColor.DARK_PURPLE + "E-Storage " + ChatColor.DARK_RED + "[Personal " + UnicodeSymbol.NUMBER.toUnicode() + getFrequency() + "]";
     }
 
     @Override
