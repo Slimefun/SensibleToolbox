@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 public class LandslideListener implements Listener {
+	
     public LandslideListener(Plugin plugin) {
         try {
             Class.forName("me.desht.landslide.BlockSlideEvent");

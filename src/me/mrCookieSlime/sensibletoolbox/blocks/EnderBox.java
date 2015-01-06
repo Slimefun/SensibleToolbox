@@ -8,6 +8,7 @@ import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderTunable;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -89,7 +90,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
     @Override
     public String getDisplaySuffix() {
-        return (isGlobal() ? "Global" : "Personal") + " ƒ" + getEnderFrequency();
+        return (isGlobal() ? "Global" : "Personal") + " " + UnicodeSymbol.NUMBER.toUnicode() + getEnderFrequency();
     }
 
     @Override

@@ -8,6 +8,7 @@ public enum UnicodeSymbol {
 	ARROW_DOWN("\u21E9"),
 	
 	ELECTRICITY("\u2301"),
+	NUMBER("\u2116"),
 	
 	CENTERED_POINT("\u2022"),
 	SQUARE("\u2588");
