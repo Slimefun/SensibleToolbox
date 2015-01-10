@@ -1,7 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.AbstractIOMachine;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipeManager;
@@ -21,6 +19,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class Sawmill extends AbstractIOMachine {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
 
     public Sawmill() {
@@ -77,13 +76,6 @@ public class Sawmill extends AbstractIOMachine {
     @Override
     public int getUpgradeLabelSlot() {
         return 40;
-    }
-
-    @Override
-    protected void playActiveParticleEffect() {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-            ParticleEffect.CLOUD.play(getLocation().add(0.5, 0.5, 0.5), 0.5f, 0.5f, 0.5f, 0.001f, 7);
-        }
     }
 
     @Override

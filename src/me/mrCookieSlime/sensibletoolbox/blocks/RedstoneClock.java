@@ -28,8 +28,8 @@ import org.bukkit.material.MaterialData;
 
 public class RedstoneClock extends BaseSTBBlock {
 	
-    private final MaterialData inactive_texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
-    private final MaterialData active_texture = new MaterialData(Material.REDSTONE_BLOCK);
+    private static final MaterialData inactive_texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
+    private static final MaterialData active_texture = new MaterialData(Material.REDSTONE_BLOCK);
     private int interval;
     private int onDuration;
     private boolean active = false;

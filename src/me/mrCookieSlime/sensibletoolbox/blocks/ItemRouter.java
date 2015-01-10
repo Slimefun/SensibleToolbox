@@ -52,12 +52,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	
     private final MaterialData texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
 
-    private final int BUFFER_LABEL_SLOT = 12;
-    private final int BUFFER_ITEM_SLOT = 13;
-    private final int MODULE_LABEL_SLOT = 18;
-    private final int MOD_SLOT_START = 27;
-    private final int MOD_SLOT_END = 36;
-    private final int MOD_SLOT_COUNT = 9;
+    private static final int BUFFER_LABEL_SLOT = 12;
+    private static final int BUFFER_ITEM_SLOT = 13;
+    private static final int MODULE_LABEL_SLOT = 18;
+    private static final int MOD_SLOT_START = 27;
+    private static final int MOD_SLOT_END = 36;
+    private static final int MOD_SLOT_COUNT = 9;
 
     private final List<ModuleAndAmount> modules = Lists.newArrayList();
     private ItemStack bufferItem;
