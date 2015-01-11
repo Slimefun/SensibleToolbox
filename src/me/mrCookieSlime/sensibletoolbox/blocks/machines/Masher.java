@@ -1,7 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.AbstractIOMachine;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipeManager;
@@ -156,11 +154,12 @@ public class Masher extends AbstractIOMachine {
             getLocation().getWorld().playSound(getLocation(), Sound.HORSE_SKELETON_IDLE, 1.0f, 0.5f);
         }
     }
-
-    @Override
-    protected void playActiveParticleEffect() {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-            ParticleEffect.LARGE_SMOKE.play(getLocation().add(0.5, 1.0, 0.5), 0.2f, 1.0f, 0.2f, 0.001f, 5);
-        }
-    }
+    
+//    TODO: Fix particles
+//    @Override
+//    protected void playActiveParticleEffect() {
+//        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
+//            ParticleEffect.LARGE_SMOKE.play(getLocation().add(0.5, 1.0, 0.5), 0.2f, 1.0f, 0.2f, 0.001f, 5);
+//        }
+//    }
 }
