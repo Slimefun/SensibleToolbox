@@ -2,7 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
 
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.FuelItems;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
@@ -25,6 +24,7 @@ import org.bukkit.material.Coal;
 import org.bukkit.material.MaterialData;
 
 public class HeatEngine extends Generator {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
     private static final FuelItems fuelItems = new FuelItems();
     private static final int TICK_FREQUENCY = 10;
@@ -82,9 +82,7 @@ public class HeatEngine extends Generator {
 
     @Override
     protected void playActiveParticleEffect() {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-            getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
-        }
+        if (getTicksLived() % 20 == 0) getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
     }
 
     @Override

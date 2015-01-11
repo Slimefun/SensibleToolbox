@@ -52,6 +52,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.TrashCan;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoBuilder;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BasicSolarCell;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BigStorageUnit;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.DenseSolar;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
@@ -616,7 +617,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new SilkyBreakerModule(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new SubspaceTransponder(), this, CONFIG_NODE, PERMISSION_NODE);
         if (isProtocolLibEnabled()) itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
-
+        itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}

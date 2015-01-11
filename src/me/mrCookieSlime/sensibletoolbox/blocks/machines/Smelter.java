@@ -26,6 +26,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class Smelter extends AbstractIOMachine {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.LIGHT_BLUE);
 
     private static int getProcessingTime(ItemStack stack) {
