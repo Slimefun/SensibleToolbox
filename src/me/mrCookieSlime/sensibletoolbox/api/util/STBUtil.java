@@ -718,6 +718,11 @@ public class STBUtil {
                 return new MaterialData(Material.LEAVES, species.getData());
         }
     }
+    
+    @SuppressWarnings("deprecation")
+	public static MaterialData makeSapling(TreeSpecies species) {
+        return new MaterialData(Material.SAPLING, species.getData());
+    }
 
     /**
      * Workaround method: ensure that the given inventory is refreshed to all its viewers.

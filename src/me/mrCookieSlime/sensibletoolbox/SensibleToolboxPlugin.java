@@ -624,7 +624,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public EnderStorageManager getEnderStorageManager() 	{			return enderStorageManager;													}
     public STBItemRegistry getItemRegistry() 				{			return itemRegistry;														}
     public FriendManager getFriendManager() 				{			return friendManager;														}
-    public Random getRandom() 								{			return random;																}
+    public Random getRandom() 						{			return random;																}
     public EnergyNetManager getEnergyNetManager() 			{			return enetManager;															}
     public boolean isWorldGuardAvailable() 					{			return worldGuardPlugin != null && worldGuardPlugin.isEnabled();			}
     public boolean isPreciousStonesAvailable() 				{			return preciousStonesPlugin != null && preciousStonesPlugin.isEnabled(); 	}

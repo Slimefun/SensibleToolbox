@@ -38,6 +38,7 @@ public class BioEngine extends Generator {
         fuelItems.addFuel(new ItemStack(Material.SLIME_BALL), true, 6, 80);
         for (TreeSpecies species : TreeSpecies.values()) {
         	fuelItems.addFuel(STBUtil.makeLeaves(species).toItemStack(1), true, 6, 40);
+        	fuelItems.addFuel(STBUtil.makeSapling(species).toItemStack(1), true, 6, 60);
         }
         fuelItems.addFuel(new ItemStack(Material.LONG_GRASS), true, 4, 80);
         fuelItems.addFuel(new ItemStack(Material.APPLE), true, 10, 100);
@@ -52,6 +53,17 @@ public class BioEngine extends Generator {
         fuelItems.addFuel(new ItemStack(Material.CARROT_ITEM), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.POTATO_ITEM), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.SUGAR_CANE), true, 8, 100);
+        fuelItems.addFuel(new ItemStack(Material.NETHER_STALK), true, 12, 140);
+        fuelItems.addFuel(new ItemStack(Material.DIRT), true, 0.5, 20);
+        fuelItems.addFuel(new ItemStack(Material.GRASS), true, 0.5, 20);
+        fuelItems.addFuel(new ItemStack(Material.YELLOW_FLOWER), true, 11, 80);
+        fuelItems.addFuel(new ItemStack(Material.RED_ROSE), true, 11, 80);
+        fuelItems.addFuel(new ItemStack(Material.RED_MUSHROOM), true, 11, 80);
+        fuelItems.addFuel(new ItemStack(Material.BROWN_MUSHROOM), true, 11, 80);
+        fuelItems.addFuel(new ItemStack(Material.VINE), true, 8, 80);
+        fuelItems.addFuel(new ItemStack(Material.CACTUS), true, 8, 100);
+        fuelItems.addFuel(new ItemStack(Material.WATER_LILY), true, 8, 80);
+        fuelItems.addFuel(new ItemStack(Material.DOUBLE_PLANT), true, 11, 80);
     }
     
     public BioEngine() {

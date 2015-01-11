@@ -30,8 +30,10 @@ public class HeatEngine extends Generator {
     private static final int TICK_FREQUENCY = 10;
     private final double slowBurnThreshold;
 
+    private FuelItems.FuelValues currentFuel;
+    
     static {
-        fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
+    	fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
         fuelItems.addFuel(new ItemStack(Material.COAL), false, 15, 120);
         // 1 coal block is slightly more efficient than 9 coal
         fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), true, 15, 1120);
@@ -42,9 +44,7 @@ public class HeatEngine extends Generator {
         fuelItems.addFuel(new ItemStack(Material.WOOD), true, 5, 20);
         fuelItems.addFuel(new ItemStack(Material.STICK), true, 2.5, 20);
         fuelItems.addFuel(new ItemStack(Material.FIREBALL), true, 50, 20);
-    }
-
-    private FuelItems.FuelValues currentFuel;
+	}
 
     public HeatEngine() {
         super();
@@ -52,11 +52,9 @@ public class HeatEngine extends Generator {
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
 
-    public HeatEngine(ConfigurationSection conf) {
+	public HeatEngine(ConfigurationSection conf) {
         super(conf);
-        if (getProgress() > 0) {
-            currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
-        }
+        if (getProgress() > 0) currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
 
@@ -113,15 +111,13 @@ public class HeatEngine extends Generator {
     @Override
     public String[] getLore() {
         return new String[]{
-                "Converts burnable items to power",
+                "Converts burnable items to power"
         };
     }
 
     @Override
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
-        if (!super.isValidUpgrade(player, upgrade)) {
-            return false;
-        }
+        if (!super.isValidUpgrade(player, upgrade)) return false;
         if (!(upgrade instanceof RegulatorUpgrade)) {
             STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
             return false;
@@ -203,11 +199,7 @@ public class HeatEngine extends Generator {
     }
 
     private double getBurnRate() {
-        if (getCharge() < slowBurnThreshold) {
-            return 1.0;
-        } else {
-            return 1.15 - (getCharge() / getMaxCharge());
-        }
+    	return getCharge() < slowBurnThreshold ? 1.0: 1.15 - (getCharge() / getMaxCharge());
     }
 
     private void pullItemIntoProcessing(int inputSlot) {

@@ -3,6 +3,7 @@ package me.mrCookieSlime.sensibletoolbox.items;
 import java.util.Random;
 
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
@@ -28,6 +29,7 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class WateringCan extends BaseSTBItem {
+	
     private static final MaterialData md = new MaterialData(Material.POTION);
     private static final MaterialData md2 = new MaterialData(Material.GLASS_BOTTLE);
 
@@ -188,18 +190,12 @@ public class WateringCan extends BaseSTBItem {
         checkForFlooding(b0.getRelative(BlockFace.DOWN));
 
         Block candidate = null;
-        if (b0.getRelative(BlockFace.UP).getType() == Material.AIR) {
-            candidate = b0;
-        } else if (b0.getRelative(BlockFace.UP, 2).getType() == Material.AIR) {
-            candidate = b0.getRelative(BlockFace.UP);
-        }
+        if (b0.getRelative(BlockFace.UP).getType() == Material.AIR) candidate = b0;
+        else if (b0.getRelative(BlockFace.UP, 2).getType() == Material.AIR) candidate = b0.getRelative(BlockFace.UP);
 
         if (candidate != null && SensibleToolbox.getPluginInstance().getRandom().nextInt(100) < 50) {
-            if (candidate.getData() == 15) {
-                candidate.getRelative(BlockFace.UP).setTypeIdAndData(mat.getId(), (byte) 0, true);
-            } else {
-                candidate.setData((byte) (candidate.getData() + 1));
-            }
+            if (candidate.getData() == 15) candidate.getRelative(BlockFace.UP).setTypeIdAndData(mat.getId(), (byte) 0, true);
+            else candidate.setData((byte) (candidate.getData() + 1));
         }
     }
 
@@ -241,9 +237,7 @@ public class WateringCan extends BaseSTBItem {
                 break;
             }
             if (b1.getType() == Material.SOIL) {
-                if (b1.getData() < 8) {
-                    b1.setData((byte) (b1.getData() + 1));
-                }
+                if (b1.getData() < 8) b1.setData((byte) (b1.getData() + 1));
                 checkForFlooding(b1);
                 useSomeWater(player, b, 1);
             }
@@ -271,10 +265,8 @@ public class WateringCan extends BaseSTBItem {
         if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
             return;
         }
-        if (new Random().nextInt(100) < GROW_CHANCE) {
-            if (b.getData() < 8) {
-                b.setData((byte) (b.getData() + 1));
-            }
+        if (SensibleToolboxPlugin.getInstance().getRandom().nextInt(100) < GROW_CHANCE) {
+            if (b.getData() < 8) b.setData((byte) (b.getData() + 1));
         }
         checkForFlooding(b.getRelative(BlockFace.DOWN));
         useSomeWater(player, b, 1);
