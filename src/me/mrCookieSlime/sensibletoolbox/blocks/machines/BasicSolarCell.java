@@ -39,6 +39,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 
 public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
 
     private static final int PV_CELL_SLOT = 1;
