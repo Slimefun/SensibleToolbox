@@ -57,6 +57,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.DenseSolar;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HyperStorageUnit;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.Masher;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.Pump;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.SCURelay;
@@ -618,6 +619,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new SubspaceTransponder(), this, CONFIG_NODE, PERMISSION_NODE);
         if (isProtocolLibEnabled()) itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}
