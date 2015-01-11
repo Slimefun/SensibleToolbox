@@ -57,8 +57,12 @@ public class STBItemRegistry implements ItemRegistry {
     public void registerItem(BaseSTBItem item, Plugin plugin, String configPrefix, String permissionPrefix) {
         String id = item.getItemTypeID();
 
-        if (configPrefix != null && !plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) {
-            return;
+        if (configPrefix != null) {
+        	if (!plugin.getConfig().contains(configPrefix + "." + item.getItemTypeID())) {
+        		plugin.getConfig().set(configPrefix + "." + item.getItemTypeID(), true);
+        		plugin.saveConfig();
+        	}
+        	if (!plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) return;
         }
 
         Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
