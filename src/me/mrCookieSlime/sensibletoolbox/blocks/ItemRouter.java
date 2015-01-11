@@ -50,7 +50,7 @@ import com.google.common.collect.Lists;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	
-    private final MaterialData texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
+    private static final MaterialData texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
 
     private static final int BUFFER_LABEL_SLOT = 12;
     private static final int BUFFER_ITEM_SLOT = 13;

@@ -95,6 +95,7 @@ public class SlimefunManager {
 	    			}
 	    			SlimefunItem sfItem = new ExcludedBlock(category, item.toItemStack(), id.toUpperCase(), recipeType, recipe.toArray(new ItemStack[recipe.size()]));
 	    			sfItem.setReplacing(true);
+	    			if (r != null) sfItem.setRecipeOutput(r.getResult());
 	    			sfItem.register();
 	    		}
 	    		
