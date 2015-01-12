@@ -54,6 +54,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.BasicSolarCell;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BigStorageUnit;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.DenseSolar;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.ElectricalEnergizer;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HyperStorageUnit;
@@ -622,6 +623,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new ElectricalEnergizer(), this, CONFIG_NODE, PERMISSION_NODE);
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}
