@@ -112,6 +112,7 @@ import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedGoldDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedGoldIngot;
 import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedIronDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedIronIngot;
+import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedQuartz;
 import me.mrCookieSlime.sensibletoolbox.items.components.GoldDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.InfernalDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.IntegratedCircuit;
@@ -620,6 +621,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         if (isProtocolLibEnabled()) itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}
