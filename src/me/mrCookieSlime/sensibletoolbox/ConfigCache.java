@@ -8,6 +8,7 @@ import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
  * Cache some frequently-access config values to reduce config lookup overhead
  */
 public class ConfigCache {
+	
     private final SensibleToolboxPlugin plugin;
     private RedstoneBehaviour defaultRedstone;
     private AccessControl defaultAccess;
