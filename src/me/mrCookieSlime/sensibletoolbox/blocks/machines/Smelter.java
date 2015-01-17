@@ -2,8 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import java.util.Iterator;
 
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.AbstractIOMachine;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
@@ -16,6 +14,7 @@ import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -167,8 +166,6 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     protected void playActiveParticleEffect() {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-            ParticleEffect.FLAME.play(getLocation().add(0.5, 0.5, 0.5), 0.4f, 0.4f, 0.4f, 0.001f, 10);
-        }
+        if (getTicksLived() % 20 == 0) getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1F);
     }
 }
