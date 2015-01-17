@@ -2,7 +2,7 @@ name: SensibleToolbox
 description: A collection of generally useful tools and utilites
 author: mrCookieSlime, desht
 main: me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin
-version: 1.0.2
+version: 1.0.3
 softdepend: [ ProtocolLib, Landslide, HoloAPI, WorldGuard, PreciousStones, LWC, Multiverse-Core, Slimefun ]
 
 commands:
