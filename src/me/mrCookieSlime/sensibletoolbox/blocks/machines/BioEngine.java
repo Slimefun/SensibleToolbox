@@ -49,7 +49,6 @@ public class BioEngine extends Generator {
         fuelItems.addFuel(new ItemStack(Material.PUMPKIN_SEEDS), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.WHEAT), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.SEEDS), true, 10, 100);
-        fuelItems.addFuel(new ItemStack(Material.APPLE), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.CARROT_ITEM), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.POTATO_ITEM), true, 10, 100);
         fuelItems.addFuel(new ItemStack(Material.SUGAR_CANE), true, 8, 100);
