@@ -32,10 +32,9 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
-    private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.EYE_OF_ENDER),
-            ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
-    private static final ItemStack UNLOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.ENDER_PEARL),
-            ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
+	
+    private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.EYE_OF_ENDER), ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
+    private static final ItemStack UNLOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.ENDER_PEARL), ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
     private static final MaterialData md = STBUtil.makeLog(TreeSpecies.DARK_OAK);
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
     private static final long DOUBLE_CLICK_TIME = 250L;
@@ -128,11 +127,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     private void updateSignQuantityLine() {
-        if (isLocked()) {
-            signLabel[1] = ChatColor.DARK_RED + Integer.toString(getTotalAmount());
-        } else {
-            signLabel[1] = getTotalAmount() > 0 ? Integer.toString(getTotalAmount()) : "";
-        }
+        if (isLocked()) signLabel[1] = ChatColor.DARK_RED + Integer.toString(getTotalAmount());
+        else signLabel[1] = getTotalAmount() > 0 ? Integer.toString(getTotalAmount()) : "";
     }
 
     private void updateSignItemLines() {
@@ -140,9 +136,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             String[] lines = WordUtils.wrap(ItemNames.lookup(this.stored), 15).split("\\n");
             signLabel[2] = lines[0];
             String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
-            if (lines.length > 1) {
-                signLabel[3] = pfx + lines[1];
-            }
+            if (lines.length > 1) signLabel[3] = pfx + lines[1];
         } else {
             signLabel[2] = ChatColor.ITALIC + "Empty";
             signLabel[3] = "";

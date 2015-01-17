@@ -2,17 +2,22 @@ package me.mrCookieSlime.sensibletoolbox.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLib.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLib.general.Inventory.Item.MenuItem;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.ExcludedBlock;
+import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.ExcludedGadget;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.STBFurnaceRecipe;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.SimpleCustomRecipe;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
 
 import org.bukkit.Bukkit;
@@ -36,8 +41,6 @@ public class SlimefunManager {
 		 if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
 	        	Category items = new Category(new MenuItem(Material.SHEARS, "&7STB - Items", 0, "open"));
 	    		Category blocks = new Category(new MenuItem(Material.BRICK, "&7STB - Blocks and Machines", 0, "open"));
-	    		
-	    		
 	    		for (String id: SensibleToolboxPlugin.getInstance().getItemRegistry().getItemIds()) {
 	    			BaseSTBItem item = SensibleToolboxPlugin.getInstance().getItemRegistry().getItemById(id);
 	    			Category category = item.toItemStack().getType().isBlock() ? blocks: items;
@@ -93,8 +96,28 @@ public class SlimefunManager {
 	    					}
 	    				}
 	    			}
-	    			SlimefunItem sfItem = new ExcludedBlock(category, item.toItemStack(), id.toUpperCase(), recipeType, recipe.toArray(new ItemStack[recipe.size()]));
+	    			SlimefunItem sfItem = null;
+	    			
+	    			if (id.equalsIgnoreCase("bioengine")) {
+	    				Set<ItemStack> fuels = ((BioEngine) item).getFuelInformation();
+	    				if (fuels.size() % 2 != 0) fuels.add(null);
+	    				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
+	    			}
+	    			else if (id.equalsIgnoreCase("magmaticengine")) {
+	    				Set<ItemStack> fuels = ((MagmaticEngine) item).getFuelInformation();
+	    				if (fuels.size() % 2 != 0) fuels.add(null);
+	    				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
+	    			}
+	    			else if (id.equalsIgnoreCase("heatengine")) {
+	    				Set<ItemStack> fuels = ((HeatEngine) item).getFuelInformation();
+	    				if (fuels.size() % 2 != 0) fuels.add(null);
+	    				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
+	    			}
+	    			else sfItem = new ExcludedBlock(category, item.toItemStack(), id.toUpperCase(), null, null);
+	    			
 	    			sfItem.setReplacing(true);
+	    			sfItem.setRecipeType(recipeType);
+	    			sfItem.setRecipe(recipe.toArray(new ItemStack[recipe.size()]));
 	    			if (r != null) sfItem.setRecipeOutput(r.getResult());
 	    			sfItem.register();
 	    		}

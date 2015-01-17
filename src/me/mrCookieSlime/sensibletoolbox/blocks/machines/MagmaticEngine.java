@@ -1,6 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.FuelItems;
@@ -24,10 +25,10 @@ import org.bukkit.material.MaterialData;
 public class MagmaticEngine extends Generator {
 	
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
-	private static final FuelItems fuelItems = new FuelItems();
 	private static final int TICK_FREQUENCY = 10;
     private final double slowBurnThreshold;
     private FuelItems.FuelValues currentFuel;
+	private static final FuelItems fuelItems = new FuelItems();
 
     static {
         fuelItems.addFuel(new ItemStack(Material.LAVA_BUCKET), true, 16, 1000);
@@ -213,6 +214,10 @@ public class MagmaticEngine extends Generator {
         meta.setLore(Arrays.asList(ChatColor.GRAY.toString() + ChatColor.ITALIC + fuel.toString()));
         toProcess.setItemMeta(meta);
         return toProcess;
+    }
+    
+    public Set<ItemStack> getFuelInformation() {
+    	return fuelItems.fuelItems;
     }
 
 }

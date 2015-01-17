@@ -8,6 +8,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class Generator extends AbstractProcessingMachine {
+	
     protected Generator() {
         super();
         setChargeDirection(ChargeDirection.CELL);
