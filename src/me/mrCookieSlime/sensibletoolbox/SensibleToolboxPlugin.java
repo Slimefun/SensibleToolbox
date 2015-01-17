@@ -33,6 +33,7 @@ import me.desht.sensibletoolbox.dhutils.MessagePager;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.dhutils.commands.CommandManager;
 import me.mrCookieSlime.CSCoreLib.PluginStatistics.PluginStatistics;
+import me.mrCookieSlime.CSCoreLib.updater.UpdaterService;
 import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
 import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
@@ -207,9 +208,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         instance = this;
 
         LogUtils.init(this);
+        
+        UpdaterService.setup(this, 79884, getFile());
 
         random = new Random();
-
         configManager = new ConfigurationManager(this, this);
 
         configCache = new ConfigCache(this);
