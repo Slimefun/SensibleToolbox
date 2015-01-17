@@ -1,12 +1,17 @@
 package me.mrCookieSlime.sensibletoolbox.api.recipes;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * Represents items that may be converted to SCU by some machine.  A machine
@@ -14,8 +19,10 @@ import org.bukkit.inventory.ItemStack;
  * effectively use as a fuel dictionary.
  */
 public class FuelItems {
+	
     private final Map<ItemStack, FuelValues> fuels = new HashMap<ItemStack, FuelValues>();
     private final Map<Material, FuelValues> fuelMaterials = new HashMap<Material, FuelValues>();
+    public Set<ItemStack> fuelItems = new HashSet<ItemStack>();
 
     /**
      * Register an item as fuel.
@@ -26,11 +33,13 @@ public class FuelItems {
      * @param burnTime the time in server ticks to convert the item into SCU
      */
     public void addFuel(ItemStack stack, boolean ignoreData, double chargePerTick, int burnTime) {
-        if (ignoreData) {
-            fuelMaterials.put(stack.getType(), new FuelValues(chargePerTick, burnTime));
-        } else {
-            fuels.put(getSingle(stack), new FuelValues(chargePerTick, burnTime));
-        }
+        if (ignoreData) fuelMaterials.put(stack.getType(), new FuelValues(chargePerTick, burnTime));
+        else fuels.put(getSingle(stack), new FuelValues(chargePerTick, burnTime));
+        ItemStack info = stack.clone();
+        ItemMeta im = info.getItemMeta();
+        im.setLore(Arrays.asList(ChatColor.GRAY + "" + ChatColor.ITALIC + get(stack).toString()));
+        info.setItemMeta(im);
+        fuelItems.add(info);
         Debugger.getInstance().debug("register burnable fuel: " + stack + " -> " + get(stack).toString());
     }
 

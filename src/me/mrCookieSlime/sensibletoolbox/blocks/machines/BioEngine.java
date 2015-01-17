@@ -1,6 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.FuelItems;
@@ -25,13 +26,13 @@ import org.bukkit.material.MaterialData;
 public class BioEngine extends Generator {
 	
 	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.LIME);
-	private static final FuelItems fuelItems = new FuelItems();
 	private static final int TICK_FREQUENCY = 10;
+	private static final FuelItems fuelItems = new FuelItems();
     private final double slowBurnThreshold;
     private FuelItems.FuelValues currentFuel;
 
     static {
-        fuelItems.addFuel(new ItemStack(Material.ROTTEN_FLESH), true, 2, 60);
+        fuelItems .addFuel(new ItemStack(Material.ROTTEN_FLESH), true, 2, 60);
         fuelItems.addFuel(new ItemStack(Material.SPIDER_EYE), true, 2.5, 60);
         fuelItems.addFuel(new ItemStack(Material.BONE), true, 2, 60);
         fuelItems.addFuel(new ItemStack(Material.INK_SACK), true, 3, 60);
@@ -248,5 +249,8 @@ public class BioEngine extends Generator {
         toProcess.setItemMeta(meta);
         return toProcess;
     }
-
+    
+    public Set<ItemStack> getFuelInformation() {
+    	return fuelItems.fuelItems;
+    }
 }
