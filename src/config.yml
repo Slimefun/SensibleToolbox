@@ -35,3 +35,5 @@ item_settings:
     scu_per_op: 30
   multibuilder:
     scu_per_op: 30
+options:
+  auto-update: true
