@@ -35,6 +35,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class AutoBuilder extends BaseSTBMachine {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.YELLOW);
     private static final int LANDMARKER_SLOT_1 = 10;
     private static final int LANDMARKER_SLOT_2 = 12;
