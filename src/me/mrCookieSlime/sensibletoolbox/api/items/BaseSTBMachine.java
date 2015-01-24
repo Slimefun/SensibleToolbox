@@ -56,6 +56,7 @@ import org.bukkit.inventory.ItemStack;
  * holds an inventory with possible input and output slots.
  */
 public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableBlock, STBInventoryHolder {
+	
     private double charge;
     private ChargeDirection chargeDirection;
     private boolean jammed;  // true if no space in output slots for processing result
