@@ -20,7 +20,6 @@ package me.mrCookieSlime.sensibletoolbox;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Random;
 
 import me.desht.sensibletoolbox.dhutils.ConfigurationListener;
 import me.desht.sensibletoolbox.dhutils.ConfigurationManager;
@@ -32,8 +31,8 @@ import me.desht.sensibletoolbox.dhutils.LogUtils;
 import me.desht.sensibletoolbox.dhutils.MessagePager;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.dhutils.commands.CommandManager;
-import me.mrCookieSlime.CSCoreLib.PluginStatistics.PluginStatistics;
-import me.mrCookieSlime.CSCoreLib.updater.UpdaterService;
+import me.mrCookieSlime.CSCoreLibPlugin.PluginUtils;
+import me.mrCookieSlime.CSCoreLibSetup.CSCoreLibLoader;
 import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
 import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
@@ -190,7 +189,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private EnderStorageManager enderStorageManager;
     private STBItemRegistry itemRegistry;
     private STBFriendManager friendManager;
-    private Random random;
     private EnergyNetManager enetManager;
     private WorldGuardPlugin worldGuardPlugin = null;
     private PreciousStones preciousStonesPlugin = null;
@@ -205,100 +203,102 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     @Override
     public void onEnable() {
-        instance = this;
+        CSCoreLibLoader loader = new CSCoreLibLoader(this);
+        if (loader.load()) {
+        	instance = this;
 
-        LogUtils.init(this);
-        
-        UpdaterService.setup(this, 79884, getFile());
+            LogUtils.init(this);
+            
+            PluginUtils utils = new PluginUtils(this);
+            utils.setupUpdater(79884, getFile());
+            utils.setupMetrics();
+            
+            configManager = new ConfigurationManager(this, this);
 
-        random = new Random();
-        configManager = new ConfigurationManager(this, this);
+            configCache = new ConfigCache(this);
+            configCache.processConfig();
 
-        configCache = new ConfigCache(this);
-        configCache.processConfig();
+            MiscUtil.init(this);
+            MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
-        MiscUtil.init(this);
-        MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
+            LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 
-        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
+            Debugger.getInstance().setPrefix("[STB] ");
+            Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
+            if (getConfig().getInt("debug_level") > 0) Debugger.getInstance().setTarget(getServer().getConsoleSender());
 
-        Debugger.getInstance().setPrefix("[STB] ");
-        Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
-        if (getConfig().getInt("debug_level") > 0) Debugger.getInstance().setTarget(getServer().getConsoleSender());
+            // try to hook other plugins
+            setupHoloAPI();
+            setupProtocolLib();
+            setupLandslide();
+            setupLWC();
+            setupWorldGuard();
+            setupPreciousStones();
+            setupMultiverse();
 
-        // try to hook other plugins
-        setupHoloAPI();
-        setupProtocolLib();
-        setupLandslide();
-        setupLWC();
-        setupWorldGuard();
-        setupPreciousStones();
-        setupMultiverse();
+            scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
 
-        scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
+            blockProtection = new BlockProtection(this);
 
-        blockProtection = new BlockProtection(this);
+            STBInventoryGUI.buildStockTextures();
 
-        STBInventoryGUI.buildStockTextures();
+            itemRegistry = new STBItemRegistry();
+            registerItems();
 
-        itemRegistry = new STBItemRegistry();
-        registerItems();
+            friendManager = new STBFriendManager(this);
+            enetManager = new EnergyNetManager(this);
 
-        friendManager = new STBFriendManager(this);
-        enetManager = new EnergyNetManager(this);
+            registerEventListeners();
+            registerCommands();
 
-        registerEventListeners();
-        registerCommands();
+            try {
+                LocationManager.getManager().load();
+            } catch (Exception e) {
+                e.printStackTrace();
+                setEnabled(false);
+                return;
+            }
 
-        try {
-            LocationManager.getManager().load();
-        } catch (Exception e) {
-            e.printStackTrace();
-            setEnabled(false);
-            return;
+            MessagePager.setPageCmd("/stb page [#|n|p]");
+            MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
+
+            // do all the recipe setup on a delayed task to ensure we pick up
+            // custom recipes from any plugins that may have loaded after us
+            Bukkit.getScheduler().runTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    RecipeUtil.findVanillaFurnaceMaterials();
+                    RecipeUtil.setupRecipes();
+                    RecipeBook.buildRecipes();
+                }
+            });
+
+            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+                @Override
+                public void run() {
+                    LocationManager.getManager().tick();
+                }
+            }, 1L, 1L);
+
+            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+                @Override
+                public void run() {
+                    getEnderStorageManager().tick();
+                }
+            }, 1L, 300L);
+
+            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+                @Override
+                public void run() {
+                    friendManager.save();
+                }
+            }, 60L, 300L);
+
+            scheduleEnergyNetTicker();
+            SlimefunManager.initiate();
+
+            inited = true;
         }
-
-        MessagePager.setPageCmd("/stb page [#|n|p]");
-        MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
-
-        // do all the recipe setup on a delayed task to ensure we pick up
-        // custom recipes from any plugins that may have loaded after us
-        Bukkit.getScheduler().runTask(this, new Runnable() {
-            @Override
-            public void run() {
-                RecipeUtil.findVanillaFurnaceMaterials();
-                RecipeUtil.setupRecipes();
-                RecipeBook.buildRecipes();
-            }
-        });
-
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                LocationManager.getManager().tick();
-            }
-        }, 1L, 1L);
-
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                getEnderStorageManager().tick();
-            }
-        }, 1L, 300L);
-
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                friendManager.save();
-            }
-        }, 60L, 300L);
-
-        scheduleEnergyNetTicker();
-
-        PluginStatistics.collect(this);
-        SlimefunManager.initiate();
-
-        inited = true;
     }
 
     public void onDisable() {
@@ -631,7 +631,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public EnderStorageManager getEnderStorageManager() 	{			return enderStorageManager;													}
     public STBItemRegistry getItemRegistry() 				{			return itemRegistry;														}
     public FriendManager getFriendManager() 				{			return friendManager;														}
-    public Random getRandom() 						{			return random;																}
     public EnergyNetManager getEnergyNetManager() 			{			return enetManager;															}
     public boolean isWorldGuardAvailable() 					{			return worldGuardPlugin != null && worldGuardPlugin.isEnabled();			}
     public boolean isPreciousStonesAvailable() 				{			return preciousStonesPlugin != null && preciousStonesPlugin.isEnabled(); 	}

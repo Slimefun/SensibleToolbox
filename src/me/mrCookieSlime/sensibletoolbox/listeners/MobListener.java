@@ -1,5 +1,6 @@
 package me.mrCookieSlime.sensibletoolbox.listeners;
 
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.items.components.InfernalDust;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Random;
 
 public class MobListener extends STBBaseListener {
+	
     public MobListener(SensibleToolboxPlugin plugin) {
         super(plugin);
     }
@@ -25,7 +27,7 @@ public class MobListener extends STBBaseListener {
             Player killer = event.getEntity().getKiller();
             if (dust.checkPlayerPermission(killer, BaseSTBItem.ItemAction.CRAFT)) {
                 int chance = 20, amount = 1;
-                Random r = plugin.getRandom();
+                Random r = CSCoreLib.randomizer();
                 ItemStack item = killer.getItemInHand();
                 if (item != null) {
                     switch (item.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)) {
