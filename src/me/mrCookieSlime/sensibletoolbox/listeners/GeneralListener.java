@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.LogUtils;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
@@ -156,7 +157,7 @@ public class GeneralListener extends STBBaseListener {
             event.setCancelled(true);
             for (BlockFace face : STBUtil.directFaces) {
                 Block b = event.getBlock().getRelative(face);
-                if (b.getType() == Material.FIRE && plugin.getRandom().nextInt(3) != 0) {
+                if (b.getType() == Material.FIRE && CSCoreLib.randomizer().nextInt(3) != 0) {
                     b.setType(Material.AIR);
                 }
             }
@@ -268,7 +269,7 @@ public class GeneralListener extends STBBaseListener {
             BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
             if (stb != null) {
                 if (stb.onEntityExplode(event)) {
-                    stb.breakBlock(plugin.getRandom().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
+                    stb.breakBlock(CSCoreLib.randomizer().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
                 }
                 iter.remove();
             }

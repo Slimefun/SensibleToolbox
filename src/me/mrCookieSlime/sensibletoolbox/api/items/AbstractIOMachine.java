@@ -1,6 +1,10 @@
 package me.mrCookieSlime.sensibletoolbox.api.items;
 
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Random;
+
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipeManager;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.ProcessingResult;
 import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
@@ -10,10 +14,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Random;
 
 /**
  * Represents a machine which processes items from its input slots to
@@ -94,7 +94,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         }
 
         if (addBonus) {
-            Random rnd = SensibleToolbox.getPluginInstance().getRandom();
+            Random rnd = CSCoreLib.randomizer();
             if (rnd.nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
                 // bonus item(s), yay!
                 int bonus = rnd.nextInt(result.getAmount()) + 1;

@@ -7,6 +7,7 @@ import java.util.Map;
 import me.desht.sensibletoolbox.dhutils.Debugger;
 import me.desht.sensibletoolbox.dhutils.ItemGlow;
 import me.desht.sensibletoolbox.dhutils.PermissionUtils;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
@@ -318,7 +319,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         YamlConfiguration conf = freeze();
         if (!isStackable()) {
             // add a (hopefully) unique hidden field to ensure the item can't stack
-            conf.set("*nostack", System.nanoTime() ^ SensibleToolboxPlugin.getInstance().getRandom().nextLong());
+            conf.set("*nostack", System.nanoTime() ^ CSCoreLib.randomizer().nextLong());
         }
         conf.set("*TYPE", getItemTypeID());
         AttributeStorage storage = AttributeStorage.newTarget(res, STBItemRegistry.STB_ATTRIBUTE_ID);
