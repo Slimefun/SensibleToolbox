@@ -295,7 +295,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             }, 60L, 300L);
 
             scheduleEnergyNetTicker();
-            SlimefunManager.initiate();
+            if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) SlimefunManager.initiate();
 
             inited = true;
         }
