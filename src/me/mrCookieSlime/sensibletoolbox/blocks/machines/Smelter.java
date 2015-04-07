@@ -166,6 +166,6 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     protected void playActiveParticleEffect() {
-        if (getTicksLived() % 20 == 0) getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1F);
+        if (getTicksLived() % 20 == 0) getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
     }
 }
