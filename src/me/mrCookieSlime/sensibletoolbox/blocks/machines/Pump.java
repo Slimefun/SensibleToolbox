@@ -1,11 +1,17 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
 import me.mrCookieSlime.sensibletoolbox.api.items.AbstractProcessingMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.components.MachineFrame;
 import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -16,6 +22,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class Pump extends AbstractProcessingMachine {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.CYAN);
     private static final int PUMP_FILL_TIME = 40; // 40 ticks to fill a bucket
     private BlockFace pumpFace = BlockFace.DOWN;  // will be configurable later
@@ -75,7 +82,7 @@ public class Pump extends AbstractProcessingMachine {
 
     @Override
     protected void playActiveParticleEffect() {
-        // nothing right now
+        getLocation().getWorld().playEffect(getLocation(), Effect.STEP_SOUND, getRelativeLocation(pumpFace).getBlock().getType());
     }
 
     @Override
@@ -152,7 +159,6 @@ public class Pump extends AbstractProcessingMachine {
         int inputSlot = getInputSlots()[0];
         ItemStack stackIn = getInventoryItem(inputSlot);
 
-        // TODO: for lava pumping, we need to seek the available lava source block
         Block toPump = findNextBlockToPump();
 
         if (getProcessing() == null && stackIn != null && isRedstoneActive()) {
@@ -195,8 +201,15 @@ public class Pump extends AbstractProcessingMachine {
     }
 
     private Block findNextBlockToPump() {
-        // TODO: for lava pumping, we need to seek the next available lava source block
-        return getRelativeLocation(pumpFace).getBlock();
+        switch (getRelativeLocation(pumpFace).getBlock().getType()) {
+        case LAVA: case STATIONARY_LAVA:
+        	List<Location> list = new ArrayList<Location>();
+        	list.add(getRelativeLocation(pumpFace));
+        	Vein.calculate(getRelativeLocation(pumpFace), getRelativeLocation(pumpFace), list, 128);
+        	return list.get(list.size() - 1).getBlock();
+        default:
+            return getRelativeLocation(pumpFace).getBlock();
+        }
     }
 
     private void replacePumpedBlock(Block block) {
@@ -208,7 +221,7 @@ public class Pump extends AbstractProcessingMachine {
                 block.setType(Material.AIR);
                 break;
             case LAVA: case STATIONARY_LAVA:
-                block.setType(Material.COBBLESTONE);
+                block.setType(Material.STONE);
                 break;
             default:
                 break;

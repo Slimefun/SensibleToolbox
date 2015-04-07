@@ -796,7 +796,7 @@ public class STBUtil {
      * @return true if the block is an infinite water source
      */
     public static boolean isInfiniteWaterSource(Block block) {
-        if (isLiquidSourceBlock(block)) {
+        if (isLiquidSourceBlock(block) && block.getType() != Material.LAVA && block.getType() != Material.STATIONARY_LAVA) {
             int n = 0;
             for (BlockFace face : mainHorizontalFaces) {
                 Block neighbour = block.getRelative(face);

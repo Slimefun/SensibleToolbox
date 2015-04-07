@@ -21,6 +21,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class STBEnergyNet implements EnergyNet {
+	
     public static final String STB_ENET_ID = "STB_ENet_ID";
     public static final int MAX_BLOCKS_IN_CABLE = 512;
     private static int freeID = 1;
