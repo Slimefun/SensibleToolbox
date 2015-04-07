@@ -55,7 +55,7 @@ public class MagmaticEngine extends Generator {
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0];
+        return new int[] {14};
     }
 
     @Override
@@ -179,6 +179,10 @@ public class MagmaticEngine extends Generator {
                 playActiveParticleEffect();
                 if (getProgress() <= 0) {
                     // fuel burnt
+                	ItemStack bucket = getInventoryItem(getOutputSlots()[0]);
+                	if (bucket == null) bucket = new ItemStack(Material.BUCKET);
+                	else bucket.setAmount(bucket.getAmount() + 1);
+                    setInventoryItem(getOutputSlots()[0], bucket);
                     setProcessing(null);
                     update(false);
                 }
@@ -192,6 +196,7 @@ public class MagmaticEngine extends Generator {
     }
 
     private void pullItemIntoProcessing(int inputSlot) {
+    	if (getInventoryItem(getOutputSlots()[0]) != null && getInventoryItem(getOutputSlots()[0]).getAmount() >= getInventoryItem(getOutputSlots()[0]).getMaxStackSize()) return;
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {

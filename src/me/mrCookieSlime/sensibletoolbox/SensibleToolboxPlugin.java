@@ -60,6 +60,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HyperStorageUnit;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.Masher;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.PowerMonitor;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.Pump;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.SCURelay;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.Sawmill;
@@ -625,6 +626,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new ElectricalEnergizer(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PowerMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}
