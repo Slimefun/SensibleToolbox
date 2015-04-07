@@ -1,9 +1,9 @@
 package me.mrCookieSlime.sensibletoolbox.listeners;
 
+import me.mrCookieSlime.CSCoreLibPlugin.general.Recipe.RecipeCalculator;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.recipes.RecipeUtil;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
 import org.bukkit.Bukkit;
@@ -12,7 +12,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Hopper;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -109,7 +114,7 @@ public class FurnaceListener extends STBBaseListener {
         } else {
             // vanilla item - need to ensure it's actually smeltable (i.e. wasn't added
             // as a furnace recipe because it's the material for some custom STB item)
-            return RecipeUtil.isVanillaSmelt(stack.getType());
+            return RecipeCalculator.getSmeltedOutput(stack.getType()) != null;
         }
     }
 
