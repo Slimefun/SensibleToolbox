@@ -1,5 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.blocks;
 
+import java.awt.Color;
+
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
 import me.mrCookieSlime.sensibletoolbox.api.gui.AccessControlGadget;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
@@ -13,11 +15,9 @@ import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -66,9 +66,8 @@ public class RedstoneClock extends BaseSTBBlock {
                 if (newValue < getInterval()) {
                     setOnDuration(newValue);
                     return true;
-                } else {
-                    return false;
-                }
+                } 
+                else return false;
             }
         }));
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
@@ -160,11 +159,32 @@ public class RedstoneClock extends BaseSTBBlock {
             repaint(b);
         }
 
-        if (time % 50 == 10) loc.getWorld().playEffect(loc.add(0, 0.5, 0), Effect.SMOKE, BlockFace.UP);
+        if (time % 50 == 10) playParticles(new Color(255, 0, 0));
         super.onServerTick();
     }
 
-    @Override
+    public void playParticles(Color color) {
+//    	try {
+//        	Location l = getLocation().add(0.6, 1, 0.3);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(1.6, 1, 0.1);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(0.6, 0.5, -0.2);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(0.4, 0.8, 0.6);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(0.3, 0.6, 1.6);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(-0.2, 0.3, 0.6);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(1.6, 0.7, 0.3);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+    }
+
+	@Override
     public void onInteractBlock(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             getGUI().show(event.getPlayer());

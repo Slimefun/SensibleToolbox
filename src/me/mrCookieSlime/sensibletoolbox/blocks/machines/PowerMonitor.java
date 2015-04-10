@@ -60,7 +60,7 @@ public class PowerMonitor extends BaseSTBBlock {
 	
 	@Override
 	public int getTickRate() {
-        return 60;
+        return 100;
     }
 	
 	@Override

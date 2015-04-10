@@ -1,4 +1,4 @@
-package me.mrCookieSlime.sensibletoolbox.util;
+package me.mrCookieSlime.sensibletoolbox.slimefun;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.MenuItem;
+import me.mrCookieSlime.Slimefun.Lists.Categories;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.ExcludedBlock;
@@ -26,7 +27,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
-public class SlimefunManager {
+public class SlimefunBridge {
 	
 	private static void patch(String id, RecipeType recipeType, ItemStack recipe) {
 		SlimefunItem item = SlimefunItem.getByName(id);;
@@ -94,6 +95,12 @@ public class SlimefunManager {
 					}
 				}
 			}
+			else if (item instanceof SlimefunIOMachine) {
+				category = Categories.MACHINES_1;
+				recipeType = RecipeType.ENHANCED_CRAFTING_TABLE;
+				recipe = ((SlimefunIOMachine) item).getSlimefunRecipe();
+			}
+			
 			SlimefunItem sfItem = null;
 			
 			if (id.equalsIgnoreCase("bioengine")) {

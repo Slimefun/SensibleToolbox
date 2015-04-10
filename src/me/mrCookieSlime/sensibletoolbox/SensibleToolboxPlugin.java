@@ -156,7 +156,9 @@ import me.mrCookieSlime.sensibletoolbox.listeners.PlayerUUIDTracker;
 import me.mrCookieSlime.sensibletoolbox.listeners.SoundMufflerListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.TrashCanListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.WorldListener;
-import me.mrCookieSlime.sensibletoolbox.util.SlimefunManager;
+import me.mrCookieSlime.sensibletoolbox.slimefun.SlimefunBridge;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalGrinder;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalJuicer;
 import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 
 import org.bukkit.Bukkit;
@@ -296,7 +298,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             }, 60L, 300L);
 
             scheduleEnergyNetTicker();
-            if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) SlimefunManager.initiate();
+            if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) SlimefunBridge.initiate();
 
             inited = true;
         }
@@ -621,12 +623,17 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new SCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new SilkyBreakerModule(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new SubspaceTransponder(), this, CONFIG_NODE, PERMISSION_NODE);
-        if (isProtocolLibEnabled()) itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new ElectricalEnergizer(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new PowerMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
+        if (isProtocolLibEnabled()) itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
+        
+        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
+        	itemRegistry.registerItem(new ElectricalJuicer(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new ElectricalGrinder(), this, CONFIG_NODE, PERMISSION_NODE);
+        }
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}
