@@ -104,6 +104,7 @@ public class RecipeUtil {
     }
 
     public static String makeRecipeKey(boolean ignoreData, ItemStack item) {
+    	if (item == null) return "";
         String res = item.getType().toString();
         if (!ignoreData && item.getDurability() != 32767) {
             res += ":" + item.getDurability();

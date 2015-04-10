@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
  * Represents a machine with a progress bar to indicate how much of this work cycle is done.
  */
 public abstract class AbstractProcessingMachine extends BaseSTBMachine {
+	
     private static final long PROGRESS_INTERVAL = 10;
     private double progress; // ticks remaining till this work cycle is done
     private int progressMeterId;

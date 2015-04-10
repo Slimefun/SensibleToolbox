@@ -21,6 +21,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class Masher extends AbstractIOMachine {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.GREEN);
 
     public Masher() {

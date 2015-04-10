@@ -130,7 +130,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
                                 }
                             }
                             if (toSlurp > 0) {
-                                getItemRouter().playParticles();
+                                getItemRouter().playParticles(new java.awt.Color(0, 0, 255));
                                 getItemRouter().update(false);
                             }
                         }

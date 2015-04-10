@@ -1,5 +1,6 @@
 package me.mrCookieSlime.sensibletoolbox.blocks;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -110,9 +111,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             String[] f = l.split("::", 2);
             try {
                 YamlConfiguration modConf = new YamlConfiguration();
-                if (f.length > 1) {
-                    modConf.loadFromString(f[1]);
-                }
+                if (f.length > 1) modConf.loadFromString(f[1]);
                 ItemRouterModule mod = (ItemRouterModule) SensibleToolbox.getItemRegistry().getItemById(f[0], modConf);
                 insertModule(mod, modConf.getInt("amount"));
             } catch (Exception e) {
@@ -161,9 +160,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public String[] getExtraLore() {
-        if (modules.isEmpty()) {
-            return new String[0];
-        } else {
+        if (modules.isEmpty()) return new String[0];
+        else {
             List<String> lore = Lists.newArrayListWithCapacity(modules.size());
             for (ModuleAndAmount e : modules) {
                 String s = e.module.getDisplaySuffix() == null ? "" : ": " + e.module.getDisplaySuffix();
@@ -210,14 +208,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             updateBufferIndicator(true);
             getGUI().show(event.getPlayer());
             event.setCancelled(true);
-        } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && getBufferItem() != null) {
-            if (hasAccessRights(event.getPlayer())) {
-                ejectBuffer(event.getBlockFace());
-            }
+        } 
+        else if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && getBufferItem() != null) {
+            if (hasAccessRights(event.getPlayer())) ejectBuffer(event.getBlockFace());
             event.setCancelled(true);
-        } else {
-            super.onInteractBlock(event);
-        }
+        } 
+        else super.onInteractBlock(event);
     }
 
     public void ejectBuffer(BlockFace face) {
@@ -232,8 +228,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 36, ChatColor.DARK_RED + getItemName());
 
-        gui.addLabel("Item Buffer", BUFFER_LABEL_SLOT, null,
-                "Items can be extracted", "here, but not inserted.");
+        gui.addLabel("Item Buffer", BUFFER_LABEL_SLOT, null, "Items can be extracted", "here, but not inserted.");
         gui.setSlotType(BUFFER_ITEM_SLOT, InventoryGUI.SlotType.ITEM);
         gui.setItem(BUFFER_ITEM_SLOT, getBufferItem());
 
@@ -264,6 +259,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 findNeighbourInventories();
             }
         });
+        
         if (updateNeeded) {
             update(false);
             updateNeeded = false;
@@ -312,7 +308,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             }
             if (didSomeWork) {
                 update(false);
-                playParticles();
+                playParticles(new Color(0, 0, 255));
             }
         }
         super.onServerTick();
@@ -331,27 +327,35 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private void findNeighbourInventories() {
         neighbours.clear();
         Location loc = getLocation();
-        if (loc == null) {
-            return;
-        }
+        if (loc == null) return;
         Block b = loc.getBlock();
         for (BlockFace face : STBUtil.directFaces) {
             Block b1 = b.getRelative(face);
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b1.getLocation());
-            if (stb instanceof STBInventoryHolder) {
-                neighbours.add(face);
-            } else if (VanillaInventoryUtils.isVanillaInventory(b1)) {
-                neighbours.add(face);
-            }
+            if (stb instanceof STBInventoryHolder) neighbours.add(face);
+            else if (VanillaInventoryUtils.isVanillaInventory(b1)) neighbours.add(face);
         }
     }
 
-    public void playParticles() {
-    	// TODO: Google how to use Particles in 1.8 (Im lazy...)
-//        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
-//            Location loc = getLocation().add(0.5, 0.5, 0.5);
-//            ParticleEffect.WITCH_MAGIC.play(loc, 0.25f, 0.25f, 0.25f, 0, 12);
-//        }
+    public void playParticles(Color color) {
+//    	try {
+//        	Location l = getLocation().add(0.6, 1, 0.3);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(1.6, 1, 0.1);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(0.6, 0.5, -0.2);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(0.4, 0.8, 0.6);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(0.3, 0.6, 1.6);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(-0.2, 0.3, 0.6);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//			l = getLocation().add(1.6, 0.7, 0.3);
+//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
     }
 
     private void clearModules() {
