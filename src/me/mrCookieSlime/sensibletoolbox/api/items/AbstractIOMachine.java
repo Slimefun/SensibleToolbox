@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
  * an internal processing store, and places resulting items in its output slots.
  */
 public abstract class AbstractIOMachine extends AbstractProcessingMachine {
+	
     // a stack of items which can't be placed into output due to lack of space
     private final Deque<ItemStack> pendingItems = new ArrayDeque<ItemStack>();
 

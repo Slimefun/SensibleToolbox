@@ -55,7 +55,9 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.BigStorageUnit;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.DenseSolar;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.ElectricalEnergizer;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.Fermenter;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.FishingNet;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HyperStorageUnit;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
@@ -115,6 +117,7 @@ import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedGoldIngot;
 import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedIronDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedIronIngot;
 import me.mrCookieSlime.sensibletoolbox.items.components.EnergizedQuartz;
+import me.mrCookieSlime.sensibletoolbox.items.components.FishBait;
 import me.mrCookieSlime.sensibletoolbox.items.components.GoldDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.InfernalDust;
 import me.mrCookieSlime.sensibletoolbox.items.components.IntegratedCircuit;
@@ -628,8 +631,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new ElectricalEnergizer(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new PowerMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
-        if (isProtocolLibEnabled()) itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Fermenter(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new FishBait(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new FishingNet(), this, CONFIG_NODE, PERMISSION_NODE);
         
+        if (isProtocolLibEnabled()) {
+        	itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
+        }
         if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
         	itemRegistry.registerItem(new ElectricalJuicer(), this, CONFIG_NODE, PERMISSION_NODE);
         	itemRegistry.registerItem(new ElectricalGrinder(), this, CONFIG_NODE, PERMISSION_NODE);
