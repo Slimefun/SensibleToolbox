@@ -144,7 +144,6 @@ public class FishingNet extends AbstractProcessingMachine {
         ShapedRecipe recipe = new ShapedRecipe(toItemStack());
         recipe.shape(" F ", "SMS", "RGR");
         recipe.setIngredient('F', Material.FISHING_ROD);
-        recipe.setIngredient('B', Material.BUCKET);
         recipe.setIngredient('S', sc.getMaterialData());
         recipe.setIngredient('M', mf.getMaterialData());
         recipe.setIngredient('R', Material.REDSTONE);
