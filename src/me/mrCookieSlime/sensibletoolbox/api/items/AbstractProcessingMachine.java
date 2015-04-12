@@ -111,7 +111,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      * @return a progress message tooltip
      */
     public String getProgressMessage() {
-        return "Progress: " + getProgressMeter().getProgressPercent() + "%";
+        return "§7Progress: " + getProgressMeter().getProgressPercent() + "%";
     }
 
     /**

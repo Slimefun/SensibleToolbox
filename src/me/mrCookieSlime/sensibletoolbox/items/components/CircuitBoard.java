@@ -12,6 +12,7 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class CircuitBoard extends BaseSTBItem {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.CARPET, DyeColor.GREEN);
 
     public CircuitBoard() {

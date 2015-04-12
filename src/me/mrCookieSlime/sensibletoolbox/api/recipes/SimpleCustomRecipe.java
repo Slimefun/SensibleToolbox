@@ -13,6 +13,7 @@ import java.util.Collections;
  * which supports multiple ingredients and results.
  */
 public class SimpleCustomRecipe implements CustomRecipe {
+	
     private final String processorID;  // id of STB item which makes this
     private final ItemStack ingredient;
     private final ItemStack result;
