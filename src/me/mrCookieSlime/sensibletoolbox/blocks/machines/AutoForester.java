@@ -1,15 +1,14 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.items.IronCombineHoe;
 import me.mrCookieSlime.sensibletoolbox.items.components.MachineFrame;
 
 import org.bukkit.DyeColor;
@@ -24,26 +23,25 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
-public class AutoFarm extends BaseSTBMachine {
+public class AutoForester extends BaseSTBMachine {
 	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
-    private static final Map<Material, Material> crops = new HashMap<Material, Material>();
-    private static final int radius = 3;
+    private static final Set<Material> logs = new HashSet<Material>();
+    private static final int radius = 5;
     
     static {
-    	crops.put(Material.CROPS, Material.WHEAT);
-    	crops.put(Material.POTATO, Material.POTATO_ITEM);
-    	crops.put(Material.CARROT, Material.CARROT_ITEM);
+    	logs.add(Material.LOG);
+    	logs.add(Material.LOG_2);
     }
     
     private Set<Block> blocks;
-    private Material buffer;
+    private MaterialData buffer;
 
-    public AutoFarm() {
+    public AutoForester() {
         blocks = new HashSet<Block>();
     }
 
-    public AutoFarm(ConfigurationSection conf) {
+    public AutoForester(ConfigurationSection conf) {
         super(conf);
         blocks = new HashSet<Block>();
     }
@@ -55,14 +53,14 @@ public class AutoFarm extends BaseSTBMachine {
 
     @Override
     public String getItemName() {
-        return "Auto Farm";
+        return "Auto Forester";
     }
 
     @Override
     public String[] getLore() {
         return new String[] {
                 "Automatically harvests and replants",
-                "Wheat/Potato/Carrot Crops",
+                "Trees",
                 "in a " + radius + "x" + radius + " Radius 2 Blocks above the Machine"
         };
     }
@@ -70,14 +68,13 @@ public class AutoFarm extends BaseSTBMachine {
     @Override
     public Recipe getRecipe() {
     	MachineFrame frame = new MachineFrame();
-    	IronCombineHoe hoe = new IronCombineHoe();
-    	registerCustomIngredients(frame, hoe);
+    	registerCustomIngredients(frame);
         ShapedRecipe res = new ShapedRecipe(toItemStack());
-        res.shape(" H ", "IFI", "RGR");
+        res.shape("A A", "IFI", "RGR");
         res.setIngredient('R', Material.REDSTONE);
         res.setIngredient('G', Material.GOLD_INGOT);
         res.setIngredient('I', Material.IRON_INGOT);
-        res.setIngredient('H', hoe.getMaterialData());
+        res.setIngredient('A', Material.IRON_AXE);
         res.setIngredient('F', frame.getMaterialData());
         return res;
     }
@@ -99,33 +96,42 @@ public class AutoFarm extends BaseSTBMachine {
     	super.onBlockRegistered(location, isPlacing);
     }
 
-    @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	@Override
     public void onServerTick() {
     	if (!isJammed()) {
-    		for (Block crop: blocks) {
-        		if (crops.containsKey(crop.getType()) && crop.getData() >= 7) {
-        			crop.setData((byte) 0);
-        			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
-            		setJammed(!output(crops.get(crop.getType())));
+    		for (Block log: blocks) {
+        		if (logs.contains(log.getType())) {
+        			List<Location> list = new ArrayList<Location>();
+        			TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
+        			for (Location l: list) {
+        				buffer = new MaterialData(l.getBlock().getType(), l.getBlock().getData());
+                		setJammed(!output(buffer));
+        				log.getWorld().playEffect(l, Effect.STEP_SOUND, l.getBlock().getType());
+        				if (blocks.contains(l.getBlock())) {
+							byte data = l.getBlock().getData();
+							if (l.getBlock().getType() == Material.LOG_2) data = (byte) (data + 4);
+        					l.getBlock().setType(Material.SAPLING);
+        					l.getBlock().setData(data);
+        				}
+        				else l.getBlock().setType(Material.AIR);
+        			}
         			break;
         		}
         	}
     	}
-    	else if (buffer != null) {
-    		setJammed(!output(buffer));
-    	}
+    	else if (buffer != null) setJammed(!output(buffer));
     	
         super.onServerTick();
     }
 
-	private boolean output(Material m) {
+	@SuppressWarnings("deprecation")
+	private boolean output(MaterialData m) {
 		for (int slot: getOutputSlots()) {
 			ItemStack stack = getInventoryItem(slot);
-			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-				if (stack == null) stack = new ItemStack(m);
-				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (CSCoreLib.randomizer().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
-				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
+			if (stack == null || (stack.getType() == m.getItemType() && stack.getData().getData() == m.getData() && stack.getAmount() < stack.getMaxStackSize())) {
+				if (stack == null) stack = m.toItemStack(1);
+				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + 1));
 				buffer = null;
 				return true;
 			}
