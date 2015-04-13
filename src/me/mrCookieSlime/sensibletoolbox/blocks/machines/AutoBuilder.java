@@ -1,7 +1,6 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.dhutils.cuboid.Cuboid;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.gui.ButtonGadget;
@@ -292,8 +291,6 @@ public class AutoBuilder extends BaseSTBMachine {
                                 b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                             }
                         }
-                    } else {
-                        ParticleEffect.RED_DUST.play(b.getLocation(), 0.05f, 0.05f, 0.05f, 1.0f, 3);
                     }
                     break;
             }
