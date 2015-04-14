@@ -7,7 +7,7 @@ import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
+import me.mrCookieSlime.sensibletoolbox.api.items.AutoFarmingMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.components.MachineFrame;
 
@@ -16,14 +16,13 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
-public class AutoForester extends BaseSTBMachine {
+public class AutoForester extends AutoFarmingMachine {
 	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
     private static final Set<Material> logs = new HashSet<Material>();
@@ -78,11 +77,6 @@ public class AutoForester extends BaseSTBMachine {
         res.setIngredient('F', frame.getMaterialData());
         return res;
     }
-
-    @Override
-    public int getTickRate() {
-        return 60;
-    }
     
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
@@ -102,6 +96,8 @@ public class AutoForester extends BaseSTBMachine {
     	if (!isJammed()) {
     		for (Block log: blocks) {
         		if (logs.contains(log.getType())) {
+        			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
+        			else break;
         			List<Location> list = new ArrayList<Location>();
         			TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
         			for (Location l: list) {
@@ -138,59 +134,9 @@ public class AutoForester extends BaseSTBMachine {
 		}
 		return false;
 	}
-
+	
 	@Override
-	public boolean acceptsEnergy(BlockFace face) {
-		return true;
-	}
-
-	@Override
-	public boolean suppliesEnergy(BlockFace face) {
-		return false;
-	}
-
-	@Override
-	public int getMaxCharge() {
-		return 2500;
-	}
-
-	@Override
-	public int getChargeRate() {
-		return 25;
-	}
-
-	@Override
-    public int[] getInputSlots() {
-        return new int[0];
-    }
-
-    @Override
-    public int[] getOutputSlots() {
-        return new int[]{10, 11, 12, 13, 14, 15};
-    }
-    
-    @Override
-    public int[] getUpgradeSlots() {
-        return new int[]{42, 43, 44};
-    }
-
-    @Override
-    public int getUpgradeLabelSlot() {
-        return 41;
-    }
-
-    @Override
-    public int getEnergyCellSlot() {
-        return 36;
-    }
-
-    @Override
-    public int getChargeDirectionSlot() {
-        return 37;
-    }
-
-    @Override
-    public int getInventoryGUISize() {
-        return 45;
+    public double getScuPerCycle() {
+        return 250.0;
     }
 }
