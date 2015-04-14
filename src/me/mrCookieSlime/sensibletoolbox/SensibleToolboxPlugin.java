@@ -49,6 +49,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.PaintCan;
 import me.mrCookieSlime.sensibletoolbox.blocks.RedstoneClock;
 import me.mrCookieSlime.sensibletoolbox.blocks.SoundMuffler;
 import me.mrCookieSlime.sensibletoolbox.blocks.TrashCan;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.AdvancedFarm;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoBuilder;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoFarm;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoForester;
@@ -62,6 +63,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FishingNet;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HyperStorageUnit;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.InfernalFarm;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.Masher;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.PowerMonitor;
@@ -638,6 +640,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new FishingNet(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new AutoFarm(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new AutoForester(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AdvancedFarm(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new InfernalFarm(), this, CONFIG_NODE, PERMISSION_NODE);
         
         if (isProtocolLibEnabled()) {
         	itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
