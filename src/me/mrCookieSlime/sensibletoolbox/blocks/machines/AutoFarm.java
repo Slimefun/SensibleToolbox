@@ -7,7 +7,7 @@ import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
+import me.mrCookieSlime.sensibletoolbox.api.items.AutoFarmingMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.IronCombineHoe;
 import me.mrCookieSlime.sensibletoolbox.items.components.MachineFrame;
@@ -17,14 +17,13 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
-public class AutoFarm extends BaseSTBMachine {
+public class AutoFarm extends AutoFarmingMachine {
 	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
     private static final Map<Material, Material> crops = new HashMap<Material, Material>();
@@ -40,6 +39,7 @@ public class AutoFarm extends BaseSTBMachine {
     private Material buffer;
 
     public AutoFarm() {
+    	super();
         blocks = new HashSet<Block>();
     }
 
@@ -81,11 +81,6 @@ public class AutoFarm extends BaseSTBMachine {
         res.setIngredient('F', frame.getMaterialData());
         return res;
     }
-
-    @Override
-    public int getTickRate() {
-        return 60;
-    }
     
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
@@ -105,6 +100,8 @@ public class AutoFarm extends BaseSTBMachine {
     	if (!isJammed()) {
     		for (Block crop: blocks) {
         		if (crops.containsKey(crop.getType()) && crop.getData() >= 7) {
+        			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
+        			else break;
         			crop.setData((byte) 0);
         			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
             		setJammed(!output(crops.get(crop.getType())));
@@ -118,7 +115,7 @@ public class AutoFarm extends BaseSTBMachine {
     	
         super.onServerTick();
     }
-
+    
 	private boolean output(Material m) {
 		for (int slot: getOutputSlots()) {
 			ItemStack stack = getInventoryItem(slot);
@@ -132,59 +129,9 @@ public class AutoFarm extends BaseSTBMachine {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean acceptsEnergy(BlockFace face) {
-		return true;
-	}
-
-	@Override
-	public boolean suppliesEnergy(BlockFace face) {
-		return false;
-	}
-
-	@Override
-	public int getMaxCharge() {
-		return 2500;
-	}
-
-	@Override
-	public int getChargeRate() {
-		return 25;
-	}
-
-	@Override
-    public int[] getInputSlots() {
-        return new int[0];
-    }
-
-    @Override
-    public int[] getOutputSlots() {
-        return new int[]{10, 11, 12, 13, 14, 15};
-    }
     
     @Override
-    public int[] getUpgradeSlots() {
-        return new int[]{42, 43, 44};
-    }
-
-    @Override
-    public int getUpgradeLabelSlot() {
-        return 41;
-    }
-
-    @Override
-    public int getEnergyCellSlot() {
-        return 36;
-    }
-
-    @Override
-    public int getChargeDirectionSlot() {
-        return 37;
-    }
-
-    @Override
-    public int getInventoryGUISize() {
-        return 45;
+    public double getScuPerCycle() {
+        return 25.0;
     }
 }
