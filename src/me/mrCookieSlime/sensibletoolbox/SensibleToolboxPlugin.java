@@ -52,6 +52,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.TrashCan;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AdvancedFarm;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoBuilder;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoFarm;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoFarm2;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.AutoForester;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BasicSolarCell;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.BigStorageUnit;
@@ -642,6 +643,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new AutoForester(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new AdvancedFarm(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new InfernalFarm(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AutoFarm2(), this, CONFIG_NODE, PERMISSION_NODE);
         
         if (isProtocolLibEnabled()) {
         	itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
