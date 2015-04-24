@@ -68,9 +68,7 @@ public class ElectricalJuicer extends SlimefunIOMachine {
 
 	@Override
 	protected void onMachineStartup() {
-		if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) {
-            getLocation().getWorld().playSound(getLocation(), Sound.SPLASH, 1.0f, 0.5f);
-        }
+		if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) getLocation().getWorld().playSound(getLocation(), Sound.SPLASH, 1.0f, 0.5f);
 	}
 
 }
