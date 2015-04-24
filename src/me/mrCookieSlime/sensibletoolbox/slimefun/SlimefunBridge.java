@@ -22,6 +22,8 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalOreWasher;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalPanningMachine;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.FruitPicker;
 
 import org.bukkit.Material;
@@ -29,6 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.material.MaterialData;
 
 public class SlimefunBridge {
 	
@@ -40,10 +43,10 @@ public class SlimefunBridge {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public static void initiate() {
 		Category items = new Category(new MenuItem(Material.SHEARS, "&7STB - Items", 0, "open"));
-		Category blocks = new Category(new MenuItem(Material.BRICK, "&7STB - Blocks and Machines", 0, "open"));
+		Category blocks = new Category(new CustomItem(new MaterialData(Material.STAINED_GLASS, (byte) 10), "&7STB - Blocks and Machines", "", "&a> Click to open"));
 		for (String id: SensibleToolboxPlugin.getInstance().getItemRegistry().getItemIds()) {
 			BaseSTBItem item = SensibleToolboxPlugin.getInstance().getItemRegistry().getItemById(id);
 			Category category = item.toItemStack().getType().isBlock() ? blocks: items;
@@ -99,7 +102,7 @@ public class SlimefunBridge {
 					}
 				}
 			}
-			else if (item instanceof SlimefunIOMachine || item instanceof FruitPicker) {
+			else if (item instanceof SlimefunIOMachine || item instanceof FruitPicker || item instanceof ElectricalPanningMachine || item instanceof ElectricalOreWasher) {
 				category = Categories.MACHINES_1;
 				recipeType = RecipeType.ENHANCED_CRAFTING_TABLE;
 				try {
