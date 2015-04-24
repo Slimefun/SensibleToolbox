@@ -437,41 +437,38 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
-        if (!hasAccessRights(uuid)) {
-            return 0;
-        }
+        if (!hasAccessRights(uuid)) return 0;
         // item routers don't care about sorters - they will take items from them happily
         if (bufferItem == null) {
             setBufferItem(item.clone());
             return item.getAmount();
-        } else if (item.isSimilar(bufferItem)) {
+        } 
+        else if (item.isSimilar(bufferItem)) {
             int nInserted = Math.min(item.getAmount(), item.getType().getMaxStackSize() - bufferItem.getAmount());
             setBufferAmount(bufferItem.getAmount() + nInserted);
             return nInserted;
-        } else {
-            return 0;
-        }
+        } 
+        else return 0;
     }
 
     @Override
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
-        if (!hasAccessRights(uuid) || bufferItem == null) {
-            return null;
-        } else if (receiver == null) {
+        if (!hasAccessRights(uuid) || bufferItem == null) return null;
+        else if (receiver == null) {
             ItemStack returned = bufferItem.clone();
             int nExtracted = Math.min(amount, bufferItem.getAmount());
             returned.setAmount(nExtracted);
             setBufferAmount(bufferItem.getAmount() - nExtracted);
             return returned;
-        } else if (receiver.isSimilar(bufferItem)) {
+        } 
+        else if (receiver.isSimilar(bufferItem)) {
             int nExtracted = Math.min(amount, bufferItem.getAmount());
             nExtracted = Math.min(nExtracted, receiver.getMaxStackSize() - receiver.getAmount());
             receiver.setAmount(receiver.getAmount() + nExtracted);
             setBufferAmount(bufferItem.getAmount() - nExtracted);
             return receiver;
-        } else {
-            return null;
-        }
+        } 
+        else return null;
     }
 
     @Override
@@ -480,16 +477,13 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             Inventory inv = Bukkit.createInventory(this, 9);
             inv.setItem(0, getBufferItem());
             return inv;
-        } else {
-            return null;
-        }
+        } 
+        else return null;
     }
 
     @Override
     public void updateOutputItems(UUID uuid, Inventory inventory) {
-        if (hasAccessRights(uuid)) {
-            setBufferItem(inventory.getItem(0));
-        }
+        if (hasAccessRights(uuid)) setBufferItem(inventory.getItem(0));
     }
 
     @Override
@@ -500,21 +494,18 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         if (slot == BUFFER_ITEM_SLOT) {
-            if (inSlot == null || onCursor.getType() != Material.AIR) {
-                return false;
-            }
+            if (inSlot == null || onCursor.getType() != Material.AIR) return false;
             needToScanBufferSlot = true;
             return true;
-        } else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
+        } 
+        else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
             if (onCursor.getType() == Material.AIR || SensibleToolbox.getItemRegistry().isSTBItem(onCursor, ItemRouterModule.class)) {
                 needToProcessModules = true;
                 return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+            } 
+            else return false;
+        } 
+        else return false;
     }
 
     @Override
@@ -524,28 +515,23 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
-        if (!SensibleToolbox.getItemRegistry().isSTBItem(toInsert, ItemRouterModule.class)) {
-            return 0;
-        }
+        if (!SensibleToolbox.getItemRegistry().isSTBItem(toInsert, ItemRouterModule.class)) return 0;
         int nInserted = 0;
         for (int modSlot = MOD_SLOT_START; modSlot < MOD_SLOT_END; modSlot++) {
             ItemStack mod = getGUI().getInventory().getItem(modSlot);
             if (mod == null) {
                 getGUI().getInventory().setItem(modSlot, toInsert);
                 nInserted = toInsert.getAmount();
-            } else if (mod.isSimilar(toInsert)) {
+            } 
+            else if (mod.isSimilar(toInsert)) {
                 nInserted = mod.getType().getMaxStackSize() - mod.getAmount();
                 nInserted = Math.min(toInsert.getAmount(), nInserted);
                 mod.setAmount(mod.getAmount() + nInserted);
                 getGUI().getInventory().setItem(modSlot, mod);
             }
-            if (nInserted > 0) {
-                break;
-            }
+            if (nInserted > 0) break;
         }
-        if (nInserted > 0) {
-            needToProcessModules = true;
-        }
+        if (nInserted > 0) needToProcessModules = true;
         return nInserted;
     }
 
@@ -554,12 +540,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (slot == BUFFER_ITEM_SLOT && getBufferItem() != null) {
             needToScanBufferSlot = true;
             return true;
-        } else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
+        } 
+        else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
             needToProcessModules = true;
             return true;
-        } else {
-            return false;
-        }
+        } 
+        else return false;
     }
 
     @Override
@@ -579,25 +565,18 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         for (int i = 0; i < MOD_SLOT_COUNT; i++) {
             ItemStack stack = inv.getItem(baseSlot + i);
             if (stack != null) {
-                if (!mods.containsKey(stack)) {
-                    mods.put(stack, stack.getAmount());
-                } else {
-                    mods.put(stack, mods.get(stack) + stack.getAmount());
-                }
+                if (!mods.containsKey(stack)) mods.put(stack, stack.getAmount());
+                else mods.put(stack, mods.get(stack) + stack.getAmount());
             }
         }
 
         for (Map.Entry<ItemStack, Integer> entry : mods.entrySet()) {
             ItemRouterModule mod = SensibleToolbox.getItemRegistry().fromItemStack(entry.getKey(), ItemRouterModule.class);
-            if (mod != null) {
-                insertModule(mod, entry.getValue());
-            }
+            if (mod != null) insertModule(mod, entry.getValue());
         }
 
         Debugger.getInstance().debug("re-processed modules for " + this + " tick-rate=" + getTickRate() + " stack-size=" + getStackSize());
-        if (getTicksLived() > 20) {
-            update(false);
-        }
+        if (getTicksLived() > 20) update(false);
     }
 
     public List<BlockFace> getNeighbours() {

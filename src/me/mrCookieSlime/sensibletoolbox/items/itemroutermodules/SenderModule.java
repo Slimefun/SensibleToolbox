@@ -20,6 +20,7 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class SenderModule extends DirectionalItemRouterModule {
+	
     private static final Dye md = makeDye(DyeColor.BLUE);
 
     private static final int MAX_SENDER_DISTANCE = 10;
@@ -65,14 +66,12 @@ public class SenderModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
-            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
-                return false;
-            }
+            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) return false;
             Debugger.getInstance().debug(2, "sender in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
             Block b = loc.getBlock();
             Block target = b.getRelative(getFacing());
             int nToInsert = getItemRouter().getStackSize();
-            if (allowsItemsThrough(target.getType())) {
+            if (!(SensibleToolbox.getBlockAt(target.getLocation(), true) instanceof STBInventoryHolder) &&allowsItemsThrough(target.getType())) {
                 // search for a visible Item Router with an installed Receiver Module
                 ReceiverModule receiver = findReceiver(b);
                 if (receiver != null) {
@@ -87,7 +86,8 @@ public class SenderModule extends DirectionalItemRouterModule {
                     }
                     return nReceived > 0;
                 }
-            } else {
+            } 
+            else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
                 if (stb instanceof STBInventoryHolder) {
                     if (creativeModeBlocked(stb, loc)) {
@@ -99,7 +99,8 @@ public class SenderModule extends DirectionalItemRouterModule {
                     int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), false, getItemRouter().getOwner());
                     getItemRouter().reduceBuffer(nInserted);
                     return nInserted > 0;
-                } else {
+                } 
+                else {
                     // vanilla inventory holder?
                     return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
                 }
@@ -122,18 +123,14 @@ public class SenderModule extends DirectionalItemRouterModule {
     private ReceiverModule findReceiver(Block b) {
         for (int i = 0; i < MAX_SENDER_DISTANCE; i++) {
             b = b.getRelative(getFacing());
-            if (!allowsItemsThrough(b.getType())) {
-                break;
-            }
+            if (!allowsItemsThrough(b.getType())) break;
         }
         ItemRouter rtr = SensibleToolbox.getBlockAt(b.getLocation(), ItemRouter.class, false);
         return rtr == null ? null : rtr.getReceiver();
     }
 
     private boolean allowsItemsThrough(Material mat) {
-        if (mat.isTransparent()) {
-            return true;
-        }
+        if (mat.isTransparent()) return true;
         switch (mat) {
             case GLASS:
             case THIN_GLASS:
