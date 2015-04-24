@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.MaterialData;
 
-public abstract class SlimefunIOMachine extends AbstractIOMachine {
+public abstract class SlimefunIOMachine extends AbstractIOMachine implements STBSlimefunMachine {
 	
 	public SlimefunIOMachine() {
     }
@@ -25,7 +25,6 @@ public abstract class SlimefunIOMachine extends AbstractIOMachine {
     }
 	
 	protected abstract String getSlimefunMachine();
-	public abstract List<ItemStack> getSlimefunRecipe();
 	
 	@Override
     public void addCustomRecipes(final CustomRecipeManager crm) {

@@ -1,11 +1,13 @@
 package me.mrCookieSlime.sensibletoolbox.slimefun;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.MenuItem;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Reflection.ReflectionUtils;
 import me.mrCookieSlime.Slimefun.Lists.Categories;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
@@ -20,6 +22,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.FruitPicker;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -37,6 +40,7 @@ public class SlimefunBridge {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void initiate() {
 		Category items = new Category(new MenuItem(Material.SHEARS, "&7STB - Items", 0, "open"));
 		Category blocks = new Category(new MenuItem(Material.BRICK, "&7STB - Blocks and Machines", 0, "open"));
@@ -95,10 +99,18 @@ public class SlimefunBridge {
 					}
 				}
 			}
-			else if (item instanceof SlimefunIOMachine) {
+			else if (item instanceof SlimefunIOMachine || item instanceof FruitPicker) {
 				category = Categories.MACHINES_1;
 				recipeType = RecipeType.ENHANCED_CRAFTING_TABLE;
-				recipe = ((SlimefunIOMachine) item).getSlimefunRecipe();
+				try {
+					recipe = (List<ItemStack>) ReflectionUtils.getMethod(item.getClass(), "getSlimefunRecipe").invoke(item);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			SlimefunItem sfItem = null;
