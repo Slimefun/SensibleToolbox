@@ -167,6 +167,8 @@ import me.mrCookieSlime.sensibletoolbox.listeners.WorldListener;
 import me.mrCookieSlime.sensibletoolbox.slimefun.SlimefunBridge;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalGrinder;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalJuicer;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalOreWasher;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalPanningMachine;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.FruitPicker;
 import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 
@@ -652,6 +654,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
         	itemRegistry.registerItem(new ElectricalJuicer(), this, CONFIG_NODE, PERMISSION_NODE);
         	itemRegistry.registerItem(new ElectricalGrinder(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new ElectricalPanningMachine(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new ElectricalOreWasher(), this, CONFIG_NODE, PERMISSION_NODE);
         	if (Bukkit.getPluginManager().isPluginEnabled("ExoticGarden")) itemRegistry.registerItem(new FruitPicker(), this, CONFIG_NODE, PERMISSION_NODE);
         }
     }
