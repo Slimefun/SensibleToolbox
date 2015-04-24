@@ -63,7 +63,7 @@ public class ElectricalJuicer extends SlimefunIOMachine {
 				SlimefunItems.STEEL_INGOT,
 				SlimefunItems.STEEL_INGOT,
 				SlimefunItems.STEEL_INGOT
-				);
+		);
 	}
 
 	@Override
