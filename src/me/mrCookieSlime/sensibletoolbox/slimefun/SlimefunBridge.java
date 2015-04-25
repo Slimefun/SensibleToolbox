@@ -10,10 +10,12 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.MenuItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Reflection.ReflectionUtils;
 import me.mrCookieSlime.Slimefun.Lists.Categories;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
+import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.ExcludedBlock;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.ExcludedGadget;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
+import me.mrCookieSlime.Slimefun.api.Slimefun;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.recipes.STBFurnaceRecipe;
@@ -25,6 +27,7 @@ import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalOreWasher;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalPanningMachine;
 import me.mrCookieSlime.sensibletoolbox.slimefun.machines.FruitPicker;
+import me.mrCookieSlime.sensibletoolbox.slimefun.machines.NuclearReactor;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -102,7 +105,7 @@ public class SlimefunBridge {
 					}
 				}
 			}
-			else if (item instanceof SlimefunIOMachine || item instanceof FruitPicker || item instanceof ElectricalPanningMachine || item instanceof ElectricalOreWasher) {
+			else if (item instanceof SlimefunIOMachine || item instanceof FruitPicker || item instanceof ElectricalPanningMachine || item instanceof ElectricalOreWasher || item instanceof NuclearReactor) {
 				category = Categories.MACHINES_1;
 				recipeType = RecipeType.ENHANCED_CRAFTING_TABLE;
 				try {
@@ -150,6 +153,17 @@ public class SlimefunBridge {
 		patch("IRONDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.IRON_INGOT));
 		patch("GOLDDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.GOLD_INGOT));
 		patch("FISHBAIT", new RecipeType(SlimefunItem.getByName("FERMENTER").getItem()), new ItemStack(Material.ROTTEN_FLESH));
+		
+		new SlimefunItem(Categories.TECH_MISC, new CustomItem(new MaterialData(Material.DISPENSER), "&bReactor Coolant Port", "", "&rAttach this to the Bottom of a Reactor"), "REACTOR_COOLANT_PORT", RecipeType.ENHANCED_CRAFTING_TABLE,
+		new ItemStack[] {null, SlimefunItems.LEAD_INGOT, null, SlimefunItems.REINFORCED_PLATE, SlimefunItems.COOLING_UNIT, SlimefunItems.REINFORCED_PLATE, null, SlimefunItems.LEAD_INGOT, null})
+		.register();
+		
+		new SlimefunItem(Categories.TECH_MISC, NuclearReactor.COOLANT_ITEM, "COOLANT_CELL", RecipeType.ENHANCED_CRAFTING_TABLE,
+		new ItemStack[] {null, SlimefunItems.TIN_INGOT, null, SlimefunItems.TIN_INGOT, new ItemStack(Material.PACKED_ICE), SlimefunItems.TIN_INGOT, null, SlimefunItems.TIN_INGOT, null},
+		new CustomItem(new CustomItem(NuclearReactor.COOLANT_ITEM, 8)))
+		.register();
+		
+		Slimefun.addDescription("REACTOR_COOLANT_PORT", "&e1: Place this on the Bottom Side of a Reactor", "&e2: Fill it with Coolant Cells", "§e3: Make sure to supply more Coolant Cells", "&e since they get consumed over time");
 	}
 
 }
