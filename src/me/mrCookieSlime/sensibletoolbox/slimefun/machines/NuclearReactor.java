@@ -191,7 +191,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
             	}
             	else {
             		boolean cool = true;
-            		if (getTicksLived() % (TICK_FREQUENCY * 8) == 0) {
+            		if (getTicksLived() % (TICK_FREQUENCY * 16) == 0) {
             			cool = false;
             			Block port = getRelativeLocation(BlockFace.DOWN).getBlock();
             			SlimefunItem slimefun = BlockStorage.check(port);
