@@ -98,7 +98,6 @@ import me.mrCookieSlime.sensibletoolbox.core.gui.STBInventoryGUI;
 import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 import me.mrCookieSlime.sensibletoolbox.items.AdvancedMoistureChecker;
 import me.mrCookieSlime.sensibletoolbox.items.AdvancedRecipeBook;
-import me.mrCookieSlime.sensibletoolbox.items.BagOfHolding;
 import me.mrCookieSlime.sensibletoolbox.items.DiamondCombineHoe;
 import me.mrCookieSlime.sensibletoolbox.items.EnderBag;
 import me.mrCookieSlime.sensibletoolbox.items.EnderLeash;
@@ -619,7 +618,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new Pump(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnderTuner(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnderBox(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BagOfHolding(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new InfernalDust(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnergizedIronDust(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnergizedGoldDust(), this, CONFIG_NODE, PERMISSION_NODE);
