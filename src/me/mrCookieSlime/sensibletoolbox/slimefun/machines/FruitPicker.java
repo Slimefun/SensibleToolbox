@@ -8,6 +8,7 @@ import java.util.Set;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.ExoticGarden.Berry;
 import me.mrCookieSlime.ExoticGarden.ExoticGarden;
+import me.mrCookieSlime.ExoticGarden.PlantType;
 import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
@@ -21,6 +22,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -116,6 +118,11 @@ public class FruitPicker extends AutoFarmingMachine implements STBSlimefunMachin
 		Berry berry = ExoticGarden.getBerry(block);
 		if (berry == null) return null;
 		block.setType(Material.SAPLING);
+		if (berry.getType() == PlantType.DOUBLE_PLANT) {
+			block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.STEP_SOUND, Material.LEAVES);
+			block.getRelative(BlockFace.UP).setType(Material.AIR);
+			BlockStorage.retrieve(block.getRelative(BlockFace.UP));
+		}
 		block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, Material.LEAVES);
 		block.setData((byte) 0);
 		BlockStorage.store(block, SlimefunItem.getByName(berry.toBush()).getItem());
