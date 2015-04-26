@@ -34,6 +34,8 @@ import org.bukkit.material.MaterialData;
 public class NuclearReactor extends Generator implements STBSlimefunMachine {
 	
 	public static final ItemStack COOLANT_ITEM = new CustomItem(new MaterialData(Material.IRON_INGOT), "&bCoolant Cell", "", "&rUsed to cool Reactors");
+	public static final ItemStack PLUTONIUM = new CustomItem(new MaterialData(Material.CLAY_BALL), "&7Plutonium");
+	
 	private static final MaterialData md = new MaterialData(Material.IRON_BLOCK);
 	private static final int TICK_FREQUENCY = 10;
 	private static final FuelItems fuelItems = new FuelItems();
@@ -75,7 +77,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0];
+        return new int[] {14};
     }
 
     @Override
@@ -229,6 +231,10 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
                         playActiveParticleEffect();
                         if (getProgress() <= 0) {
                             // fuel burnt
+                        	ItemStack plutonium = getInventoryItem(getOutputSlots()[0]);
+                        	if (plutonium == null) plutonium = PLUTONIUM;
+                        	else plutonium.setAmount(plutonium.getAmount() + 1);
+                            setInventoryItem(getOutputSlots()[0], plutonium);
                             setProcessing(null);
                             update(false);
                         }
@@ -254,6 +260,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
     }
 
     private void pullItemIntoProcessing(int inputSlot) {
+    	if (getInventoryItem(getOutputSlots()[0]) != null && getInventoryItem(getOutputSlots()[0]).getAmount() >= getInventoryItem(getOutputSlots()[0]).getMaxStackSize()) return;
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
