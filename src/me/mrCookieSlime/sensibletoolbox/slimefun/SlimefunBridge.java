@@ -136,6 +136,11 @@ public class SlimefunBridge {
 				if (fuels.size() % 2 != 0) fuels.add(null);
 				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
 			}
+			else if (id.equalsIgnoreCase("nuclearreactor")) {
+				Set<ItemStack> fuels = ((NuclearReactor) item).getFuelInformation();
+				if (fuels.size() % 2 != 0) fuels.add(null);
+				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
+			}
 			else sfItem = new ExcludedBlock(category, item.toItemStack(), id.toUpperCase(), null, null);
 			
 			sfItem.setReplacing(true);
@@ -163,8 +168,12 @@ public class SlimefunBridge {
 		new CustomItem(new CustomItem(NuclearReactor.COOLANT_ITEM, 8)))
 		.register();
 		
-		new SlimefunItem(Categories.RESOURCES, NuclearReactor.PLUTONIUM, "PLUTONIUM", new RecipeType(new CustomItem(new MaterialData(Material.IRON_BLOCK), "&2Nuclear Reactor", "", "&rResult of burning up Uranium", "&rin a Nuclear Reactor")),
+		new SlimefunItem(Categories.RESOURCES, NuclearReactor.NEPTUNIUM, "NEPTUNIUM", new RecipeType(new CustomItem(new MaterialData(Material.IRON_BLOCK), "&2Nuclear Reactor", "", "&rResult of burning up Uranium", "&rin a Nuclear Reactor")),
 		new ItemStack[] {null, null, null, null, SlimefunItems.URANIUM, null, null, null, null})
+		.register();
+		
+		new SlimefunItem(Categories.RESOURCES, NuclearReactor.PLUTONIUM, "PLUTONIUM", new RecipeType(new CustomItem(new MaterialData(Material.IRON_BLOCK), "&2Nuclear Reactor", "", "&rResult of burning up Neptunium", "&rin a Nuclear Reactor")),
+		new ItemStack[] {null, null, null, null, NuclearReactor.NEPTUNIUM, null, null, null, null})
 		.register();
 		
 		Slimefun.addDescription("REACTOR_COOLANT_PORT", "&e1: Place this on the Bottom Side of a Reactor", "&e2: Fill it with Coolant Cells", "§e3: Make sure to supply more Coolant Cells", "&e since they get consumed over time");
