@@ -34,7 +34,8 @@ import org.bukkit.material.MaterialData;
 public class NuclearReactor extends Generator implements STBSlimefunMachine {
 	
 	public static final ItemStack COOLANT_ITEM = new CustomItem(new MaterialData(Material.IRON_INGOT), "&bCoolant Cell", "", "&rUsed to cool Reactors");
-	public static final ItemStack PLUTONIUM = new CustomItem(new MaterialData(Material.CLAY_BALL), "&7Plutonium");
+	public static final ItemStack NEPTUNIUM = new CustomItem(new MaterialData(Material.SLIME_BALL), "&aNeptunium", "&4&oHazmat Suit highly recommended!");
+	public static final ItemStack PLUTONIUM = new CustomItem(new MaterialData(Material.CLAY_BALL), "&7Plutonium", "&4&oHazmat Suit highly recommended!");
 	
 	private static final MaterialData md = new MaterialData(Material.IRON_BLOCK);
 	private static final int TICK_FREQUENCY = 10;
@@ -55,7 +56,8 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
     private FuelItems.FuelValues currentFuel;
 
     static {
-    	fuelItems.addFuel(SlimefunItems.URANIUM, true, 24, 5 * 60 * 20);
+    	fuelItems.addFuel(SlimefunItems.URANIUM, true, 30, 5 * 60 * 20);
+    	fuelItems.addFuel(NEPTUNIUM, true, 24, 2 * 60 * 20);
     }
     
     public NuclearReactor() {
@@ -77,7 +79,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14};
+        return new int[] {14, 15};
     }
 
     @Override
@@ -231,10 +233,11 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
                         playActiveParticleEffect();
                         if (getProgress() <= 0) {
                             // fuel burnt
-                        	ItemStack plutonium = getInventoryItem(getOutputSlots()[0]);
-                        	if (plutonium == null) plutonium = PLUTONIUM;
-                        	else plutonium.setAmount(plutonium.getAmount() + 1);
-                            setInventoryItem(getOutputSlots()[0], plutonium);
+                        	int index = SlimefunManager.isItemSimiliar(getProcessing(), NEPTUNIUM, true) ? 1: 0;
+                        	ItemStack result = getInventoryItem(getOutputSlots()[index]);
+                        	if (result == null) result = index == 1 ? PLUTONIUM: NEPTUNIUM;
+                        	else result.setAmount(result.getAmount() + 1);
+                            setInventoryItem(getOutputSlots()[0], result);
                             setProcessing(null);
                             update(false);
                         }
