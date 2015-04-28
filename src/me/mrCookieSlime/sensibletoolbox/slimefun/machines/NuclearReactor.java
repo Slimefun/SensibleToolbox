@@ -52,12 +52,17 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
     		BlockFace.NORTH_WEST
     	};
     
+    static {
+    	SlimefunItem.setRadioactive(NEPTUNIUM);
+    	SlimefunItem.setRadioactive(PLUTONIUM);
+    }
+    
     private final double slowBurnThreshold;
     private FuelItems.FuelValues currentFuel;
 
     static {
-    	fuelItems.addFuel(SlimefunItems.URANIUM, true, 30, 5 * 60 * 20);
-    	fuelItems.addFuel(NEPTUNIUM, true, 24, 2 * 60 * 20);
+    	fuelItems.addFuel(SlimefunItems.URANIUM, true, 100, 5 * 60 * 20);
+    	fuelItems.addFuel(NEPTUNIUM, true, 50, 2 * 60 * 20);
     }
     
     public NuclearReactor() {
@@ -195,7 +200,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
             	}
             	else {
             		boolean cool = true;
-            		if (getTicksLived() % (TICK_FREQUENCY * 20) == 0) {
+            		if (getTicksLived() % (TICK_FREQUENCY * 50) == 0) {
             			cool = false;
             			Block port = getRelativeLocation(BlockFace.DOWN).getBlock();
             			SlimefunItem slimefun = BlockStorage.check(port);
