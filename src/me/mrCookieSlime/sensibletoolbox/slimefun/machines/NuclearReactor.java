@@ -158,7 +158,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
 
     @Override
     public int getChargeRate() {
-        return 128;
+        return 512;
     }
 
     @Override
