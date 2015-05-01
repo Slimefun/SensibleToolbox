@@ -6,23 +6,17 @@ import java.util.List;
 import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-import me.mrCookieSlime.ExoticGarden.Berry;
 import me.mrCookieSlime.ExoticGarden.ExoticGarden;
-import me.mrCookieSlime.ExoticGarden.PlantType;
 import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.sensibletoolbox.api.items.AutoFarmingMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.slimefun.STBSlimefunMachine;
 
 import org.bukkit.DyeColor;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -86,7 +80,7 @@ public class FruitPicker extends AutoFarmingMachine implements STBSlimefunMachin
     public void onServerTick() {
     	if (!isJammed()) {
     		for (Block crop: blocks) {
-    			ItemStack item = harvest(crop);
+    			ItemStack item = ExoticGarden.harvestPlant(crop);
         		if (item != null) {
         			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
         			else break;
@@ -111,22 +105,6 @@ public class FruitPicker extends AutoFarmingMachine implements STBSlimefunMachin
 			}
 		}
 		return false;
-	}
-	
-	@SuppressWarnings("deprecation")
-	private ItemStack harvest(Block block) {
-		Berry berry = ExoticGarden.getBerry(block);
-		if (berry == null) return null;
-		block.setType(Material.SAPLING);
-		if (berry.getType() == PlantType.DOUBLE_PLANT) {
-			block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.STEP_SOUND, Material.LEAVES);
-			block.getRelative(BlockFace.UP).setType(Material.AIR);
-			BlockStorage.retrieve(block.getRelative(BlockFace.UP));
-		}
-		block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, Material.LEAVES);
-		block.setData((byte) 0);
-		BlockStorage.store(block, SlimefunItem.getByName(berry.toBush()).getItem());
-		return berry.getItem();
 	}
     
     @Override
