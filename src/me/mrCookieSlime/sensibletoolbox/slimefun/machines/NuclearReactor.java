@@ -178,7 +178,7 @@ public class NuclearReactor extends Generator implements STBSlimefunMachine {
 
     @Override
     public boolean acceptsItemType(ItemStack item) {
-        return SlimefunManager.isItemSimiliar(item, SlimefunItems.URANIUM, true);
+        return SlimefunManager.isItemSimiliar(item, SlimefunItems.URANIUM, true) || SlimefunManager.isItemSimiliar(item, NEPTUNIUM, true);
     }
 
     @Override
