@@ -18,7 +18,6 @@ import org.bukkit.material.MaterialData;
 public class PowerMonitor extends BaseSTBBlock {
 	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.ORANGE);
-    private static final BlockFace[] faces = new BlockFace[] {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
     public PowerMonitor() {
     }
@@ -72,7 +71,7 @@ public class PowerMonitor extends BaseSTBBlock {
 	@Override
     protected String[] getSignLabel(BlockFace face) {
         String[] label = super.getSignLabel(face);
-        for (BlockFace f: faces) {
+        for (BlockFace f: STBUtil.mainHorizontalFaces) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
             if (net != null) {
             	double stat = net.getSupply() - net.getDemand();

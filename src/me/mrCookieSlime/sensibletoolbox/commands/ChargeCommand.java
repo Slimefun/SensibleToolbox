@@ -1,5 +1,7 @@
 package me.mrCookieSlime.sensibletoolbox.commands;
 
+import java.util.Set;
+
 import me.desht.sensibletoolbox.dhutils.DHUtilsException;
 import me.desht.sensibletoolbox.dhutils.DHValidate;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
@@ -21,13 +23,13 @@ import org.bukkit.material.Attachable;
 import org.bukkit.plugin.Plugin;
 
 public class ChargeCommand extends AbstractCommand {
+	
     public ChargeCommand() {
         super("stb charge", 0, 1);
         setPermissionNode("stb.commands.charge");
         setUsage("/<command> charge <amount>");
     }
 
-    @SuppressWarnings("deprecation")
 	@Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         notFromConsole(sender);
@@ -38,9 +40,9 @@ public class ChargeCommand extends AbstractCommand {
         Chargeable c = null;
         if (item != null && item instanceof Chargeable) {
             c = (Chargeable) item;
-        } else {
-            // maybe there's a chargeable block targeted
-            Block b = player.getTargetBlock(null, 10);
+        } 
+        else {
+            Block b = player.getTargetBlock((Set<Material>) null, 10);
             if (b != null) {
                 if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
                     Sign s = (Sign) b.getState();

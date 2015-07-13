@@ -42,7 +42,8 @@ import com.google.common.io.OutputSupplier;
 import com.google.common.primitives.Primitives;
 
 @SuppressWarnings("deprecation")
-public class NbtFactory {   
+public class NbtFactory {
+	
     // Convert between NBT id and the equivalent class in java
     private static final BiMap<Integer, Class<?>> NBT_CLASS = HashBiMap.create();
     private static final BiMap<Integer, NbtType> NBT_ENUM = HashBiMap.create();

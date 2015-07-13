@@ -1,12 +1,14 @@
 package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.List;
+import java.util.Set;
 
 import me.desht.sensibletoolbox.dhutils.DHUtilsException;
 import me.desht.sensibletoolbox.dhutils.ParticleEffect;
 import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,7 +20,6 @@ public class ParticleCommand extends AbstractCommand {
         setUsage("/<command> particle <type> <x> <y> <z> <speed> <amount>");
     }
 
-    @SuppressWarnings("deprecation")
 	@Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         notFromConsole(sender);
@@ -28,7 +29,7 @@ public class ParticleCommand extends AbstractCommand {
         try {
             ParticleEffect p = ParticleEffect.valueOf(effect.toUpperCase());
 
-            List<Block> b = player.getLastTwoTargetBlocks(null, 50);
+            List<Block> b = player.getLastTwoTargetBlocks((Set<Material>) null, 50);
             Location loc = b.get(0).getLocation().add(0.5, 0.5, 0.5);
             float sx = Float.parseFloat(args[1]);
             float sy = Float.parseFloat(args[2]);

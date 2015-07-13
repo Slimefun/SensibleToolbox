@@ -63,6 +63,7 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.Fermenter;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.FishingNet;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
+import me.mrCookieSlime.sensibletoolbox.blocks.machines.HolographicMonitor;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HyperStorageUnit;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.InfernalFarm;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
@@ -214,6 +215,117 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
+    }
+    
+    public void registerItems() {
+        final String CONFIG_NODE = "items_enabled";
+        final String PERMISSION_NODE = "stb";
+
+        itemRegistry.registerItem(new AngelicBlock(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnderLeash(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new RedstoneClock(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new BlockUpdateDetector(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnderBag(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new WateringCan(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new MoistureChecker(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AdvancedMoistureChecker(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new WoodCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new IronCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new GoldCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new DiamondCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new TrashCan(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PaintBrush(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PaintRoller(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PaintCan(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Elevator(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new TapeMeasure(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new CircuitBoard(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SimpleCircuit(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new MultiBuilder(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new MachineFrame(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Smelter(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Masher(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Sawmill(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new IronDust(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new GoldDust(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new ItemRouter(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new BlankModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PullerModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new DropperModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SenderModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new DistributorModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AdvancedSenderModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new HyperSenderModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new ReceiverModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SorterModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new VacuumModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new BreakerModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new StackModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SpeedModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new TenKEnergyCell(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new FiftyKEnergyCell(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new TenKBatteryBox(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new FiftyKBatteryBox(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SpeedUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EjectorUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new RegulatorUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new ThoroughnessUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new HeatEngine(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new BasicSolarCell(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new DenseSolar(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new RecipeBook(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AdvancedRecipeBook(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Multimeter(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new BigStorageUnit(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new HyperStorageUnit(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Pump(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnderTuner(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnderBox(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new InfernalDust(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnergizedIronDust(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnergizedGoldDust(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnergizedIronIngot(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnergizedGoldIngot(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new ToughMachineFrame(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new QuartzDust(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SiliconWafer(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new IntegratedCircuit(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new LandMarker(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PVCell(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AutoBuilder(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new UnlinkedSCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SilkyBreakerModule(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new SubspaceTransponder(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new ElectricalEnergizer(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new PowerMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new Fermenter(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new FishBait(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new FishingNet(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AutoFarm(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AutoForester(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AdvancedFarm(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new InfernalFarm(), this, CONFIG_NODE, PERMISSION_NODE);
+        itemRegistry.registerItem(new AutoFarm2(), this, CONFIG_NODE, PERMISSION_NODE);
+        
+        if (isProtocolLibEnabled()) {
+        	itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
+        }
+        if (isHolographicDisplaysEnabled()) {
+        	itemRegistry.registerItem(new HolographicMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
+        	itemRegistry.registerItem(new ElectricalJuicer(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new ElectricalGrinder(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new ElectricalPanningMachine(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new ElectricalOreWasher(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new NuclearReactor(), this, CONFIG_NODE, PERMISSION_NODE);
+        	itemRegistry.registerItem(new CompactSmeltery(), this, CONFIG_NODE, PERMISSION_NODE);
+        	if (Bukkit.getPluginManager().isPluginEnabled("ExoticGarden")) itemRegistry.registerItem(new FruitPicker(), this, CONFIG_NODE, PERMISSION_NODE);
+        }
     }
 
     @Override
@@ -481,8 +593,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return newVal;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	private <T extends Enum> T getEnumValue(String value, Class<T> c) {
+    @SuppressWarnings({ "unchecked" })
+	private <T> T getEnumValue(String value, Class<T> c) {
         try {
             Method m = c.getMethod("valueOf", String.class);
             //noinspection unchecked
@@ -539,114 +651,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
                 enetManager.tick();
             }
         }, 1L, enetManager.getTickRate());
-    }
-
-    public void registerItems() {
-        final String CONFIG_NODE = "items_enabled";
-        final String PERMISSION_NODE = "stb";
-
-        itemRegistry.registerItem(new AngelicBlock(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnderLeash(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new RedstoneClock(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BlockUpdateDetector(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnderBag(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new WateringCan(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new MoistureChecker(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AdvancedMoistureChecker(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new WoodCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new IronCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new GoldCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new DiamondCombineHoe(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new TrashCan(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new PaintBrush(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new PaintRoller(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new PaintCan(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Elevator(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new TapeMeasure(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new CircuitBoard(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SimpleCircuit(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new MultiBuilder(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new MachineFrame(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Smelter(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Masher(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Sawmill(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new IronDust(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new GoldDust(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new ItemRouter(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BlankModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new PullerModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new DropperModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SenderModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new DistributorModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AdvancedSenderModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new HyperSenderModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new ReceiverModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SorterModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new VacuumModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BreakerModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new StackModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SpeedModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new TenKEnergyCell(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new FiftyKEnergyCell(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new TenKBatteryBox(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new FiftyKBatteryBox(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SpeedUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EjectorUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new RegulatorUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new ThoroughnessUpgrade(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new HeatEngine(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BasicSolarCell(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new DenseSolar(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new RecipeBook(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AdvancedRecipeBook(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Multimeter(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BigStorageUnit(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new HyperStorageUnit(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Pump(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnderTuner(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnderBox(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new InfernalDust(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnergizedIronDust(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnergizedGoldDust(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnergizedIronIngot(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnergizedGoldIngot(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new ToughMachineFrame(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new QuartzDust(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SiliconWafer(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new IntegratedCircuit(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new LandMarker(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new PVCell(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AutoBuilder(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new UnlinkedSCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SCURelay(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SilkyBreakerModule(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new SubspaceTransponder(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new BioEngine(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new MagmaticEngine(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new EnergizedQuartz(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new ElectricalEnergizer(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new PowerMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new Fermenter(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new FishBait(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new FishingNet(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AutoFarm(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AutoForester(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AdvancedFarm(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new InfernalFarm(), this, CONFIG_NODE, PERMISSION_NODE);
-        itemRegistry.registerItem(new AutoFarm2(), this, CONFIG_NODE, PERMISSION_NODE);
-        
-        if (isProtocolLibEnabled()) {
-        	itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
-        	itemRegistry.registerItem(new ElectricalJuicer(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new ElectricalGrinder(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new ElectricalPanningMachine(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new ElectricalOreWasher(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new NuclearReactor(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new CompactSmeltery(), this, CONFIG_NODE, PERMISSION_NODE);
-        	if (Bukkit.getPluginManager().isPluginEnabled("ExoticGarden")) itemRegistry.registerItem(new FruitPicker(), this, CONFIG_NODE, PERMISSION_NODE);
-        }
     }
 
     public ConfigurationManager getConfigManager() 			{			return configManager;														}

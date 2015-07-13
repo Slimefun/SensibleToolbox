@@ -17,10 +17,13 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 
 public class Attributes {
+	
     public enum Operation {
+    	
         ADD_NUMBER(0),
         MULTIPLY_PERCENTAGE(1),
         ADD_PERCENTAGE(2);
+        
         private int id;
         
         private Operation(int id) {
