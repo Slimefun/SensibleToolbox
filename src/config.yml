@@ -5,9 +5,9 @@ debug_level: 0
 save_interval: 30
 database:
   table_prefix: "stb_"
-holo_messages:
-   enabled: true
-   duration_per_line: 2.0
+holograms:
+  enabled: true
+  duration-in-seconds: 3
 energy:
   tick_rate: 10
 noisy_machines: true

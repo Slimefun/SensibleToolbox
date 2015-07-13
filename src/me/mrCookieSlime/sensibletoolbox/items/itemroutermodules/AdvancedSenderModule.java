@@ -22,6 +22,7 @@ import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
 
 public class AdvancedSenderModule extends DirectionalItemRouterModule {
+	
     private static final int RANGE = 24;
     private static final int RANGE2 = RANGE * RANGE;
     private static final Dye md = makeDye(DyeColor.LIGHT_BLUE);

@@ -26,12 +26,13 @@ import org.bukkit.inventory.ItemStack;
  * are not; we must ensure that those vanilla items can't be smelted.
  */
 public class FurnaceListener extends STBBaseListener {
+	
     public FurnaceListener(SensibleToolboxPlugin plugin) {
         super(plugin);
     }
 
 
-    @EventHandler
+    @EventHandler(ignoreCancelled=true)
     public void onFurnaceInsert(final InventoryClickEvent event) {
         if (event.getInventory().getType() != InventoryType.FURNACE) {
             return;
@@ -63,7 +64,7 @@ public class FurnaceListener extends STBBaseListener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled=true)
     public void onFurnaceInsert(InventoryDragEvent event) {
         if (event.getInventory().getType() != InventoryType.FURNACE) {
             return;

@@ -12,7 +12,7 @@ import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
-import me.mrCookieSlime.sensibletoolbox.api.util.PopupMessage;
+import me.mrCookieSlime.sensibletoolbox.api.util.HoloMessage;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.blocks.PaintCan;
 import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
@@ -239,24 +239,25 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     @Override
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         event.setCancelled(true);
-        if (getPaintLevel() <= 0) {
-            return;
-        }
+        if (getPaintLevel() <= 0) return;
         Entity e = event.getRightClicked();
         int paintUsed = 0;
         if (e instanceof Colorable) {
             ((Colorable) e).setColor(getColour());
             paintUsed = 1;
-        } else if (e instanceof Painting) {
+        } 
+        else if (e instanceof Painting) {
             Art a = ((Painting) e).getArt();
             if (getPaintLevel() >= a.getBlockHeight() * a.getBlockWidth()) {
                 IconMenu menu = buildMenu((Painting) e);
                 menu.open(event.getPlayer());
-            } else {
+            } 
+            else {
                 Location loc = e.getLocation().add(0, -a.getBlockHeight() / 2.0, 0);
-                PopupMessage.quickMessage(event.getPlayer(), loc, ChatColor.RED + "Not enough paint!");
+                HoloMessage.popup(event.getPlayer(), loc, ChatColor.RED + "Not enough paint!");
             }
-        } else if (e instanceof Wolf) {
+        } 
+        else if (e instanceof Wolf) {
             Wolf wolf = (Wolf) e;
             wolf.setCollarColor(getColour());
             paintUsed = 1;

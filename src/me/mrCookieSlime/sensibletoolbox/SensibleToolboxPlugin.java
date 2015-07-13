@@ -198,7 +198,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private PlayerUUIDTracker uuidTracker;
     private boolean inited = false;
     private LandslideListener landslideListener = null;
-    private boolean holoAPIenabled = false;
+    private boolean holographicDisplays = false;
     private BukkitTask energyTask = null;
     private LWC lwc = null;
     private EnderStorageManager enderStorageManager;
@@ -243,7 +243,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             if (getConfig().getInt("debug_level") > 0) Debugger.getInstance().setTarget(getServer().getConsoleSender());
 
             // try to hook other plugins
-            setupHoloAPI();
+            holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
             setupProtocolLib();
             setupLandslide();
             setupLWC();
@@ -415,19 +415,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
     }
 
-    private void setupHoloAPI() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("HoloAPI");
-        if (plugin != null && plugin.isEnabled()) {
-            if (!plugin.getDescription().getVersion().startsWith("1.")) {
-                LogUtils.warning("Found HoloAPI " + plugin.getDescription().getVersion() +
-                        ", but only HoloAPI v1.x is supported by SensibleToolbox at this time - disabling HoloAPI support");
-            } else {
-                holoAPIenabled = true;
-                Debugger.getInstance().debug("Hooked HoloAPI v" + plugin.getDescription().getVersion());
-            }
-        }
-    }
-
     public boolean isProtocolLibEnabled() {
         return protocolLibEnabled;
     }
@@ -436,8 +423,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return landslideListener;
     }
 
-    public boolean isHoloAPIenabled() {
-        return holoAPIenabled;
+    public boolean isHolographicDisplaysEnabled() {
+        return holographicDisplays;
     }
 
     private void registerCommands() {
