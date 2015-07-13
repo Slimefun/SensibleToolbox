@@ -4,7 +4,7 @@ import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.energy.EnergyNet;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
-import me.mrCookieSlime.sensibletoolbox.api.util.PopupMessage;
+import me.mrCookieSlime.sensibletoolbox.api.util.HoloMessage;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
 
@@ -101,7 +101,7 @@ public class Multimeter extends BaseSTBItem {
                 String.format("Demand: " + ChatColor.GOLD + "%5.2f SCU/t", net.getDemand()),
                 String.format("Supply: " + ChatColor.GOLD + "%5.2f SCU/t", net.getSupply()),
         };
-        PopupMessage.quickMessage(player, clicked.getLocation(), lines);
+        HoloMessage.popup(player, clicked.getLocation(), lines);
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
     }
 
@@ -113,7 +113,7 @@ public class Multimeter extends BaseSTBItem {
                 "Charge: " + STBUtil.getChargeString(machine),
                 "Max Charge Rate: " + ChatColor.GOLD + machine.getChargeRate() + " SCU/t",
         };
-        PopupMessage.quickMessage(player, clicked.getLocation(), lines);
+        HoloMessage.popup(player, clicked.getLocation(), lines);
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
     }
 }

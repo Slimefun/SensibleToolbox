@@ -4,7 +4,7 @@ authors: [mrCookieSlime, desht]
 website: http://mrcookieslime.github.io/
 main: me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin
 version: 1.1.0
-softdepend: [ CS-CoreLib, ProtocolLib, Landslide, HoloAPI, WorldGuard, PreciousStones, LWC, Multiverse-Core, Slimefun, ExoticGarden ]
+softdepend: [ CS-CoreLib, ProtocolLib, Landslide, HolographicDisplays, WorldGuard, PreciousStones, LWC, Multiverse-Core, Slimefun, ExoticGarden ]
 
 commands:
   stb:
