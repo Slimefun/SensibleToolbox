@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import me.desht.sensibletoolbox.dhutils.DHUtilsException;
 import me.desht.sensibletoolbox.dhutils.DHValidate;
@@ -22,6 +23,7 @@ import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -92,7 +94,6 @@ public class ShowCommand extends AbstractCommand {
         }
     }
 
-    @SuppressWarnings("deprecation")
 	private void showDetails(CommandSender sender, MessagePager pager, String locStr) {
         BaseSTBItem item;
         if (locStr.equals(".")) {
@@ -101,7 +102,7 @@ public class ShowCommand extends AbstractCommand {
             // try to show either the held item or the targeted block
             item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
             if (item == null) {
-                Block b = player.getTargetBlock(null, 10);
+                Block b = player.getTargetBlock((Set<Material>) null, 10);
                 item = LocationManager.getManager().get(b.getLocation(), true);
             }
         } else {

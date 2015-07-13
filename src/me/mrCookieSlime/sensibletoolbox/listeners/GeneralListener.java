@@ -484,7 +484,8 @@ public class GeneralListener extends STBBaseListener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("deprecation")
+	@EventHandler(ignoreCancelled = true)
     public void onPistonRetract(final BlockPistonRetractEvent event) {
         if (event.isSticky()) {
             final BaseSTBBlock stb = LocationManager.getManager().get(event.getRetractLocation());

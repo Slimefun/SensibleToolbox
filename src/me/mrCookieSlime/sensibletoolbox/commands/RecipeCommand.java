@@ -1,11 +1,14 @@
 package me.mrCookieSlime.sensibletoolbox.commands;
 
+import java.util.Set;
+
 import me.desht.sensibletoolbox.dhutils.DHValidate;
 import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +22,6 @@ public class RecipeCommand extends AbstractCommand {
         setPermissionNode("stb.commands.recipe");
     }
 
-    @SuppressWarnings("deprecation")
 	@Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         notFromConsole(sender);
@@ -38,7 +40,7 @@ public class RecipeCommand extends AbstractCommand {
         book.setInventorySlot(slot);
         book.setRecipeNameFilter(filter);
         book.goToItemList();
-        Block b = player.getTargetBlock(null, 4);
+        Block b = player.getTargetBlock((Set<Material>) null, 4);
         book.openBook(player, STBUtil.canFabricateWith(b) ? b : null);
         return true;
     }
