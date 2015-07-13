@@ -266,7 +266,7 @@ public class WateringCan extends BaseSTBItem {
             return;
         }
         if (CSCoreLib.randomizer().nextInt(100) < GROW_CHANCE) {
-            if (b.getData() < 8) b.setData((byte) (b.getData() + 1));
+            if (b.getData() < 7) b.setData((byte) (b.getData() + 1));
         }
         checkForFlooding(b.getRelative(BlockFace.DOWN));
         useSomeWater(player, b, 1);
