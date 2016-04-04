@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
+import me.desht.sensibletoolbox.dhutils.ItemGlow;
 import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
@@ -300,8 +301,14 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         im.setDisplayName(DISPLAY_COLOR + getItemName() + suffix);
         im.setLore(buildLore());
         res.setItemMeta(im);
+        
         if (enchants != null) {
             res.addUnsafeEnchantments(enchants);
+        }
+        
+
+        if (SensibleToolboxPlugin.getInstance().isGlowingEnabled()) {
+        	ItemGlow.setGlowing(res, hasGlow());
         }
 
         if (this instanceof Chargeable && res.getType().getMaxDurability() > 0) {

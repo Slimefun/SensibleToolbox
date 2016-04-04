@@ -10,6 +10,7 @@ import java.util.Random;
 
 import me.desht.sensibletoolbox.dhutils.DHUtilsException;
 import me.desht.sensibletoolbox.dhutils.Debugger;
+import me.desht.sensibletoolbox.dhutils.ItemGlow;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.dhutils.block.BlockUtil;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
@@ -980,6 +981,9 @@ public class STBUtil {
             }
         }
         ItemStack stack = mat.toItemStack(amount);
+        if (glowing && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        	ItemGlow.setGlowing(stack, true);
+        }
 
         return stack;
     }
