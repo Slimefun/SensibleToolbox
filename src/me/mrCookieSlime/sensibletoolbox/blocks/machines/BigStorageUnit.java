@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemNames;
+import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
 import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
 import me.mrCookieSlime.sensibletoolbox.api.gui.ToggleButton;
@@ -133,7 +133,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     private void updateSignItemLines() {
         if (this.stored != null) {
-            String[] lines = WordUtils.wrap(ItemNames.lookup(this.stored), 15).split("\\n");
+            String[] lines = WordUtils.wrap(StringUtils.formatItemName(this.stored, false), 15).split("\\n");
             signLabel[2] = lines[0];
             String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
             if (lines.length > 1) signLabel[3] = pfx + lines[1];
@@ -192,7 +192,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     @Override
     public String[] getExtraLore() {
         if (isLocked() && getStoredItemType() != null) {
-            return new String[]{ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + ItemNames.lookup(getStoredItemType())};
+            return new String[]{ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + StringUtils.formatItemName(getStoredItemType(), false)};
         } else {
             return new String[0];
         }

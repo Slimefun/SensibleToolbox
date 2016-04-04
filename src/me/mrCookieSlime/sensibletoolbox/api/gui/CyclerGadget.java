@@ -3,7 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.api.gui;
 import java.util.List;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.PermissionUtils;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
 import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
@@ -148,7 +147,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
     }
 
     private boolean mayOverride(HumanEntity whoClicked) {
-        return whoClicked instanceof Player && PermissionUtils.isAllowedTo((Player) whoClicked, "stb.access.modify");
+        return whoClicked instanceof Player && whoClicked.hasPermission("stb.access.modify");
     }
 
     @Override

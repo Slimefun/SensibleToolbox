@@ -10,8 +10,6 @@ import java.util.Random;
 
 import me.desht.sensibletoolbox.dhutils.DHUtilsException;
 import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemGlow;
-import me.desht.sensibletoolbox.dhutils.ItemNames;
 import me.desht.sensibletoolbox.dhutils.MiscUtil;
 import me.desht.sensibletoolbox.dhutils.block.BlockUtil;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
@@ -648,12 +646,7 @@ public class STBUtil {
         if (stack == null) {
             return "nothing";
         }
-        String res = stack.getAmount() + " x ";
-        if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()) {
-            res += stack.getItemMeta().getDisplayName();
-        } else {
-            res += ItemNames.lookup(stack);
-        }
+        String res = stack.getAmount() + " x " + me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils.formatItemName(stack, false);
         return res;
     }
 
@@ -987,9 +980,6 @@ public class STBUtil {
             }
         }
         ItemStack stack = mat.toItemStack(amount);
-        if (glowing && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
-            ItemGlow.setGlowing(stack, true);
-        }
 
         return stack;
     }

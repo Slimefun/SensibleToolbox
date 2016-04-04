@@ -3,9 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.api.items;
 import java.util.BitSet;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.PermissionUtils;
 import me.desht.sensibletoolbox.dhutils.PersistableLocation;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
@@ -235,10 +232,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 return true;
             case PRIVATE:
                 return getOwner().equals(player.getUniqueId())
-                        || PermissionUtils.isAllowedTo(player, "stb.access.any");
+                        || player.hasPermission("stb.access.any");
             case RESTRICTED:
                 return getOwner().equals(player.getUniqueId())
-                        || PermissionUtils.isAllowedTo(player, "stb.access.any")
+                        || player.hasPermission("stb.access.any")
                         || SensibleToolbox.getFriendManager().isFriend(getOwner(), player.getUniqueId());
             default:
                 return false;
@@ -327,7 +324,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     public final void handlePhysicsEvent(BlockPhysicsEvent event) {
         int power = event.getBlock().getBlockPower();
         if (power != lastPower) {
-            Debugger.getInstance().debug(this + " redstone power change: " + lastPower + "->" + power);
             onRedstonePowerChanged(lastPower, power);
             if (lastPower == 0 && power > 0 && getRedstoneBehaviour() == RedstoneBehaviour.PULSED) {
                 pulsing = true;
@@ -351,7 +347,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param event the interaction event
      */
     public void onInteractBlock(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == Material.SIGN
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SIGN
                 && event.getClickedBlock().getType() != Material.WALL_SIGN && event.getClickedBlock().getType() != Material.SIGN_POST) {
             // attach a label sign
             if (attachLabelSign(event)) {
@@ -541,7 +537,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         newLoc.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolbox.getPluginInstance(), this));
         for (RelativePosition pos : getBlockStructure()) {
             Block auxBlock = getAuxiliaryBlock(newLoc, pos);
-            Debugger.getInstance().debug(2, "multiblock for " + this + " -> " + auxBlock);
             auxBlock.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
         }
         if (this instanceof ChargeableBlock) {
@@ -593,7 +588,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         location.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
         for (RelativePosition pos : getBlockStructure()) {
             Block auxBlock = getAuxiliaryBlock(location, pos);
-            Debugger.getInstance().debug(2, "Multiblock for " + this + " -> " + auxBlock);
             auxBlock.setMetadata(STB_MULTI_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
         }
 
@@ -830,10 +824,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     @Override
     public String toString() {
         return "STB " + getItemName() + " @ " +
-                (getLocation() == null ? "(null)" : MiscUtil.formatLocation(getLocation()));
+                (getLocation() == null ? "(null)" : formatLocation(getLocation()));
     }
 
-    /**
+    private String formatLocation(Location loc)
+    {
+      return String.format("%d,%d,%d,%s", new Object[] { Integer.valueOf(loc.getBlockX()), Integer.valueOf(loc.getBlockY()), Integer.valueOf(loc.getBlockZ()), loc.getWorld().getName() });
+    }
+
+	/**
      * Get the label text for the block's label sign.  The default behaviour
      * is simply to put the block's item name on the first line of the sign;
      * override this in subclasses if you want a customised sign label.
@@ -907,7 +906,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
     }
 
-    private boolean attachLabelSign(PlayerInteractEvent event) {
+    @SuppressWarnings("deprecation")
+	private boolean attachLabelSign(PlayerInteractEvent event) {
         if (event.getBlockFace().getModY() != 0) {
             // only support placing a label sign on the side of a machine, not the top
             event.setCancelled(true);
@@ -934,7 +934,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         placeLabelSign(signBlock, event.getBlockFace());
 
         if (player.getGameMode() != GameMode.CREATIVE) {
-            ItemStack stack = player.getItemInHand();
+            ItemStack stack = player.getInventory().getItemInMainHand();
             stack.setAmount(stack.getAmount() - 1);
             player.setItemInHand(stack.getAmount() <= 0 ? null : stack);
         }
@@ -948,11 +948,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 	private boolean placeLabelSign(Block signBlock, BlockFace face) {
         if (!signBlock.isEmpty() && signBlock.getType() != Material.WALL_SIGN) {
             // something in the way!
-            Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.SIGN));
             return false;
         } else {
-            Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
             // using setTypeIdAndData() here because we don't want to cause a physics update
             signBlock.setTypeIdAndData(Material.WALL_SIGN.getId(), (byte) 0, false);
             Sign sign = (Sign) signBlock.getState();
@@ -993,7 +991,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param face the face to which the sign was attached
      */
     public void detachLabelSign(BlockFace face) {
-        Debugger.getInstance().debug(this + ": detach label sign on face " + face);
         labelSigns.set(STBUtil.getFaceRotation(getFacing(), face), false);
         update(false);
     }

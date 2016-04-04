@@ -2,7 +2,7 @@ package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
 
-import me.desht.sensibletoolbox.dhutils.ItemNames;
+import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.items.components.IntegratedCircuit;
 
@@ -122,7 +122,7 @@ public class HyperStorageUnit extends BigStorageUnit {
         if (getTotalAmount() > 0) {
             String[] l = super.getExtraLore();
             String[] l2 = Arrays.copyOf(l, l.length + 1);
-            l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemNames.lookup(getStoredItemType());
+            l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + StringUtils.formatItemName(getStoredItemType(), false);
             return l2;
         } else {
             return super.getExtraLore();
