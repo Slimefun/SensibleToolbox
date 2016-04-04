@@ -69,6 +69,7 @@ public class HolographicMonitor extends BaseSTBBlock {
 	@Override
 	public void onServerTick() {
 		super.onServerTick();
+		if (hologram == null) return;
 		this.hologram.clearLines();
 		
 		for (BlockFace f: STBUtil.mainHorizontalFaces) {

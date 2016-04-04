@@ -496,8 +496,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
         }
         if (protocolLibEnabled) {
-            ItemGlow.init(this);
-        } else {
+            if (getConfig().getBoolean("options.glowing_items"))ItemGlow.init(this);
+        } 
+        else {
             LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
             LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
         }
@@ -667,4 +668,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public LWC getLWC()									 	{			return lwc;																	}
     public SoundMufflerListener getSoundMufflerListener() 	{			return soundMufflerListener;												}
     public PlayerUUIDTracker getUuidTracker() 				{			return uuidTracker;															}
+
+	public boolean isGlowingEnabled() {
+		return isProtocolLibEnabled() && getConfig().getBoolean("options.glowing_items");
+	}
 }

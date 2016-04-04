@@ -162,7 +162,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             public void run() {
                 if (tryMix()) {
                     Location loc = getLocation();
-                    loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
+                    loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
                 }
             }
         }));
@@ -211,7 +211,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     private void emptyPaintCan() {
         setPaintLevel(0);
         Location loc = getLocation();
-        loc.getWorld().playSound(loc, Sound.SPLASH2, 1.0f, 1.0f);
+        loc.getWorld().playSound(loc, Sound.ENTITY_PLAYER_SPLASH, 1.0f, 1.0f);
     }
 
     private LevelMonitor getPaintLevelMonitor() {
@@ -371,7 +371,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColour());
 
             Location loc = getLocation();
-            loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
+            loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
 
             inventory.setItem(bucketSlot, new ItemStack(Material.BUCKET));
             dyeStack.setAmount(dyeStack.getAmount() - toUse);
@@ -390,7 +390,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             inventory.setItem(ITEM_SLOTS[1], undyed.getAmount() > 0 ? undyed : null);
             setPaintLevel(getPaintLevel() - canDye);
             Location loc = getLocation();
-            loc.getWorld().playSound(loc, Sound.SPLASH, 1.0f, 1.0f);
+            loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
             return true;
         } else {
             return false;

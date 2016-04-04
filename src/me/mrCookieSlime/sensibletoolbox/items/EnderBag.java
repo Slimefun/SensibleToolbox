@@ -117,7 +117,7 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
                         setEnderFrequency(box.getEnderFrequency());
                         setGlobal(box.isGlobal());
                         player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
-                        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0f, 2.0f);
                     }
                     player.updateInventory();
                     event.setCancelled(true);

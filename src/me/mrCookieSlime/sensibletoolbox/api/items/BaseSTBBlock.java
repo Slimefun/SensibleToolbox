@@ -939,7 +939,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             player.setItemInHand(stack.getAmount() <= 0 ? null : stack);
         }
 
-        player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
 
         return true;
     }

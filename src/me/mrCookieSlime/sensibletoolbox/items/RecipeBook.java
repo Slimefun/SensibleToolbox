@@ -577,7 +577,7 @@ public class RecipeBook extends BaseSTBItem {
             result = stb.toItemStack();
         }
         player.getInventory().addItem(result);
-        player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
         MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemNames.lookup(result));
     }
 
@@ -598,7 +598,7 @@ public class RecipeBook extends BaseSTBItem {
             result = stb.toItemStack();
         }
         player.getInventory().addItem(result);
-        player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
         MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(result));
     }
 

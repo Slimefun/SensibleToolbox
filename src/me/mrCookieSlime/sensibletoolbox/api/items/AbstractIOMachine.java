@@ -39,7 +39,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
     @Override
     protected void onOutOfCharge() {
-        getLocation().getWorld().playSound(getLocation(), Sound.ENDERDRAGON_HIT, 1.0f, 0.5f);
+        getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 1.0f, 0.5f);
     }
 
     @Override

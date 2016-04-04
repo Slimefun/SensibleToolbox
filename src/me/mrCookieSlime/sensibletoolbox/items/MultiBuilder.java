@@ -343,7 +343,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
         }
         player.setItemInHand(toItemStack());
-        player.playSound(player.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f);
     }
 
     @SuppressWarnings("deprecation")
@@ -354,7 +354,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
         if (ch == 0) {
-            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 0.5f);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.5f);
             return Collections.emptySet();
         }
         max = Math.min(Math.min(max, howMuchDoesPlayerHave(player, matData)), ch);

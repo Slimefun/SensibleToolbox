@@ -37,3 +37,4 @@ item_settings:
     scu_per_op: 30
 options:
   auto-update: true
+  glowing_items: false

@@ -49,7 +49,7 @@ public class ElectricalGrinder extends SlimefunIOMachine {
 	@Override
 	protected void onMachineStartup() {
 		if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) {
-            getLocation().getWorld().playSound(getLocation(), Sound.WOOD_CLICK, 1.0f, 1.0f);
+            getLocation().getWorld().playSound(getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.0f, 1.0f);
         }
 	}
 

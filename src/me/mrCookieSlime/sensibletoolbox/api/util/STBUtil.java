@@ -878,7 +878,7 @@ public class STBUtil {
      * @param player the player
      */
     public static void complain(Player player) {
-        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1.0f, 1.0f);
     }
 
     /**
@@ -888,7 +888,7 @@ public class STBUtil {
      * @param message the message text
      */
     public static void complain(Player player, String message) {
-        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1.0f, 1.0f);
         MiscUtil.errorMessage(player, message);
     }
 
