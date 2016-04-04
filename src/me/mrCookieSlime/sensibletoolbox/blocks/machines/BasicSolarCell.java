@@ -292,7 +292,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             if (stack != null) {
                 Block block = event.getClickedBlock();
                 block.getWorld().dropItemNaturally(block.getLocation(), stack);
-                player.playSound(block.getLocation(), Sound.CLICK, 1.0f, 0.6f);
+                player.playSound(block.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.6f);
             }
         }
         super.onInteractBlock(event);

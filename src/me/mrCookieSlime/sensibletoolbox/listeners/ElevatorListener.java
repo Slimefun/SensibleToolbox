@@ -35,7 +35,7 @@ public class ElevatorListener extends STBBaseListener {
                         dest.setPitch(event.getPlayer().getLocation().getPitch());
                         dest.setYaw(event.getPlayer().getLocation().getYaw());
                         event.setTo(dest);
-                        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.PISTON_EXTEND, 1.0f, 1.8f);
+                        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_PISTON_EXTEND, 1.0f, 1.8f);
                     }
                 }
             }
@@ -56,7 +56,7 @@ public class ElevatorListener extends STBBaseListener {
                         dest.setPitch(event.getPlayer().getLocation().getPitch());
                         dest.setYaw(event.getPlayer().getLocation().getYaw());
                         event.getPlayer().teleport(dest);
-                        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.PISTON_RETRACT, 1.0f, 1.8f);
+                        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_PISTON_CONTRACT, 1.0f, 1.8f);
                     }
                 }
             }

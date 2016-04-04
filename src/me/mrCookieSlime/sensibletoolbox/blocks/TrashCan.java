@@ -95,7 +95,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
             if (noisy) {
                 for (ItemStack stack : d.getInventory()) {
                     if (stack != null) {
-                        d.getLocation().getWorld().playSound(d.getLocation(), Sound.EAT, 1.0f, 1.0f);
+                        d.getLocation().getWorld().playSound(d.getLocation(), Sound.ENTITY_GENERIC_EAT, 1.0f, 1.0f);
                         break;
                     }
                 }

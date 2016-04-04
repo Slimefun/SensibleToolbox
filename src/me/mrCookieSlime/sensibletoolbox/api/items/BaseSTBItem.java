@@ -305,7 +305,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         if (enchants != null) {
             res.addUnsafeEnchantments(enchants);
         }
-        if (SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
+        if (SensibleToolboxPlugin.getInstance().isGlowingEnabled()) {
             ItemGlow.setGlowing(res, hasGlow());
         }
 
@@ -338,8 +338,10 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     private List<String> buildLore() {
         String[] lore = getLore();
         String[] lore2 = getExtraLore();
+        
         List<String> res = new ArrayList<String>(lore.length + lore2.length + 1);
         res.add(STBItemRegistry.LORE_PREFIX + getProviderPlugin().getName() + " (STB) item");
+        
         for (String l : lore) {
             res.add(LORE_COLOR + l);
         }

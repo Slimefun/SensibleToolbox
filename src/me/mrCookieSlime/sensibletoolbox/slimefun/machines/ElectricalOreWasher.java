@@ -211,6 +211,6 @@ public class ElectricalOreWasher extends AbstractProcessingMachine implements ST
 
 	@Override
 	protected void onMachineStartup() {
-		if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) getLocation().getWorld().playSound(getLocation(), Sound.SPLASH, 1.0f, 0.75f);
+		if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_PLAYER_SPLASH, 1.0f, 0.75f);
 	}
 }

@@ -34,6 +34,7 @@ import org.bukkit.plugin.Plugin;
 import com.google.common.collect.Maps;
 
 public class STBItemRegistry implements ItemRegistry {
+	
     public static final UUID STB_ATTRIBUTE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
     public static final String LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
     public static final int MAX_ITEM_ID_LENGTH = 32;
@@ -67,6 +68,7 @@ public class STBItemRegistry implements ItemRegistry {
 
         Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
         Constructor<? extends BaseSTBItem> ctor0, ctor1;
+        
         try {
             ctor0 = item.getClass().getConstructor();
         } catch (NoSuchMethodException e) {

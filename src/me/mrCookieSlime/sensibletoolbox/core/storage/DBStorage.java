@@ -13,6 +13,7 @@ import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.core.STBItemRegistry;
 
 public class DBStorage {
+	
     private final Connection connection;
 
     public DBStorage() throws SQLException, ClassNotFoundException {
@@ -25,7 +26,15 @@ public class DBStorage {
     }
 
     private Connection connectSQLite() throws ClassNotFoundException, SQLException {
-        Class.forName("org.sqlite.JDBC");
+    	try {
+			System.out.println("[CS-CoreLib - Database] Loading SQL Driver...");
+	        Class.forName("org.sqlite.JDBC");
+		}
+		catch (Exception x) {
+			System.err.println("ERROR: Failed to load SQL Driver: org.sqlite.JDBC");
+			x.printStackTrace();
+			return null;
+		}
         File dbFile = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), "blocks.db");
         return DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
     }

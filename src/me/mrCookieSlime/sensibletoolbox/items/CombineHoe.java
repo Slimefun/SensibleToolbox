@@ -268,7 +268,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
         if (amountLeft < getSeedAmount()) {
             setSeedAmount(amountLeft);
-            player.getWorld().playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 1.0f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
         }
         ItemStack stack = toItemStack();
         stack.setDurability(durability);
@@ -314,7 +314,7 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
         }
         if (count > 0) {
-            player.playSound(b.getLocation(), Sound.DIG_GRASS, 1.0f, 1.0f);
+            player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0f, 1.0f);
         }
         damageHeldItem(player, count);
     }
@@ -324,7 +324,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         stack.setDurability((short) (stack.getDurability() + amount));
         if (stack.getDurability() >= stack.getType().getMaxDurability()) {
             player.setItemInHand(null);
-            player.playSound(player.getLocation(), Sound.ITEM_BREAK, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
         } else {
             player.setItemInHand(stack);
         }

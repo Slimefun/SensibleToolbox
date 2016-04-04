@@ -108,7 +108,7 @@ public class WateringCan extends BaseSTBItem {
             Block neighbour = block.getRelative(event.getBlockFace());
             if ((neighbour.getType() == Material.STATIONARY_WATER || neighbour.getType() == Material.WATER) && neighbour.getData() == 0) {
                 // attempt to refill the watering can
-                player.playSound(player.getLocation(), Sound.WATER, 1.0f, 0.8f);
+                player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
                 neighbour.setType(Material.AIR);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
@@ -155,7 +155,7 @@ public class WateringCan extends BaseSTBItem {
             if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER) {
                 // attempt to refill the watering can
                 b.setType(Material.AIR);
-                player.playSound(player.getLocation(), Sound.WATER, 1.0f, 0.8f);
+                player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
             }
@@ -293,7 +293,7 @@ public class WateringCan extends BaseSTBItem {
 
     private void useSomeWater(Player p, Block b, int amount) {
         setWaterLevel(Math.max(0, getWaterLevel() - amount));
-        p.playSound(p.getLocation(), Sound.WATER, 1.0f, 2.0f);
+        p.playSound(p.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 2.0f);
         p.playEffect(b.getLocation(), Effect.STEP_SOUND, Material.WATER);
     }
 }

@@ -102,7 +102,7 @@ public class Multimeter extends BaseSTBItem {
                 String.format("Supply: " + ChatColor.GOLD + "%5.2f SCU/t", net.getSupply()),
         };
         HoloMessage.popup(player, clicked.getLocation(), lines);
-        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0f, 2.0f);
     }
 
     private void showMachineInfo(Player player, BaseSTBMachine machine, Block clicked) {
@@ -114,6 +114,6 @@ public class Multimeter extends BaseSTBItem {
                 "Max Charge Rate: " + ChatColor.GOLD + machine.getChargeRate() + " SCU/t",
         };
         HoloMessage.popup(player, clicked.getLocation(), lines);
-        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 2.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0f, 2.0f);
     }
 }

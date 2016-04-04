@@ -64,7 +64,7 @@ public class CompactSmeltery extends SlimefunIOMachine {
 	@Override
 	protected void onMachineStartup() {
 		if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) {
-            getLocation().getWorld().playSound(getLocation(), Sound.FIRE_IGNITE, 1.0f, 1.0f);
+            getLocation().getWorld().playSound(getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0f, 1.0f);
         }
 	}
 
