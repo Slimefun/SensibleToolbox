@@ -165,13 +165,6 @@ import me.mrCookieSlime.sensibletoolbox.listeners.SoundMufflerListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.TrashCanListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.WorldListener;
 import me.mrCookieSlime.sensibletoolbox.slimefun.SlimefunBridge;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.CompactSmeltery;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalGrinder;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalJuicer;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalOreWasher;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalPanningMachine;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.FruitPicker;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.NuclearReactor;
 import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 
 import org.bukkit.Bukkit;
@@ -316,15 +309,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
         if (isHolographicDisplaysEnabled()) {
         	itemRegistry.registerItem(new HolographicMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
-        	itemRegistry.registerItem(new ElectricalJuicer(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new ElectricalGrinder(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new ElectricalPanningMachine(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new ElectricalOreWasher(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new NuclearReactor(), this, CONFIG_NODE, PERMISSION_NODE);
-        	itemRegistry.registerItem(new CompactSmeltery(), this, CONFIG_NODE, PERMISSION_NODE);
-        	if (Bukkit.getPluginManager().isPluginEnabled("ExoticGarden")) itemRegistry.registerItem(new FruitPicker(), this, CONFIG_NODE, PERMISSION_NODE);
         }
     }
 
