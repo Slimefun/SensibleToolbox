@@ -1,14 +1,11 @@
 package me.mrCookieSlime.sensibletoolbox.slimefun;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.MenuItem;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Reflection.ReflectionUtils;
-import me.mrCookieSlime.Slimefun.Lists.Categories;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.ExcludedBlock;
@@ -23,10 +20,6 @@ import me.mrCookieSlime.sensibletoolbox.blocks.machines.BioEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.HeatEngine;
 import me.mrCookieSlime.sensibletoolbox.blocks.machines.MagmaticEngine;
 import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalOreWasher;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.ElectricalPanningMachine;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.FruitPicker;
-import me.mrCookieSlime.sensibletoolbox.slimefun.machines.NuclearReactor;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -104,19 +97,6 @@ public class SlimefunBridge {
 					}
 				}
 			}
-			else if (item instanceof SlimefunIOMachine || item instanceof FruitPicker || item instanceof ElectricalPanningMachine || item instanceof ElectricalOreWasher || item instanceof NuclearReactor) {
-				category = Categories.MACHINES_1;
-				recipeType = RecipeType.ENHANCED_CRAFTING_TABLE;
-				try {
-					recipe = (List<ItemStack>) ReflectionUtils.getMethod(item.getClass(), "getSlimefunRecipe").invoke(item);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
 			
 			SlimefunItem sfItem = null;
 			
@@ -132,11 +112,6 @@ public class SlimefunBridge {
 			}
 			else if (id.equalsIgnoreCase("heatengine")) {
 				Set<ItemStack> fuels = ((HeatEngine) item).getFuelInformation();
-				if (fuels.size() % 2 != 0) fuels.add(null);
-				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
-			}
-			else if (id.equalsIgnoreCase("nuclearreactor")) {
-				Set<ItemStack> fuels = ((NuclearReactor) item).getFuelInformation();
 				if (fuels.size() % 2 != 0) fuels.add(null);
 				sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
 			}
@@ -157,8 +132,6 @@ public class SlimefunBridge {
 		patch("IRONDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.IRON_INGOT));
 		patch("GOLDDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.GOLD_INGOT));
 		patch("FISHBAIT", new RecipeType(SlimefunItem.getByName("FERMENTER").getItem()), new ItemStack(Material.ROTTEN_FLESH));
-		
-		STBSlimefunItems.load();
 		
 		Slimefun.addDescription("REACTOR_COOLANT_PORT", "&e1: Place this on the Bottom Side of a Reactor", "&e2: Fill it with Coolant Cells", "§e3: Make sure to supply more Coolant Cells", "&e since they get consumed over time");
 	}
