@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemGlow;
-import me.desht.sensibletoolbox.dhutils.PermissionUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
@@ -85,7 +83,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     public final boolean checkPlayerPermission(Player player, ItemAction action) {
         String prefix = SensibleToolboxPlugin.getInstance().getItemRegistry().getPermissionPrefix(this);
         Validate.notNull(prefix, "Can't determine permission node prefix for " + getItemTypeID());
-        return PermissionUtils.isAllowedTo(player, prefix + "." + action.getNode() + "." + getItemTypeID());
+        return player.hasPermission(prefix + "." + action.getNode() + "." + getItemTypeID());
     }
 
     /**
@@ -304,9 +302,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         res.setItemMeta(im);
         if (enchants != null) {
             res.addUnsafeEnchantments(enchants);
-        }
-        if (SensibleToolboxPlugin.getInstance().isGlowingEnabled()) {
-            ItemGlow.setGlowing(res, hasGlow());
         }
 
         if (this instanceof Chargeable && res.getType().getMaxDurability() > 0) {

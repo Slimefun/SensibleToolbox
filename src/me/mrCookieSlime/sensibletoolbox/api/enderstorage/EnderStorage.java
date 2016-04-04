@@ -1,6 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.api.enderstorage;
 
-import me.desht.sensibletoolbox.dhutils.PermissionUtils;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
@@ -80,7 +79,7 @@ public class EnderStorage {
     public static boolean isCreativeAccessBlocked(Player player) {
         return (player.getGameMode() == GameMode.CREATIVE || STBUtil.isCreativeWorld(player.getWorld()))
                 && !SensibleToolbox.getPluginInstance().getConfigCache().isCreativeEnderAccess()
-                && !PermissionUtils.isAllowedTo(player, "stb.enderaccess.creative");
+                && !player.hasPermission("stb.enderaccess.creative");
     }
 
 }
