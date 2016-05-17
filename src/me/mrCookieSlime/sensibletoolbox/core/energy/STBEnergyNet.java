@@ -5,7 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import me.desht.dhutils.Debugger;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeableBlock;
 import me.mrCookieSlime.sensibletoolbox.api.energy.EnergyNet;
@@ -13,12 +19,6 @@ import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
 import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.sensibletoolbox.core.storage.BlockPosition;
 import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class STBEnergyNet implements EnergyNet {
 	

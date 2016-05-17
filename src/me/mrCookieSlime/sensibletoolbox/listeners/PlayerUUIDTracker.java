@@ -4,15 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 
 public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
     private static final String MAP_FILE = "playermap.yml";

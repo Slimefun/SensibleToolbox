@@ -3,15 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 import java.io.IOException;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.gui.ToggleButton;
-import me.mrCookieSlime.sensibletoolbox.api.items.AbstractProcessingMachine;
-import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,6 +21,15 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.gui.ToggleButton;
+import me.mrCookieSlime.sensibletoolbox.api.items.AbstractProcessingMachine;
+import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
 	

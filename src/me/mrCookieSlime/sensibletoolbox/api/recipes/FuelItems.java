@@ -6,12 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import me.desht.dhutils.Debugger;
 
 /**
  * Represents items that may be converted to SCU by some machine.  A machine

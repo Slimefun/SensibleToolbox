@@ -3,9 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.listeners;
 import java.util.HashSet;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.sensibletoolbox.blocks.SoundMuffler;
-
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -15,6 +12,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.sensibletoolbox.blocks.SoundMuffler;
 
 public class SoundMufflerListener extends PacketAdapter implements Listener {
     private final Set<SoundMuffler> mufflers = new HashSet<SoundMuffler>();

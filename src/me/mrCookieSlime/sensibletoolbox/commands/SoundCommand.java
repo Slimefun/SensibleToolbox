@@ -2,15 +2,16 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.List;
 
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.commands.AbstractCommand;
+
 public class SoundCommand extends AbstractCommand {
+	
     public SoundCommand() {
         super("stb sound", 1, 3);
         setUsage("/<command> sound <sound-name> [<volume>] [<pitch>]");

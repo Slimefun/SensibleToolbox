@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import me.desht.sensibletoolbox.dhutils.LogUtils;
+import me.desht.dhutils.LogUtils;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.core.STBItemRegistry;
 

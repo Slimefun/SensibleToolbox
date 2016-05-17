@@ -7,15 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.api.ItemRegistry;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.attributes.AttributeStorage;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +23,15 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.collect.Maps;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.sensibletoolbox.api.ItemRegistry;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.attributes.AttributeStorage;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 
 public class STBItemRegistry implements ItemRegistry {
 	

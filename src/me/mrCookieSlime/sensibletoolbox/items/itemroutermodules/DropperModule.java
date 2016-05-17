@@ -1,7 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +11,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
+
+import me.desht.dhutils.Debugger;
 
 public class DropperModule extends DirectionalItemRouterModule {
     private static final MaterialData md = makeDye(DyeColor.GRAY);

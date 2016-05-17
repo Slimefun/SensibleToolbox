@@ -8,18 +8,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
-
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
+
 public class STBFriendManager implements FriendManager {
+	
     private static final String FRIEND_DIR = "friends";
 
     private static final FilenameFilter ymlFilter = new FilenameFilter() {

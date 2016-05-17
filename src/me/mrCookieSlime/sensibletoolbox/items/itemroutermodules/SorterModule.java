@@ -1,11 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,6 +11,12 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
 
 public class SorterModule extends DirectionalItemRouterModule {
     private static final Dye md = makeDye(DyeColor.PURPLE);

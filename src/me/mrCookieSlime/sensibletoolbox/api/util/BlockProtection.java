@@ -2,12 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.api.util;
 
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
-
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
@@ -19,6 +13,12 @@ import com.griefcraft.util.UUIDRegistry;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 
 /**
  * Check protections in force for various vanilla blocks and inventories.

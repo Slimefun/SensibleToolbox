@@ -2,14 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.items;
 
 import java.util.Random;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.api.util.SoilSaturation;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -27,6 +19,14 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.api.util.SoilSaturation;
 
 public class WateringCan extends BaseSTBItem {
 	

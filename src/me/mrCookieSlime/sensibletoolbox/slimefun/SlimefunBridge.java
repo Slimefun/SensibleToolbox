@@ -38,7 +38,7 @@ public class SlimefunBridge {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings("deprecation")
 	public static void initiate() {
 		Category items = new Category(new MenuItem(Material.SHEARS, "&7STB - Items", 0, "open"));
 		Category blocks = new Category(new CustomItem(new MaterialData(Material.STAINED_GLASS, (byte) 10), "&7STB - Blocks and Machines", "", "&a> Click to open"));

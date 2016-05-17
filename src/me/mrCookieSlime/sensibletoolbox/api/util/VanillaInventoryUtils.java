@@ -3,9 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.api.util;
 import java.util.HashMap;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,6 +14,9 @@ import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
 
 /**
  * Utility methods to interact with vanilla inventories.

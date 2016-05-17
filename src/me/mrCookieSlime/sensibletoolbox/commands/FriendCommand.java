@@ -4,12 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.MessagePager;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -18,7 +12,14 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.collect.Lists;
 
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.MessagePager;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
+
 public class FriendCommand extends STBAbstractCommand {
+	
     public FriendCommand() {
         super("stb friend");
         setPermissionNode("stb.commands.friend");

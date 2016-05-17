@@ -1,13 +1,13 @@
 package me.mrCookieSlime.sensibletoolbox.commands;
 
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.AbstractCommand;
 
 public class DebugCommand extends AbstractCommand {
     public DebugCommand() {

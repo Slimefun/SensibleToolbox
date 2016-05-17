@@ -3,16 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 import java.util.Arrays;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.core.IDTracker;
-import me.mrCookieSlime.sensibletoolbox.items.components.SubspaceTransponder;
-import me.mrCookieSlime.sensibletoolbox.items.components.UnlinkedSCURelay;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -30,7 +20,18 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.core.IDTracker;
+import me.mrCookieSlime.sensibletoolbox.items.components.SubspaceTransponder;
+import me.mrCookieSlime.sensibletoolbox.items.components.UnlinkedSCURelay;
+
 public class SCURelay extends BatteryBox {
+	
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.CYAN);
     private static final int TRANSPONDER_LABEL_SLOT = 43;
     private static final int TRANSPONDER_SLOT = 44;

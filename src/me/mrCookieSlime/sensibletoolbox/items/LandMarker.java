@@ -2,10 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.items;
 
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,6 +15,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.items.components.SimpleCircuit;
 
 public class LandMarker extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.FIREWORK);

@@ -5,18 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.IconMenu;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
-import me.mrCookieSlime.sensibletoolbox.api.util.HoloMessage;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.blocks.PaintCan;
-import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Art;
 import org.bukkit.ChatColor;
@@ -42,7 +30,20 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.IconMenu;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
+import me.mrCookieSlime.sensibletoolbox.api.util.HoloMessage;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.blocks.PaintCan;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
+
 public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEventHandler {
+	
     private static final MaterialData md = new MaterialData(Material.GOLD_SPADE);
     private int paintLevel;
     private DyeColor colour;

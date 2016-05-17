@@ -2,20 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.listeners;
 
 import java.util.Iterator;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
-import me.mrCookieSlime.sensibletoolbox.api.gui.STBGUIHolder;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem.ItemAction;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.core.gui.STBInventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,6 +39,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Lever;
 import org.bukkit.material.Sign;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
+import me.mrCookieSlime.sensibletoolbox.api.gui.STBGUIHolder;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem.ItemAction;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.core.gui.STBInventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 
 public class GeneralListener extends STBBaseListener {
     private static final String LAST_PISTON_EXTEND = "STB_Last_Piston_Extend";

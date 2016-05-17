@@ -1,14 +1,14 @@
 package me.mrCookieSlime.sensibletoolbox.api.util;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 
 public class HoloMessage {
 	

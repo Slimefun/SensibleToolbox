@@ -2,15 +2,16 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.PermissionUtils;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.PermissionUtils;
+import me.desht.dhutils.commands.AbstractCommand;
+
 public abstract class STBAbstractCommand extends AbstractCommand {
+	
     public STBAbstractCommand(String label) {
         super(label);
     }

@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.MiscUtil;
 
 /**
  * Represents the custom recipes known by a specific type of machine.

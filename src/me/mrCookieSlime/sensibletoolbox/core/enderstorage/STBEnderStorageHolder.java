@@ -6,13 +6,6 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorageHolder;
-import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
-import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.Inventory;
@@ -20,7 +13,15 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.io.Files;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorageHolder;
+import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
+import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
+
 public abstract class STBEnderStorageHolder implements EnderStorageHolder {
+	
     private final int frequency;
     private final EnderStorageManager manager;
     private Inventory inventory;

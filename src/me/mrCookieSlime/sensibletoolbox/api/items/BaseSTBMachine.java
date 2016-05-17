@@ -9,8 +9,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
 import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
@@ -34,22 +50,6 @@ import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import me.mrCookieSlime.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
 import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Represents an STB block which acts a machine; it is chargeable and

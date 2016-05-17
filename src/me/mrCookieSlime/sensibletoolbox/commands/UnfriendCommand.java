@@ -2,16 +2,17 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.FriendManager;
+
 public class UnfriendCommand extends STBAbstractCommand {
+	
     public UnfriendCommand() {
         super("stb unfriend", 1);
         setPermissionNode("stb.commands.unfriend");
