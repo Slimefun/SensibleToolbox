@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.desht.sensibletoolbox.dhutils.ConfigurationManager;
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.ConfigurationManager;
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.AbstractCommand;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 
 public class SetcfgCommand extends AbstractCommand {
 

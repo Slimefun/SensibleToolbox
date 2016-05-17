@@ -2,15 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.items;
 
 import java.util.HashMap;
 
-import me.desht.sensibletoolbox.dhutils.ItemNames;
-import me.desht.sensibletoolbox.dhutils.cuboid.Cuboid;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -27,6 +18,15 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.cuboid.Cuboid;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
 public abstract class CombineHoe extends BaseSTBItem {
     private Material seedType;

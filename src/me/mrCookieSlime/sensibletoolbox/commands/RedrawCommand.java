@@ -3,20 +3,21 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.AbstractCommand;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
+
 public class RedrawCommand extends AbstractCommand {
+	
     public RedrawCommand() {
         super("stb redraw");
         setPermissionNode("stb.commands.redraw");

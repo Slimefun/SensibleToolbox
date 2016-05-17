@@ -1,15 +1,16 @@
 package me.mrCookieSlime.sensibletoolbox.commands;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.AbstractCommand;
 import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 import me.mrCookieSlime.sensibletoolbox.core.STBFriendManager;
 import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
-
 public class SaveCommand extends AbstractCommand {
+	
     public SaveCommand() {
         super("stb save", 0, 0);
         setPermissionNode("stb.commands.save");

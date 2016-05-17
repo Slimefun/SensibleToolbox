@@ -28,7 +28,7 @@ public class MobListener extends STBBaseListener {
             if (dust.checkPlayerPermission(killer, BaseSTBItem.ItemAction.CRAFT)) {
                 int chance = 20, amount = 1;
                 Random r = CSCoreLib.randomizer();
-                ItemStack item = killer.getItemInHand();
+                ItemStack item = killer.getInventory().getItemInMainHand();
                 if (item != null) {
                     switch (item.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)) {
                         case 1:

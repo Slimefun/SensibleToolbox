@@ -8,24 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.gui.AccessControlGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
-import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
-import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
-import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.ReceiverModule;
-import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.SpeedModule;
-import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.StackModule;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -48,6 +30,24 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.Lists;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.gui.AccessControlGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
+import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
+import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.ReceiverModule;
+import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.SpeedModule;
+import me.mrCookieSlime.sensibletoolbox.items.itemroutermodules.StackModule;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	

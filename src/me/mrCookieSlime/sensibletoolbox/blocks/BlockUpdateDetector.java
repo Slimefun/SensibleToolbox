@@ -1,15 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.blocks;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
-import me.mrCookieSlime.sensibletoolbox.api.gui.AccessControlGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.gui.NumericGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,6 +15,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
+import me.mrCookieSlime.sensibletoolbox.api.gui.AccessControlGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.gui.NumericGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
 public class BlockUpdateDetector extends BaseSTBBlock {
     private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.PURPLE);

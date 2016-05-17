@@ -4,19 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.gui.ClickableGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUIListener;
-import me.mrCookieSlime.sensibletoolbox.api.gui.MonitorGadget;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
@@ -36,7 +23,21 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.gui.ClickableGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUIListener;
+import me.mrCookieSlime.sensibletoolbox.api.gui.MonitorGadget;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+
 public class STBInventoryGUI implements InventoryGUI {
+	
     // some handy stock textures
     public static ItemStack INPUT_TEXTURE;
     public static ItemStack OUTPUT_TEXTURE;

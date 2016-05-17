@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
-
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
 
 /**
  * Represents a shapeless recipe with potentially multiple ingredients and

@@ -3,23 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 import java.util.Arrays;
 import java.util.List;
 
-import me.desht.sensibletoolbox.dhutils.ItemNames;
-import me.mrCookieSlime.sensibletoolbox.api.Filtering;
-import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.gui.DirectionGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.FilterTypeGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.gui.ToggleButton;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.util.Filter;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
-import me.mrCookieSlime.sensibletoolbox.blocks.EnderBox;
-import me.mrCookieSlime.sensibletoolbox.blocks.ItemRouter;
-import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
-
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -37,6 +20,23 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Directional;
 import org.bukkit.material.Wool;
+
+import me.desht.dhutils.ItemNames;
+import me.mrCookieSlime.sensibletoolbox.api.Filtering;
+import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.gui.DirectionGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.FilterTypeGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.gui.ToggleButton;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.util.Filter;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.mrCookieSlime.sensibletoolbox.blocks.EnderBox;
+import me.mrCookieSlime.sensibletoolbox.blocks.ItemRouter;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
 	

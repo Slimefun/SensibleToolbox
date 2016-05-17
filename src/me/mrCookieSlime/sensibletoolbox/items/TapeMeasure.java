@@ -1,10 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.items;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,6 +12,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 public class TapeMeasure extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.STRING);

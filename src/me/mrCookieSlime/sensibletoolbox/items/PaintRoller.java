@@ -7,6 +7,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 public class PaintRoller extends PaintBrush {
+	
     private static final MaterialData md = new MaterialData(Material.IRON_SPADE);
 
     public PaintRoller() {

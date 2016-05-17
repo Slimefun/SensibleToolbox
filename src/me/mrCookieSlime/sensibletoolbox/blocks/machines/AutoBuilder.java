@@ -1,20 +1,5 @@
 package me.mrCookieSlime.sensibletoolbox.blocks.machines;
 
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.cuboid.Cuboid;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.gui.ButtonGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.CyclerGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
-import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.items.LandMarker;
-import me.mrCookieSlime.sensibletoolbox.items.components.IntegratedCircuit;
-import me.mrCookieSlime.sensibletoolbox.items.components.ToughMachineFrame;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -32,6 +17,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.cuboid.Cuboid;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.gui.ButtonGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.CyclerGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBMachine;
+import me.mrCookieSlime.sensibletoolbox.api.util.BlockProtection;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.items.LandMarker;
+import me.mrCookieSlime.sensibletoolbox.items.components.IntegratedCircuit;
+import me.mrCookieSlime.sensibletoolbox.items.components.ToughMachineFrame;
 
 public class AutoBuilder extends BaseSTBMachine {
 	

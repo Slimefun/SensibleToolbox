@@ -2,17 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,6 +10,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Attachable;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.AbstractCommand;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 
 public class ChargeCommand extends AbstractCommand {
 	

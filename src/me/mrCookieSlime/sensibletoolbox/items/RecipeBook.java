@@ -13,30 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemNames;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.cost.ItemCost;
-import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
-import me.mrCookieSlime.sensibletoolbox.api.gui.ButtonGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.CyclerGadget;
-import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.items.AbstractProcessingMachine;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipe;
-import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipeManager;
-import me.mrCookieSlime.sensibletoolbox.api.recipes.RecipeUtil;
-import me.mrCookieSlime.sensibletoolbox.api.recipes.STBFurnaceRecipe;
-import me.mrCookieSlime.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
-import me.mrCookieSlime.sensibletoolbox.core.STBItemRegistry;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -65,6 +41,30 @@ import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.cost.ItemCost;
+import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
+import me.mrCookieSlime.sensibletoolbox.api.gui.ButtonGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.CyclerGadget;
+import me.mrCookieSlime.sensibletoolbox.api.gui.GUIUtil;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.items.AbstractProcessingMachine;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipe;
+import me.mrCookieSlime.sensibletoolbox.api.recipes.CustomRecipeManager;
+import me.mrCookieSlime.sensibletoolbox.api.recipes.RecipeUtil;
+import me.mrCookieSlime.sensibletoolbox.api.recipes.STBFurnaceRecipe;
+import me.mrCookieSlime.sensibletoolbox.api.recipes.SimpleCustomRecipe;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.api.util.VanillaInventoryUtils;
+import me.mrCookieSlime.sensibletoolbox.core.STBItemRegistry;
 
 /**
  * A recipe book allows browsing of all known recipes, and also fabrication of

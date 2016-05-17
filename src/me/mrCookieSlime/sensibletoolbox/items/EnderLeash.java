@@ -3,13 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.items;
 import java.io.IOException;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.PermissionUtils;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -38,6 +31,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.PermissionUtils;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.api.util.BukkitSerialization;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
 public class EnderLeash extends BaseSTBItem {
     private static final MaterialData md = new MaterialData(Material.LEASH);

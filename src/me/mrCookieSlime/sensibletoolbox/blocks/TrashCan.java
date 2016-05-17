@@ -2,12 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.blocks;
 
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -22,6 +16,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.sensibletoolbox.api.STBInventoryHolder;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
 
 public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 

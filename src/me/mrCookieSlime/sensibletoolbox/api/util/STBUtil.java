@@ -8,17 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemGlow;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.block.BlockUtil;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.sensibletoolbox.attributes.Attributes;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
@@ -47,6 +36,17 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.ItemGlow;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.block.BlockUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBItem;
+import me.mrCookieSlime.sensibletoolbox.attributes.Attributes;
 
 /**
  * A collection of miscellaneous utility methods.

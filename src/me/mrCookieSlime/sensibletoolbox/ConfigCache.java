@@ -1,6 +1,6 @@
 package me.mrCookieSlime.sensibletoolbox;
 
-import me.desht.sensibletoolbox.dhutils.LogUtils;
+import me.desht.dhutils.LogUtils;
 import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
 import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
 

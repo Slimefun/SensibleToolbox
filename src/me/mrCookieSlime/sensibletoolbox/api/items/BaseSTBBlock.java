@@ -3,19 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.api.items;
 import java.util.BitSet;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.PersistableLocation;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
-import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeableBlock;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
-import me.mrCookieSlime.sensibletoolbox.api.gui.STBGUIHolder;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +28,19 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.ChatPaginator;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.PersistableLocation;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
+import me.mrCookieSlime.sensibletoolbox.api.RedstoneBehaviour;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.energy.ChargeableBlock;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUI;
+import me.mrCookieSlime.sensibletoolbox.api.gui.STBGUIHolder;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
+import me.mrCookieSlime.sensibletoolbox.util.UnicodeSymbol;
 
 /**
  * Represents an STB block; an STB item which can be placed as a block in the

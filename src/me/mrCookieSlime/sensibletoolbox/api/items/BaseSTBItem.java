@@ -4,18 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemGlow;
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
-import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUIListener;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.attributes.AttributeStorage;
-import me.mrCookieSlime.sensibletoolbox.attributes.NbtFactory;
-import me.mrCookieSlime.sensibletoolbox.core.STBItemRegistry;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,6 +25,18 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.ItemGlow;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.energy.Chargeable;
+import me.mrCookieSlime.sensibletoolbox.api.gui.InventoryGUIListener;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.attributes.AttributeStorage;
+import me.mrCookieSlime.sensibletoolbox.attributes.NbtFactory;
+import me.mrCookieSlime.sensibletoolbox.core.STBItemRegistry;
 
 
 /**

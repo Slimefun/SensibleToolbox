@@ -2,8 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.items.itemroutermodules;
 
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -13,6 +11,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.Dye;
 import org.bukkit.material.MaterialData;
+
+import me.desht.dhutils.Debugger;
 
 public class ReceiverModule extends ItemRouterModule {
     private static final Dye md = makeDye(DyeColor.ORANGE);

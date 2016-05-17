@@ -8,13 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorageHolder;
-import me.mrCookieSlime.sensibletoolbox.items.EnderBag;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -23,6 +16,13 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
+import me.mrCookieSlime.sensibletoolbox.api.enderstorage.EnderStorageHolder;
+import me.mrCookieSlime.sensibletoolbox.items.EnderBag;
 
 public class EnderStorageManager implements Listener {
 	

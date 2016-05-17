@@ -6,15 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.MessagePager;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.MessagePager;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.AbstractCommand;
+import me.mrCookieSlime.sensibletoolbox.SensibleToolboxPlugin;
 
 public class GetcfgCommand extends AbstractCommand {
 

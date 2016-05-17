@@ -2,12 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -15,7 +9,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.commands.AbstractCommand;
+import me.mrCookieSlime.sensibletoolbox.api.SensibleToolbox;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.items.RecipeBook;
+
 public class RecipeCommand extends AbstractCommand {
+	
     public RecipeCommand() {
         super("stb recipe", 0, 1);
         setUsage("/<command> recipe <filter-string>");

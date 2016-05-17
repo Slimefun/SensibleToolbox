@@ -3,9 +3,10 @@ package me.mrCookieSlime.sensibletoolbox.core.storage;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
+import me.desht.dhutils.Debugger;
 
 public class DBUpdaterTask implements Runnable {
+	
     private final LocationManager manager;
     private final PreparedStatement insertStmt;
     private final PreparedStatement updateStmt;

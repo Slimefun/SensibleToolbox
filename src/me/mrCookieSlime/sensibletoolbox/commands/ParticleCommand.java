@@ -3,10 +3,6 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 import java.util.List;
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.ParticleEffect;
-import me.desht.sensibletoolbox.dhutils.commands.AbstractCommand;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,7 +10,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.ParticleEffect;
+import me.desht.dhutils.commands.AbstractCommand;
+
 public class ParticleCommand extends AbstractCommand {
+	
     public ParticleCommand() {
         super("stb particle", 6, 6);
         setUsage("/<command> particle <type> <x> <y> <z> <speed> <amount>");

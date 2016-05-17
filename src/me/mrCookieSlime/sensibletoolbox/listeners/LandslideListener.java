@@ -1,12 +1,12 @@
 package me.mrCookieSlime.sensibletoolbox.listeners;
 
-import me.desht.landslide.BlockSlideEvent;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.LogUtils;
+import me.desht.landslide.BlockSlideEvent;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
 
 public class LandslideListener implements Listener {
 	

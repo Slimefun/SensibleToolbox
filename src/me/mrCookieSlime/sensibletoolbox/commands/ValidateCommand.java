@@ -2,13 +2,6 @@ package me.mrCookieSlime.sensibletoolbox.commands;
 
 import java.util.Set;
 
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
-import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
-import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,7 +13,15 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.collect.Sets;
 
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MiscUtil;
+import me.mrCookieSlime.sensibletoolbox.api.items.BaseSTBBlock;
+import me.mrCookieSlime.sensibletoolbox.api.util.STBUtil;
+import me.mrCookieSlime.sensibletoolbox.core.storage.LocationManager;
+
 public class ValidateCommand extends STBAbstractCommand {
+	
     public ValidateCommand() {
         super("stb validate");
         setPermissionNode("stb.commands.validate");

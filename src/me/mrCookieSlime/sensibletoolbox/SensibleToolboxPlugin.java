@@ -21,16 +21,31 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import me.desht.sensibletoolbox.dhutils.ConfigurationListener;
-import me.desht.sensibletoolbox.dhutils.ConfigurationManager;
-import me.desht.sensibletoolbox.dhutils.DHUtilsException;
-import me.desht.sensibletoolbox.dhutils.DHValidate;
-import me.desht.sensibletoolbox.dhutils.Debugger;
-import me.desht.sensibletoolbox.dhutils.ItemGlow;
-import me.desht.sensibletoolbox.dhutils.LogUtils;
-import me.desht.sensibletoolbox.dhutils.MessagePager;
-import me.desht.sensibletoolbox.dhutils.MiscUtil;
-import me.desht.sensibletoolbox.dhutils.commands.CommandManager;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.comphenix.protocol.ProtocolLibrary;
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.LWCPlugin;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
+import me.desht.dhutils.ConfigurationListener;
+import me.desht.dhutils.ConfigurationManager;
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.DHValidate;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.ItemGlow;
+import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.MessagePager;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.commands.CommandManager;
 import me.mrCookieSlime.CSCoreLibPlugin.PluginUtils;
 import me.mrCookieSlime.CSCoreLibSetup.CSCoreLibLoader;
 import me.mrCookieSlime.sensibletoolbox.api.AccessControl;
@@ -166,21 +181,6 @@ import me.mrCookieSlime.sensibletoolbox.listeners.TrashCanListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.WorldListener;
 import me.mrCookieSlime.sensibletoolbox.slimefun.SlimefunBridge;
 import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
-import com.comphenix.protocol.ProtocolLibrary;
-import com.griefcraft.lwc.LWC;
-import com.griefcraft.lwc.LWCPlugin;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
