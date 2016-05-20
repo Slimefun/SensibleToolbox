@@ -173,7 +173,6 @@ import me.mrCookieSlime.sensibletoolbox.listeners.AnvilListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.ElevatorListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.FurnaceListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.GeneralListener;
-import me.mrCookieSlime.sensibletoolbox.listeners.LandslideListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.MobListener;
 import me.mrCookieSlime.sensibletoolbox.listeners.PlayerUUIDTracker;
 import me.mrCookieSlime.sensibletoolbox.listeners.SoundMufflerListener;
@@ -191,7 +190,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private SoundMufflerListener soundMufflerListener;
     private PlayerUUIDTracker uuidTracker;
     private boolean inited = false;
-    private LandslideListener landslideListener = null;
     private boolean holographicDisplays = false;
     private BukkitTask energyTask = null;
     private LWC lwc = null;
@@ -341,7 +339,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             // try to hook other plugins
             holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
             setupProtocolLib();
-            setupLandslide();
             setupLWC();
             setupWorldGuard();
             setupPreciousStones();
@@ -504,20 +501,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
     }
 
-    private void setupLandslide() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("Landslide");
-        if (plugin != null && plugin.isEnabled()) {
-            landslideListener = new LandslideListener(this);
-            Debugger.getInstance().debug("Hooked Landslide v" + plugin.getDescription().getVersion());
-        }
-    }
-
     public boolean isProtocolLibEnabled() {
         return protocolLibEnabled;
-    }
-
-    public LandslideListener getLandslideListener() {
-        return landslideListener;
     }
 
     public boolean isHolographicDisplaysEnabled() {
