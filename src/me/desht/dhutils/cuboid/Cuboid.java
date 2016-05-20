@@ -17,8 +17,6 @@ import org.bukkit.material.MaterialData;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.block.MassBlockUpdate;
-import me.desht.landslide.dhutils.nms.NMSHelper;
-import me.desht.landslide.dhutils.nms.api.NMSAbstraction;
 
 public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializable {
 	protected final String worldName;
@@ -634,47 +632,47 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 		fill(mat.getItemTypeId(), (byte)mat.getData(), mbu);
 	}
 
-	/**
-	 * Set the light level of all blocks within this Cuboid.
-	 *
-	 * @param level the required light level
-	 */
-	public void forceLightLevel(int level) {
-		long start = System.nanoTime();
-		NMSAbstraction nms = NMSHelper.getNMS();
-		if (nms == null) {
-			return;
-		}
-		World world = getWorld();
-		for (int x = getLowerX(); x < getUpperX(); x++) {
-			for (int z = getLowerZ(); z < getUpperZ(); z++) {
-				for (int y = getLowerY(); y < getUpperY(); y++) {
-						nms.forceBlockLightLevel(world, x, y, z, level);
-				}
-			}
-		}
-		Debugger.getInstance().debug(2, "Cuboid: forceLightLevel: " + this + " (level " + level + ") in " + (System.nanoTime() - start) + " ns");
-	}
-
-	/**
-	 * Reset the light level of all blocks within this Cuboid.
-	 */
-	public void resetLightLevel() {
-		long start = System.nanoTime();
-		NMSAbstraction nms = NMSHelper.getNMS();
-		if (nms == null) {
-			return;
-		}
-		World world = getWorld();
-		for (int x = getLowerX(); x < getUpperX(); x++) {
-			for (int z = getLowerZ(); z < getUpperZ(); z++) {
-				for (int y = getLowerY(); y < getUpperY(); y++) {
-					nms.recalculateBlockLighting(world, x, y, z);
-				}
-			}
-		}
-		Debugger.getInstance().debug(2, "Cuboid: resetLightLevel: " + this + " in " + (System.nanoTime() - start) + " ns");
-	}
+//	/**
+//	 * Set the light level of all blocks within this Cuboid.
+//	 *
+//	 * @param level the required light level
+//	 */
+//	public void forceLightLevel(int level) {
+//		long start = System.nanoTime();
+//		NMSAbstraction nms = NMSHelper.getNMS();
+//		if (nms == null) {
+//			return;
+//		}
+//		World world = getWorld();
+//		for (int x = getLowerX(); x < getUpperX(); x++) {
+//			for (int z = getLowerZ(); z < getUpperZ(); z++) {
+//				for (int y = getLowerY(); y < getUpperY(); y++) {
+//						nms.forceBlockLightLevel(world, x, y, z, level);
+//				}
+//			}
+//		}
+//		Debugger.getInstance().debug(2, "Cuboid: forceLightLevel: " + this + " (level " + level + ") in " + (System.nanoTime() - start) + " ns");
+//	}
+//
+//	/**
+//	 * Reset the light level of all blocks within this Cuboid.
+//	 */
+//	public void resetLightLevel() {
+//		long start = System.nanoTime();
+//		NMSAbstraction nms = NMSHelper.getNMS();
+//		if (nms == null) {
+//			return;
+//		}
+//		World world = getWorld();
+//		for (int x = getLowerX(); x < getUpperX(); x++) {
+//			for (int z = getLowerZ(); z < getUpperZ(); z++) {
+//				for (int y = getLowerY(); y < getUpperY(); y++) {
+//					nms.recalculateBlockLighting(world, x, y, z);
+//				}
+//			}
+//		}
+//		Debugger.getInstance().debug(2, "Cuboid: resetLightLevel: " + this + " in " + (System.nanoTime() - start) + " ns");
+//	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Iterable#iterator()
