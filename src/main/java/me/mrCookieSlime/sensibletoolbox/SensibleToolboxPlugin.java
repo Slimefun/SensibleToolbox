@@ -186,7 +186,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private static SensibleToolboxPlugin instance = null;
     private final CommandManager cmds = new CommandManager(this);
     private ConfigurationManager configManager;
-    private boolean protocolLibEnabled = false;
+    private boolean protocolLibEnabled = true;
     private SoundMufflerListener soundMufflerListener;
     private PlayerUUIDTracker uuidTracker;
     private boolean inited = false;
