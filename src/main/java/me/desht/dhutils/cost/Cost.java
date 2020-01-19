@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.List;
 
 public abstract class Cost {
+	
 	private final double quantity;
 
 	protected Cost(double quantity) {

@@ -1,15 +1,19 @@
 package me.desht.dhutils.block;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Attachable;
-import org.bukkit.material.Sign;
 import org.bukkit.util.Vector;
 
 public class BlockUtil {
@@ -103,7 +107,7 @@ public class BlockUtil {
 		}
 	}
 
-	public static BlockAndPosition getTargetPoint(Player player, HashSet<Byte> transparent, int maxDistance) {
+	public static BlockAndPosition getTargetPoint(Player player, Set<Material> transparent, int maxDistance) {
 		List<Block> lastBlocks = player.getLastTwoTargetBlocks(transparent, maxDistance);
 		Block block = lastBlocks.get(1);
 		BlockFace face = block.getFace(lastBlocks.get(0));
@@ -111,21 +115,40 @@ public class BlockUtil {
 		Vector plane = new Vector(block.getX(), block.getY(), block.getZ());
 		// this is the lower northwest point of the block
 		// we need a point (any point) on the correct side of the block
-		if (block.getType() == Material.WALL_SIGN) {
+		if (Tag.WALL_SIGNS.isTagged(block.getType())) {
 			// of course signs are thin, and we don't have hitbox data available via Bukkit
 			// so we'll have to cheat...
-			Sign s = (Sign) ((org.bukkit.block.Sign)block.getState()).getData();
-			switch (s.getFacing()) {
-				case EAST: plane.add(new Vector(0.125, 0.0, 0.0)); break;
-				case WEST: plane.add(new Vector(0.875, 0.0, 0.0)); break;
-				case NORTH: plane.add(new Vector(0.0, 0.0, 0.875)); break;
-				case SOUTH: plane.add(new Vector(0.0, 0.0, 0.125)); break;
+			Sign s = (Sign) block.getState().getData();
+			switch (s.getRotation()) {
+			case EAST: 
+				plane.add(new Vector(0.125, 0.0, 0.0)); 
+				break;
+			case WEST: 
+				plane.add(new Vector(0.875, 0.0, 0.0)); 
+				break;
+			case NORTH: 
+				plane.add(new Vector(0.0, 0.0, 0.875)); 
+				break;
+			case SOUTH: 
+				plane.add(new Vector(0.0, 0.0, 0.125)); 
+				break;
+			default:
+				break;
 			}
-		} else {
+		} 
+		else {
 			switch (face) {
-				case EAST: plane.add(new Vector(1.0, 0.0, 0.0)); break;
-				case SOUTH: plane.add(new Vector(0.0, 0.0, 1.0)); break;
-				case UP: plane.add(new Vector(0.0, 1.0, 0.0)); break;
+			case EAST: 
+				plane.add(new Vector(1.0, 0.0, 0.0)); 
+				break;
+			case SOUTH: 
+				plane.add(new Vector(0.0, 0.0, 1.0)); 
+				break;
+			case UP: 
+				plane.add(new Vector(0.0, 1.0, 0.0)); 
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -147,11 +170,13 @@ public class BlockUtil {
 		Vector u = p1.clone().subtract(p0);
 		Vector w = p0.clone().subtract(plane);
 		double dot = normal.dot(u);
+		
 		if (Math.abs(dot) > epsilon) {
 			double fac = -normal.dot(w) / dot;
 			u.multiply(fac);
 			return p0.clone().add(u);
-		} else {
+		} 
+		else {
 			return null;
 		}
 	}

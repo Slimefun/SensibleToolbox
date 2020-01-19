@@ -19,6 +19,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.block.MassBlockUpdate;
 
 public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializable {
+	
 	protected final String worldName;
 	protected final int x1, y1, z1;
 	protected final int x2, y2, z2;
