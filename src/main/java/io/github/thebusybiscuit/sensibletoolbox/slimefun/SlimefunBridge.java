@@ -4,22 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.MenuItem;
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
 
-import io.github.thebusybiscuit.Slimefun.Lists.RecipeType;
-import io.github.thebusybiscuit.Slimefun.Objects.Category;
-import io.github.thebusybiscuit.Slimefun.Objects.SlimefunItem.ExcludedBlock;
-import io.github.thebusybiscuit.Slimefun.Objects.SlimefunItem.ExcludedGadget;
-import io.github.thebusybiscuit.Slimefun.Objects.SlimefunItem.SlimefunItem;
-import io.github.thebusybiscuit.Slimefun.api.Slimefun;
+import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.STBFurnaceRecipe;
@@ -28,27 +19,33 @@ import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.BioEngine;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.HeatEngine;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.MagmaticEngine;
 import io.github.thebusybiscuit.sensibletoolbox.items.RecipeBook;
+import me.mrCookieSlime.Slimefun.Lists.RecipeType;
+import me.mrCookieSlime.Slimefun.Objects.Category;
+import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 
-public class SlimefunBridge {
+public final class SlimefunBridge {
+	
+	private SlimefunBridge() {}
 	
 	private static void patch(String id, RecipeType recipeType, ItemStack recipe) {
-		SlimefunItem item = SlimefunItem.getByName(id);;
+		SlimefunItem item = SlimefunItem.getByID(id);
 		if (item != null) {
 			item.setRecipe(new ItemStack[] {null, null, null, null, recipe, null, null, null, null});
 			item.setRecipeType(recipeType);
 		}
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	public static void initiate() {
-		Category items = new Category(new MenuItem(Material.SHEARS, "&7STB - Items", 0, "open"));
-		Category blocks = new Category(new CustomItem(new MaterialData(Material.STAINED_GLASS, (byte) 10), "&7STB - Blocks and Machines", "", "&a> Click to open"));
-		for (String id: SensibleToolboxPlugin.getInstance().getItemRegistry().getItemIds()) {
+		Category items = new Category(new CustomItem(Material.SHEARS, "&7STB - Items", "", "&a> Click to open"));
+		Category blocks = new Category(new CustomItem(Material.PURPLE_STAINED_GLASS, "&7STB - Blocks and Machines", "", "&a> Click to open"));
+		
+		for (String id : SensibleToolboxPlugin.getInstance().getItemRegistry().getItemIds()) {
 			BaseSTBItem item = SensibleToolboxPlugin.getInstance().getItemRegistry().getItemById(id);
 			Category category = item.toItemStack().getType().isBlock() ? blocks: items;
-			List<ItemStack> recipe = new ArrayList<ItemStack>();
+			List<ItemStack> recipe = new ArrayList<>();
 			RecipeType recipeType = null;
 			Recipe r = item.getRecipe();
+			
 			if (r != null) {
 				if (r instanceof SimpleCustomRecipe) {
 					recipe.add(null);
@@ -125,16 +122,14 @@ public class SlimefunBridge {
 			sfItem.register();
 		}
 		
-		patch("INFERNALDUST", RecipeType.MOB_DROP, new CustomItem(Material.MONSTER_EGG, "&a&oBlaze", 61));
-		patch("ENERGIZEDGOLDINGOT", RecipeType.FURNACE, SlimefunItem.getByName("ENERGIZEDGOLDDUST").getItem());
-		patch("QUARTZDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.QUARTZ));
-		patch("ENERGIZEDIRONINGOT", RecipeType.FURNACE, SlimefunItem.getByName("ENERGIZEDIRONDUST").getItem());
-		patch("SILICONWAFER", RecipeType.FURNACE, SlimefunItem.getByName("QUARTZDUST").getItem());
-		patch("IRONDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.IRON_INGOT));
-		patch("GOLDDUST", new RecipeType(SlimefunItem.getByName("MASHER").getItem()), new ItemStack(Material.GOLD_INGOT));
-		patch("FISHBAIT", new RecipeType(SlimefunItem.getByName("FERMENTER").getItem()), new ItemStack(Material.ROTTEN_FLESH));
-		
-		Slimefun.addDescription("REACTOR_COOLANT_PORT", "&e1: Place this on the Bottom Side of a Reactor", "&e2: Fill it with Coolant Cells", "�e3: Make sure to supply more Coolant Cells", "&e since they get consumed over time");
+		patch("INFERNALDUST", RecipeType.MOB_DROP, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
+		patch("ENERGIZEDGOLDINGOT", RecipeType.FURNACE, SlimefunItem.getByID("ENERGIZEDGOLDDUST").getItem());
+		patch("QUARTZDUST", new RecipeType(SlimefunItem.getByID("MASHER").getItem()), new ItemStack(Material.QUARTZ));
+		patch("ENERGIZEDIRONINGOT", RecipeType.FURNACE, SlimefunItem.getByID("ENERGIZEDIRONDUST").getItem());
+		patch("SILICONWAFER", RecipeType.FURNACE, SlimefunItem.getByID("QUARTZDUST").getItem());
+		patch("IRONDUST", new RecipeType(SlimefunItem.getByID("MASHER").getItem()), new ItemStack(Material.IRON_INGOT));
+		patch("GOLDDUST", new RecipeType(SlimefunItem.getByID("MASHER").getItem()), new ItemStack(Material.GOLD_INGOT));
+		patch("FISHBAIT", new RecipeType(SlimefunItem.getByID("FERMENTER").getItem()), new ItemStack(Material.ROTTEN_FLESH));
 	}
 
 }

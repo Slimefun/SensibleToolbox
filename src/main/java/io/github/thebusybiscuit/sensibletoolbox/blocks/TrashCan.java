@@ -15,7 +15,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -39,11 +38,10 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
         }
         return null;
     }
-
-    @SuppressWarnings("deprecation")
+    
 	@Override
-    public MaterialData getMaterialData() {
-        return new MaterialData(Material.DROPPER, STBUtil.getDirectionData(getFacing()));
+    public Material getMaterial() {
+        return Material.DROPPER;
     }
 
     @Override
@@ -58,7 +56,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SSS", "OCO", "OOO");
         recipe.setIngredient('S', Material.STONE);
         recipe.setIngredient('C', Material.CHEST);
@@ -90,8 +88,9 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
      */
     public void emptyTrash(boolean noisy) {
         Location l = getLocation();
-        if (l != null && l.getBlock().getType() == getMaterialData().getItemType()) {
+        if (l != null && l.getBlock().getType() == getMaterial()) {
             Dropper d = (Dropper) l.getBlock().getState();
+            
             if (noisy) {
                 for (ItemStack stack : d.getInventory()) {
                     if (stack != null) {
@@ -100,6 +99,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
                     }
                 }
             }
+            
             Debugger.getInstance().debug(this + ": trash emptied");
             d.getInventory().clear();
         }
@@ -131,10 +131,12 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     public Inventory getInventory() {
         Location l = getLocation();
-        if (l != null && l.getBlock().getType() == getMaterialData().getItemType()) {
+        
+        if (l != null && l.getBlock().getType() == getMaterial()) {
             Dropper d = (Dropper) getLocation().getBlock().getState();
             return d.getInventory();
-        } else {
+        } 
+        else {
             return null;
         }
     }

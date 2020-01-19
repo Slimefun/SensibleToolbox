@@ -20,7 +20,9 @@ package io.github.thebusybiscuit.sensibletoolbox;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -305,101 +307,75 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     @Override
     public void onEnable() {
-        CSCoreLibLoader loader = new CSCoreLibLoader(this);
-        if (loader.load()) {
-        	instance = this;
+    	instance = this;
 
-            LogUtils.init(this);
-            
-            PluginUtils utils = new PluginUtils(this);
-            utils.setupUpdater(79884, getFile());
-            utils.setupMetrics();
-            
-            configManager = new ConfigurationManager(this, this);
+        LogUtils.init(this);
+        new Metrics(this);
+        
+        configManager = new ConfigurationManager(this, this);
 
-            configCache = new ConfigCache(this);
-            configCache.processConfig();
+        configCache = new ConfigCache(this);
+        configCache.processConfig();
 
-            MiscUtil.init(this);
-            MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
+        MiscUtil.init(this);
+        MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
-            LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
+        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 
-            Debugger.getInstance().setPrefix("[STB] ");
-            Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
-            if (getConfig().getInt("debug_level") > 0) Debugger.getInstance().setTarget(getServer().getConsoleSender());
+        Debugger.getInstance().setPrefix("[STB] ");
+        Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
+        if (getConfig().getInt("debug_level") > 0) Debugger.getInstance().setTarget(getServer().getConsoleSender());
 
-            // try to hook other plugins
-            holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
-            setupProtocolLib();
-            setupLWC();
-            setupWorldGuard();
-            setupPreciousStones();
-            setupMultiverse();
+        // try to hook other plugins
+        holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
+        setupProtocolLib();
+        setupMultiverse();
 
-            scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
+        scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
 
-            blockProtection = new BlockProtection(this);
+        blockProtection = new BlockProtection(this);
 
-            STBInventoryGUI.buildStockTextures();
+        STBInventoryGUI.buildStockTextures();
 
-            itemRegistry = new STBItemRegistry();
-            registerItems();
+        itemRegistry = new STBItemRegistry();
+        registerItems();
 
-            friendManager = new STBFriendManager(this);
-            enetManager = new EnergyNetManager(this);
+        friendManager = new STBFriendManager(this);
+        enetManager = new EnergyNetManager(this);
 
-            registerEventListeners();
-            registerCommands();
+        registerEventListeners();
+        registerCommands();
 
-            try {
-                LocationManager.getManager().load();
-            } catch (Exception e) {
-                e.printStackTrace();
-                setEnabled(false);
-                return;
-            }
-
-            MessagePager.setPageCmd("/stb page [#|n|p]");
-            MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
-
-            // do all the recipe setup on a delayed task to ensure we pick up
-            // custom recipes from any plugins that may have loaded after us
-            Bukkit.getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    RecipeUtil.findVanillaFurnaceMaterials();
-                    RecipeUtil.setupRecipes();
-                    RecipeBook.buildRecipes();
-                }
-            });
-
-            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-                @Override
-                public void run() {
-                    LocationManager.getManager().tick();
-                }
-            }, 1L, 1L);
-
-            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-                @Override
-                public void run() {
-                    getEnderStorageManager().tick();
-                }
-            }, 1L, 300L);
-
-            Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-                @Override
-                public void run() {
-                    friendManager.save();
-                }
-            }, 60L, 300L);
-
-            scheduleEnergyNetTicker();
-            if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) SlimefunBridge.initiate();
-
-            inited = true;
+        try {
+            LocationManager.getManager().load();
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "An Error occured while loading Locations...", e);
+            setEnabled(false);
+            return;
         }
+
+        MessagePager.setPageCmd("/stb page [#|n|p]");
+        MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
+
+        // do all the recipe setup on a delayed task to ensure we pick up
+        // custom recipes from any plugins that may have loaded after us
+        Bukkit.getScheduler().runTask(this, () -> {
+            RecipeUtil.findVanillaFurnaceMaterials();
+            RecipeUtil.setupRecipes();
+            RecipeBook.buildRecipes();
+        });
+
+        Bukkit.getScheduler().runTaskTimer(this, LocationManager.getManager()::tick, 1L, 1L);
+        Bukkit.getScheduler().runTaskTimer(this, getEnderStorageManager()::tick, 1L, 300L);
+        Bukkit.getScheduler().runTaskTimer(this, friendManager::save, 60L, 300L);
+
+        scheduleEnergyNetTicker();
+        
+        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
+        	SlimefunBridge.initiate();
+        }
+
+        inited = true;
     }
 
     public void onDisable() {
@@ -416,7 +392,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
                 p.closeInventory();
             }
         }
-        if (soundMufflerListener != null) soundMufflerListener.clear();
+        
+        if (soundMufflerListener != null) {
+        	soundMufflerListener.clear();
+        }
+        
         LocationManager.getManager().save();
         LocationManager.getManager().shutdown();
 
@@ -442,12 +422,14 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             soundMufflerListener = new SoundMufflerListener(this);
             soundMufflerListener.start();
         }
+        
         enderStorageManager = new EnderStorageManager(this);
         pm.registerEvents(enderStorageManager, this);
     }
 
     private void setupProtocolLib() {
         Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
+        
         if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
             protocolLibEnabled = true;
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
@@ -463,6 +445,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     private void setupMultiverse() {
         Plugin mvPlugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
+        
         if (mvPlugin != null && mvPlugin.isEnabled() && mvPlugin instanceof MultiverseCore) {
             multiverseCore = (MultiverseCore) mvPlugin;
             Debugger.getInstance().debug("Hooked Multiverse-Core v" + mvPlugin.getDescription().getVersion());

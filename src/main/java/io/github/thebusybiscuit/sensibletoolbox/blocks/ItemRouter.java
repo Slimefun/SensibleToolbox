@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,9 +26,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
-
-import com.google.common.collect.Lists;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -51,8 +47,6 @@ import me.desht.dhutils.LogUtils;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 	
-    private static final MaterialData texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BLUE);
-
     private static final int BUFFER_LABEL_SLOT = 12;
     private static final int BUFFER_ITEM_SLOT = 13;
     private static final int MODULE_LABEL_SLOT = 18;
@@ -60,13 +54,13 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private static final int MOD_SLOT_END = 36;
     private static final int MOD_SLOT_COUNT = 9;
 
-    private final List<ModuleAndAmount> modules = Lists.newArrayList();
+    private final List<ModuleAndAmount> modules = new ArrayList<>();
     private ItemStack bufferItem;
     private int stackSize;
     private int tickRate;
     private boolean needToProcessModules = false;
     private boolean needToScanBufferSlot = false;
-    private final List<BlockFace> neighbours = new ArrayList<BlockFace>();
+    private final List<BlockFace> neighbours = new ArrayList<>();
     private boolean updateNeeded = false;
     private ReceiverModule receiver = null;
 
@@ -83,7 +77,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (conf.contains("modules")) {
             loadOldStyleModules(conf);
             updateNeeded = true;
-        } else loadNewStyleModules(conf);
+        } 
+        else {
+        	loadNewStyleModules(conf);
+        }
+        
         try {
             if (conf.contains("buffer")) {
                 Inventory inv = BukkitSerialization.fromBase64(conf.getString("buffer"));
@@ -140,8 +138,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return texture;
+    public Material getMaterial() {
+        return Material.BLUE_TERRACOTTA;
     }
 
     @Override
@@ -160,23 +158,25 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public String[] getExtraLore() {
-        if (modules.isEmpty()) return new String[0];
+        if (modules.isEmpty()) {
+        	return new String[0];
+        }
         else {
-            List<String> lore = Lists.newArrayListWithCapacity(modules.size());
+            List<String> lore = new ArrayList<>(modules.size());
             for (ModuleAndAmount e : modules) {
                 String s = e.module.getDisplaySuffix() == null ? "" : ": " + e.module.getDisplaySuffix();
                 lore.add(ChatColor.GREEN + e.module.getItemName() + s);
             }
-            return lore.toArray(new String[modules.size()]);
+            return lore.toArray(new String[0]);
         }
     }
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack(4));
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(4));
         recipe.shape("RFR", "FLF", "RFR");
         recipe.setIngredient('R', Material.REDSTONE);
-        recipe.setIngredient('F', Material.IRON_FENCE);
+        recipe.setIngredient('F', Material.IRON_BARS);
         recipe.setIngredient('L', Material.LEVER);
         return recipe;
     }
@@ -253,17 +253,13 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public void onBlockRegistered(Location loc, boolean isPlacing) {
-        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                findNeighbourInventories();
-            }
-        });
+        Bukkit.getScheduler().runTask(getProviderPlugin(), this::findNeighbourInventories);
         
         if (updateNeeded) {
             update(false);
             updateNeeded = false;
         }
+        
         super.onBlockRegistered(loc, isPlacing);
     }
 
@@ -272,9 +268,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         // eject any items in the buffer and/or module slots
         getGUI().ejectItems(BUFFER_ITEM_SLOT);
         setBufferItem(null);
+        
         for (int modSlot = MOD_SLOT_START; modSlot < MOD_SLOT_END; modSlot++) {
             getGUI().ejectItems(modSlot);
         }
+        
         clearModules();
 
         super.onBlockUnregistered(loc);
@@ -316,12 +314,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                findNeighbourInventories();
-            }
-        });
+        Bukkit.getScheduler().runTask(getProviderPlugin(), this::findNeighbourInventories);
     }
 
     private void findNeighbourInventories() {
@@ -329,6 +322,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         Location loc = getLocation();
         if (loc == null) return;
         Block b = loc.getBlock();
+        
         for (BlockFace face : STBUtil.directFaces) {
             Block b1 = b.getRelative(face);
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b1.getLocation());
@@ -373,13 +367,17 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             if (dm.getFacing() == null) {
                 dm.setFacingDirection(BlockFace.SELF);
             }
-        } else if (module instanceof StackModule) {
+        } 
+        else if (module instanceof StackModule) {
             setStackSize(getStackSize() * (int) Math.pow(2, count));
-        } else if (module instanceof SpeedModule) {
+        } 
+        else if (module instanceof SpeedModule) {
             setTickRate(getTickRate() - 5 * count);
-        } else if (module instanceof ReceiverModule) {
+        } 
+        else if (module instanceof ReceiverModule) {
             receiver = (ReceiverModule) module;
         }
+        
         modules.add(new ModuleAndAmount(module, count));
     }
 
@@ -388,16 +386,18 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     private void updateBufferIndicator(boolean force) {
-        if (getGUI() != null && (getGUI().getViewers().size() > 0 || force)) {
+        if (getGUI() != null && (getGUI().getViewers().isEmpty() || force)) {
             getGUI().getInventory().setItem(BUFFER_ITEM_SLOT, bufferItem);
         }
     }
 
     public void setBufferItem(ItemStack bufferItem) {
         this.bufferItem = bufferItem;
+        
         if (bufferItem != null && (bufferItem.getAmount() == 0 || bufferItem.getType() == Material.AIR)) {
             this.bufferItem = null;
         }
+        
         updateBufferIndicator(false);
     }
 
@@ -422,14 +422,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             return 0;
         }
     }
-
-    @SuppressWarnings("unchecked")
+    
 	@Deprecated
     public <T extends ItemRouterModule> T findModule(Class <T> c) {
         for (ModuleAndAmount e : modules) {
             if (c.isAssignableFrom(e.module.getClass())) {
-                //noinspection unchecked
-                return (T) e.module;
+                return c.cast(e.module);
             }
         }
         return null;
@@ -561,7 +559,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private void processModules(Inventory inv, int baseSlot) {
         clearModules();
 
-        Map<ItemStack, Integer> mods = new LinkedHashMap<ItemStack, Integer>();
+        Map<ItemStack, Integer> mods = new LinkedHashMap<>();
+        
         for (int i = 0; i < MOD_SLOT_COUNT; i++) {
             ItemStack stack = inv.getItem(baseSlot + i);
             if (stack != null) {
@@ -576,7 +575,10 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
 
         Debugger.getInstance().debug("re-processed modules for " + this + " tick-rate=" + getTickRate() + " stack-size=" + getStackSize());
-        if (getTicksLived() > 20) update(false);
+        
+        if (getTicksLived() > 20) {
+        	update(false);
+        }
     }
 
     public List<BlockFace> getNeighbours() {
