@@ -16,7 +16,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorage;
@@ -27,8 +26,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventoryHolder {
-    private static final MaterialData md = new MaterialData(Material.ENDER_CHEST);
-
+    
     private int frequency;
     private boolean global;
     private final String signLabel[] = new String[4];
@@ -79,8 +77,8 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.ENDER_CHEST;
     }
 
     @Override
@@ -107,7 +105,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack(1));
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(1));
         recipe.shape("GDG", "GEG", "GGG");
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('D', Material.DIAMOND);
@@ -123,9 +121,11 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
             Player player = event.getPlayer();
             if (!hasAccessRights(player)) {
                 STBUtil.complain(player, "That " + getItemName() + " is private!");
-            } else if (EnderStorage.isCreativeAccessBlocked(player)) {
+            } 
+            else if (EnderStorage.isCreativeAccessBlocked(player)) {
                 STBUtil.complain(player, "No creative-mode access to ender boxes!");
-            } else {
+            } 
+            else {
                 Inventory inv = isGlobal() ?
                         EnderStorage.getEnderInventory(getEnderFrequency()) :
                         EnderStorage.getEnderInventory(player, getEnderFrequency());
@@ -140,7 +140,8 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
         if (hasAccessRights(uuid)) {
             return getInventoryHolderFor(uuid).insertItems(item, face, sorting, uuid);
-        } else {
+        } 
+        else {
             return 0;
         }
     }
@@ -149,7 +150,8 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
         if (hasAccessRights(uuid)) {
             return getInventoryHolderFor(uuid).extractItems(face, receiver, amount, uuid);
-        } else {
+        } 
+        else {
             return null;
         }
     }

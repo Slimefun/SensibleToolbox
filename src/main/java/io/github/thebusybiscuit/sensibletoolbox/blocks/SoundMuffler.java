@@ -2,7 +2,6 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -12,8 +11,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Wool;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
@@ -23,7 +20,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 
 public class SoundMuffler extends BaseSTBBlock {
 	
-    private static final MaterialData md = new Wool(DyeColor.WHITE);
     public static final int DISTANCE = 8;
     private int volume; // 0-100
 
@@ -67,8 +63,8 @@ public class SoundMuffler extends BaseSTBBlock {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.WHITE_WOOL;
     }
 
     @Override
@@ -87,9 +83,9 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WWW", "WNW", "WWW");
-        recipe.setIngredient('W', Material.WOOL);
+        recipe.setIngredient('W', Material.WHITE_WOOL);
         recipe.setIngredient('N', Material.NOTE_BLOCK);
         return recipe;
     }

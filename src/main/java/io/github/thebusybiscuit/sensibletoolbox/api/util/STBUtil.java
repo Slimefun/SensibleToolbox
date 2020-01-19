@@ -659,9 +659,10 @@ public class STBUtil {
      * @param colour the colour
      * @return the material data object
      */
-    @SuppressWarnings("deprecation")
-	public static MaterialData makeColouredMaterial(Material mat, DyeColor colour) {
-        if (mat == Material.GLASS) mat = Material.STAINED_GLASS;
+	public static Material makeColouredMaterial(Material mat, DyeColor colour) {
+        if (mat == Material.GLASS) {
+        	mat = Material.STAINED_GLASS;
+        }
         else if (mat == Material.THIN_GLASS)
             mat = Material.STAINED_GLASS_PANE;
 

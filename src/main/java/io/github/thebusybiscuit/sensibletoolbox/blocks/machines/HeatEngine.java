@@ -26,7 +26,6 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorU
 
 public class HeatEngine extends Generator {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.ORANGE);
     private static final int TICK_FREQUENCY = 10;
     private final double slowBurnThreshold;
 	private static final FuelItems fuelItems = new FuelItems();
@@ -100,8 +99,8 @@ public class HeatEngine extends Generator {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.ORANGE_TERRACOTTA;
     }
 
     @Override

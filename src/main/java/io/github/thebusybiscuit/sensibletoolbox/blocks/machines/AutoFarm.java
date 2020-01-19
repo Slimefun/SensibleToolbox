@@ -5,10 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,17 +13,16 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.IronCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class AutoFarm extends AutoFarmingMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
-    private static final Map<Material, Material> crops = new HashMap<Material, Material>();
+    private static final Map<Material, Material> crops = new HashMap<>();
     private static final int radius = 3;
     
     static {
@@ -41,17 +36,17 @@ public class AutoFarm extends AutoFarmingMachine {
 
     public AutoFarm() {
     	super();
-        blocks = new HashSet<Block>();
+        blocks = new HashSet<>();
     }
 
     public AutoFarm(ConfigurationSection conf) {
         super(conf);
-        blocks = new HashSet<Block>();
+        blocks = new HashSet<>();
     }
     
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BROWN_TERRACOTTA;
     }
 
     @Override
@@ -73,7 +68,7 @@ public class AutoFarm extends AutoFarmingMachine {
     	MachineFrame frame = new MachineFrame();
     	IronCombineHoe hoe = new IronCombineHoe();
     	registerCustomIngredients(frame, hoe);
-        ShapedRecipe res = new ShapedRecipe(toItemStack());
+        ShapedRecipe res = new ShapedRecipe(getKey(), toItemStack());
         res.shape(" H ", "IFI", "RGR");
         res.setIngredient('R', Material.REDSTONE);
         res.setIngredient('G', Material.GOLD_INGOT);
@@ -94,8 +89,7 @@ public class AutoFarm extends AutoFarmingMachine {
     	
     	super.onBlockRegistered(location, isPlacing);
     }
-
-    @SuppressWarnings("deprecation")
+    
 	@Override
     public void onServerTick() {
     	if (!isJammed()) {

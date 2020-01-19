@@ -35,7 +35,6 @@ import me.desht.dhutils.cuboid.Cuboid;
 
 public class AutoBuilder extends BaseSTBMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.YELLOW);
     private static final int LANDMARKER_SLOT_1 = 10;
     private static final int LANDMARKER_SLOT_2 = 12;
     public static final int MODE_SLOT = 14;
@@ -101,8 +100,8 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.YELLOW_TERRACOTTA;
     }
 
     @Override
@@ -117,7 +116,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         ToughMachineFrame mf = new ToughMachineFrame();
         IntegratedCircuit ic = new IntegratedCircuit();
         registerCustomIngredients(mf, ic);
@@ -521,31 +520,27 @@ public class AutoBuilder extends BaseSTBMachine {
             highlightWorkArea((Player) player);
         }
     }
-
-    @SuppressWarnings("deprecation")
-	private void highlightWorkArea(final Player p) {
+    
+	private void highlightWorkArea(Player p) {
         if (workArea != null) {
-            final Block[] corners = workArea.corners();
+            Block[] corners = workArea.corners();
+            
             for (Block b : corners) {
-                p.sendBlockChange(b.getLocation(), Material.STAINED_GLASS, DyeColor.LIME.getWoolData());
+                p.sendBlockChange(b.getLocation(), Material.LIME_STAINED_GLASS, 0);
             }
-            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    if (p.isOnline()) {
-                        for (Block b : corners) {
-                            p.sendBlockChange(b.getLocation(), Material.STAINED_GLASS, DyeColor.GREEN.getWoolData());
-                        }
+            
+            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
+            	if (p.isOnline()) {
+                    for (Block b : corners) {
+                        p.sendBlockChange(b.getLocation(), Material.GREEN_STAINED_GLASS, 0);
                     }
                 }
             }, 25L);
-            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    if (p.isOnline()) {
-                        for (Block b : corners) {
-                            p.sendBlockChange(b.getLocation(), b.getType(), b.getData());
-                        }
+            
+            Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
+            	if (p.isOnline()) {
+                    for (Block b : corners) {
+                        p.sendBlockChange(b.getLocation(), b.getType(), b.getData());
                     }
                 }
             }, 50L);

@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,7 +13,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.AccessControlGadget;
@@ -24,12 +22,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.NumericGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class RedstoneClock extends BaseSTBBlock {
 	
-    private static final MaterialData inactive_texture = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
-    private static final MaterialData active_texture = new MaterialData(Material.REDSTONE_BLOCK);
     private int interval;
     private int onDuration;
     private boolean active = false;
@@ -103,8 +98,8 @@ public class RedstoneClock extends BaseSTBBlock {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return active ? active_texture : inactive_texture;
+    public Material getMaterial() {
+        return active ? Material.REDSTONE_BLOCK : Material.RED_TERRACOTTA;
     }
 
     @Override
@@ -124,11 +119,11 @@ public class RedstoneClock extends BaseSTBBlock {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe res = new ShapedRecipe(toItemStack());
+        ShapedRecipe res = new ShapedRecipe(getKey(), toItemStack());
         res.shape("RSR", "STS", "RSR");
         res.setIngredient('R', Material.REDSTONE);
         res.setIngredient('S', Material.STONE);
-        res.setIngredient('T', Material.REDSTONE_TORCH_ON);
+        res.setIngredient('T', Material.REDSTONE_TORCH);
         return res;
     }
 
@@ -153,7 +148,8 @@ public class RedstoneClock extends BaseSTBBlock {
             // power up
             active = true;
             repaint(b);
-        } else if (time % getInterval() == getOnDuration()) {
+        } 
+        else if (time % getInterval() == getOnDuration()) {
             // power down
             active = false;
             repaint(b);

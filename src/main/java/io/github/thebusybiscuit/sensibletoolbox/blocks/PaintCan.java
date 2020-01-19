@@ -43,7 +43,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     private static final int MAX_PAINT_LEVEL = 200;
     private static final int PAINT_PER_DYE = 25;
     private static final int[] ITEM_SLOTS = new int[]{9, 10};
-    private static final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLD_SPADE);
+    private static final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLDEN_SHOVEL);
     private static final ItemStack EMPTY_TEXTURE = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE).toItemStack();
     private int paintLevel;
     private DyeColor colour;
@@ -124,9 +124,9 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GSG", "G G", "III");
-        recipe.setIngredient('S', Material.WOOD_STEP);
+        recipe.setIngredient('S', Material.OAK_SLAB);
         recipe.setIngredient('G', Material.GLASS);
         recipe.setIngredient('I', Material.IRON_INGOT);
         return recipe;
@@ -358,16 +358,19 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                     toUse = Math.min(getMaxPaintLevel() / paintPerDye, dyeAmount);
                     setColour(newColour);
                     setPaintLevel(paintPerDye * toUse);
-                } else {
+                } 
+                else {
                     // yes, they mix
                     setColour(mixedColour);
                     setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + paintPerDye * toUse));
                 }
-            } else {
+            } 
+            else {
                 // either adding to an empty can, or adding more of the same colour
                 setColour(newColour);
                 setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + paintPerDye * toUse));
             }
+            
             Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColour());
 
             Location loc = getLocation();
@@ -378,7 +381,8 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             inventory.setItem(dyeSlot, dyeStack.getAmount() > 0 ? dyeStack : null);
 
             return true;
-        } else if (dyeableSlot >= 0 && getPaintLevel() > 0) {
+        } 
+        else if (dyeableSlot >= 0 && getPaintLevel() > 0) {
             // soak up some paint with the dyeable item(s)
             int toDye = inventory.getItem(dyeableSlot).getAmount();
             Debugger.getInstance().debug(this + ": dyeing " + inventory.getItem(dyeableSlot));
@@ -392,7 +396,8 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             Location loc = getLocation();
             loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
             return true;
-        } else {
+        } 
+        else {
             return false;
         }
     }
@@ -423,7 +428,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         } else if (dye1 == DyeColor.PINK && dye2 == DyeColor.PURPLE) {
             return DyeColor.MAGENTA;
         } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
-            return DyeColor.SILVER;
+            return DyeColor.LIGHT_GRAY;
         } else {
             // colours don't mix
             return null;

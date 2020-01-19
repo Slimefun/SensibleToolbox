@@ -10,13 +10,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class Elevator extends BaseSTBBlock implements Colorable {
+	
     private DyeColor color;
 
     public Elevator() {
@@ -44,8 +44,8 @@ public class Elevator extends BaseSTBBlock implements Colorable {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return STBUtil.makeColouredMaterial(Material.STAINED_CLAY, color);
+    public Material getMaterial() {
+        return STBUtil.makeColouredMaterial(Material.TERRACOTTA, color);
     }
 
     @Override
@@ -65,9 +65,9 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WWW", "WPW", "WWW");
-        recipe.setIngredient('W', Material.WOOL);
+        recipe.setIngredient('W', Material.WHITE_WOOL);
         recipe.setIngredient('P', Material.ENDER_PEARL);
         return recipe;
     }
@@ -77,6 +77,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
         Block b = getLocation().getBlock();
         Elevator res = null;
+        
         while (b.getY() > 0 && b.getY() < b.getWorld().getMaxHeight()) {
             b = b.getRelative(direction);
             if (b.getType().isSolid()) {
