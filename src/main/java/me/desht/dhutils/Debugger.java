@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class Debugger {
+	
 	private static final String DEBUG_COLOR = ChatColor.DARK_GREEN.toString();
 	private static Debugger instance;
 	private int level;

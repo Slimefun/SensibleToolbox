@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 public class PersistableLocation implements ConfigurationSerializable {
+	
 	private final String worldName;
 	private final double x, y, z;
 	private final float pitch, yaw;
@@ -26,7 +27,7 @@ public class PersistableLocation implements ConfigurationSerializable {
 	}
 
 	public PersistableLocation(Map<String,Object> map) {
-		worldName = (String)map.get("world");
+		worldName = (String) map.get("world");
 		x = toDouble(map.get("x"));
 		y = toDouble(map.get("y"));
 		z = toDouble(map.get("z"));
@@ -112,7 +113,7 @@ public class PersistableLocation implements ConfigurationSerializable {
 	}
 
 	public Map<String, Object> serialize() {
-		Map<String,Object> map = new HashMap<String, Object>();
+		Map<String,Object> map = new HashMap<>();
 		map.put("world", worldName);
 		map.put("x", x);
 		map.put("y", y);
@@ -145,18 +146,24 @@ public class PersistableLocation implements ConfigurationSerializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
+		
 		if (obj == null)
 			return false;
+		
 		if (getClass() != obj.getClass())
 			return false;
+		
 		PersistableLocation other = (PersistableLocation) obj;
 		if (Float.floatToIntBits(pitch) != Float.floatToIntBits(other.pitch))
 			return false;
+		
 		if (worldName == null) {
 			if (other.worldName != null)
 				return false;
-		} else if (!worldName.equals(other.worldName))
+		} 
+		else if (!worldName.equals(other.worldName))
 			return false;
+		
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
 			return false;
 		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
@@ -165,6 +172,7 @@ public class PersistableLocation implements ConfigurationSerializable {
 			return false;
 		if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z))
 			return false;
+		
 		return true;
 	}
 
@@ -177,9 +185,11 @@ public class PersistableLocation implements ConfigurationSerializable {
 	private double toDouble(Object val) {
 		if (val instanceof Double) {
 			return (Double) val;
-		} else if (val instanceof Integer) {
+		} 
+		else if (val instanceof Integer) {
 			return ((Integer)val).doubleValue();
-		} else {
+		} 
+		else {
 			throw new IllegalArgumentException("invalid numeric value: " + val);
 		}
 	}
