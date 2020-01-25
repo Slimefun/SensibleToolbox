@@ -19,6 +19,7 @@ import com.comphenix.protocol.wrappers.nbt.NbtFactory;
  * https://gist.github.com/aadnk/4580551
  */
 public class ItemGlow {
+	
 	private static boolean inited = false;
 
     // use this enchantment on most items
@@ -38,11 +39,13 @@ public class ItemGlow {
 			public void onPacketSending(PacketEvent event) {
 				if (event.getPacketID() == Packets.Server.SET_SLOT) {
 					addGlow(new ItemStack[] { event.getPacket().getItemModifier().read(0) });
-				} else {
+				} 
+				else {
 					addGlow(event.getPacket().getItemArrayModifier().read(0));
 				}
 			}
 		};
+		
 		ProtocolLibrary.getProtocolManager().addPacketListener(adapter);
 		inited = true;
 	}
@@ -57,13 +60,15 @@ public class ItemGlow {
 		if (!inited) {
 			throw new IllegalStateException("ItemGlow system has not been initialised.  Call ItemGlow.init(plugin) first.");
 		}
+		
         Enchantment flag = getFlag(stack);
 		if (glowing) {
 			// if the item already has a real enchantment, let's not overwrite it!
 			if (!stack.getItemMeta().hasEnchant(flag)) {
                 stack.addUnsafeEnchantment(flag, GLOW_FLAG_LEVEL);
 			}
-		} else if (stack.getEnchantmentLevel(flag) == GLOW_FLAG_LEVEL) {
+		} 
+		else if (stack.getEnchantmentLevel(flag) == GLOW_FLAG_LEVEL) {
 			stack.removeEnchantment(flag);
 		}
 	}

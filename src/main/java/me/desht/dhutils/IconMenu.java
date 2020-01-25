@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
  * Courtesy of nisovin: http://forums.bukkit.org/threads/icon-menu.108342/
  */
 public class IconMenu implements Listener {
+	
 	private String name;
 	private int size;
 	private OptionClickEventHandler handler;
@@ -46,11 +47,13 @@ public class IconMenu implements Listener {
 
 	public void open(Player player) {
 		Inventory inventory = Bukkit.createInventory(player, size, name);
+		
 		for (int i = 0; i < optionIcons.length; i++) {
 			if (optionIcons[i] != null) {
 				inventory.setItem(i, optionIcons[i]);
 			}
 		}
+		
 		player.openInventory(inventory);
 	}
 
@@ -64,21 +67,19 @@ public class IconMenu implements Listener {
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	void onInventoryClick(InventoryClickEvent event) {
-		if (event.getInventory().getTitle().equals(name)) {
+		if (event.getView().getTitle().equals(name)) {
 			event.setCancelled(true);
 			int slot = event.getRawSlot();
+			
 			if (slot >= 0 && slot < size && optionNames[slot] != null) {
-				Plugin plugin = this.plugin;
-				OptionClickEvent e = new OptionClickEvent((Player)event.getWhoClicked(), slot, optionNames[slot]);
+				OptionClickEvent e = new OptionClickEvent((Player) event.getWhoClicked(), slot, optionNames[slot]);
 				handler.onOptionClick(e);
+				
 				if (e.willClose()) {
-					final Player p = (Player)event.getWhoClicked();
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-						public void run() {
-							p.closeInventory();
-						}
-					}, 1);
+					Player p = (Player) event.getWhoClicked();
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, p::closeInventory, 1);
 				}
+				
 				if (e.willDestroy()) {
 					destroy();
 				}
@@ -86,11 +87,15 @@ public class IconMenu implements Listener {
 		}
 	}
 
+	@FunctionalInterface
 	public interface OptionClickEventHandler {
-		public void onOptionClick(OptionClickEvent event);
+		
+		void onOptionClick(OptionClickEvent event);
+		
 	}
 
 	public class OptionClickEvent {
+		
 		private Player player;
 		private int position;
 		private String name;

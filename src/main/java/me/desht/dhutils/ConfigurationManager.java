@@ -19,7 +19,7 @@ public class ConfigurationManager {
 	private final Plugin plugin;
 	private final Configuration config;
 	private final Configuration descConfig;
-	private final Map<String,Class<?>> forceTypes = new HashMap<String,Class<?>>();
+	private final Map<String,Class<?>> forceTypes = new HashMap<>();
 
 	private ConfigurationListener listener;
 	private String prefix;
@@ -94,13 +94,17 @@ public class ConfigurationManager {
 	public Class<?> getType(String key) {
 		if (forceTypes.containsKey(key)) {
 			return forceTypes.get(key);
-		} else {
+		} 
+		else {
 			key = addPrefix(key);
+			
 			if (config.getDefaults().contains(key)) {
 				return config.getDefaults().get(key).getClass();
-			} else if (config.contains(key)) {
+			} 
+			else if (config.contains(key)) {
 				return config.get(key).getClass();
-			} else {
+			} 
+			else {
 				throw new IllegalArgumentException("can't determine type for unknown key '" + key + "'");
 			}
 		}
@@ -108,9 +112,11 @@ public class ConfigurationManager {
 
 	public void insert(String key, Object def) {
 		String keyPrefixed = addPrefix(key);
+		
 		if (config.contains(keyPrefixed)) {
 			throw new DHUtilsException("Config item already exists: " + keyPrefixed);
 		}
+		
 		config.addDefault(keyPrefixed, def);
 		config.getDefaults().set(key, def);
 	}
@@ -169,17 +175,21 @@ public class ConfigurationManager {
 
 	public void setDescription(String key, String desc) {
 		String keyPrefixed = addPrefix(key);
+		
 		if (!config.contains(keyPrefixed)) {
 			throw new DHUtilsException("No such config item: " + keyPrefixed);
 		}
+		
 		descConfig.set(keyPrefixed, desc);
 	}
 
 	public String getDescription(String key) {
 		String keyPrefixed = addPrefix(key);
+		
 		if (!config.contains(keyPrefixed)) {
 			throw new DHUtilsException("No such config item: " + keyPrefixed);
 		}
+		
 		return descConfig.getString(keyPrefixed, "");
 	}
 
@@ -192,15 +202,18 @@ public class ConfigurationManager {
 
 		if (val == null) {
 			processedVal = null;
-		} else if (List.class.isAssignableFrom(c)) {
-			List<String>list = new ArrayList<String>(1);
+		} 
+		else if (List.class.isAssignableFrom(c)) {
+			List<String>list = new ArrayList<>(1);
 			list.add(val);
 			processedVal = handleListValue(key, list);
-		} else if (String.class.isAssignableFrom(c)) {
+		} 
+		else if (String.class.isAssignableFrom(c)) {
 			// String config values are common, so this should be a little quicker than going
 			// through the default case below (using reflection)
 			processedVal = val;
-		} else if (Enum.class.isAssignableFrom(c)) {
+		} 
+		else if (Enum.class.isAssignableFrom(c)) {
 			// this really isn't very pretty, but as far as I can tell there's no way to
 			// do this with a parameterised Enum type
 			@SuppressWarnings("rawtypes")
@@ -210,19 +223,23 @@ public class ConfigurationManager {
 			} catch (IllegalArgumentException e) {
 				throw new DHUtilsException("'" + val + "' is not a valid value for '" + key + "'");
 			}
-		} else {
+		} 
+		else {
 			// the class we're converting to must either have a static method annotated with @FactoryMethod,
 			// or have a constructor taking a single String argument
 			try {
 				for (Method method : c.getDeclaredMethods()) {
 					Class<?>[] params = method.getParameterTypes();
+					
 					if (params.length != 1 || !String.class.isAssignableFrom(params[0]))
 						continue;
+					
 					if (method.isAnnotationPresent(FactoryMethod.class) && Modifier.isStatic(method.getModifiers())) {
 						processedVal = method.invoke(null, val);
 						break;
 					}
 				}
+				
 				if (processedVal == null) {
 					Constructor<?> ctor = c.getDeclaredConstructor(String.class);
 					processedVal = ctor.newInstance(val);
@@ -238,9 +255,11 @@ public class ConfigurationManager {
 			} catch (InvocationTargetException e) {
 				if (e.getCause() instanceof NumberFormatException) {
 					throw new DHUtilsException("Invalid numeric value: " + val);
-				} else if (e.getCause() instanceof IllegalArgumentException) {
+				} 
+				else if (e.getCause() instanceof IllegalArgumentException) {
 					throw new DHUtilsException("Invalid argument: " + val);
-				} else {
+				} 
+				else {
 					e.printStackTrace();
 				}
 			}
@@ -250,48 +269,58 @@ public class ConfigurationManager {
 			if (listener != null && validate) {
 				processedVal = listener.onConfigurationValidate(this, key, get(key), processedVal);
 			}
+			
 			config.set(addPrefix(key), processedVal);
-		} else {
+		} 
+		else {
 			throw new DHUtilsException("Don't know what to do with " + key + " = " + val);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> void setItem(String key, List<T> list) {
 		String keyPrefixed = addPrefix(key);
+		
 		if (config.getDefaults().get(keyPrefixed) == null) {
 			throw new DHUtilsException("No such key '" + key + "'");
 		}
+		
 		if (!(config.getDefaults().get(keyPrefixed) instanceof List<?>)) {
 			throw new DHUtilsException("Key '" + key + "' does not accept a list of values");
 		}
+		
 		if (listener != null && validate) {
             //noinspection unchecked
             list = (List<T>) listener.onConfigurationValidate(this, key, get(key), list);
 		}
+		
 		config.set(addPrefix(key), handleListValue(key, list));
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> List<T> handleListValue(String key, List<T> list) {
-		HashSet<T> current = new HashSet<T>((List<T>)config.getList(addPrefix(key)));
+		HashSet<T> current = new HashSet<>((List<T>) config.getList(addPrefix(key)));
 
 		if (list.get(0).equals("-")) {
 			// remove specified item from list
 			list.remove(0);
 			current.removeAll(list);
-		} else if (list.get(0).equals("=")) {
+		} 
+		else if (list.get(0).equals("=")) {
 			// replace list
 			list.remove(0);
-			current = new HashSet<T>(list);
-		} else if (list.get(0).equals("+")) {
+			current = new HashSet<>(list);
+		} 
+		else if (list.get(0).equals("+")) {
 			// append to list
 			list.remove(0);
 			current.addAll(list);
-		} else {
+		} 
+		else {
 			// append to list
 			current.addAll(list);
 		}
 
-		return new ArrayList<T>(current);
+		return new ArrayList<>(current);
 	}
 }

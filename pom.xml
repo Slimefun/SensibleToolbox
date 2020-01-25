@@ -33,6 +33,10 @@
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
+        <repository>
+            <id>worldedit-repo</id>
+            <url>https://maven.sk89q.com/repo/</url>
+        </repository>
     </repositories>
     
     <build>
@@ -134,6 +138,18 @@
             <artifactId>CS-CoreLib2</artifactId>
             <version>0.8.8</version>
             <scope>compile</scope>
+        </dependency>
+	    <dependency>
+        	<groupId>com.github.MilkBowl</groupId>
+        	<artifactId>VaultAPI</artifactId>
+        	<version>1.7</version>
+        	<scope>provided</scope>
+    	</dependency>
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>

@@ -19,8 +19,6 @@
 
 package me.desht.dhutils.block;
 
-import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
-
 /**
  * Block data related classes.
  *

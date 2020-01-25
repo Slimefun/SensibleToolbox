@@ -8,11 +8,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.MiscUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,22 +16,30 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Joiner;
 
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.MiscUtil;
+
 /**
  * @author des
  *
  */
 public abstract class AbstractCommand implements Comparable<AbstractCommand> {
+	
 	private enum OptType { BOOL, STRING, INT, DOUBLE }
 
-	private final int minArgs, maxArgs;
-	private final List<CommandRecord> cmdRecs = new ArrayList<AbstractCommand.CommandRecord>();
-	private final Map<String, OptType> options = new HashMap<String,OptType>();
-	private final Map<String,Object> optVals = new HashMap<String, Object>();
-	private String usage[];
+	private final int minArgs;
+	private final int maxArgs;
+	
+	private final List<CommandRecord> cmdRecs = new ArrayList<>();
+	private final Map<String, OptType> options = new HashMap<>();
+	private final Map<String,Object> optVals = new HashMap<>();
+	
+	private String[] usage;
 	private String permissionNode;
 	private boolean quotedArgs;
 	private CommandRecord matchedCommand;
-	private String matchedArgs[];
+	private String[] matchedArgs;
 
 	public AbstractCommand(String label) {
 		this(label, 0, Integer.MAX_VALUE);
@@ -51,6 +54,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
 		setUsage("");
 		addAlias(label);
+		
 		this.minArgs = minArgs;
 		this.maxArgs = maxArgs;
 	}
@@ -67,7 +71,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 	}
 
 	public boolean matchesSubCommand(String label, String[] args, boolean partialOk) {
-		CMDREC: for (CommandRecord rec : cmdRecs) {
+		CMDREC: 
+		for (CommandRecord rec : cmdRecs) {
 			if (!label.equalsIgnoreCase(rec.getCommand()))
 				continue;
 
@@ -98,18 +103,22 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 				continue;
 
 			int nArgs;
+			
 			if (isQuotedArgs()) {
 				List<String> a = MiscUtil.splitQuotedString(combine(args, 0));
 				nArgs = a.size() - rec.subCommands.length;
-			} else {
+			} 
+			else {
 				nArgs = args.length - rec.subCommands.length;
 			}
+			
 			Debugger.getInstance().debug(3, String.format("matchesArgCount: %s, nArgs=%d min=%d max=%d", label, nArgs, minArgs, maxArgs));
 			if (nArgs >= minArgs && nArgs <= maxArgs) {
 				storeMatchedArgs(args, rec);
 				return true;
 			}
 		}
+		
 		matchedArgs = null;
 		return false;
 	}
@@ -120,39 +129,50 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
 	private void storeMatchedArgs(String[] args, CommandRecord rec) {
 		String[] tmpResult = new String[args.length - rec.subCommands.length];
+		
 		for (int i = rec.subCommands.length; i < args.length; i++) {
 			tmpResult[i - rec.subCommands.length] = args[i];
 		}
 
 		String[] tmpArgs;
 		if (isQuotedArgs()) {
-			List<String>a = MiscUtil.splitQuotedString(combine(tmpResult, 0));
-			tmpArgs = a.toArray(new String[a.size()]);
-		} else {
+			tmpArgs = MiscUtil.splitQuotedString(combine(tmpResult, 0)).toArray(new String[0]);
+		} 
+		else {
 			tmpArgs = tmpResult;
 		}
 
 		// extract any command-line options that were specified
-		List<String> l = new ArrayList<String>(tmpArgs.length);
+		List<String> l = new ArrayList<>(tmpArgs.length);
 		optVals.clear();
+		
 		for (int i = 0; i < tmpArgs.length; i++) {
 			String opt;
+			
 			if (tmpArgs[i].length() < 2 || !tmpArgs[i].startsWith("-")) {
 				opt = "";
-			} else {
+			} 
+			else {
 				opt = tmpArgs[i].substring(1);
 			}
+			
 			if (options.containsKey(opt)) {
 				try {
 					switch (options.get(opt)) {
 					case BOOL:
 						optVals.put(opt, true); break;
 					case STRING:
-						optVals.put(opt, tmpArgs[++i]); break;
+						i++;
+						optVals.put(opt, tmpArgs[i]); 
+						break;
 					case INT:
-						optVals.put(opt, Integer.parseInt(tmpArgs[++i])); break;
+						i++;
+						optVals.put(opt, Integer.parseInt(tmpArgs[i])); 
+						break;
 					case DOUBLE:
-						optVals.put(opt, Double.parseDouble(tmpArgs[++i])); break;
+						i++;
+						optVals.put(opt, Double.parseDouble(tmpArgs[i])); 
+						break;
 					default:
 						throw new IllegalStateException("unexpected option type for " + tmpArgs[i]);
 					}
@@ -161,12 +181,13 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 				} catch (Exception e) {
 					throw new DHUtilsException("Invalid value for option '" + tmpArgs[i - 1] + "'");
 				}
-			} else {
+			} 
+			else {
 				l.add(tmpArgs[i]);
 			}
 		}
 
-		matchedArgs = l.toArray(new String[l.size()]);
+		matchedArgs = l.toArray(new String[0]);
 	}
 
 
@@ -174,10 +195,12 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 		if (usage.length == 0) {
 			return;
 		}
+		
 		String indent;
 		if (prefix == null || prefix.isEmpty()) {
 			indent = "";
-		} else {
+		} 
+		else {
 			int l = prefix.length();
 			indent = sender instanceof Player ? StringUtils.repeat(" ", l + 2) : StringUtils.repeat(" ", l);
 		}
@@ -223,13 +246,17 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 	protected void setOptions(String... optSpec) {
 		for (String opt : optSpec) {
 			String[] parts = opt.split(":");
+			
 			if (parts.length == 1) {
 				options.put(parts[0], OptType.BOOL);
-			} else if (parts[1].startsWith("i")) {
+			} 
+			else if (parts[1].startsWith("i")) {
 				options.put(parts[0], OptType.INT);
-			} else if (parts[1].startsWith("d")) {
+			} 
+			else if (parts[1].startsWith("d")) {
 				options.put(parts[0], OptType.DOUBLE);
-			} else if (parts[1].startsWith("s")) {
+			} 
+			else if (parts[1].startsWith("s")) {
 				options.put(parts[0], OptType.STRING);
 			}
 		}
@@ -314,7 +341,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
 	@Deprecated
 	protected Map<String, String> parseCommandOptions(String[] args, int start) {
-		Map<String, String> res = new HashMap<String, String>();
+		Map<String, String> res = new HashMap<>();
 
 		Pattern pattern = Pattern.compile("^-(.+)"); //$NON-NLS-1$
 
@@ -375,12 +402,14 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 	 * @return
 	 */
 	protected List<String> filterPrefix(CommandSender sender, Collection<String> c, String prefix) {
-		List<String> res = new ArrayList<String>();
+		List<String> res = new ArrayList<>();
+		
 		for (String s : c) {
 			if (prefix == null || prefix.isEmpty() || s.toLowerCase().startsWith(prefix.toLowerCase())) {
 				res.add(s);
 			}
 		}
+		
 		return getResult(res, sender, true);
 	}
 
@@ -399,37 +428,46 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 	}
 
 	protected List<String> getEnumCompletions(CommandSender sender, Class<? extends Enum<?>> c, String prefix) {
-		List<String> res = new ArrayList<String>();
+		List<String> res = new ArrayList<>();
+		
 		for (Object o1 : c.getEnumConstants()) {
 			res.add(o1.toString());
 		}
+		
 		return filterPrefix(sender, res, prefix);
 	}
 
 	protected List<String> getConfigCompletions(CommandSender sender, ConfigurationSection config, String prefix) {
-		List<String> res = new ArrayList<String>();
+		List<String> res = new ArrayList<>();
+		
 		for (String k : config.getKeys(true)) {
 			if (!config.isConfigurationSection(k)) {
 				res.add(k);
 			}
 		}
+		
 		return filterPrefix(sender, res, prefix);
 	}
 
 	protected List<String> getConfigValueCompletions(CommandSender sender, String key, Object obj, String desc, String prefix) {
-		List<String> res = new ArrayList<String>();
+		List<String> res = new ArrayList<>();
+		
 		if (obj instanceof Enum<?>) {
 			MiscUtil.alertMessage(sender, key + ":" + desc);
+			
 			for (Object o1 : obj.getClass().getEnumConstants()) {
 				res.add(o1.toString());
 			}
-		} else if (obj instanceof Boolean) {
+		} 
+		else if (obj instanceof Boolean) {
 			MiscUtil.alertMessage(sender, key + ":" + desc);
 			res.add("true");
 			res.add("false");
-		} else {
+		} 
+		else {
 			MiscUtil.alertMessage(sender, key + " = <" + obj.getClass().getSimpleName() + ">" + desc);
 		}
+		
 		return filterPrefix(sender, res, prefix);
 	}
 
@@ -438,12 +476,14 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 	 * contains one or more of these records.
 	 */
 	class CommandRecord {
+		
 		private final String command;
-		private final String subCommands[];
+		private final String[] subCommands;
 
 		public CommandRecord(String[] fields) {
 			this.command = fields[0];
 			this.subCommands = new String[fields.length - 1];
+			
 			for (int i = 1; i < fields.length; i++) {
 				subCommands[i - 1] = fields[i];
 			}

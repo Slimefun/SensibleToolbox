@@ -410,7 +410,7 @@ public class AutoBuilder extends BaseSTBMachine {
             if (w.contains(ourLoc)) {
                 return BuilderStatus.TOO_NEAR;
             }
-            if (!w.outset(Cuboid.CuboidDirection.Both, MAX_DISTANCE).contains(ourLoc)) {
+            if (!w.outset(Cuboid.CuboidDirection.BOTH, MAX_DISTANCE).contains(ourLoc)) {
                 return BuilderStatus.TOO_FAR;
             }
             workArea = w;
