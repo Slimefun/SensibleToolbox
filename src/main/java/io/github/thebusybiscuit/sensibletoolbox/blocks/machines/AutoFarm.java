@@ -9,6 +9,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -23,12 +24,12 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 public class AutoFarm extends AutoFarmingMachine {
 	
     private static final Map<Material, Material> crops = new HashMap<>();
-    private static final int radius = 3;
+    private static final int RADIUS = 3;
     
     static {
-    	crops.put(Material.CROPS, Material.WHEAT);
-    	crops.put(Material.POTATO, Material.POTATO_ITEM);
-    	crops.put(Material.CARROT, Material.CARROT_ITEM);
+    	crops.put(Material.WHEAT, Material.WHEAT);
+    	crops.put(Material.POTATOES, Material.POTATO);
+    	crops.put(Material.CARROTS, Material.CARROT);
     }
     
     private Set<Block> blocks;
@@ -59,7 +60,7 @@ public class AutoFarm extends AutoFarmingMachine {
         return new String[] {
                 "Automatically harvests and replants",
                 "Wheat/Potato/Carrot Crops",
-                "in a " + radius + "x" + radius + " Radius 2 Blocks above the Machine"
+                "in a " + RADIUS + "x" + RADIUS + " Radius 2 Blocks above the Machine"
         };
     }
 
@@ -80,7 +81,7 @@ public class AutoFarm extends AutoFarmingMachine {
     
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
-    	int i = radius / 2;
+    	int i = RADIUS / 2;
     	for (int x = -i; x <= i; x++) {
     		for (int z = -i; z <= i; z++) {
         		blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
@@ -93,16 +94,22 @@ public class AutoFarm extends AutoFarmingMachine {
 	@Override
     public void onServerTick() {
     	if (!isJammed()) {
-    		for (Block crop: blocks) {
-        		if (crops.containsKey(crop.getType()) && crop.getData() >= 7) {
-        			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
-        			else break;
-        			crop.setData((byte) 0);
-        			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
-            		setJammed(!output(crops.get(crop.getType())));
-        			break;
-        		}
-        	}
+    		if (getCharge() >= getScuPerCycle()) {
+        		for (Block crop : blocks) {
+            		if (crops.containsKey(crop.getType())) {
+            			Ageable ageable = (Ageable) crop.getBlockData();
+            			
+            			if (ageable.getAge() >= ageable.getMaximumAge()) {
+                			setCharge(getCharge() - getScuPerCycle());
+                			
+                			ageable.setAge(0);
+                			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
+                    		setJammed(!output(crops.get(crop.getType())));
+                			break;
+            			}
+            		}
+            	}
+    		}
     	}
     	else if (buffer != null) {
     		setJammed(!output(buffer));

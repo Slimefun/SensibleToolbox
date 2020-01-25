@@ -8,6 +8,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -85,16 +86,22 @@ public class InfernalFarm extends AutoFarmingMachine {
 	@Override
     public void onServerTick() {
     	if (!isJammed()) {
-    		for (Block crop: blocks) {
-        		if (crop.getType() == Material.NETHER_WART && crop.getData() >= 3) {
-        			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
-        			else break;
-        			crop.setData((byte) 0);
-        			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
-            		setJammed(!output(Material.NETHER_WART));
-        			break;
-        		}
-        	}
+    		if (getCharge() >= getScuPerCycle()) {
+        		for (Block crop : blocks) {
+            		if (crop.getType() == Material.NETHER_WART) {
+            			Ageable ageable = (Ageable) crop.getBlockData();
+            			
+            			if (ageable.getAge() >= ageable.getMaximumAge()) {
+                			setCharge(getCharge() - getScuPerCycle());
+                			
+                			ageable.setAge(0);
+                			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
+                    		setJammed(!output(Material.NETHER_WART));
+                			break;
+            			}
+            		}
+            	}
+    		}
     	}
     	else if (buffer != null) {
     		setJammed(!output(buffer));
@@ -104,7 +111,7 @@ public class InfernalFarm extends AutoFarmingMachine {
     }
 
 	private boolean output(Material m) {
-		for (int slot: getOutputSlots()) {
+		for (int slot : getOutputSlots()) {
 			ItemStack stack = getInventoryItem(slot);
 			
 			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {

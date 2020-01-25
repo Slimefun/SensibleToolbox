@@ -119,12 +119,10 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             Player player = event.getPlayer();
+            
             if (!hasAccessRights(player)) {
                 STBUtil.complain(player, "That " + getItemName() + " is private!");
-            } 
-            else if (EnderStorage.isCreativeAccessBlocked(player)) {
-                STBUtil.complain(player, "No creative-mode access to ender boxes!");
-            } 
+            }
             else {
                 Inventory inv = isGlobal() ?
                         EnderStorage.getEnderInventory(getEnderFrequency()) :

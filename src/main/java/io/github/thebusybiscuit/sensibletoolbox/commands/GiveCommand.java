@@ -23,8 +23,7 @@ public class GiveCommand extends AbstractCommand {
         setUsage("/<command> give <item-name> [<amount>] [<player-name>]");
         setQuotedArgs(true);
     }
-
-    @SuppressWarnings("deprecation")
+    
 	@Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         Player target;
@@ -32,7 +31,8 @@ public class GiveCommand extends AbstractCommand {
         if (args.length >= 3) {
             target = Bukkit.getPlayer(args[2]);
             DHValidate.notNull(target, "Unknown player: " + args[2]);
-        } else {
+        } 
+        else {
             if (args.length >= 2) {
                 try {
                     amount = Integer.parseInt(args[1]);
@@ -43,6 +43,7 @@ public class GiveCommand extends AbstractCommand {
             notFromConsole(sender);
             target = (Player) sender;
         }
+        
         String id = args[0].replace(" ", "").toLowerCase();
         BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(id);
         DHValidate.notNull(item, "Unknown SensibleToolbox item: " + args[0]);
@@ -55,21 +56,24 @@ public class GiveCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         if (args.length == 1) {
             return getItemCompletions(plugin, sender, args[0]);
-        } else if (args.length == 2) {
+        } 
+        else if (args.length == 2) {
             return null;  // list players
-        } else {
+        } 
+        else {
             return noCompletions(sender);
         }
     }
 
     protected List<String> getItemCompletions(Plugin plugin, CommandSender sender, String prefix) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
 
         for (String item : SensibleToolbox.getItemRegistry().getItemIds()) {
             if (item.startsWith(prefix)) {
                 res.add(item);
             }
         }
+        
         return getResult(res, sender, true);
     }
 }

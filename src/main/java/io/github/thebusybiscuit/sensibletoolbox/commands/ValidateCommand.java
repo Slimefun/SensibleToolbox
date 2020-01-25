@@ -1,17 +1,16 @@
 package io.github.thebusybiscuit.sensibletoolbox.commands;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
-
-import com.google.common.collect.Sets;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
@@ -37,19 +36,19 @@ public class ValidateCommand extends STBAbstractCommand {
         }
         return true;
     }
-
-    @SuppressWarnings("deprecation")
+    
 	private int validate(Plugin plugin, World world) {
-        Set<Block> fixed = Sets.newHashSet();
+        Set<Block> fixed = new HashSet<>();
+        
         for (BaseSTBBlock stb : LocationManager.getManager().listBlocks(world, false)) {
             Location loc = stb.getLocation();
             Block b = loc.getBlock();
-            MaterialData md = stb.getMaterialData();
+            Material material = stb.getMaterial();
 
-            Debugger.getInstance().debug("compare: block " + b + " vs. STB: " + stb + " - " + md);
-            if (b.getType() != md.getItemType() || b.getData() != md.getData()) {
-                // block's material/data doesn't match
-                b.setTypeIdAndData(md.getItemTypeId(), md.getData(), false);
+            Debugger.getInstance().debug("compare: block " + b + " vs. STB: " + stb + " - " + material);
+            if (b.getType() != material) {
+                // block's material doesn't match
+                b.setType(material);
                 LogUtils.info("restored type and data for STB block [" + stb + "], world block: " + b);
                 fixed.add(b);
             }

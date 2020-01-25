@@ -17,9 +17,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.util.Vector;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class AngelicBlock extends BaseSTBBlock {
@@ -67,7 +67,8 @@ public class AngelicBlock extends BaseSTBBlock {
             Vector v = p.getLocation().getDirection().normalize().multiply(2.0);
             Location loc = p.getEyeLocation().add(v);
             Block b = loc.getBlock();
-            if (b.isEmpty() && SensibleToolbox.getBlockProtection().playerCanBuild(p, b, BlockProtection.Operation.PLACE)) {
+            
+            if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.PLACE_BLOCK)) {
                 ItemStack stack = p.getItemInHand();
                 if (stack.getAmount() > 1) {
                     stack.setAmount(stack.getAmount() - 1);
@@ -94,7 +95,7 @@ public class AngelicBlock extends BaseSTBBlock {
         Player p = event.getPlayer();
         Block b = event.getBlock();
         
-        if (SensibleToolbox.getBlockProtection().playerCanBuild(p, b, BlockProtection.Operation.BREAK)) {
+        if (SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.BREAK_BLOCK)) {
             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
             breakBlock(false);
             STBUtil.giveItems(p, toItemStack());

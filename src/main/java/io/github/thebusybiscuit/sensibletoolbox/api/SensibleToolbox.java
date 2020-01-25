@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
@@ -29,10 +30,12 @@ public class SensibleToolbox {
     public static SensibleToolboxPlugin getPluginInstance() {
         if (instance == null) {
             instance = (SensibleToolboxPlugin) Bukkit.getPluginManager().getPlugin("SensibleToolbox");
+            
             if (instance == null || !instance.isEnabled()) {
                 throw new IllegalStateException("SensibleToolbox plugin is not available!");
             }
         }
+        
         return instance;
     }
 
@@ -187,4 +190,8 @@ public class SensibleToolbox {
     public static EnergyNet getEnergyNet(Block block) {
         return getPluginInstance().getEnergyNetManager().getEnergyNet(block);
     }
+
+	public static ProtectionManager getProtectionManager() {
+		return getPluginInstance().getProtectionManager();
+	}
 }

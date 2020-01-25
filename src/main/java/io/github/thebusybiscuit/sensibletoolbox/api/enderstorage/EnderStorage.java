@@ -1,12 +1,9 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.enderstorage;
 
-import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 /**
  * Top-level utility methods for interacting with ender inventories.
@@ -17,6 +14,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
  * to any custom STB ender inventory.
  */
 public class EnderStorage {
+	
     public static final int MAX_ENDER_FREQUENCY = 1000;
 
     /**
@@ -65,21 +63,6 @@ public class EnderStorage {
      */
     public static EnderStorageHolder getEnderStorageHolder(int frequency) {
         return SensibleToolbox.getPluginInstance().getEnderStorageManager().getGlobalInventoryHolder(frequency);
-    }
-
-    /**
-     * Check if the player's access to ender inventories is blocked due to
-     * being in creative mode.  Creative-mode access to ender inventories
-     * poses a risk, since it could be used to easily obtain items in a
-     * creative world and move them to a survival world.
-     *
-     * @param player the player to check
-     * @return true if access should be blocked for this player; false otherwise
-     */
-    public static boolean isCreativeAccessBlocked(Player player) {
-        return (player.getGameMode() == GameMode.CREATIVE || STBUtil.isCreativeWorld(player.getWorld()))
-                && !SensibleToolbox.getPluginInstance().getConfigCache().isCreativeEnderAccess()
-                && !player.hasPermission("stb.enderaccess.creative");
     }
 
 }
