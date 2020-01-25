@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
  * 
  */
 public class ExperienceManager {
+	
 	// this is to stop the lookup table growing without control
 	private static int hardMaxLevel = 100000;
 
@@ -41,7 +42,7 @@ public class ExperienceManager {
 	 */
 	public ExperienceManager(Player player) {
 		Validate.notNull(player, "Player cannot be null");
-		this.player = new WeakReference<Player>(player);
+		this.player = new WeakReference<>(player);
 		this.playerName = player.getName();
 	}
 
