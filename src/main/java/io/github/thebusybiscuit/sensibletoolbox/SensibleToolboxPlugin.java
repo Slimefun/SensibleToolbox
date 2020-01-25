@@ -304,7 +304,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     	instance = this;
 
         LogUtils.init(this);
-        new Metrics(this);
+        new Metrics(this, 6354);
         
         configManager = new ConfigurationManager(this, this);
 
@@ -378,6 +378,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             // if they stay open after server reload, event dispatch will probably not work,
             // allowing fake items to be removed from them - not a good thing
             InventoryGUI gui = STBInventoryGUI.getOpenGUI(p);
+            
             if (gui != null) {
                 gui.hide(p);
                 p.closeInventory();
