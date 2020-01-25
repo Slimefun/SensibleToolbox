@@ -104,10 +104,6 @@ public class RecipeUtil {
     public static String makeRecipeKey(ItemStack item) {
         String res = item.getType().toString();
         
-        if (item.getDurability() != -1) {
-            res += ":" + item.getDurability();
-        }
-        
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             res += ":" + item.getItemMeta().getDisplayName();
         }

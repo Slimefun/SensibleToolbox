@@ -1,5 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,6 @@ import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
@@ -16,7 +16,8 @@ import me.desht.dhutils.MiscUtil;
  * Represents the custom recipes known by a specific type of machine.
  */
 public class CustomRecipeCollection {
-    private final Map<String, ProcessingResult> recipes = new HashMap<String, ProcessingResult>();
+	
+    private final Map<String, ProcessingResult> recipes = new HashMap<>();
 
     /**
      * Register a new custom recipe with the recipe manager.
@@ -29,9 +30,11 @@ public class CustomRecipeCollection {
         String key = recipe.makeKey(false);
         ProcessingResult pr = new ProcessingResult(recipe.getResult(), recipe.getProcessingTime());
         recipes.put(key, pr);
+        
         if (allowWild) {
             recipes.put(recipe.makeKey(true), pr);
         }
+        
         Debugger.getInstance().debug("added custom recipe: [" + key + "] => " + recipe.getResult() + " via " + recipe.getProcessorID());
     }
 
@@ -54,11 +57,13 @@ public class CustomRecipeCollection {
     public ProcessingResult get(boolean shaped, ItemStack... input) {
         String key = makeKey(shaped, false, input);
         ProcessingResult res = recipes.get(key);
+        
         if (res == null) {
             // check for a recipe with wildcarded data
             key = makeKey(shaped, true, input);
             res = recipes.get(key);
         }
+        
         return res;
     }
 
@@ -71,9 +76,11 @@ public class CustomRecipeCollection {
      */
     public boolean hasRecipe(boolean shaped, ItemStack... input) {
         String key = makeKey(shaped, false, input);
+        
         if (recipes.containsKey(key)) {
             return true;
-        } else {
+        } 
+        else {
             key = makeKey(shaped, true, input);
             return recipes.containsKey(key);
         }
@@ -84,18 +91,22 @@ public class CustomRecipeCollection {
             // common case
             return "1x" + RecipeUtil.makeRecipeKey(ignoreData, input[0]);
         }
-        List<String> l = Lists.newArrayListWithCapacity(input.length);
+        List<String> l = new ArrayList<>(input.length);
+        
         for (ItemStack stack : input) {
             if (stack == null) {
                 if (shaped) {
                     l.add("");
-                } else {
+                } 
+                else {
                     throw new IllegalArgumentException("null items not allowed for shapeless recipes");
                 }
-            } else {
+            } 
+            else {
                 l.add(stack.getAmount() + "x" + RecipeUtil.makeRecipeKey(ignoreData, stack));
             }
         }
+        
         return Joiner.on(";").join(MiscUtil.asSortedList(l));
     }
 }
