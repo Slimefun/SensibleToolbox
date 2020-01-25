@@ -326,8 +326,10 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         for (BlockFace face : STBUtil.directFaces) {
             Block b1 = b.getRelative(face);
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b1.getLocation());
-            if (stb instanceof STBInventoryHolder) neighbours.add(face);
-            else if (VanillaInventoryUtils.isVanillaInventory(b1)) neighbours.add(face);
+            
+            if (stb instanceof STBInventoryHolder || VanillaInventoryUtils.isVanillaInventory(b1))  {
+            	neighbours.add(face);
+            }
         }
     }
 
@@ -405,9 +407,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (newAmount == bufferItem.getAmount()) {
             return;
         }
+        
         if (newAmount <= 0) {
             setBufferItem(null);
-        } else {
+        } 
+        else {
             bufferItem.setAmount(newAmount);
             updateBufferIndicator(false);
         }
@@ -418,7 +422,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             amount = Math.min(amount, bufferItem.getAmount());
             setBufferAmount(bufferItem.getAmount() - amount);
             return amount;
-        } else {
+        } 
+        else {
             return 0;
         }
     }

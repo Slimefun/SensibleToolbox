@@ -36,6 +36,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class ShowCommand extends AbstractCommand {
+	
     public ShowCommand() {
         super("stb show");
         setPermissionNode("stb.commands.show");
@@ -46,24 +47,31 @@ public class ShowCommand extends AbstractCommand {
     @Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         MessagePager pager = MessagePager.getPager(sender).clear();
+        
         if (args.length >= 1) {
             showDetails(sender, pager, args[0]);
-        } else if (getBooleanOption("perf")) {
+        } 
+        else if (getBooleanOption("perf")) {
             for (World w : Bukkit.getWorlds()) {
                 pager.add(w.getName() + ": " + w.getLoadedChunks().length + " loaded chunks");
             }
+            
             long avg = LocationManager.getManager().getAverageTimePerTick();
             double pct = avg / 200000.0;
             pager.add(avg + " ns/tick (" + pct + "%) spent in ticking STB blocks");
-        } else if (getBooleanOption("dump")) {
+        } 
+        else if (getBooleanOption("dump")) {
             dumpItemData(plugin, sender);
-        } else {
+        } 
+        else {
             String id = getStringOption("type");
+            
             if (hasOption("w")) {
                 World w = Bukkit.getWorld(getStringOption("w"));
                 DHValidate.notNull(w, "Unknown world: " + getStringOption("w"));
                 show(pager, w, id);
-            } else {
+            } 
+            else {
                 for (World w : Bukkit.getWorlds()) {
                     show(pager, w, id);
                 }
@@ -76,8 +84,8 @@ public class ShowCommand extends AbstractCommand {
 
     private void dumpItemData(Plugin plugin, CommandSender sender) {
         File out = new File(plugin.getDataFolder(), "item-dump.txt");
-        try {
-            PrintWriter writer = new PrintWriter(out, "UTF-8");
+        
+        try (PrintWriter writer = new PrintWriter(out, "UTF-8")) {
             for (String itemId : SensibleToolbox.getItemRegistry().getItemIds()) {
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(itemId);
                 String lore = Joiner.on("\\\\").join(item.getLore()).replace("\u00a7r", "");
@@ -87,7 +95,7 @@ public class ShowCommand extends AbstractCommand {
                 }
                 writer.println("|" + item.getItemName() + "|" + item.getItemTypeID() + "|" + appearance + "|" + lore);
             }
-            writer.close();
+            
             MiscUtil.statusMessage(sender, "STB item data dumped to " + out);
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,6 +104,7 @@ public class ShowCommand extends AbstractCommand {
 
 	private void showDetails(CommandSender sender, MessagePager pager, String locStr) {
         BaseSTBItem item;
+        
         if (locStr.equals(".")) {
             notFromConsole(sender);
             Player player = (Player) sender;
@@ -105,7 +114,8 @@ public class ShowCommand extends AbstractCommand {
                 Block b = player.getTargetBlock((Set<Material>) null, 10);
                 item = LocationManager.getManager().get(b.getLocation(), true);
             }
-        } else {
+        } 
+        else {
             try {
                 Location loc = MiscUtil.parseLocation(locStr);
                 item = LocationManager.getManager().get(loc);
@@ -114,10 +124,12 @@ public class ShowCommand extends AbstractCommand {
                 throw new DHUtilsException(e.getMessage());
             }
         }
+        
         DHValidate.notNull(item, "No valid STB item/block found");
 
         YamlConfiguration conf = item.freeze();
         pager.add(ChatColor.AQUA.toString() + item + ":");
+        
         for (String k : conf.getKeys(true)) {
             if (!conf.isConfigurationSection(k)) {
                 Object o = conf.get(k);
@@ -125,7 +137,8 @@ public class ShowCommand extends AbstractCommand {
                     // is it safe to assume base64-encoded string always starts with "rO" ?
                     String s = getStringFromBase64(o);
                     pager.add(ChatColor.WHITE + k + " = " + ChatColor.YELLOW + s);
-                } else {
+                } 
+                else {
                     pager.add(ChatColor.WHITE + k + " = " + ChatColor.YELLOW + o);
                 }
             }
@@ -134,9 +147,10 @@ public class ShowCommand extends AbstractCommand {
 
     private String getStringFromBase64(Object o) {
         String s;
+        
         try {
             Inventory inv = BukkitSerialization.fromBase64(o.toString());
-            List<String> l = new ArrayList<String>(inv.getSize());
+            List<String> l = new ArrayList<>(inv.getSize());
             for (ItemStack stack : inv) {
                 if (stack != null) {
                     l.add(STBUtil.describeItemStack(stack));
@@ -146,19 +160,24 @@ public class ShowCommand extends AbstractCommand {
         } catch (IOException e) {
             s = "???";
         }
+        
         return s;
     }
 
     private void show(MessagePager pager, World w, String id) {
         LocationManager mgr = LocationManager.getManager();
+        
         for (BaseSTBBlock stb : mgr.listBlocks(w, true)) {
             if (id != null && !id.equalsIgnoreCase(stb.getItemTypeID())) {
                 continue;
             }
+            
             String name = stb.getItemName();
+            
             if (stb.getDisplaySuffix() != null) {
                 name = name + ": " + stb.getDisplaySuffix();
             }
+            
             pager.addListItem(MiscUtil.formatLocation(stb.getLocation()) + " - " + name);
         }
     }
@@ -166,14 +185,16 @@ public class ShowCommand extends AbstractCommand {
     @Override
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         if (args.length >= 2 && args[args.length - 2].equals("-w")) {
-            List<String> worlds = new ArrayList<String>();
+            List<String> worlds = new ArrayList<>();
             for (World w : Bukkit.getWorlds()) {
                 worlds.add(w.getName());
             }
             return filterPrefix(sender, worlds, args[args.length - 1]);
-        } else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
+        } 
+        else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
             return filterPrefix(sender, SensibleToolbox.getItemRegistry().getItemIds(), args[args.length - 1]);
-        } else {
+        } 
+        else {
             showUsage(sender);
             return noCompletions(sender);
         }

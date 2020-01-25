@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,10 +18,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
@@ -32,15 +34,15 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
 	
-    private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.EYE_OF_ENDER), ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
-    private static final ItemStack UNLOCKED_BUTTON = GUIUtil.makeTexture(new MaterialData(Material.ENDER_PEARL), ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
+    private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(Material.ENDER_EYE, ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
+    private static final ItemStack UNLOCKED_BUTTON = GUIUtil.makeTexture(Material.ENDER_PEARL, ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
     private static final long DOUBLE_CLICK_TIME = 250L;
     private ItemStack stored;
     private int storageAmount;
     private int outputAmount;
     private int maxCapacity;
-    private final String signLabel[] = new String[4];
+    private final String[] signLabel = new String[4];
     private int oldTotalAmount = -1;
     private boolean locked;
 
@@ -108,20 +110,25 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public void setLocked(boolean locked) {
         this.locked = locked;
         updateSignQuantityLine();
+        
         if (getTotalAmount() == 0 && !isLocked()) {
             setStoredItemType(null);
         }
+        
         updateAttachedLabelSigns();
     }
 
     public void setStoredItemType(ItemStack stored) {
         Debugger.getInstance().debug(this + " set stored item = " + stored);
+        
         if (stored != null) {
             this.stored = stored.clone();
             this.stored.setAmount(1);
-        } else if (!isLocked()) {
+        } 
+        else if (!isLocked()) {
             this.stored = null;
         }
+        
         maxCapacity = getStackCapacity() * (this.stored == null ? 64 : this.stored.getMaxStackSize());
         updateSignItemLines();
     }
@@ -133,11 +140,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     private void updateSignItemLines() {
         if (this.stored != null) {
-            String[] lines = WordUtils.wrap(StringUtils.formatItemName(this.stored, false), 15).split("\\n");
+            String[] lines = WordUtils.wrap(ItemUtils.getItemName(stored), 15).split("\\n");
             signLabel[2] = lines[0];
             String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
             if (lines.length > 1) signLabel[3] = pfx + lines[1];
-        } else {
+        } 
+        else {
             signLabel[2] = ChatColor.ITALIC + "Empty";
             signLabel[3] = "";
         }
@@ -145,12 +153,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] {10};
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14};
+        return new int[] {14};
     }
 
     @Override
@@ -186,13 +194,13 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Big Storage Unit", "Stores up to " + getStackCapacity() + " stacks", "of a single item type"};
+        return new String[] {"Big Storage Unit", "Stores up to " + getStackCapacity() + " stacks", "of a single item type"};
     }
 
     @Override
     public String[] getExtraLore() {
         if (isLocked() && getStoredItemType() != null) {
-            return new String[]{ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + StringUtils.formatItemName(getStoredItemType(), false)};
+            return new String[] {ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + StringUtils.formatItemName(getStoredItemType(), false)};
         } 
         else {
             return new String[0];
@@ -203,18 +211,9 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("LSL", "L L", "LLL");
-        recipe.setIngredient('L', STBUtil.makeWildCardMaterialData(Material.LOG));
-        recipe.setIngredient('S', STBUtil.makeWildCardMaterialData(Material.WOOD_STEP));
+        recipe.setIngredient('L', new MaterialChoice(Tag.LOGS));
+        recipe.setIngredient('S', new MaterialChoice(Tag.WOODEN_SLABS));
         return recipe;
-    }
-
-    @Override
-    public Recipe[] getExtraRecipes() {
-        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
-        recipe.shape("LSL", "L L", "LLL");
-        recipe.setIngredient('L', STBUtil.makeWildCardMaterialData(Material.LOG_2));
-        recipe.setIngredient('S', STBUtil.makeWildCardMaterialData(Material.WOOD_STEP));
-        return new Recipe[]{recipe};
     }
 
     @Override
@@ -372,13 +371,14 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     @Override
     public void onInteractBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack inHand = player.getItemInHand();
+        ItemStack inHand = event.getItem();
         
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStoredItemType() != null &&
                 hasAccessRights(player) && hasOKItem(player)) {
             // try to extract items from the output stack
             int wanted = player.isSneaking() ? 1 : getStoredItemType().getMaxStackSize();
             int nExtracted = Math.min(wanted, getOutputAmount());
+            
             if (nExtracted > 0) {
                 Location loc = event.getClickedBlock().getRelative(event.getBlockFace()).getLocation().add(0.5, 0.5, 0.5);
                 ItemStack stack = getStoredItemType().clone();
@@ -428,6 +428,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 	private void rightClickFullInsert(Player player) {
         for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
             ItemStack stack = player.getInventory().getItem(slot);
+            
             if (stack != null && stack.isSimilar(getStoredItemType()) && rightClickInsert(player, slot) == 0) {
                 break;
             }
@@ -555,9 +556,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
         if (receiver != null) {
             amount = Math.min(amount, receiver.getMaxStackSize() - receiver.getAmount());
+            
             if (getStorageAmount() > 0 && !receiver.isSimilar(getStoredItemType())) {
                 return null;
             }
+            
             if (amount > getStorageAmount() && getOutputAmount() > 0 && !receiver.isSimilar(getOutputItem())) {
                 return null;
             }
@@ -574,6 +577,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         
         if (amount > 0) {
             fromOutput = Math.min(getOutputAmount(), amount);
+            
             if (fromOutput > 0) {
                 setOutputAmount(getOutputAmount() - fromOutput);
                 ItemStack output = getOutputItem();
@@ -583,6 +587,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
 
         ItemStack tmpStored = getStoredItemType();
+        
         if (getTotalAmount() == 0) {
             setStoredItemType(null);
         }

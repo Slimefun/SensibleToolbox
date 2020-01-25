@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -13,7 +14,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
@@ -22,16 +22,10 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class AutoForester extends AutoFarmingMachine {
 	
-    private static final Set<Material> logs = new HashSet<>();
-    private static final int radius = 5;
-    
-    static {
-    	logs.add(Material.LOG);
-    	logs.add(Material.LOG_2);
-    }
+    private static final int RADIUS = 5;
     
     private Set<Block> blocks;
-    private MaterialData buffer;
+    private Material buffer;
 
     public AutoForester() {
         blocks = new HashSet<>();
@@ -57,7 +51,7 @@ public class AutoForester extends AutoFarmingMachine {
         return new String[] {
                 "Automatically harvests and replants",
                 "Trees",
-                "in a " + radius + "x" + radius + " Radius 2 Blocks above the Machine"
+                "in a " + RADIUS + "x" + RADIUS + " Radius 2 Blocks above the Machine"
         };
     }
 
@@ -77,7 +71,7 @@ public class AutoForester extends AutoFarmingMachine {
     
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
-    	int i = radius / 2;
+    	int i = RADIUS / 2;
     	for (int x = -i; x <= i; x++) {
     		for (int z = -i; z <= i; z++) {
         		blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
@@ -87,21 +81,21 @@ public class AutoForester extends AutoFarmingMachine {
     	super.onBlockRegistered(location, isPlacing);
     }
 
-	@SuppressWarnings("deprecation")
 	@Override
     public void onServerTick() {
     	if (!isJammed()) {
-    		for (Block log: blocks) {
-        		if (logs.contains(log.getType())) {
+    		for (Block log : blocks) {
+        		if (Tags.LOGS.isTagged(log.getType())) {
         			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
         			else break;
         			List<Location> list = new ArrayList<>();
         			TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
         			
         			for (Location l: list) {
-        				buffer = new MaterialData(l.getBlock().getType(), l.getBlock().getData());
+        				buffer = l.getBlock().getType();
                 		setJammed(!output(buffer));
         				log.getWorld().playEffect(l, Effect.STEP_SOUND, l.getBlock().getType());
+        				
         				if (blocks.contains(l.getBlock())) {
 							byte data = l.getBlock().getData();
 							if (l.getBlock().getType() == Material.LOG_2) data = (byte) (data + 4);
@@ -118,14 +112,14 @@ public class AutoForester extends AutoFarmingMachine {
     	
         super.onServerTick();
     }
-
-	@SuppressWarnings("deprecation")
-	private boolean output(MaterialData m) {
+    
+	private boolean output(Material m) {
 		for (int slot: getOutputSlots()) {
 			ItemStack stack = getInventoryItem(slot);
-			if (stack == null || (stack.getType() == m.getItemType() && stack.getData().getData() == m.getData() && stack.getAmount() < stack.getMaxStackSize())) {
-				if (stack == null) stack = m.toItemStack(1);
-				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + 1));
+			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
+				if (stack == null) stack = new ItemStack(m);
+				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
+				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
 				buffer = null;
 				return true;
 			}

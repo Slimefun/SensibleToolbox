@@ -8,6 +8,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
@@ -21,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.Dye;
@@ -125,7 +127,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GSG", "G G", "III");
-        recipe.setIngredient('S', Material.OAK_SLAB);
+        recipe.setIngredient('S', new MaterialChoice(Tag.WOODEN_SLABS));
         recipe.setIngredient('G', Material.GLASS);
         recipe.setIngredient('I', Material.IRON_INGOT);
         return recipe;
@@ -172,12 +174,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         }));
         
         lore = new String[] { "Caution: This will empty the", "paint tank and can't be undone!" };
-        gui.addGadget(new ButtonGadget(gui, 13, ChatColor.RED.toString() + ChatColor.UNDERLINE + "☠ Empty Paint ☠", lore, EMPTY_TEXTURE, new Runnable() {
-            @Override
-            public void run() {
-                emptyPaintCan();
-            }
-        }));
+        gui.addGadget(new ButtonGadget(gui, 13, ChatColor.RED.toString() + ChatColor.UNDERLINE + "☠ Empty Paint ☠", lore, EMPTY_TEXTURE, this::emptyPaintCan));
         
         levelMonitorId = gui.addMonitor(new LevelMonitor(gui, this));
         gui.addGadget(new AccessControlGadget(gui, 8));
@@ -245,12 +242,15 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         if (!validItem(toInsert)) {
             return 0;
-        } else {
+        } 
+        else {
             HashMap<Integer, ItemStack> excess = getGUI().getInventory().addItem(toInsert);
             int inserted = toInsert.getAmount();
+            
             for (ItemStack stack : excess.values()) {
                 inserted -= stack.getAmount();
             }
+            
             return inserted;
         }
     }
@@ -272,6 +272,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             Location loc = getLocation();
             for (int slot : ITEM_SLOTS) {
                 ItemStack item = getGUI().getInventory().getItem(slot);
+                
                 if (item != null) {
                     loc.getWorld().dropItemNaturally(getLocation(), item);
                     getGUI().getInventory().setItem(slot, null);

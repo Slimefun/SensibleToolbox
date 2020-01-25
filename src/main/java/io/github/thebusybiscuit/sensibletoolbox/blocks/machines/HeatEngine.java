@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.CoalType;
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,7 +14,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Coal;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.FuelItems;
@@ -60,7 +58,7 @@ public class HeatEngine extends Generator {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] {10};
     }
 
     @Override
@@ -130,12 +128,12 @@ public class HeatEngine extends Generator {
         SimpleCircuit sc = new SimpleCircuit();
         TenKEnergyCell cell = new TenKEnergyCell();
         registerCustomIngredients(sc, cell);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("III", "SCE", "RGR");
         recipe.setIngredient('I', Material.IRON_INGOT);
-        recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('E', STBUtil.makeWildCardMaterialData(cell));
-        recipe.setIngredient('C', Material.CAULDRON_ITEM);
+        recipe.setIngredient('S', sc.getMaterial());
+        recipe.setIngredient('E', cell.getMaterial());
+        recipe.setIngredient('C', Material.CAULDRON);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('R', Material.REDSTONE);
         return recipe;
@@ -181,13 +179,15 @@ public class HeatEngine extends Generator {
                         break;
                     }
                 }
-            } else if (getProgress() > 0) {
+            } 
+            else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
                 double burnRate = Math.max(getBurnRate() * Math.min(getProgress(), TICK_FREQUENCY), 1.0);
                 setProgress(getProgress() - burnRate);
                 setCharge(getCharge() + currentFuel.getCharge() * burnRate);
                 playActiveParticleEffect();
+                
                 if (getProgress() <= 0) {
                     // fuel burnt
                     setProcessing(null);
@@ -205,11 +205,13 @@ public class HeatEngine extends Generator {
     private void pullItemIntoProcessing(int inputSlot) {
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
+        
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
             // Regulator prevents pulling fuel in unless there's definitely
             // enough room to store the charge that would be generated
             return;
         }
+        
         setProcessing(makeProcessingItem(currentFuel, stack));
         getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
         setProgress(currentFuel.getBurnTime());

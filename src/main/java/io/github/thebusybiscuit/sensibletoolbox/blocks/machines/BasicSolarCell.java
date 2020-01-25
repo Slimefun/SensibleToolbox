@@ -88,27 +88,33 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         boolean res = super.onSlotClick(player, slot, click, inSlot, onCursor);
+        
         if (res) {
             rescanPVCell();
         }
+        
         return res;
     }
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         int inserted = super.onShiftClickInsert(player, slot, toInsert);
+        
         if (inserted > 0) {
             rescanPVCell();
         }
+        
         return inserted;
     }
 
     @Override
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
         boolean res = super.onShiftClickExtract(player, slot, toExtract);
+        
         if (res) {
             rescanPVCell();
         }
+        
         return res;
     }
 
@@ -125,9 +131,11 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public int insertItems(ItemStack toInsert, BlockFace side, boolean sorting, UUID uuid) {
         int n = super.insertItems(toInsert, side, sorting, uuid);
+        
         if (n > 0) {
             rescanPVCell();
         }
+        
         return n;
     }
 
@@ -189,7 +197,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ",  ChatColor.RESET +"  - extract PV cell"};
+        return new String[] {"Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ",  ChatColor.RESET +"  - extract PV cell"};
     }
 
     @Override
@@ -251,7 +259,6 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         return 20;
     }
 
-    @SuppressWarnings("deprecation")
 	private void drawPVLayer(Block b) {
         // put a carpet on top of the main block to represent the PV cell
         DyeColor color = pvCellLife > 0 ? getCapColour() : DyeColor.GRAY;

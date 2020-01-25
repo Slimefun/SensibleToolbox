@@ -27,19 +27,19 @@ public abstract class STBAbstractCommand extends AbstractCommand {
     protected UUID getID(String s) {
         if (MiscUtil.looksLikeUUID(s)) {
             return UUID.fromString(s);
-        } else {
-            @SuppressWarnings("deprecation")
+        } 
+        else {
             Player p = Bukkit.getPlayer(s);
             return p == null ? null : p.getUniqueId();
         }
     }
-
-    @SuppressWarnings("deprecation")
+    
 	protected Player getTargetPlayer(CommandSender sender, String playerNameOrID) {
         if (playerNameOrID == null) {
             notFromConsole(sender);
             return (Player) sender;
-        } else {
+        } 
+        else {
             PermissionUtils.requirePerms(sender, "stb.friends.other");
             //noinspection deprecation
             return MiscUtil.looksLikeUUID(playerNameOrID) ? Bukkit.getPlayer(UUID.fromString(playerNameOrID)) : Bukkit.getPlayer(playerNameOrID);

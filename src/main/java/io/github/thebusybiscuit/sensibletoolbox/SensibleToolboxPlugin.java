@@ -34,6 +34,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
@@ -192,14 +193,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private EnergyNetManager enetManager;
     private ConfigCache configCache;
     private IDTracker scuRelayIDTracker;
+    private ProtectionManager protectionManager;
 
     public static SensibleToolboxPlugin getInstance() {
         return instance;
     }
     
     public void registerItems() {
-        final String CONFIG_NODE = "items_enabled";
-        final String PERMISSION_NODE = "stb";
+        String CONFIG_NODE = "items_enabled";
+        String PERMISSION_NODE = "stb";
 
         itemRegistry.registerItem(new AngelicBlock(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new EnderLeash(), this, CONFIG_NODE, PERMISSION_NODE);
@@ -318,7 +320,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         Debugger.getInstance().setPrefix("[STB] ");
         Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
-        if (getConfig().getInt("debug_level") > 0) Debugger.getInstance().setTarget(getServer().getConsoleSender());
+        
+        if (getConfig().getInt("debug_level") > 0) {
+        	Debugger.getInstance().setTarget(getServer().getConsoleSender());
+        }
 
         // try to hook other plugins
         holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
@@ -354,6 +359,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             RecipeUtil.findVanillaFurnaceMaterials();
             RecipeUtil.setupRecipes();
             RecipeBook.buildRecipes();
+            
+            protectionManager = new ProtectionManager(getServer());
         });
 
         Bukkit.getScheduler().runTaskTimer(this, LocationManager.getManager()::tick, 1L, 1L);
@@ -507,7 +514,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
                 e.printStackTrace();
                 throw new DHUtilsException(e.getMessage());
-            } else {
+            } 
+            else {
                 throw new DHUtilsException("Unknown value: " + value);
             }
         }
@@ -559,16 +567,17 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         energyTask = Bukkit.getScheduler().runTaskTimer(this, enetManager::tick, 1L, enetManager.getTickRate());
     }
 
-    public ConfigurationManager getConfigManager() 			{			return configManager;														}
-    public EnderStorageManager getEnderStorageManager() 	{			return enderStorageManager;													}
-    public STBItemRegistry getItemRegistry() 				{			return itemRegistry;														}
-    public FriendManager getFriendManager() 				{			return friendManager;														}
-    public EnergyNetManager getEnergyNetManager() 			{			return enetManager;															}
-    public ConfigCache getConfigCache() 					{			return configCache;															}
-    public IDTracker getScuRelayIDTracker() 				{			return scuRelayIDTracker;													}
-    public SoundMufflerListener getSoundMufflerListener() 	{			return soundMufflerListener;												}
-    public PlayerUUIDTracker getUuidTracker() 				{			return uuidTracker;															}
-
+    public ConfigurationManager getConfigManager() 			{			return configManager;				}
+    public EnderStorageManager getEnderStorageManager() 	{			return enderStorageManager;			}
+    public STBItemRegistry getItemRegistry() 				{			return itemRegistry;				}
+    public FriendManager getFriendManager() 				{			return friendManager;				}
+    public EnergyNetManager getEnergyNetManager() 			{			return enetManager;					}
+    public ConfigCache getConfigCache() 					{			return configCache;					}
+    public IDTracker getScuRelayIDTracker() 				{			return scuRelayIDTracker;			}
+    public SoundMufflerListener getSoundMufflerListener() 	{			return soundMufflerListener;		}
+    public PlayerUUIDTracker getUuidTracker() 				{			return uuidTracker;					}
+    public ProtectionManager getProtectionManager()			{			return protectionManager;			}
+    
 	public boolean isGlowingEnabled() {
 		return isProtocolLibEnabled() && getConfig().getBoolean("options.glowing_items");
 	}

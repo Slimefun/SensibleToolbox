@@ -6,6 +6,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.CyclerGadget;
@@ -24,7 +26,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.LandMarker;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
@@ -245,13 +246,15 @@ public class AutoBuilder extends BaseSTBMachine {
             Block b = getLocation().getWorld().getBlockAt(buildX, buildY, buildZ);
             double scuNeeded = 0.0;
             boolean advanceBuildPos = true;
+        	OfflinePlayer owner = Bukkit.getOfflinePlayer(getOwner());
             
             switch (getBuildMode()) {
                 case CLEAR:
-                    if (!SensibleToolbox.getBlockProtection().playerCanBuild(getOwner(), b, BlockProtection.Operation.BREAK)) {
+                	if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.BREAK_BLOCK)) {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }
+                	
                     // just skip over any "unbreakable" blocks (bedrock, ender portal etc.)
                     if (STBUtil.getMaterialHardness(b.getType()) < Double.MAX_VALUE) {
                         scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
@@ -261,6 +264,7 @@ public class AutoBuilder extends BaseSTBMachine {
                         else if (b.getType() != Material.AIR) {
                             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+                            
                             if (stb != null) {
                                 stb.breakBlock(false);
                             } 
@@ -273,7 +277,7 @@ public class AutoBuilder extends BaseSTBMachine {
                 case FILL:
                 case WALLS:
                 case FRAME:
-                    if (!SensibleToolbox.getBlockProtection().playerCanBuild(getOwner(), b, BlockProtection.Operation.PLACE)) {
+                	if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.PLACE_BLOCK)) {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }
@@ -362,28 +366,36 @@ public class AutoBuilder extends BaseSTBMachine {
 
     private ItemStack fetchNextBuildItem() {
         ItemStack stack = getGUI().getItem(getInputSlots()[invSlot]);
+        
         if (stack == null) {
             int scanSlot = invSlot;
+            
             for (int i = 0; i < getInputSlots().length; i++) {
                 scanSlot++;
+                
                 if (scanSlot >= getInputSlots().length) {
                     scanSlot = 0;
                 }
+                
                 if (getGUI().getItem(getInputSlots()[scanSlot]) != null) {
                     break;
                 }
             }
+            
             if (scanSlot == invSlot) {
                 return null;
-            } else {
+            } 
+            else {
                 invSlot = scanSlot;
                 stack = getGUI().getItem(getInputSlots()[invSlot]);
             }
         }
+        
         if (stack.getAmount() == 1) {
             setInventoryItem(getInputSlots()[invSlot], null);
             return stack;
-        } else {
+        } 
+        else {
             ItemStack res = stack.clone();
             res.setAmount(1);
             stack.setAmount(stack.getAmount() - 1);
@@ -643,9 +655,9 @@ public class AutoBuilder extends BaseSTBMachine {
                     "Clear all blocks", "in the work area");
             add(AutoBuilderMode.FILL, ChatColor.YELLOW, Material.BRICK,
                     "Use inventory to replace", "all empty blocks", "in the work area");
-            add(AutoBuilderMode.WALLS, ChatColor.YELLOW, Material.COBBLE_WALL,
+            add(AutoBuilderMode.WALLS, ChatColor.YELLOW, Material.COBBLESTONE_WALL,
                     "Use inventory to build", "walls around the", "the work area");
-            add(AutoBuilderMode.FRAME, ChatColor.YELLOW, Material.FENCE,
+            add(AutoBuilderMode.FRAME, ChatColor.YELLOW, Material.OAK_FENCE,
                     "Use inventory to build", "a frame around the", "the work area");
             setInitialValue(((AutoBuilder) gui.getOwningBlock()).getBuildMode());
         }

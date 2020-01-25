@@ -5,54 +5,51 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Cocoa;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.GoldCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
-@SuppressWarnings("deprecation")
 public class AutoFarm2 extends AutoFarmingMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
-    private static final Map<Material, MaterialData> crops = new HashMap<Material, MaterialData>();
-    private static final int radius = 5;
+    private static final Map<Material, Material> crops = new HashMap<>();
+    private static final int RADIUS = 5;
     
     static {
-    	crops.put(Material.COCOA, new MaterialData(Material.INK_SACK, (byte) 3));
-    	crops.put(Material.SUGAR_CANE_BLOCK, new MaterialData(Material.SUGAR_CANE));
-    	crops.put(Material.CACTUS, new MaterialData(Material.CACTUS));
+    	crops.put(Material.COCOA, Material.COCOA_BEANS);
+    	crops.put(Material.SUGAR_CANE, Material.SUGAR_CANE);
+    	crops.put(Material.CACTUS, Material.CACTUS);
     }
     
     private Set<Block> blocks;
-    private MaterialData buffer;
+    private Material buffer;
 
     public AutoFarm2() {
-        blocks = new HashSet<Block>();
+        blocks = new HashSet<>();
     }
 
     public AutoFarm2(ConfigurationSection conf) {
         super(conf);
-        blocks = new HashSet<Block>();
+        blocks = new HashSet<>();
     }
     
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BROWN_TERRACOTTA;
     }
 
     @Override
@@ -65,7 +62,7 @@ public class AutoFarm2 extends AutoFarmingMachine {
         return new String[] {
                 "Automatically harvests and replants",
                 "Cocoa Beans/Sugar Cane/Cactus",
-                "in a " + radius + "x" + radius + " Radius 2 Blocks above the Machine"
+                "in a " + RADIUS + "x" + RADIUS + " Radius 2 Blocks above the Machine"
         };
     }
 
@@ -74,20 +71,20 @@ public class AutoFarm2 extends AutoFarmingMachine {
     	MachineFrame frame = new MachineFrame();
     	GoldCombineHoe hoe = new GoldCombineHoe();
     	registerCustomIngredients(frame, hoe);
-        ShapedRecipe res = new ShapedRecipe(toItemStack());
+        ShapedRecipe res = new ShapedRecipe(getKey(), toItemStack());
         res.shape("LHL", "IFI", "RGR");
         res.setIngredient('R', Material.REDSTONE);
         res.setIngredient('G', Material.GOLD_INGOT);
         res.setIngredient('I', Material.IRON_INGOT);
-        res.setIngredient('L', Material.LOG);
-        res.setIngredient('H', hoe.getMaterialData());
-        res.setIngredient('F', frame.getMaterialData());
+        res.setIngredient('L', new MaterialChoice(Tag.LOGS));
+        res.setIngredient('H', hoe.getMaterial());
+        res.setIngredient('F', frame.getMaterial());
         return res;
     }
     
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
-    	int i = radius / 2;
+    	int i = RADIUS / 2;
     	for (int x = -i; x <= i; x++) {
     		for (int z = -i; z <= i; z++) {
         		blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
@@ -100,13 +97,15 @@ public class AutoFarm2 extends AutoFarmingMachine {
 	@Override
     public void onServerTick() {
     	if (!isJammed()) {
-    		for (Block crop: blocks) {
+    		for (Block crop : blocks) {
         		if (crops.containsKey(crop.getType())) {
         			if (crop.getType() == Material.COCOA) {
-        				if (crop.getData() >= 8) {
+        				Cocoa cocoa = (Cocoa) crop.getBlockData();
+        				if (cocoa.getAge() >= cocoa.getMaximumAge()) {
         					if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
                 			else break;
-                			crop.setData((byte) (crop.getData() - 8));
+        					
+                			cocoa.setAge(0);
                 			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
                     		setJammed(!output(crops.get(crop.getType())));
                 			break;
@@ -130,13 +129,13 @@ public class AutoFarm2 extends AutoFarmingMachine {
     	
         super.onServerTick();
     }
-
-	private boolean output(MaterialData m) {
+    
+	private boolean output(Material m) {
 		for (int slot: getOutputSlots()) {
 			ItemStack stack = getInventoryItem(slot);
-			if (stack == null || (stack.getType() == m.getItemType() && stack.getAmount() < stack.getMaxStackSize())) {
-				if (stack == null) stack = m.toItemStack(1);
-				int amount = m.getItemType() == Material.INK_SACK ? ((stack.getMaxStackSize() - stack.getAmount()) > 3 ? (CSCoreLib.randomizer().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount())): 1;
+			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
+				if (stack == null) stack = new ItemStack(m);
+				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (CSCoreLib.randomizer().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
 				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
 				buffer = null;
 				return true;

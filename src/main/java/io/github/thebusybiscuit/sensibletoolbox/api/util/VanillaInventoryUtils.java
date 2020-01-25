@@ -1,20 +1,22 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.util;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang.math.IntRange;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.block.BlockState;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import me.desht.dhutils.Debugger;
 
@@ -22,6 +24,10 @@ import me.desht.dhutils.Debugger;
  * Utility methods to interact with vanilla inventories.
  */
 public class VanillaInventoryUtils {
+	
+	public static boolean isVanillaInventory(Block b) {
+		return getVanillaInventory(b).isPresent();
+	}
 
     /**
      * Get the vanilla inventory for the given block.
@@ -29,27 +35,13 @@ public class VanillaInventoryUtils {
      * @param target the block containing the target inventory
      * @return the block's inventory, or null if the block does not have one
      */
-    public static Inventory getVanillaInventoryFor(Block target) {
-        switch (target.getType()) {
-            case CHEST:
-                Chest c = (Chest) target.getState();
-                if (c.getInventory().getHolder() instanceof DoubleChest) {
-                    DoubleChest dc = (DoubleChest) c.getInventory().getHolder();
-                    return dc.getInventory();
-                } else {
-                    return c.getBlockInventory();
-                }
-            case DISPENSER:
-            case HOPPER:
-            case DROPPER:
-            case FURNACE:
-            case BREWING_STAND:
-            case BURNING_FURNACE:
-                return ((InventoryHolder) target.getState()).getInventory();
-            // any other vanilla inventory types ?
-            default:
-                return null;
-        }
+    public static Optional<Inventory> getVanillaInventory(Block target) {
+        BlockState state = target.getState();
+        
+        if (state instanceof InventoryHolder) 
+        	return Optional.of(((InventoryHolder) state).getInventory());
+        else 
+        	return Optional.empty();
     }
 
     /**
@@ -70,11 +62,17 @@ public class VanillaInventoryUtils {
         if (source == null || source.getAmount() == 0) {
             return 0;
         }
-        if (!SensibleToolbox.getBlockProtection().isInventoryAccessible(inserterId, target)) {
+        
+        if (!SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(inserterId), target, ProtectableAction.ACCESS_INVENTORIES)) {
             return 0;
         }
-        Inventory targetInv = getVanillaInventoryFor(target);
-        return vanillaInsertion(targetInv, source, amount, side, sorting);
+        
+        Optional<Inventory> targetInv = getVanillaInventory(target);
+        
+        if (!targetInv.isPresent())
+        	return 0;
+        else
+        	return vanillaInsertion(targetInv.get(), source, amount, side, sorting);
     }
 
     /**
@@ -92,10 +90,12 @@ public class VanillaInventoryUtils {
             if (sorting && !sortingOK(source, targetInv)) {
                 return 0;
             }
+            
             ItemStack stack = source.clone();
             stack.setAmount(Math.min(amount, stack.getAmount()));
             Debugger.getInstance().debug(2, "inserting " + stack + " into " + targetInv.getHolder());
             HashMap<Integer, ItemStack> excess;
+            
             switch (targetInv.getType()) {
                 case FURNACE:
                     if (side == BlockFace.DOWN) {
@@ -115,6 +115,7 @@ public class VanillaInventoryUtils {
                     excess = targetInv.addItem(stack);
                     break;
             }
+            
             if (!excess.isEmpty()) {
                 for (ItemStack s : excess.values()) {
                     if (s.isSimilar(source)) {
@@ -123,7 +124,8 @@ public class VanillaInventoryUtils {
                     }
                 }
                 return stack.getAmount(); // shouldn't get here!
-            } else {
+            } 
+            else {
                 source.setAmount(source.getAmount() - stack.getAmount());
                 return stack.getAmount();
             }
@@ -144,11 +146,16 @@ public class VanillaInventoryUtils {
      * @return the items pulled, or null if nothing was pulled
      */
     public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, UUID pullerId) {
-        if (!SensibleToolbox.getBlockProtection().isInventoryAccessible(pullerId, target)) {
+        if (!SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(pullerId), target, ProtectableAction.ACCESS_INVENTORIES)) {
             return null;
         }
-        Inventory targetInv = getVanillaInventoryFor(target);
-        return pullFromInventory(targetInv, amount, buffer, filter);
+        
+        Optional<Inventory> targetInv = getVanillaInventory(target);
+        
+        if (!targetInv.isPresent())
+        	return null;
+        else 
+        	return pullFromInventory(targetInv.get(), amount, buffer, filter);
     }
 
     /**
@@ -168,20 +175,25 @@ public class VanillaInventoryUtils {
         IntRange range = getExtractionSlots(targetInv);
         for (int slot = range.getMinimumInteger(); slot <= range.getMaximumInteger(); slot++) {
             ItemStack stack = targetInv.getItem(slot);
+            
             if (stack != null) {
                 if ((filter == null || filter.shouldPass(stack)) && (buffer == null || stack.isSimilar(buffer))) {
                     Debugger.getInstance().debug(2, "pulling " + stack + " from " + targetInv.getHolder());
                     int toTake = Math.min(amount, stack.getAmount());
+                    
                     if (buffer != null) {
                         toTake = Math.min(toTake, buffer.getType().getMaxStackSize() - buffer.getAmount());
                     }
+                    
                     if (toTake > 0) {
                         if (buffer == null) {
                             buffer = stack.clone();
                             buffer.setAmount(toTake);
-                        } else {
+                        } 
+                        else {
                             buffer.setAmount(buffer.getAmount() + toTake);
                         }
+                        
                         stack.setAmount(stack.getAmount() - toTake);
                         targetInv.setItem(slot, stack.getAmount() > 0 ? stack : null);
                         return buffer;
@@ -189,6 +201,7 @@ public class VanillaInventoryUtils {
                 }
             }
         }
+        
         return null;
     }
 
@@ -204,31 +217,38 @@ public class VanillaInventoryUtils {
     }
 
     private static HashMap<Integer, ItemStack> addToBrewingStand(BrewerInventory targetInv, ItemStack stack, BlockFace side) {
-        HashMap<Integer, ItemStack> res = new HashMap<Integer, ItemStack>();
+        HashMap<Integer, ItemStack> res = new HashMap<>();
         ItemStack excess = null;
+        
         if (side == BlockFace.UP) {
             // ingredient slot
             if (!STBUtil.isPotionIngredient(stack.getData())) {
                 excess = stack;
-            } else {
+            } 
+            else {
                 excess = putStack(targetInv, 3, stack);
             }
-        } else {
+        } 
+        else {
             // water/potion slots
             if (stack.getType() != Material.GLASS_BOTTLE && stack.getType() != Material.POTION) {
                 excess = stack;
-            } else {
+            } 
+            else {
                 for (int slot = 0; slot <= 2; slot++) {
                     excess = putStack(targetInv, slot, stack);
+                    
                     if (excess == null) {
                         break; // all fitted
-                    } else {
+                    } 
+                    else {
                         // some or none fitted, continue with other slots
                         stack.setAmount(excess.getAmount());
                     }
                 }
             }
         }
+        
         if (excess != null) {
             res.put(0, excess);
         }
@@ -236,8 +256,9 @@ public class VanillaInventoryUtils {
     }
 
     private static HashMap<Integer, ItemStack> addToFurnace(FurnaceInventory targetInv, ItemStack stack, BlockFace side) {
-        HashMap<Integer, ItemStack> res = new HashMap<Integer, ItemStack>();
+        HashMap<Integer, ItemStack> res = new HashMap<>();
         int slot;
+        
         switch (side) {
             case UP:
                 slot = 0;
@@ -246,10 +267,13 @@ public class VanillaInventoryUtils {
                 slot = 1;
                 break; // fuel slot
         }
+        
         ItemStack excess = putStack(targetInv, slot, stack);
+        
         if (excess != null) {
             res.put(slot, excess);
         }
+        
         return res;
     }
 
@@ -264,10 +288,12 @@ public class VanillaInventoryUtils {
      */
     private static ItemStack putStack(Inventory inv, int slot, ItemStack stack) {
         ItemStack current = inv.getItem(slot);
+        
         if (current == null) {
             inv.setItem(slot, stack);
             return null;
-        } else if (current.isSimilar(stack)) {
+        } 
+        else if (current.isSimilar(stack)) {
             int toAdd = Math.min(stack.getAmount(), current.getType().getMaxStackSize() - current.getAmount());
             current.setAmount(current.getAmount() + toAdd);
             inv.setItem(slot, current);
@@ -275,23 +301,28 @@ public class VanillaInventoryUtils {
                 ItemStack leftover = stack.clone();
                 leftover.setAmount(stack.getAmount() - toAdd);
                 return leftover;
-            } else {
+            } 
+            else {
                 return null;
             }
-        } else {
+        } 
+        else {
             return stack;
         }
     }
 
     private static boolean sortingOK(ItemStack candidate, Inventory inv) {
         boolean isEmpty = true;
+        
         for (ItemStack stack : inv) {
             if (candidate.isSimilar(stack)) {
                 return true;
-            } else if (stack != null) {
+            } 
+            else if (stack != null) {
                 isEmpty = false;
             }
         }
+        
         return isEmpty;
     }
 }
