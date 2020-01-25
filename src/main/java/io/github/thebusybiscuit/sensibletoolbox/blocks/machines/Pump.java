@@ -3,9 +3,6 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
-
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,16 +12,15 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
 
 public class Pump extends AbstractProcessingMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.CYAN);
     private static final int PUMP_FILL_TIME = 40; // 40 ticks to fill a bucket
     private BlockFace pumpFace = BlockFace.DOWN;  // will be configurable later
 
@@ -63,17 +59,17 @@ public class Pump extends AbstractProcessingMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] {10};
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14};
+        return new int[] {14};
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{41, 42, 43, 44};
+        return new int[] {41, 42, 43, 44};
     }
 
     @Override
@@ -117,8 +113,8 @@ public class Pump extends AbstractProcessingMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.CYAN_TERRACOTTA;
     }
 
     @Override
@@ -138,12 +134,12 @@ public class Pump extends AbstractProcessingMachine {
         SimpleCircuit sc = new SimpleCircuit();
         MachineFrame mf = new MachineFrame();
         registerCustomIngredients(sc, mf);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("PB ", "SIS", "RGR");
-        recipe.setIngredient('P', Material.PISTON_BASE);
+        recipe.setIngredient('P', Material.PISTON);
         recipe.setIngredient('B', Material.BUCKET);
-        recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('I', mf.getMaterialData());
+        recipe.setIngredient('S', sc.getMaterial());
+        recipe.setIngredient('I', mf.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
@@ -166,6 +162,7 @@ public class Pump extends AbstractProcessingMachine {
             // pull a bucket from the input stack into processing
             ItemStack toProcess = makeProcessingItem(toPump, stackIn.getType());
             setProcessing(toProcess);
+            
             if (toProcess != null) {
                 getProgressMeter().setMaxProgress(PUMP_FILL_TIME);
                 setProgress(PUMP_FILL_TIME);
@@ -191,7 +188,8 @@ public class Pump extends AbstractProcessingMachine {
                 setProcessing(null);
                 update(false);
                 replacePumpedBlock(toPump);
-            } else {
+            } 
+            else {
                 setJammed(true);
             }
         }
@@ -203,8 +201,8 @@ public class Pump extends AbstractProcessingMachine {
 
     private Block findNextBlockToPump() {
         switch (getRelativeLocation(pumpFace).getBlock().getType()) {
-        case LAVA: case STATIONARY_LAVA:
-        	List<Location> list = new ArrayList<Location>();
+        case LAVA:
+        	List<Location> list = new ArrayList<>();
         	list.add(getRelativeLocation(pumpFace));
         	Vein.calculate(getRelativeLocation(pumpFace), getRelativeLocation(pumpFace), list, 128);
         	return list.get(list.size() - 1).getBlock();
@@ -218,10 +216,10 @@ public class Pump extends AbstractProcessingMachine {
             return;
         }
         switch (block.getType()) {
-            case WATER: case STATIONARY_WATER:
+            case WATER:
                 block.setType(Material.AIR);
                 break;
-            case LAVA: case STATIONARY_LAVA:
+            case LAVA:
                 block.setType(Material.STONE);
                 break;
             default:
@@ -237,10 +235,10 @@ public class Pump extends AbstractProcessingMachine {
         switch (container) {
             case BUCKET:
                 switch (toPump.getType()) {
-                    case LAVA: case STATIONARY_LAVA:
+                    case LAVA:
                         res = Material.LAVA_BUCKET;
                         break;
-                    case WATER: case STATIONARY_WATER:
+                    case WATER:
                         res = Material.WATER_BUCKET;
                         break;
                     default:
@@ -249,7 +247,7 @@ public class Pump extends AbstractProcessingMachine {
                 break;
             case GLASS_BOTTLE:
                 switch (toPump.getType()) {
-                    case WATER: case STATIONARY_WATER:
+                    case WATER:
                         res = Material.POTION;
                         break;
                     default:

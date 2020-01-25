@@ -1,7 +1,12 @@
 package me.desht.dhutils;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
 
 public class MessagePager {
+	
     public static final String BULLET = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.RESET;
 
     private static final int DEF_PAGE_SIZE = 18;	// 20 lines total, minus 2 for header and footer
@@ -17,7 +23,7 @@ public class MessagePager {
     private static String pageCmd = "";
     private static int defaultPageSize = DEF_PAGE_SIZE;
 
-    private static final Map<String, MessagePager> pagers = new HashMap<String, MessagePager>();
+    private static final Map<String, MessagePager> pagers = new HashMap<>();
 
     private final List<String> messages;
     private final WeakReference<CommandSender> senderRef;
@@ -27,11 +33,11 @@ public class MessagePager {
     private boolean parseColours;
 
     public MessagePager(CommandSender sender) {
-        this.senderRef = new WeakReference<CommandSender>(sender);
+        this.senderRef = new WeakReference<>(sender);
         this.currentPage = 1;
         this.parseColours = false;
         this.pageSize = getDefaultPageSize();
-        this.messages = new ArrayList<String>();
+        this.messages = new ArrayList<>();
     }
 
     public static int getDefaultPageSize() {
@@ -69,6 +75,7 @@ public class MessagePager {
         if (!pagers.containsKey(sender.getName())) {
             pagers.put(sender.getName(), new MessagePager(sender));
         }
+        
         return pagers.get(sender.getName());
     }
 
@@ -166,7 +173,7 @@ public class MessagePager {
         //TODO: apply MinecraftChatStr.alignTags(lines, true)
         //		in pagesize segments before adding to buffer
 
-        List<String> actual = new ArrayList<String>();
+        List<String> actual = new ArrayList<>();
         for (String l : lines) {
             Collections.addAll(actual, wrap(l));
         }
@@ -228,9 +235,11 @@ public class MessagePager {
         if ((page < 1 || page > getPageCount()) && !wrap) {
             return;
         }
+        
         if (page < 1) {
             page = getPageCount();
-        } else if (page > getPageCount()) {
+        } 
+        else if (page > getPageCount()) {
             page = 1;
         }
         currentPage = page;
@@ -313,12 +322,14 @@ public class MessagePager {
             MiscUtil.rawMessage(player, ChatColor.GREEN + "\u2514" + MinecraftChatStr.strPadCenterChat(footer, 325, '\u2504'));
 
             setPage(pageNum);
-        } else {
+        } 
+        else {
             // just dump the whole message buffer to the console
             for (String s : messages) {
                 if (parseColours) {
                     MiscUtil.generalMessage(sender, s);
-                } else {
+                } 
+                else {
                     MiscUtil.rawMessage(sender, s);
                 }
             }
@@ -327,10 +338,12 @@ public class MessagePager {
 
     private String[] wrap(String line) {
         CommandSender sender = senderRef.get();
+        
         if (sender != null && sender instanceof Player) {
             String s = parseColours ? MiscUtil.parseColourSpec(sender, line) : line;
             return ChatPaginator.wordWrap(s, getLineLength());
-        } else {
+        } 
+        else {
             return new String[] { line };
         }
     }

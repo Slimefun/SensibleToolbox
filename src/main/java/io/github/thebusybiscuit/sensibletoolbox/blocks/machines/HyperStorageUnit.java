@@ -2,24 +2,19 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
 
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
+import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 
 public class HyperStorageUnit extends BigStorageUnit {
-    private static final MaterialData md = STBUtil.makeLog(TreeSpecies.ACACIA);
 
     public HyperStorageUnit() {
         super();
@@ -30,8 +25,8 @@ public class HyperStorageUnit extends BigStorageUnit {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.ACACIA_LOG;
     }
 
     @Override
@@ -44,12 +39,12 @@ public class HyperStorageUnit extends BigStorageUnit {
         IntegratedCircuit ic = new IntegratedCircuit();
         BigStorageUnit bsu = new BigStorageUnit();
         registerCustomIngredients(ic, bsu);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("OIO", "EBE", "RGR");
         recipe.setIngredient('O', Material.OBSIDIAN);
-        recipe.setIngredient('I', ic.getMaterialData());
+        recipe.setIngredient('I', ic.getMaterial());
         recipe.setIngredient('E', Material.ENDER_PEARL);
-        recipe.setIngredient('B', bsu.getMaterialData());
+        recipe.setIngredient('B', bsu.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
@@ -125,7 +120,8 @@ public class HyperStorageUnit extends BigStorageUnit {
             String[] l2 = Arrays.copyOf(l, l.length + 1);
             l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + StringUtils.formatItemName(getStoredItemType(), false);
             return l2;
-        } else {
+        } 
+        else {
             return super.getExtraLore();
         }
     }
@@ -139,11 +135,13 @@ public class HyperStorageUnit extends BigStorageUnit {
     public void onBlockUnregistered(Location loc) {
         // move all output items into storage so they don't get dropped
         ItemStack output = getOutputItem();
+        
         if (output != null) {
             setStorageAmount(getStorageAmount() + output.getAmount());
             setOutputAmount(0);
             setOutputItem(null);
         }
+        
         super.onBlockUnregistered(loc);
     }
 }

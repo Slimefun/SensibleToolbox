@@ -1,18 +1,14 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.components;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.FiftyKBatteryBox;
 
 public class UnlinkedSCURelay extends BaseSTBItem {
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.CYAN);
 
     public UnlinkedSCURelay() {
         super();
@@ -23,8 +19,8 @@ public class UnlinkedSCURelay extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.CYAN_STAINED_GLASS;
     }
 
     @Override
@@ -39,16 +35,16 @@ public class UnlinkedSCURelay extends BaseSTBItem {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         FiftyKBatteryBox bb = new FiftyKBatteryBox();
         IntegratedCircuit ic = new IntegratedCircuit();
         EnergizedGoldIngot eg = new EnergizedGoldIngot();
         registerCustomIngredients(bb, ic, eg);
         recipe.shape("GCG", " E ", " B ");
-        recipe.setIngredient('B', bb.getMaterialData());
-        recipe.setIngredient('C', ic.getMaterialData());
+        recipe.setIngredient('B', bb.getMaterial());
+        recipe.setIngredient('C', ic.getMaterial());
         recipe.setIngredient('E', Material.ENDER_CHEST);
-        recipe.setIngredient('G', eg.getMaterialData());
+        recipe.setIngredient('G', eg.getMaterial());
         return recipe;
     }
 }

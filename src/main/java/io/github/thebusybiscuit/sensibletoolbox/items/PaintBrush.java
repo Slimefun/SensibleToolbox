@@ -156,29 +156,36 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block b = event.getClickedBlock();
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation(), true);
+            
             if (stb instanceof PaintCan) {
                 refillFromCan((PaintCan) stb);
-            } else if (okToColor(b, stb)) {
+            } 
+            else if (okToColor(b, stb)) {
                 int painted;
                 // Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
                 if (player.isSneaking()) {
                     // paint a single block
                     painted = paintBlocks(player, b);
-                } else {
+                } 
+                else {
                     // paint multiple blocks around the clicked block
                     Block[] blocks = findBlocksAround(b);
                     painted = paintBlocks(player, blocks);
                 }
+                
                 if (painted > 0) {
                     player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
                 }
             }
-        } else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
+        } 
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
             setPaintLevel(0);
         }
+        
         player.setItemInHand(toItemStack());
         event.setCancelled(true);
     }
@@ -188,9 +195,11 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             // we don't want blocks which happen to use a Colorable material to be paintable
             return false;
         }
+        
         if (getBlockColour(b) == getColour() || getPaintLevel() <= 0) {
             return false;
         }
+        
         return STBUtil.isColorable(b.getType())
                 || b.getType() == Material.GLASS
                 || b.getType() == Material.THIN_GLASS
@@ -271,19 +280,22 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     }
 
     private Block[] findBlocksAround(Block b) {
-        Set<Block> blocks = new HashSet<Block>();
+        Set<Block> blocks = new HashSet<>();
         find(b, b.getType(), blocks, getMaxBlocksAffected());
-        return blocks.toArray(new Block[blocks.size()]);
+        return blocks.toArray(new Block[0]);
     }
 
     private void find(Block b, Material mat, Set<Block> blocks, int max) {
         if (b.getType() != mat || getBlockColour(b) == getColour()) {
             return;
-        } else if (blocks.contains(b)) {
+        } 
+        else if (blocks.contains(b)) {
             return;
-        } else if (blocks.size() > max) {
+        } 
+        else if (blocks.size() > max) {
             return;
         }
+        
         blocks.add(b);
         find(b.getRelative(BlockFace.UP), mat, blocks, max);
         find(b.getRelative(BlockFace.EAST), mat, blocks, max);
@@ -297,7 +309,8 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 	private DyeColor getBlockColour(Block b) {
         if (STBUtil.isColorable(b.getType())) {
             return DyeColor.getByWoolData(b.getData());
-        } else if (isStainableWood(b.getType())) {
+        } 
+        else if (isStainableWood(b.getType())) {
             switch (b.getData() & 0x07) {
                 case 0: return DyeColor.GRAY; // Oak
                 case 1: return DyeColor.BROWN; // Spruce
@@ -306,37 +319,48 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                 case 4: return DyeColor.ORANGE; // Acacia
                 case 5: return DyeColor.BLACK; // Dark Oak
             }
-        } else {
+        } 
+        else {
             return null;
         }
+        
         return STBUtil.isColorable(b.getType()) ? DyeColor.getByWoolData(b.getData()) : null;
     }
 
     @SuppressWarnings("deprecation")
 	private int paintBlocks(Player player, Block... blocks) {
         int painted = 0;
+        
         for (Block b : blocks) {
             if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
                 continue;
             }
+            
             Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+            
             if (stb != null && stb instanceof Colorable) {
                 ((Colorable) stb).setColor(getColour());
-            } else if (isStainableWood(b.getType())) {
+            } 
+            else if (isStainableWood(b.getType())) {
                 int data = b.getData() & 0xf8;
                 data |= getWoodType(getColour()).getData();
                 b.setData((byte) data);
-            } else {
+            } 
+            else {
                 if (b.getType() == Material.GLASS) {
                     b.setType(Material.STAINED_GLASS);
-                } else if (b.getType() == Material.THIN_GLASS) {
+                } 
+                else if (b.getType() == Material.THIN_GLASS) {
                     b.setType(Material.STAINED_GLASS_PANE);
                 }
+                
                 b.setData(getColour().getWoolData());
             }
+            
             painted++;
             setPaintLevel(getPaintLevel() - 1);
+            
             if (getPaintLevel() <= 0) {
                 break;
             }
@@ -346,13 +370,20 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 
     private TreeSpecies getWoodType(DyeColor colour) {
         switch (colour) {
-            case GRAY: return TreeSpecies.GENERIC; // oak
-            case BROWN: return TreeSpecies.REDWOOD; // spruce
-            case WHITE: return TreeSpecies.BIRCH;
-            case PINK: return TreeSpecies.JUNGLE;
-            case ORANGE: return TreeSpecies.ACACIA;
-            case BLACK: return TreeSpecies.DARK_OAK;
-            default: return TreeSpecies.GENERIC;
+            case GRAY: 
+            	return TreeSpecies.GENERIC; // oak
+            case BROWN: 
+            	return TreeSpecies.REDWOOD; // spruce
+            case WHITE: 
+            	return TreeSpecies.BIRCH;
+            case PINK: 
+            	return TreeSpecies.JUNGLE;
+            case ORANGE: 
+            	return TreeSpecies.ACACIA;
+            case BLACK: 
+            	return TreeSpecies.DARK_OAK;
+            default: 
+            	return TreeSpecies.GENERIC;
         }
     }
 
@@ -360,6 +391,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     public void onOptionClick(IconMenu.OptionClickEvent event) {
         Validate.notNull(editingPainting, "Editing painting should be non-null here!");
         String artName = event.getName();
+        
         try {
             Art art = Art.valueOf(artName);
             editingPainting.setArt(art);
@@ -369,6 +401,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         } catch (IllegalArgumentException e) {
             MiscUtil.errorMessage(event.getPlayer(), "Invalid artwork: " + artName);
         }
+        
         event.setWillClose(true);
         event.setWillDestroy(true);
         editingPainting = null;
@@ -379,19 +412,23 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         Art[] other = getOtherArt(painting.getArt());
         IconMenu menu = new IconMenu("Select Artwork", STBUtil.roundUp(other.length, 9), this, getProviderPlugin());
         int pos = 0;
+        
         for (Art a : other) {
             menu.setOption(pos++, new ItemStack(Material.PAINTING), a.name(), "");
         }
+        
         return menu;
     }
 
     private static Art[] getOtherArt(Art art) {
         List<Art> l = new ArrayList<>();
+        
         for (Art a : Art.values()) {
             if (a.getBlockWidth() == art.getBlockWidth() && a.getBlockHeight() == art.getBlockHeight() && a != art) {
                 l.add(a);
             }
         }
-        return l.toArray(new Art[l.size()]);
+        
+        return l.toArray(new Art[0]);
     }
 }

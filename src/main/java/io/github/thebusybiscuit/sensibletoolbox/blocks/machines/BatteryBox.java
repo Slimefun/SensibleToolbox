@@ -1,8 +1,12 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeDirection;
@@ -14,21 +18,21 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class BatteryBox extends BaseSTBMachine {
-    private final Map<BlockFace, EnergyFlow> energyFlow = new HashMap<BlockFace, EnergyFlow>();
+	
+    private final Map<BlockFace, EnergyFlow> energyFlow = new HashMap<>();
 
     protected BatteryBox() {
         for (BlockFace face : STBUtil.directFaces) {
             energyFlow.put(face, EnergyFlow.NONE);
         }
+        
         setChargeDirection(ChargeDirection.CELL);
     }
 
     public BatteryBox(ConfigurationSection conf) {
         super(conf);
+        
         for (BlockFace face : STBUtil.directFaces) {
             energyFlow.put(face, EnergyFlow.valueOf(conf.getString("flow." + face, "NONE")));
         }
@@ -37,9 +41,11 @@ public abstract class BatteryBox extends BaseSTBMachine {
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
+        
         for (BlockFace face : energyFlow.keySet()) {
             conf.set("flow." + face, energyFlow.get(face).toString());
         }
+        
         return conf;
     }
 
@@ -90,7 +96,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
 
     @Override
     public String[] getExtraLore() {
-        return new String[]{STBUtil.getChargeString(this)};
+        return new String[] {STBUtil.getChargeString(this)};
     }
 
     @Override
@@ -105,7 +111,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
         gui.addGadget(new EnergyFlowGadget(gui, 21, BlockFace.DOWN));
         gui.getInventory().setItem(5, null);
         gui.getInventory().setItem(23, null);
-        gui.addLabel(" ", 13, getMaterialData().toItemStack());
+        gui.addLabel(" ", 13, new ItemStack(getMaterial()));
 
         return gui;
     }
@@ -116,9 +122,11 @@ public abstract class BatteryBox extends BaseSTBMachine {
 
     public void setFlow(BlockFace face, EnergyFlow flow) {
         energyFlow.put(face, flow);
+        
         for (EnergyNet net : getAttachedEnergyNets()) {
             net.findSourcesAndSinks();
         }
+        
         update(false);
     }
 

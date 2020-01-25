@@ -3,13 +3,11 @@ package io.github.thebusybiscuit.sensibletoolbox.items.components;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class InfernalDust extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.BLAZE_POWDER);
-
+	
     public InfernalDust() {
     }
 
@@ -17,8 +15,8 @@ public class InfernalDust extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BLAZE_POWDER;
     }
 
     @Override

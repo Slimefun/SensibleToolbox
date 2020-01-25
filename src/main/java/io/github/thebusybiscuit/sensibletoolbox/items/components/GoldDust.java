@@ -4,13 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class GoldDust extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.GLOWSTONE_DUST);
-
+	
     public GoldDust() {
         super();
     }
@@ -20,8 +18,8 @@ public class GoldDust extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GLOWSTONE_DUST;
     }
 
     @Override
@@ -31,7 +29,7 @@ public class GoldDust extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Smelt in a Smelter or Furnace", " to get gold ingots"};
+        return new String[] {"Smelt in a Smelter or Furnace", " to get gold ingots"};
     }
 
     @Override

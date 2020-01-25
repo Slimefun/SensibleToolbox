@@ -73,8 +73,8 @@ public class AutoFarm extends AutoFarmingMachine {
         res.setIngredient('R', Material.REDSTONE);
         res.setIngredient('G', Material.GOLD_INGOT);
         res.setIngredient('I', Material.IRON_INGOT);
-        res.setIngredient('H', hoe.getMaterialData());
-        res.setIngredient('F', frame.getMaterialData());
+        res.setIngredient('H', hoe.getMaterial());
+        res.setIngredient('F', frame.getMaterial());
         return res;
     }
     

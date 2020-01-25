@@ -5,9 +5,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.comphenix.protocol.Packets;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -34,16 +33,18 @@ public class ItemGlow {
 	 * @param plugin the plugin instance
 	 */
 	public static void init(Plugin plugin) {
-		PacketAdapter adapter = new PacketAdapter(plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.HIGH, Packets.Server.SET_SLOT, Packets.Server.WINDOW_ITEMS) {
+		PacketAdapter adapter = new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS) {
+			
 			@Override
 			public void onPacketSending(PacketEvent event) {
-				if (event.getPacketID() == Packets.Server.SET_SLOT) {
+				if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
 					addGlow(new ItemStack[] { event.getPacket().getItemModifier().read(0) });
 				} 
 				else {
 					addGlow(event.getPacket().getItemArrayModifier().read(0));
 				}
 			}
+			
 		};
 		
 		ProtocolLibrary.getProtocolManager().addPacketListener(adapter);
@@ -62,6 +63,7 @@ public class ItemGlow {
 		}
 		
         Enchantment flag = getFlag(stack);
+        
 		if (glowing) {
 			// if the item already has a real enchantment, let's not overwrite it!
 			if (!stack.getItemMeta().hasEnchant(flag)) {

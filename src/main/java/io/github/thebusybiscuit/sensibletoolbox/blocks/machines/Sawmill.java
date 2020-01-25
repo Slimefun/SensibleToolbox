@@ -1,14 +1,14 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.TreeSpecies;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractIOMachine;
@@ -20,8 +20,6 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class Sawmill extends AbstractIOMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
-
     public Sawmill() {
     }
 
@@ -34,6 +32,7 @@ public class Sawmill extends AbstractIOMachine {
         for (TreeSpecies species : TreeSpecies.values()) {
             crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeLog(species).toItemStack(1), STBUtil.makePlank(species).toItemStack(6), 60));
         }
+        
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_PLATE), new ItemStack(Material.WOOD, 2), 40));
@@ -55,22 +54,22 @@ public class Sawmill extends AbstractIOMachine {
 
     @Override
     public ItemStack getProgressIcon() {
-        return new ItemStack(Material.GOLD_AXE);
+        return new ItemStack(Material.GOLDEN_AXE);
     }
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] {10};
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14};
+        return new int[] {14};
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{41, 42, 43, 44};
+        return new int[] {41, 42, 43, 44};
     }
 
     @Override
@@ -86,8 +85,8 @@ public class Sawmill extends AbstractIOMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BROWN_TERRACOTTA;
     }
 
     @Override
@@ -105,12 +104,12 @@ public class Sawmill extends AbstractIOMachine {
         SimpleCircuit sc = new SimpleCircuit();
         MachineFrame mf = new MachineFrame();
         registerCustomIngredients(sc, mf);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WAW", "IFI", "RGR");
-        recipe.setIngredient('W', Material.WOOD);
+        recipe.setIngredient('W', new MaterialChoice(Tag.PLANKS));
         recipe.setIngredient('A', Material.IRON_AXE);
-        recipe.setIngredient('I', sc.getMaterialData());
-        recipe.setIngredient('F', mf.getMaterialData());
+        recipe.setIngredient('I', sc.getMaterial());
+        recipe.setIngredient('F', mf.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;

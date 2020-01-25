@@ -1,15 +1,13 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import me.mrCookieSlime.CSCoreLibPlugin.general.Math.DoubleHandler;
-
-import org.bukkit.DyeColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
+import io.github.thebusybiscuit.cscorelib2.math.DoubleHandler;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
@@ -18,8 +16,6 @@ import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell
 
 public class PowerMonitor extends BaseSTBBlock {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.ORANGE);
-
     public PowerMonitor() {
     }
 
@@ -28,8 +24,8 @@ public class PowerMonitor extends BaseSTBBlock {
     }
     
 	@Override
-	public MaterialData getMaterialData() {
-		return md;
+	public Material getMaterial() {
+		return Material.ORANGE_STAINED_GLASS;
 	}
 
 	@Override
@@ -47,13 +43,13 @@ public class PowerMonitor extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GGG", "RCR", "GGG");
         TenKEnergyCell cell = new TenKEnergyCell();
         cell.setCharge(0.0);
         registerCustomIngredients(cell);
         recipe.setIngredient('G', Material.GLASS);
-        recipe.setIngredient('C', STBUtil.makeWildCardMaterialData(cell));
+        recipe.setIngredient('C', cell.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         return recipe;
 	}
@@ -77,9 +73,11 @@ public class PowerMonitor extends BaseSTBBlock {
             if (net != null) {
             	double stat = net.getSupply() - net.getDemand();
             	String prefix;
-            	if (stat > 0) prefix = "�a�l+";
-            	else prefix = "�4�l-";
-            	label[2] = prefix + " �8" + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t";
+            	
+            	if (stat > 0) prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
+            	else prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
+            	
+            	label[2] = prefix + " " + ChatColor.DARK_GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t";
             	break;
             }
         }

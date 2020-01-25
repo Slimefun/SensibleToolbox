@@ -29,6 +29,7 @@ public final class SlimefunBridge {
 	
 	private static void patch(String id, RecipeType recipeType, ItemStack recipe) {
 		SlimefunItem item = SlimefunItem.getByID(id);
+		
 		if (item != null) {
 			item.setRecipe(new ItemStack[] {null, null, null, null, recipe, null, null, null, null});
 			item.setRecipeType(recipeType);

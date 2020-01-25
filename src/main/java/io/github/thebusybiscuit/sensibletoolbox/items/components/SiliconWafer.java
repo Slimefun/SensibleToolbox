@@ -3,13 +3,11 @@ package io.github.thebusybiscuit.sensibletoolbox.items.components;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class SiliconWafer extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.FIREWORK_CHARGE);
-
+	
     public SiliconWafer() {
     }
 
@@ -17,8 +15,8 @@ public class SiliconWafer extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.FIREWORK_STAR;
     }
 
     @Override

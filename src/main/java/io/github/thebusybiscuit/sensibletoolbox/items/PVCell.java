@@ -86,7 +86,7 @@ public class PVCell extends BaseSTBItem {
         recipe.setIngredient('L', Material.LAPIS_LAZULI); // lapis
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_NUGGET);
-        recipe.setIngredient('S', sw.getMaterialData());
+        recipe.setIngredient('S', sw.getMaterial());
         return recipe;
     }
 
@@ -100,10 +100,13 @@ public class PVCell extends BaseSTBItem {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
+            
             if (event.getClickedBlock() != null) {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), true);
+                
                 if (stb instanceof BasicSolarCell) {
                     int nInserted = ((BasicSolarCell) stb).insertItems(event.getItem(), event.getBlockFace(), false, player.getUniqueId());
+                    
                     if (nInserted > 0) {
                         player.setItemInHand(null);
                         player.playSound(event.getClickedBlock().getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.6f);
@@ -119,10 +122,12 @@ public class PVCell extends BaseSTBItem {
     public ItemStack toItemStack(int amount) {
         ItemStack res = super.toItemStack(amount);
         ItemMeta meta = res.getItemMeta();
+        
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(Color.NAVY);
             res.setItemMeta(meta);
         }
+        
         STBUtil.levelToDurability(res, lifespan, MAX_LIFESPAN);
         return res;
     }
@@ -135,9 +140,11 @@ public class PVCell extends BaseSTBItem {
      */
     public static String formatCellLife(int lifespan) {
         int sec = lifespan / 20;
+        
         if (sec >= 60) {
             return ChatColor.RESET + "Lifetime: " + ChatColor.YELLOW.toString() + (sec / 60) + " min";
-        } else {
+        } 
+        else {
             return ChatColor.RESET + "Lifetime: " + ChatColor.YELLOW.toString() + sec + " sec";
         }
     }

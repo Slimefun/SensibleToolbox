@@ -5,15 +5,11 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 
 public class DenseSolar extends BasicSolarCell {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.GRAY);
-
     public DenseSolar() {
     }
 
@@ -22,8 +18,8 @@ public class DenseSolar extends BasicSolarCell {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GRAY_STAINED_GLASS;
     }
 
     @Override
@@ -33,13 +29,13 @@ public class DenseSolar extends BasicSolarCell {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         BasicSolarCell bs = new BasicSolarCell();
         IntegratedCircuit ic = new IntegratedCircuit();
         registerCustomIngredients(bs, ic);
         recipe.shape("SSS", "SIS", "SSS");
-        recipe.setIngredient('S', bs.getMaterialData());
-        recipe.setIngredient('I', ic.getMaterialData());
+        recipe.setIngredient('S', bs.getMaterial());
+        recipe.setIngredient('I', ic.getMaterial());
         return recipe;
     }
 

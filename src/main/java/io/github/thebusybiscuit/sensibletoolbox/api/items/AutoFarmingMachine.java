@@ -1,7 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -57,12 +57,12 @@ public abstract class AutoFarmingMachine extends BaseSTBMachine {
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{10, 11, 12, 13, 14, 15};
+        return new int[] {10, 11, 12, 13, 14, 15};
     }
     
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{43, 44};
+        return new int[] {43, 44};
     }
 
     @Override
@@ -113,7 +113,8 @@ public abstract class AutoFarmingMachine extends BaseSTBMachine {
         Block target = loc.getBlock();
         ItemStack item = result.clone();
         item.setAmount(1);
-        if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
+        
+        if (!target.getType().isSolid() || Tag.WALL_SIGNS.isTagged(target.getType())) {
             // no (solid) block there - just drop the item
             Item i = loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), item);
             i.setVelocity(new Vector(0, 0, 0));

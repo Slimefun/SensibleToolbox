@@ -4,12 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class QuartzDust extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.SUGAR);
 
     public QuartzDust() {
     }
@@ -18,8 +16,8 @@ public class QuartzDust extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.SUGAR;
     }
 
     @Override

@@ -22,26 +22,6 @@ import me.desht.dhutils.Debugger;
  * Utility methods to interact with vanilla inventories.
  */
 public class VanillaInventoryUtils {
-    /**
-     * Check if the given block contains a vanilla inventory,
-     *
-     * @param target the block to check
-     * @return true if this block holds a vanilla inventory; false otherwise
-     */
-    public static boolean isVanillaInventory(Block target) {
-        switch (target.getType()) {
-            case CHEST:
-            case DISPENSER:
-            case HOPPER:
-            case DROPPER:
-            case FURNACE:
-            case BREWING_STAND:
-            case BURNING_FURNACE:
-                return true;
-            default:
-                return false;
-        }
-    }
 
     /**
      * Get the vanilla inventory for the given block.

@@ -33,15 +33,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.onarandombox.MultiverseCore.MultiverseCore;
 
-import io.github.thebusybiscuit.CSCoreLibSetup.CSCoreLibLoader;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.RecipeUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.AngelicBlock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.BlockUpdateDetector;
@@ -177,7 +174,6 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.CommandManager;
-import me.mrCookieSlime.CSCoreLibPlugin.PluginUtils;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
@@ -194,9 +190,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private STBItemRegistry itemRegistry;
     private STBFriendManager friendManager;
     private EnergyNetManager enetManager;
-    private BlockProtection blockProtection;
     private ConfigCache configCache;
-    private MultiverseCore multiverseCore = null;
     private IDTracker scuRelayIDTracker;
 
     public static SensibleToolboxPlugin getInstance() {
@@ -329,11 +323,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         // try to hook other plugins
         holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
         setupProtocolLib();
-        setupMultiverse();
 
         scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
-
-        blockProtection = new BlockProtection(this);
 
         STBInventoryGUI.buildStockTextures();
 
@@ -443,15 +434,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
     }
 
-    private void setupMultiverse() {
-        Plugin mvPlugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
-        
-        if (mvPlugin != null && mvPlugin.isEnabled() && mvPlugin instanceof MultiverseCore) {
-            multiverseCore = (MultiverseCore) mvPlugin;
-            Debugger.getInstance().debug("Hooked Multiverse-Core v" + mvPlugin.getDescription().getVersion());
-        }
-    }
-
     public boolean isProtocolLibEnabled() {
         return protocolLibEnabled;
     }
@@ -504,13 +486,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         } 
         else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
-        } 
-        else if (key.equals("inventory_protection")) {
-            getEnumValue(newVal.toString().toUpperCase(), BlockProtection.InvProtectionType.class);
-        } 
-        else if (key.equals("block_protection")) {
-            getEnumValue(newVal.toString().toUpperCase(), BlockProtection.BlockProtectionType.class);
-        } 
+        }
         else if (key.equals("default_access")) {
             getEnumValue(newVal.toString().toUpperCase(), AccessControl.class);
         } 
@@ -557,13 +533,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         } 
         else if (key.startsWith("gui.texture.")) {
             STBInventoryGUI.buildStockTextures();
-        } 
-        else if (key.equals("inventory_protection")) {
-            blockProtection.setInvProtectionType(BlockProtection.InvProtectionType.valueOf(newVal.toString().toUpperCase()));
-        } 
-        else if (key.equals("block_protection")) {
-            blockProtection.setBlockProtectionType(BlockProtection.BlockProtectionType.valueOf(newVal.toString().toUpperCase()));
-        } 
+        }
         else if (key.equals("default_access")) {
             getConfigCache().setDefaultAccess(AccessControl.valueOf(newVal.toString().toUpperCase()));
         } 
@@ -593,10 +563,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public STBItemRegistry getItemRegistry() 				{			return itemRegistry;														}
     public FriendManager getFriendManager() 				{			return friendManager;														}
     public EnergyNetManager getEnergyNetManager() 			{			return enetManager;															}
-    public BlockProtection getBlockProtection() 			{			return blockProtection;														}
     public ConfigCache getConfigCache() 					{			return configCache;															}
-    public MultiverseCore getMultiverseCore() 				{			return multiverseCore;														}
-	public IDTracker getScuRelayIDTracker() 				{			return scuRelayIDTracker;													}
+    public IDTracker getScuRelayIDTracker() 				{			return scuRelayIDTracker;													}
     public SoundMufflerListener getSoundMufflerListener() 	{			return soundMufflerListener;												}
     public PlayerUUIDTracker getUuidTracker() 				{			return uuidTracker;															}
 
