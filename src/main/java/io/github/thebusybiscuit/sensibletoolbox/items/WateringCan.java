@@ -98,53 +98,62 @@ public class WateringCan extends BaseSTBItem {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
             Block neighbour = block.getRelative(event.getBlockFace());
-            if ((neighbour.getType() == Material.STATIONARY_WATER || neighbour.getType() == Material.WATER) && neighbour.getData() == 0) {
+            if ((neighbour.getType() == Material.WATER) && neighbour.getData() == 0) {
                 // attempt to refill the watering can
                 player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
                 neighbour.setType(Material.AIR);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
-            } else if (STBUtil.isCrop(block.getType())) {
+            } 
+            else if (STBUtil.isCrop(block.getType())) {
                 // attempt to grow the crops in a 3x3 area, and use some water from the can
                 waterCrops(player, block);
                 irrigateSoil(player, block.getRelative(BlockFace.DOWN));
                 newStack = toItemStack();
-            } else if (block.getType() == Material.FARMLAND) {
+            } 
+            else if (block.getType() == Material.FARMLAND) {
                 if (STBUtil.isCrop(block.getRelative(BlockFace.UP).getType())) {
                     waterCrops(player, block.getRelative(BlockFace.UP));
                     irrigateSoil(player, block);
                     newStack = toItemStack();
-                } else {
+                } 
+                else {
                     // make the soil wetter if possible
                     waterSoil(player, block);
                     irrigateSoil(player, block);
                     newStack = toItemStack();
                 }
-            } else if (block.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
+            } 
+            else if (block.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
                 if (new Random().nextBoolean()) {
                     block.setType(Material.MOSSY_COBBLESTONE);
                 }
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
-            } else if (block.getType() == Material.SMOOTH_BRICK && block.getData() != 1 && getWaterLevel() >= 10) {
+            } 
+            else if (block.getType() == Material.SMOOTH_BRICK && block.getData() != 1 && getWaterLevel() >= 10) {
                 if (new Random().nextBoolean()) {
                     block.setData((byte) 1);
                 }
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
-            } else if (block.getType() == Material.DIRT) {
+            } 
+            else if (block.getType() == Material.DIRT) {
                 if (maybeGrowGrass(block)) {
                     useSomeWater(player, block, 1);
                     newStack = toItemStack();
                 }
-            } else if (block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE) {
+            } 
+            else if (block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE) {
                 maybeGrowTallCrop(player, block);
                 useSomeWater(player, block, 2);
                 newStack = toItemStack();
             }
-        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+        } 
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             Block b = player.getEyeLocation().getBlock();
-            if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER) {
+            
+            if (b.getType() == Material.WATER) {
                 // attempt to refill the watering can
                 b.setType(Material.AIR);
                 player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
@@ -152,11 +161,14 @@ public class WateringCan extends BaseSTBItem {
                 newStack = toItemStack();
             }
         }
+        
         event.setCancelled(true);
+        
         if (newStack != null) {
             player.setItemInHand(newStack);
 //			player.updateInventory();
         }
+        
         if (floodWarning) {
             MiscUtil.alertMessage(player, "This soil is getting very wet!");
             floodWarning = false;

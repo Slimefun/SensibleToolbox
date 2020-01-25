@@ -1,6 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
-import org.bukkit.DyeColor;
+import java.util.List;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,16 +10,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
-import java.util.List;
-
 public class BreakerModule extends DirectionalItemRouterModule {
-    private static final MaterialData md = makeDye(DyeColor.YELLOW);
+	
     private static final ItemStack pick = new ItemStack(Material.DIAMOND_PICKAXE, 1);
 
     public BreakerModule() {
@@ -45,7 +43,8 @@ public class BreakerModule extends DirectionalItemRouterModule {
             if (getFilter().shouldPass(mainDrop) && SensibleToolbox.getBlockProtection().playerCanBuild(getItemRouter().getOwner(), b, BlockProtection.Operation.BREAK)) {
                 if (inBuffer == null) {
                     getItemRouter().setBufferItem(mainDrop);
-                } else {
+                } 
+                else {
                     int toAdd = Math.min(mainDrop.getAmount(), inBuffer.getMaxStackSize() - inBuffer.getAmount());
                     getItemRouter().setBufferAmount(inBuffer.getAmount() + toAdd);
                     if (toAdd < mainDrop.getAmount()) {
@@ -54,8 +53,10 @@ public class BreakerModule extends DirectionalItemRouterModule {
                         b.getWorld().dropItemNaturally(b.getLocation(), stack);
                     }
                 }
+                
                 b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                 b.setType(Material.AIR);
+                
                 for (int i = 1; i < drops.length; i++) {
                     b.getWorld().dropItemNaturally(b.getLocation(), drops[i]);
                 }
@@ -66,8 +67,8 @@ public class BreakerModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.YELLOW_DYE;
     }
 
     @Override
@@ -89,8 +90,8 @@ public class BreakerModule extends DirectionalItemRouterModule {
     public Recipe getRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(bm.getMaterialData());
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(bm.getMaterial());
         recipe.addIngredient(Material.DIAMOND_PICKAXE);
         recipe.addIngredient(Material.HOPPER);
         return recipe;

@@ -1,31 +1,31 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class VacuumModule extends DirectionalItemRouterModule {
-    private static final Dye md = makeDye(DyeColor.BLACK);
+	
     private static final int RADIUS = 6;
-    private static final Map<UUID,List<Item>> recentItemCache = Maps.newHashMap();
-    private static final Map<UUID,Long> cacheTime = Maps.newHashMap();
+    private static final Map<UUID,List<Item>> recentItemCache = new HashMap<>();
+    private static final Map<UUID,Long> cacheTime = new HashMap<>();
     public static final int CACHE_TIME = 1000;
     private static final String STB_VACUUMED = "STB_Vacuumed";
 
@@ -37,8 +37,8 @@ public class VacuumModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BLACK_DYE;
     }
 
     @Override
@@ -57,10 +57,10 @@ public class VacuumModule extends DirectionalItemRouterModule {
     @Override
     public Recipe getRecipe() {
         registerCustomIngredients(new BlankModule());
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
         recipe.addIngredient(Material.PAPER);
         recipe.addIngredient(Material.HOPPER);
-        recipe.addIngredient(Material.EYE_OF_ENDER);
+        recipe.addIngredient(Material.ENDER_EYE);
         return recipe;
     }
 
@@ -69,15 +69,17 @@ public class VacuumModule extends DirectionalItemRouterModule {
         // repeated getEntities() calls if there are many vacuum modules in operation.
         List<Item> list = recentItemCache.get(w.getUID());
         if (list == null) {
-            list = new ArrayList<Item>();
+            list = new ArrayList<>();
             recentItemCache.put(w.getUID(), list);
             cacheTime.put(w.getUID(), 0L);
         }
+        
         if (System.currentTimeMillis() - cacheTime.get(w.getUID()) > CACHE_TIME) {
             list.clear();
             list.addAll(w.getEntitiesByClass(Item.class));
             cacheTime.put(w.getUID(), System.currentTimeMillis());
         }
+        
         return list;
     }
 
@@ -85,15 +87,18 @@ public class VacuumModule extends DirectionalItemRouterModule {
     public boolean execute(Location loc) {
         int thresholdDist = RADIUS * RADIUS;
         loc.add(0.5, 0.5, 0.5);
+        
         for (final Item item : getItemEntities(loc.getWorld())) {
             if (!item.isValid()) {
                 // important, since we're looking at entities cached in the last second
                 continue;
             }
+            
             double dist = loc.distanceSquared(item.getLocation());
             if (dist >= thresholdDist) {
                 continue;
             }
+            
             final ItemStack onGround = item.getItemStack();
             ItemStack buffer = getItemRouter().getBufferItem();
             Location itemLoc = item.getLocation();
@@ -104,35 +109,39 @@ public class VacuumModule extends DirectionalItemRouterModule {
                     && STBUtil.getMetadataValue(item, STB_VACUUMED) == null) {
                 double rtrY = loc.getY();
                 Vector vel = loc.subtract(itemLoc).toVector().normalize().multiply(Math.min(dist * 0.06, 0.7));
+                
                 if (itemLoc.getY() < rtrY) {
                     vel.setY(vel.getY() + (rtrY - itemLoc.getY()) / 10);
                 }
+                
                 item.setMetadata(STB_VACUUMED, new FixedMetadataValue(getProviderPlugin(), getItemRouter()));
                 item.setVelocity(vel);
-                Bukkit.getScheduler().runTaskLater(getProviderPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (item.isValid()) {
-                            ItemStack newBuffer = getItemRouter().getBufferItem();
-                            int toSlurp = 0;
-                            if (newBuffer == null) {
-                                toSlurp = onGround.getAmount();
-                                getItemRouter().setBufferItem(onGround);
+                
+                Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
+                	if (item.isValid()) {
+                        ItemStack newBuffer = getItemRouter().getBufferItem();
+                        int toSlurp = 0;
+                        
+                        if (newBuffer == null) {
+                            toSlurp = onGround.getAmount();
+                            getItemRouter().setBufferItem(onGround);
+                            item.remove();
+                        } 
+                        else if (newBuffer.isSimilar(onGround)) {
+                            toSlurp = Math.min(onGround.getAmount(), newBuffer.getType().getMaxStackSize() - newBuffer.getAmount());
+                            getItemRouter().setBufferAmount(newBuffer.getAmount() + toSlurp);
+                            onGround.setAmount(onGround.getAmount() - toSlurp);
+                            if (onGround.getAmount() == 0) {
                                 item.remove();
-                            } else if (newBuffer.isSimilar(onGround)) {
-                                toSlurp = Math.min(onGround.getAmount(), newBuffer.getType().getMaxStackSize() - newBuffer.getAmount());
-                                getItemRouter().setBufferAmount(newBuffer.getAmount() + toSlurp);
-                                onGround.setAmount(onGround.getAmount() - toSlurp);
-                                if (onGround.getAmount() == 0) {
-                                    item.remove();
-                                } else {
-                                    item.setItemStack(onGround);
-                                }
+                            } 
+                            else {
+                                item.setItemStack(onGround);
                             }
-                            if (toSlurp > 0) {
-                                getItemRouter().playParticles(new java.awt.Color(0, 0, 255));
-                                getItemRouter().update(false);
-                            }
+                        }
+                        
+                        if (toSlurp > 0) {
+                            getItemRouter().playParticles(new java.awt.Color(0, 0, 255));
+                            getItemRouter().update(false);
                         }
                     }
                 }, (long) (dist / 3));
@@ -145,6 +154,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
         if (getFacing() == null || getFacing() == BlockFace.SELF) {
             return true;
         }
+        
         switch (getFacing()) {
             case NORTH:
                 return itemLoc.getZ() < rtrLoc.getZ();

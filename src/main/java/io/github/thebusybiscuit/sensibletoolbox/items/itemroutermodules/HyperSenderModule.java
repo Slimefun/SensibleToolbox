@@ -1,19 +1,16 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SubspaceTransponder;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public class HyperSenderModule extends AdvancedSenderModule {
-    private static final Dye md = makeDye(DyeColor.CYAN);
 
     public HyperSenderModule() {
         super();
@@ -24,8 +21,8 @@ public class HyperSenderModule extends AdvancedSenderModule {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.CYAN_DYE;
     }
 
     @Override
@@ -50,9 +47,9 @@ public class HyperSenderModule extends AdvancedSenderModule {
         SenderModule sm = new SenderModule();
         SubspaceTransponder st = new SubspaceTransponder();
         registerCustomIngredients(sm, st);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(sm.getMaterialData());
-        recipe.addIngredient(st.getMaterialData());
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(sm.getMaterial());
+        recipe.addIngredient(st.getMaterial());
         return recipe;
     }
 

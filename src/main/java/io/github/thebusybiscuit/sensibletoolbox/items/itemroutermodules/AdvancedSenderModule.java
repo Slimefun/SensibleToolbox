@@ -1,7 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,8 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
@@ -25,7 +22,6 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 	
     private static final int RANGE = 24;
     private static final int RANGE2 = RANGE * RANGE;
-    private static final Dye md = makeDye(DyeColor.LIGHT_BLUE);
     private Location linkedLoc;
 
     public AdvancedSenderModule() {
@@ -53,8 +49,8 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.LIGHT_BLUE_DYE;
     }
 
     @Override
@@ -84,9 +80,9 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     public Recipe getRecipe() {
         SenderModule sm = new SenderModule();
         registerCustomIngredients(sm);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(sm.getMaterialData());
-        recipe.addIngredient(Material.EYE_OF_ENDER);
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(sm.getMaterial());
+        recipe.addIngredient(Material.ENDER_EYE);
         recipe.addIngredient(Material.DIAMOND);
         return recipe;
     }
@@ -99,15 +95,18 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             if (rtr != null && rtr.getReceiver() != null) {
                 linkToRouter(rtr);
                 event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
-            } else {
+            } 
+            else {
                 STBUtil.complain(event.getPlayer());
             }
             event.setCancelled(true);
-        } else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+        } 
+        else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
-        } else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
+        } 
+        else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
                 (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             super.onInteractItem(event);
         }
@@ -129,6 +128,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
                 return false;
             }
+
             ItemRouter otherRouter = SensibleToolbox.getBlockAt(linkedLoc, ItemRouter.class, false);
             if (otherRouter != null) {
                 if (!inRange(loc)) {

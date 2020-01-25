@@ -230,6 +230,7 @@ public class STBItemRegistry implements ItemRegistry {
     }
 
     private class ReflectionDetails {
+    	
         private final Class<? extends BaseSTBItem> clazz;
         private final Constructor<? extends BaseSTBItem> ctor0arg;
         private final Constructor<? extends BaseSTBItem> ctor1arg;

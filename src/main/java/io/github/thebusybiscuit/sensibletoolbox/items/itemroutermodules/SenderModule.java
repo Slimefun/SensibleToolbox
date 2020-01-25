@@ -1,6 +1,5 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -8,8 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
@@ -20,8 +17,6 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ParticleEffect;
 
 public class SenderModule extends DirectionalItemRouterModule {
-	
-    private static final Dye md = makeDye(DyeColor.BLUE);
 
     private static final int MAX_SENDER_DISTANCE = 10;
 
@@ -52,15 +47,15 @@ public class SenderModule extends DirectionalItemRouterModule {
     public Recipe getRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(bm.getMaterialData());
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(bm.getMaterial());
         recipe.addIngredient(Material.ARROW);
         return recipe;
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BLUE_DYE;
     }
 
     @Override
@@ -71,19 +66,23 @@ public class SenderModule extends DirectionalItemRouterModule {
             Block b = loc.getBlock();
             Block target = b.getRelative(getFacing());
             int nToInsert = getItemRouter().getStackSize();
+            
             if (!(SensibleToolbox.getBlockAt(target.getLocation(), true) instanceof STBInventoryHolder) &&allowsItemsThrough(target.getType())) {
                 // search for a visible Item Router with an installed Receiver Module
                 ReceiverModule receiver = findReceiver(b);
+                
                 if (receiver != null) {
                     Debugger.getInstance().debug(2, "sender found receiver module in " + receiver.getItemRouter());
                     ItemStack toSend = getItemRouter().getBufferItem().clone();
                     toSend.setAmount(Math.min(nToInsert, toSend.getAmount()));
                     int nReceived = receiver.receiveItem(toSend, getItemRouter().getOwner());
                     getItemRouter().reduceBuffer(nReceived);
+                    
                     if (nReceived > 0 && SensibleToolbox.getPluginInstance().getConfigCache().getParticleLevel() >= 2) {
                         playSenderParticles(getItemRouter(), receiver.getItemRouter());
 
                     }
+                    
                     return nReceived > 0;
                 }
             } 
@@ -94,6 +93,7 @@ public class SenderModule extends DirectionalItemRouterModule {
                         getItemRouter().ejectBuffer(getItemRouter().getFacing());
                         return false;
                     }
+                    
                     ItemStack toInsert = getItemRouter().getBufferItem().clone();
                     toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
                     int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), false, getItemRouter().getOwner());
@@ -125,6 +125,7 @@ public class SenderModule extends DirectionalItemRouterModule {
             b = b.getRelative(getFacing());
             if (!allowsItemsThrough(b.getType())) break;
         }
+        
         ItemRouter rtr = SensibleToolbox.getBlockAt(b.getLocation(), ItemRouter.class, false);
         return rtr == null ? null : rtr.getReceiver();
     }
