@@ -4,12 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class ToughMachineFrame extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.IRON_BLOCK);
 
     public ToughMachineFrame() {
     }
@@ -18,8 +16,8 @@ public class ToughMachineFrame extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.IRON_BLOCK;
     }
 
     @Override
@@ -29,18 +27,18 @@ public class ToughMachineFrame extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Used in fabrication of", "some more advanced machines."};
+        return new String[] {"Used in fabrication of", "some more advanced machines."};
     }
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         EnergizedIronIngot ingot = new EnergizedIronIngot();
         MachineFrame frame = new MachineFrame();
         registerCustomIngredients(ingot, frame);
         recipe.shape(" I ", "IFI", " I ");
-        recipe.setIngredient('F', frame.getMaterialData());
-        recipe.setIngredient('I', ingot.getMaterialData());
+        recipe.setIngredient('F', frame.getMaterial());
+        recipe.setIngredient('I', ingot.getMaterial());
         return recipe;
     }
 }

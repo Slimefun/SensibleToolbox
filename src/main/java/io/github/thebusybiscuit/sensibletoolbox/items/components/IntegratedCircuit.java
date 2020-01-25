@@ -4,13 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class IntegratedCircuit extends BaseSTBItem {
-    private static MaterialData md = new MaterialData(Material.REDSTONE_COMPARATOR);
-
+	
     public IntegratedCircuit() {
     }
 
@@ -18,8 +16,8 @@ public class IntegratedCircuit extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.COMPARATOR;
     }
 
     @Override
@@ -29,7 +27,7 @@ public class IntegratedCircuit extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Used as a component", "in some more", "advanced machinery"};
+        return new String[] {"Used as a component", "in some more", "advanced machinery"};
     }
 
     @Override
@@ -38,11 +36,11 @@ public class IntegratedCircuit extends BaseSTBItem {
         EnergizedGoldIngot eg = new EnergizedGoldIngot();
         SiliconWafer si = new SiliconWafer();
         registerCustomIngredients(sc, eg, si);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SCG");
-        recipe.setIngredient('C', sc.getMaterialData());
-        recipe.setIngredient('G', eg.getMaterialData());
-        recipe.setIngredient('S', si.getMaterialData());
+        recipe.setIngredient('C', sc.getMaterial());
+        recipe.setIngredient('G', eg.getMaterial());
+        recipe.setIngredient('S', si.getMaterial());
         return recipe;
     }
 

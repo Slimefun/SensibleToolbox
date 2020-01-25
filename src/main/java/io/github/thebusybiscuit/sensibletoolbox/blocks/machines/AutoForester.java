@@ -5,10 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,13 +16,13 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class AutoForester extends AutoFarmingMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.BROWN);
-    private static final Set<Material> logs = new HashSet<Material>();
+    private static final Set<Material> logs = new HashSet<>();
     private static final int radius = 5;
     
     static {
@@ -38,17 +34,17 @@ public class AutoForester extends AutoFarmingMachine {
     private MaterialData buffer;
 
     public AutoForester() {
-        blocks = new HashSet<Block>();
+        blocks = new HashSet<>();
     }
 
     public AutoForester(ConfigurationSection conf) {
         super(conf);
-        blocks = new HashSet<Block>();
+        blocks = new HashSet<>();
     }
     
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BROWN_TERRACOTTA;
     }
 
     @Override
@@ -69,13 +65,13 @@ public class AutoForester extends AutoFarmingMachine {
     public Recipe getRecipe() {
     	MachineFrame frame = new MachineFrame();
     	registerCustomIngredients(frame);
-        ShapedRecipe res = new ShapedRecipe(toItemStack());
+        ShapedRecipe res = new ShapedRecipe(getKey(), toItemStack());
         res.shape("A A", "IFI", "RGR");
         res.setIngredient('R', Material.REDSTONE);
         res.setIngredient('G', Material.GOLD_INGOT);
         res.setIngredient('I', Material.IRON_INGOT);
         res.setIngredient('A', Material.IRON_AXE);
-        res.setIngredient('F', frame.getMaterialData());
+        res.setIngredient('F', frame.getMaterial());
         return res;
     }
     
@@ -99,8 +95,9 @@ public class AutoForester extends AutoFarmingMachine {
         		if (logs.contains(log.getType())) {
         			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
         			else break;
-        			List<Location> list = new ArrayList<Location>();
+        			List<Location> list = new ArrayList<>();
         			TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
+        			
         			for (Location l: list) {
         				buffer = new MaterialData(l.getBlock().getType(), l.getBlock().getData());
                 		setJammed(!output(buffer));

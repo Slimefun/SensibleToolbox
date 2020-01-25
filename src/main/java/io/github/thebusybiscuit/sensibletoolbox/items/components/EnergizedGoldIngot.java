@@ -3,12 +3,10 @@ package io.github.thebusybiscuit.sensibletoolbox.items.components;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedGoldIngot extends BaseSTBItem {
-    public static final MaterialData md = new MaterialData(Material.GOLD_INGOT);
 
     public EnergizedGoldIngot() {
     }
@@ -18,8 +16,8 @@ public class EnergizedGoldIngot extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GOLD_INGOT;
     }
 
     @Override

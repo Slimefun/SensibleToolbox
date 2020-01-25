@@ -1,6 +1,5 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
@@ -125,16 +124,18 @@ public class WateringCan extends BaseSTBItem {
                 }
             } 
             else if (block.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
-                if (new Random().nextBoolean()) {
+                if (ThreadLocalRandom.current().nextBoolean()) {
                     block.setType(Material.MOSSY_COBBLESTONE);
                 }
+                
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
             } 
-            else if (block.getType() == Material.SMOOTH_BRICK && block.getData() != 1 && getWaterLevel() >= 10) {
-                if (new Random().nextBoolean()) {
-                    block.setData((byte) 1);
+            else if (block.getType() == Material.STONE_BRICKS && getWaterLevel() >= 10) {
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    block.setType(Material.MOSSY_STONE_BRICKS);
                 }
+                
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
             } 
@@ -282,7 +283,7 @@ public class WateringCan extends BaseSTBItem {
         long delta = (now - SoilSaturation.getLastWatered(soil)) / 1000;
         saturation = Math.max(0, saturation + SATURATION_RATE - (int) delta);
         
-        if (saturation > SoilSaturation.MAX_SATURATION && new Random().nextBoolean()) {
+        if (saturation > SoilSaturation.MAX_SATURATION && ThreadLocalRandom.current().nextBoolean()) {
             soil.breakNaturally();
             soil.setTypeIdAndData(Material.WATER.getId(), (byte) 0, true);
             SoilSaturation.clear(soil);

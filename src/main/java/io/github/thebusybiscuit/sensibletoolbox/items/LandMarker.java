@@ -77,7 +77,7 @@ public class LandMarker extends BaseSTBItem {
         SimpleCircuit sc = new SimpleCircuit();
         registerCustomIngredients(sc);
         recipe.setIngredient('T', Material.REDSTONE_TORCH);
-        recipe.setIngredient('C', sc.getMaterialData());
+        recipe.setIngredient('C', sc.getMaterial());
         recipe.setIngredient('S', Material.STICK);
         return recipe;
     }
@@ -98,15 +98,18 @@ public class LandMarker extends BaseSTBItem {
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        
         if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) && getMarkedLocation() != null) {
             setMarkedLocation(null);
             player.setItemInHand(toItemStack());
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 0.6f);
-        } else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
+        } 
+        else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
             setMarkedLocation(event.getClickedBlock().getLocation());
             player.setItemInHand(toItemStack());
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.5f);
         }
+        
         event.setCancelled(true);
     }
 }

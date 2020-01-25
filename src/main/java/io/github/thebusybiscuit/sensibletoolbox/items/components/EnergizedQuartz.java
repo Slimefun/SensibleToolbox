@@ -4,13 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedQuartz extends BaseSTBItem {
-	
-    public static final MaterialData md = new MaterialData(Material.QUARTZ);
 
     public EnergizedQuartz() {
     }
@@ -19,8 +16,8 @@ public class EnergizedQuartz extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.QUARTZ;
     }
 
     @Override
@@ -35,11 +32,11 @@ public class EnergizedQuartz extends BaseSTBItem {
 
     @Override
     public Recipe getRecipe() {
-    	ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+    	ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(1));
         InfernalDust dust = new InfernalDust();
         registerCustomIngredients(dust);
-        recipe.addIngredient(dust.getMaterialData());
-        recipe.addIngredient(new MaterialData(Material.QUARTZ));
+        recipe.addIngredient(dust.getMaterial());
+        recipe.addIngredient(Material.QUARTZ);
         return recipe;
     }
 

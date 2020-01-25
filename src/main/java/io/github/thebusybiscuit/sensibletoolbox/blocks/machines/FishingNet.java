@@ -1,8 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -11,25 +10,22 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.FishBait;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class FishingNet extends AbstractProcessingMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.WHITE);
     private static final int FISHING_TIME = 600; // 600 ticks (30 Seconds) to catch a Fish
-    @SuppressWarnings("deprecation")
-	private static final ItemStack[] fish = 
+    
+    private static final ItemStack[] fish = 
 	{
-    	new MaterialData(Material.RAW_FISH, (byte) 0).toItemStack(1), 
-    	new MaterialData(Material.RAW_FISH, (byte) 1).toItemStack(1),
-    	new MaterialData(Material.RAW_FISH, (byte) 2).toItemStack(1), 
-    	new MaterialData(Material.RAW_FISH, (byte) 3).toItemStack(1)
+    	new ItemStack(Material.COD),
+    	new ItemStack(Material.SALMON),
+    	new ItemStack(Material.PUFFERFISH),
+    	new ItemStack(Material.TROPICAL_FISH)
     }; // Catchable Fish
 
     public FishingNet() {
@@ -77,7 +73,7 @@ public class FishingNet extends AbstractProcessingMachine {
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{41, 42, 43, 44};
+        return new int[] {41, 42, 43, 44};
     }
 
     @Override
@@ -87,7 +83,7 @@ public class FishingNet extends AbstractProcessingMachine {
 
     @Override
     protected void playActiveParticleEffect() {
-        getLocation().getWorld().playEffect(getLocation(), Effect.STEP_SOUND, Material.WEB);
+        getLocation().getWorld().playEffect(getLocation(), Effect.STEP_SOUND, Material.COBWEB);
     }
 
     @Override
@@ -121,8 +117,8 @@ public class FishingNet extends AbstractProcessingMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.WHITE_TERRACOTTA;
     }
 
     @Override
@@ -142,11 +138,11 @@ public class FishingNet extends AbstractProcessingMachine {
         SimpleCircuit sc = new SimpleCircuit();
         MachineFrame mf = new MachineFrame();
         registerCustomIngredients(sc, mf);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape(" F ", "SMS", "RGR");
         recipe.setIngredient('F', Material.FISHING_ROD);
-        recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('M', mf.getMaterialData());
+        recipe.setIngredient('S', sc.getMaterial());
+        recipe.setIngredient('M', mf.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
@@ -162,10 +158,11 @@ public class FishingNet extends AbstractProcessingMachine {
     	int inputSlot = getInputSlots()[0];
         ItemStack input = getInventoryItem(inputSlot);
 
-        if (getProcessing() == null && input != null && isRedstoneActive() && getRelativeLocation(BlockFace.DOWN).getBlock().getType() == Material.STATIONARY_WATER) {
+        if (getProcessing() == null && input != null && isRedstoneActive() && getRelativeLocation(BlockFace.DOWN).getBlock().getType() == Material.WATER) {
             // pull a bucket from the input stack into processing
-            ItemStack toProcess = fish[CSCoreLib.randomizer().nextInt(fish.length)];
+            ItemStack toProcess = fish[ThreadLocalRandom.current().nextInt(fish.length)];
             setProcessing(toProcess);
+            
             if (toProcess != null) {
                 getProgressMeter().setMaxProgress(FISHING_TIME);
                 setProgress(FISHING_TIME);
@@ -186,6 +183,7 @@ public class FishingNet extends AbstractProcessingMachine {
             // done processing - try to move filled container into output
             ItemStack result = getProcessing();
             int slot = findOutputSlot(result);
+            
             if (slot >= 0) {
                 setInventoryItem(slot, result);
                 setProcessing(null);

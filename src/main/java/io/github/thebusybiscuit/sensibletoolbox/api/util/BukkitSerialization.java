@@ -14,8 +14,6 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.google.common.base.Joiner;
 
-import io.github.thebusybiscuit.sensibletoolbox.attributes.Attributes;
-
 /**
  * Serialize a Bukkit inventory to/from a string.
  * <p/>
@@ -23,6 +21,7 @@ import io.github.thebusybiscuit.sensibletoolbox.attributes.Attributes;
  * Modified by desht to explicitly serialize any attribute data discovered on items.
  */
 public class BukkitSerialization {
+	
     public static String toBase64(Inventory inventory) {
         return toBase64(inventory, 0);
     }

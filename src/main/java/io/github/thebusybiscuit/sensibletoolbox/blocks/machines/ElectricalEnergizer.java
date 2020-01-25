@@ -1,19 +1,16 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractIOMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedGoldDust;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedGoldIngot;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedIronDust;
@@ -26,8 +23,6 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class ElectricalEnergizer extends AbstractIOMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.GRAY);
-
     public ElectricalEnergizer() {
     }
 
@@ -87,8 +82,8 @@ public class ElectricalEnergizer extends AbstractIOMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GRAY_TERRACOTTA;
     }
 
     @Override
@@ -108,13 +103,13 @@ public class ElectricalEnergizer extends AbstractIOMachine {
         EnergizedGoldIngot gold = new EnergizedGoldIngot();
         EnergizedQuartz quartz = new EnergizedQuartz();
         registerCustomIngredients(sc, mf, gold, quartz);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("QQQ", "IFI", "RGR");
-        recipe.setIngredient('I', sc.getMaterialData());
-        recipe.setIngredient('F', mf.getMaterialData());
+        recipe.setIngredient('I', sc.getMaterial());
+        recipe.setIngredient('F', mf.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
-        recipe.setIngredient('G', gold.getMaterialData());
-        recipe.setIngredient('Q', quartz.getMaterialData());
+        recipe.setIngredient('G', gold.getMaterial());
+        recipe.setIngredient('Q', quartz.getMaterial());
         return recipe;
     }
 

@@ -1,11 +1,13 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,14 +15,17 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
-import java.util.*;
+import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 
 /**
  * Collection of miscellaneous recipe-related utility methods.
  */
 public class RecipeUtil {
-    private static final Set<Material> vanillaSmelts = Sets.newHashSet();
-    private static final Map<ItemStack, List<ItemStack>> reverseCustomSmelts = Maps.newHashMap();
+	
+    private static final Set<Material> vanillaSmelts = new HashSet<>();
+    private static final Map<ItemStack, List<ItemStack>> reverseCustomSmelts = new HashMap<>();
 
     public static void setupRecipes() {
         for (String key : SensibleToolbox.getItemRegistry().getItemIds()) {
@@ -36,8 +41,9 @@ public class RecipeUtil {
 
             // add custom furnace recipes
             ItemStack stack = item.getSmeltingResult();
+            
             if (stack != null) {
-                Bukkit.addRecipe(new FurnaceRecipe(stack, item.getMaterialData()));
+                Bukkit.addRecipe(new FurnaceRecipe(item.getKey(), stack, item.getMaterial(), 0, 200));
                 recordReverseSmelt(stack, item.toItemStack());
             }
 
@@ -50,8 +56,10 @@ public class RecipeUtil {
 
     public static void findVanillaFurnaceMaterials() {
         Iterator<Recipe> iter = Bukkit.recipeIterator();
+        
         while (iter.hasNext()) {
             Recipe r = iter.next();
+            
             if (r instanceof FurnaceRecipe) {
                 Material mat = ((FurnaceRecipe) r).getInput().getType();
                 vanillaSmelts.add(mat);
@@ -62,8 +70,9 @@ public class RecipeUtil {
 
     private static void recordReverseSmelt(ItemStack result, ItemStack ingredient) {
         if (!reverseCustomSmelts.containsKey(result)) {
-            reverseCustomSmelts.put(result, new ArrayList<ItemStack>());
+            reverseCustomSmelts.put(result, new ArrayList<>());
         }
+        
         reverseCustomSmelts.get(result).add(ingredient);
     }
 
@@ -77,7 +86,7 @@ public class RecipeUtil {
      */
     public static List<ItemStack> getSmeltingIngredientsFor(ItemStack stack) {
         List<ItemStack> res = reverseCustomSmelts.get(stack);
-        return res == null ? Collections.<ItemStack>emptyList() : res;
+        return res == null ? Collections.emptyList() : res;
     }
 
     /**
@@ -94,21 +103,26 @@ public class RecipeUtil {
 
     public static String makeRecipeKey(ItemStack item) {
         String res = item.getType().toString();
+        
         if (item.getDurability() != -1) {
             res += ":" + item.getDurability();
         }
+        
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             res += ":" + item.getItemMeta().getDisplayName();
         }
+        
         return res;
     }
 
     public static String makeRecipeKey(boolean ignoreData, ItemStack item) {
     	if (item == null) return "";
+    	
         String res = item.getType().toString();
         if (!ignoreData && item.getDurability() != 32767) {
             res += ":" + item.getDurability();
         }
+        
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             res += ":" + item.getItemMeta().getDisplayName();
         }

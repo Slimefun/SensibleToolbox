@@ -72,13 +72,16 @@ public class AngelicBlock extends BaseSTBBlock {
                 if (stack.getAmount() > 1) {
                     stack.setAmount(stack.getAmount() - 1);
                     p.setItemInHand(stack);
-                } else {
+                } 
+                else {
                     p.setItemInHand(new ItemStack(Material.AIR));
                 }
+                
                 b.setType(getMaterial());
                 placeBlock(b, event.getPlayer(), STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
             }
-        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        } 
+        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             // no direct placing but we need to ensure the player's inventory looks OK
             hackyDelayedInvUpdate(event.getPlayer());
         }
@@ -90,6 +93,7 @@ public class AngelicBlock extends BaseSTBBlock {
         // the angelic block has just been hit by a player - insta-break it
         Player p = event.getPlayer();
         Block b = event.getBlock();
+        
         if (SensibleToolbox.getBlockProtection().playerCanBuild(p, b, BlockProtection.Operation.BREAK)) {
             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
             breakBlock(false);

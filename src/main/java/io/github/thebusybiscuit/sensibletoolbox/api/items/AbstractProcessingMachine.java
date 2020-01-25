@@ -1,7 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -168,7 +168,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
 
     @Override
     public void onServerTick() {
-        if (getTicksLived() % PROGRESS_INTERVAL == 0 && getGUI().getViewers().size() > 0) {
+        if (getTicksLived() % PROGRESS_INTERVAL == 0 && !getGUI().getViewers().isEmpty()) {
             getProgressMeter().doRepaint();
         }
         super.onServerTick();
@@ -182,6 +182,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
         if (getTicksLived() % getEjectionInterval() != 0) {
             return;
         }
+        
         boolean ejectFailed = false;
         if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
             for (int slot : getOutputSlots()) {
@@ -191,7 +192,8 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
                         stack.setAmount(stack.getAmount() - 1);
                         setInventoryItem(slot, stack);
                         setJammed(false);
-                    } else {
+                    } 
+                    else {
                         ejectFailed = true;
                     }
                     break;
@@ -208,12 +210,14 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
         Block target = loc.getBlock();
         ItemStack item = result.clone();
         item.setAmount(1);
-        if (!target.getType().isSolid() || target.getType() == Material.WALL_SIGN) {
+        
+        if (!target.getType().isSolid() || Tag.WALL_SIGNS.isTagged(target.getType())) {
             // no (solid) block there - just drop the item
             Item i = loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), item);
             i.setVelocity(new Vector(0, 0, 0));
             return true;
-        } else {
+        } 
+        else {
             BaseSTBBlock stb = LocationManager.getManager().get(loc);
             int nInserted = stb instanceof STBInventoryHolder ?
                     ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) :

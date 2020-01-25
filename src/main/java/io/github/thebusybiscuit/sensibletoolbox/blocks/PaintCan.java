@@ -24,7 +24,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -102,7 +101,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     @Override
-    public MaterialData getMaterialData() {
+    public Material getMaterial() {
         return getPaintLevel() > 0 ? new Wool(colour) : STBUtil.makeColouredMaterial(Material.STAINED_GLASS, colour);
     }
 
@@ -136,15 +135,18 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     public void onInteractBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand();
+        
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             PaintBrush brush = SensibleToolbox.getItemRegistry().fromItemStack(stack, PaintBrush.class);
+            
             if (brush == null) {
                 // refilling a paintbrush/roller from the can is handled in the PaintBrush object
                 getGUI().show(player);
                 getPaintLevelMonitor().repaint();
             }
             event.setCancelled(true);
-        } else {
+        } 
+        else {
             super.onInteractBlock(event);
         }
     }
@@ -153,9 +155,11 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     public InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 27, ChatColor.DARK_RED + getItemName());
         gui.addLabel("Ingredients", 0, null, "To mix paint:", "▶ Place a milk bucket & dye", "To dye items:", "▶ Place any dyeable item");
+        
         for (int slot : ITEM_SLOTS) {
             gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
         }
+        
         String[] lore = new String[] { "Combine milk & dye to make paint", "or dye any colourable item", "with existing paint"};
         gui.addGadget(new ButtonGadget(gui, 12, "Mix or Dye", lore, MIX_TEXTURE, new Runnable() {
             @Override
@@ -166,6 +170,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                 }
             }
         }));
+        
         lore = new String[] { "Caution: This will empty the", "paint tank and can't be undone!" };
         gui.addGadget(new ButtonGadget(gui, 13, ChatColor.RED.toString() + ChatColor.UNDERLINE + "☠ Empty Paint ☠", lore, EMPTY_TEXTURE, new Runnable() {
             @Override
@@ -173,6 +178,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                 emptyPaintCan();
             }
         }));
+        
         levelMonitorId = gui.addMonitor(new LevelMonitor(gui, this));
         gui.addGadget(new AccessControlGadget(gui, 8));
         return gui;
@@ -325,11 +331,14 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             if (stack != null) {
                 if (stack.getType() == Material.MILK_BUCKET && !stack.hasItemMeta() && bucketSlot == -1) {
                     bucketSlot = slot;
-                } else if (stack.getType() == Material.INK_SACK && !stack.hasItemMeta() && dyeSlot == -1) {
+                } 
+                else if (stack.getType() == Material.INK_SACK && !stack.hasItemMeta() && dyeSlot == -1) {
                     dyeSlot = slot;
-                } else if (validItem(stack) && dyeableSlot == -1) {
+                } 
+                else if (validItem(stack) && dyeableSlot == -1) {
                     dyeableSlot = slot;
-                } else {
+                } 
+                else {
                     // not an item we want - eject it
                     getLocation().getWorld().dropItemNaturally(getLocation(), stack);
                     inventory.setItem(slot, null);
@@ -411,25 +420,35 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             return dye1;
         }
         Debugger.getInstance().debug(this + ": try mixing: " + dye1 + " " + dye2);
+        
         if (dye1 == DyeColor.YELLOW && dye2 == DyeColor.RED) {
             return DyeColor.ORANGE;
-        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.RED) {
+        } 
+        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.RED) {
             return DyeColor.PINK;
-        } else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.GREEN) {
+        } 
+        else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.GREEN) {
             return DyeColor.CYAN;
-        } else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.RED) {
+        } 
+        else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.RED) {
             return DyeColor.PURPLE;
-        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLACK) {
+        } 
+        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLACK) {
             return DyeColor.GRAY;
-        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLUE) {
+        } 
+        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLUE) {
             return DyeColor.LIGHT_BLUE;
-        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GREEN) {
+        } 
+        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GREEN) {
             return DyeColor.LIME;
-        } else if (dye1 == DyeColor.PINK && dye2 == DyeColor.PURPLE) {
+        } 
+        else if (dye1 == DyeColor.PINK && dye2 == DyeColor.PURPLE) {
             return DyeColor.MAGENTA;
-        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
+        } 
+        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
             return DyeColor.LIGHT_GRAY;
-        } else {
+        } 
+        else {
             // colours don't mix
             return null;
         }

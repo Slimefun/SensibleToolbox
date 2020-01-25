@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -10,15 +12,13 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-
-import java.util.UUID;
 
 /**
  * Top-level collection of utility methods for Sensible Toolbox.
  */
 public class SensibleToolbox {
+	
     private static SensibleToolboxPlugin instance;
 
     /**
@@ -186,14 +186,5 @@ public class SensibleToolbox {
      */
     public static EnergyNet getEnergyNet(Block block) {
         return getPluginInstance().getEnergyNetManager().getEnergyNet(block);
-    }
-
-    /**
-     * Get the block protection handler.  This should be used by any STB block
-     * or item which directly modifies blocks in the world or vanilla
-     * inventories, to reduce the possibilty of griefing.
-     */
-    public static BlockProtection getBlockProtection() {
-        return getPluginInstance().getBlockProtection();
     }
 }

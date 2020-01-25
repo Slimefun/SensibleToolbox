@@ -8,6 +8,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,8 +41,6 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.SILVER);
-
     private static final int PV_CELL_SLOT = 1;
     private static final int LIGHT_METER_SLOT = 13;
 
@@ -149,17 +148,15 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     private void rescanPVCell() {
         // defer this since we need to ensure the inventory slot is actually updated
-        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                PVCell cell = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
-                int pvl = cell == null ? 0 : cell.getLifespan();
-                if (pvl != pvCellLife) {
-                    boolean doRedraw = pvl == 0 || pvCellLife == 0;
-                    pvCellLife = pvl;
-                    update(doRedraw);
-                    getLightMeter().repaintNeeded();
-                }
+        Bukkit.getScheduler().runTask(getProviderPlugin(), () -> {
+        	PVCell cell = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
+            int pvl = cell == null ? 0 : cell.getLifespan();
+            
+            if (pvl != pvCellLife) {
+                boolean doRedraw = pvl == 0 || pvCellLife == 0;
+                pvCellLife = pvl;
+                update(doRedraw);
+                getLightMeter().repaintNeeded();
             }
         });
     }
@@ -169,7 +166,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             PVCell pvCell = new PVCell();
             pvCell.setLifespan(pvCellLife);
             gui.setItem(PV_CELL_SLOT, pvCell.toItemStack());
-        } else {
+        } 
+        else {
             gui.setItem(PV_CELL_SLOT, null);
         }
     }
@@ -180,8 +178,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.LIGHT_GRAY_STAINED_GLASS;
     }
 
     @Override
@@ -199,9 +197,11 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         String[] l = super.getExtraLore();
         String[] l2 = new String[l.length + 1];
         System.arraycopy(l, 0, l2, 0, l.length);
+        
         if (pvCellLife == 0) {
             l2[l.length] = ChatColor.GRAY.toString() + ChatColor.ITALIC + "No PV Cell installed";
-        } else {
+        } 
+        else {
             l2[l.length] = PVCell.formatCellLife(pvCellLife);
         }
         return l2;
@@ -211,10 +211,10 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     public Recipe getRecipe() {
         SimpleCircuit sc = new SimpleCircuit();
         registerCustomIngredients(sc);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("DDD", "IQI", "RGR");
         recipe.setIngredient('D', Material.DAYLIGHT_DETECTOR);
-        recipe.setIngredient('I', sc.getMaterialData());
+        recipe.setIngredient('I', sc.getMaterial());
         recipe.setIngredient('Q', Material.QUARTZ_BLOCK);
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
@@ -301,7 +301,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public void onBlockPhysics(BlockPhysicsEvent event) {
         // ensure carpet layer doesn't get popped off (and thus not cleared) when block is broken
-        if (event.getBlock().getType() == Material.CARPET) {
+        if (Tag.CARPETS.isTagged(event.getBlock().getType())) {
             event.setCancelled(true);
         }
     }
@@ -312,9 +312,11 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
         if (pvCellLife > 0 && getCharge() < getMaxCharge() && isRedstoneActive()) {
             double toAdd = getPowerOutput() * getTickRate() * getChargeMultiplier(getLightLevel());
+            
             if (toAdd > 0) {
                 setCharge(getCharge() + toAdd);
                 pvCellLife = Math.min(PVCell.MAX_LIFESPAN, Math.max(0, pvCellLife - getTickRate()));
+                
                 if (pvCellLife == 0) {
                     update(true);
                 }
@@ -337,17 +339,22 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         Block b = getLocation().getBlock().getRelative(BlockFace.UP);
         byte newLight = SunlightLevels.getSunlightLevel(b.getWorld());
         byte lightFromSky = b.getLightFromSky();
+        
         if (lightFromSky < 14) {
             newLight = 0;  // block is excessively shaded
-        } else if (lightFromSky < 15) {
+        } 
+        else if (lightFromSky < 15) {
             newLight--;    // partially shaded
         }
+        
         if (b.getWorld().hasStorm()) {
             newLight -= 3;  // raining: big efficiency drop
         }
+        
         if (newLight < 0) {
             newLight = 0;
         }
+        
         if (newLight != effectiveLightLevel) {
             getLightMeter().repaintNeeded();
             effectiveLightLevel = newLight;
@@ -385,10 +392,11 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public ItemStack getLightMeterIndicator() {
         if (pvCellLife == 0) {
-            return GUIUtil.makeTexture(new Wool(DyeColor.BLACK),
+            return GUIUtil.makeTexture(Material.BLACK_WOOL,
                     ChatColor.WHITE + "No PV Cell inserted!",
                     ChatColor.GRAY + "Insert a PV Cell in the top left");
-        } else {
+        } 
+        else {
             DyeColor dc = colors[effectiveLightLevel];
             ChatColor cc = STBUtil.dyeColorToChatColor(dc);
             double mult = getChargeMultiplier(effectiveLightLevel);
@@ -440,6 +448,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     }
 
     private static final DyeColor[] colors = new DyeColor[16];
+    
     static {
         colors[15] = DyeColor.LIME;
         colors[14] = DyeColor.YELLOW;

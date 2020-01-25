@@ -16,6 +16,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.TreeSpecies;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -806,45 +807,6 @@ public class STBUtil {
     }
 
     /**
-     * Get a special material data for the item with the data set to -1.  This
-     * is useful when using the item in recipes, as a "don't care" data value.
-     *
-     * @param item the item to convert
-     * @return a MaterialData for the item with wildcarded data
-     */
-    @SuppressWarnings("deprecation")
-	public static MaterialData makeWildCardMaterialData(BaseSTBItem item) {
-        MaterialData md = item.getMaterialData().clone();
-        md.setData((byte) -1);
-        return md;
-    }
-
-    /**
-     * Get a special material data for the material with the data set to -1.
-     * This is useful when using the item in recipes, as a "don't care" data
-     * value.
-     *
-     * @param mat the base material
-     * @return a MaterialData for the material with wildcarded data
-     */
-    @SuppressWarnings("deprecation")
-	public static MaterialData makeWildCardMaterialData(Material mat) {
-        return new MaterialData(mat, (byte) -1);
-    }
-
-    /**
-     * Get a special item stack for the material with the data set to 32767.
-     * This is useful when using the item in recipes, as a "don't care" data
-     * value.
-     *
-     * @param mat the base material
-     * @return an item stack for the material with wildcarded data
-     */
-    public static ItemStack makeWildCardItemStack(Material mat) {
-        return new ItemStack(mat, 1, (short) 32767);
-    }
-
-    /**
      * Check if the given block can be used to fabricate items via vanilla
      * recipes.
      *
@@ -852,7 +814,7 @@ public class STBUtil {
      * @return true if the block can be used to fabricate with, false otherwise
      */
     public static boolean canFabricateWith(Block block) {
-        return block != null && block.getType() == Material.WORKBENCH;
+        return block != null && block.getType() == Material.CRAFTING_TABLE;
     }
 
     /**
@@ -863,7 +825,7 @@ public class STBUtil {
      * @return true if the item can be used to fabricate with, false otherwise
      */
     public static boolean canFabricateWith(ItemStack stack) {
-        return stack != null && stack.getType() == Material.WORKBENCH;
+        return stack != null && stack.getType() == Material.CRAFTING_TABLE;
     }
 
     /**
@@ -873,7 +835,7 @@ public class STBUtil {
      * @param player the player
      */
     public static void complain(Player player) {
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
     }
 
     /**
@@ -883,7 +845,7 @@ public class STBUtil {
      * @param message the message text
      */
     public static void complain(Player player, String message) {
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
         MiscUtil.errorMessage(player, message);
     }
 
@@ -900,7 +862,7 @@ public class STBUtil {
      * @return true if the material is any kind of tree leaf; false otherwise
      */
     public static boolean isLeaves(Material type) {
-        return type == Material.LEAVES || type == Material.LEAVES_2;
+        return Tag.LEAVES.isTagged(type);
     }
 
     /**
@@ -910,7 +872,8 @@ public class STBUtil {
      * @param stacks one or more item stacks
      */
     public static void giveItems(HumanEntity player, ItemStack stacks) {
-        HashMap<Integer,ItemStack> excess = player.getInventory().addItem(stacks);
+        Map<Integer, ItemStack> excess = player.getInventory().addItem(stacks);
+        
         for (ItemStack stack : excess.values()) {
             player.getWorld().dropItemNaturally(player.getLocation(), stack);
         }
@@ -920,23 +883,29 @@ public class STBUtil {
         if (stack == null) {
             return Collections.emptyList();
         }
-        List<String> l = Lists.newArrayList();
+        
+        List<String> l = new ArrayList<>();
         l.add("Quantity: " + stack.getAmount());
         l.add("Material/Data: " + stack.getType() + ":" + stack.getDurability());
+
         if (stack.hasItemMeta()) {
             ItemMeta meta = stack.getItemMeta();
             l.add("Display name: " + meta.getDisplayName());
+            
             if (meta.hasLore()) {
                 l.add("Lore: [" + Joiner.on(",").join(meta.getLore()) + "]");
             }
+            
             if (meta.hasEnchants()) {
                 for (Map.Entry<Enchantment, Integer> e : meta.getEnchants().entrySet()) {
                     l.add("Enchant " + e.getKey() + " = " + e.getValue());
                 }
             }
-        } else {
+        } 
+        else {
             l.add("No metadata");
         }
+        
         if (stack.getType() != Material.AIR) {
             Attributes a = new Attributes(stack);
             l.add("Attribute count: " + a.size());

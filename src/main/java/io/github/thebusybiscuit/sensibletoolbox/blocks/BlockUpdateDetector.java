@@ -3,7 +3,6 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,7 +13,6 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.AccessControlGadget;
@@ -23,7 +21,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.NumericGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import me.desht.dhutils.Debugger;
 
 public class BlockUpdateDetector extends BaseSTBBlock {

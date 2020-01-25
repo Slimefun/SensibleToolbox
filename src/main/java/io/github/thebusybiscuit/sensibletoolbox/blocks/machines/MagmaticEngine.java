@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.FuelItems;
@@ -24,7 +22,6 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorU
 
 public class MagmaticEngine extends Generator {
 	
-	private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.RED);
 	private static final int TICK_FREQUENCY = 10;
     private final double slowBurnThreshold;
     private FuelItems.FuelValues currentFuel;
@@ -50,7 +47,7 @@ public class MagmaticEngine extends Generator {
 	
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] {10};
     }
 
     @Override
@@ -89,8 +86,8 @@ public class MagmaticEngine extends Generator {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.RED_TERRACOTTA;
     }
 
     @Override
@@ -120,10 +117,10 @@ public class MagmaticEngine extends Generator {
         SimpleCircuit sc = new SimpleCircuit();
         TenKEnergyCell cell = new TenKEnergyCell();
         registerCustomIngredients(sc, cell);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape(" L ", "SES", "RGR");
-        recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('E', STBUtil.makeWildCardMaterialData(cell));
+        recipe.setIngredient('S', sc.getMaterial());
+        recipe.setIngredient('E', cell.getMaterial());
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('L', Material.LAVA_BUCKET);
@@ -170,13 +167,15 @@ public class MagmaticEngine extends Generator {
                         break;
                     }
                 }
-            } else if (getProgress() > 0) {
+            } 
+            else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
                 double burnRate = Math.max(getBurnRate() * Math.min(getProgress(), TICK_FREQUENCY), 1.0);
                 setProgress(getProgress() - burnRate);
                 setCharge(getCharge() + currentFuel.getCharge() * burnRate);
                 playActiveParticleEffect();
+                
                 if (getProgress() <= 0) {
                     // fuel burnt
                 	ItemStack bucket = getInventoryItem(getOutputSlots()[0]);
@@ -199,11 +198,13 @@ public class MagmaticEngine extends Generator {
     	if (getInventoryItem(getOutputSlots()[0]) != null && getInventoryItem(getOutputSlots()[0]).getAmount() >= getInventoryItem(getOutputSlots()[0]).getMaxStackSize()) return;
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
+        
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
             // Regulator prevents pulling fuel in unless there's definitely
             // enough room to store the charge that would be generated
             return;
         }
+        
         setProcessing(makeProcessingItem(currentFuel, stack));
         getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
         setProgress(currentFuel.getBurnTime());

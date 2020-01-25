@@ -1,19 +1,16 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractIOMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.GoldDust;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IronDust;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
@@ -22,8 +19,6 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class Masher extends AbstractIOMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.GREEN);
-
     public Masher() {
     }
 
@@ -33,14 +28,11 @@ public class Masher extends AbstractIOMachine {
 
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
-        ItemStack whiteDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.WHITE).toItemStack(5);
-        ItemStack lapis = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE).toItemStack(8);
-        ItemStack greenDye = STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.GREEN).toItemStack(1);
         QuartzDust qd = new QuartzDust();
 
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.COBBLESTONE), new ItemStack(Material.SAND), 120));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GRAVEL), new ItemStack(Material.SAND), 80));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.BONE), whiteDye, 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.BONE), new ItemStack(Material.BONE_MEAL, 5), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.BLAZE_ROD), new ItemStack(Material.BLAZE_POWDER, 4), 80));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.COAL_ORE), new ItemStack(Material.COAL, 2), 100));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.REDSTONE_ORE), new ItemStack(Material.REDSTONE, 6), 100));
@@ -51,7 +43,7 @@ public class Masher extends AbstractIOMachine {
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_INGOT), new GoldDust().toItemStack(), 80));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LAPIS_ORE), lapis, 80));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LAPIS_ORE), new ItemStack(Material.LAPIS_LAZULI, 8), 80));
 //        crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES), greenDye, 40));
 //        crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES_2), greenDye, 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LEAVES), greenDye, 40), true);
@@ -60,8 +52,8 @@ public class Masher extends AbstractIOMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GREEN_TERRACOTTA;
     }
 
     @Override
@@ -79,11 +71,11 @@ public class Masher extends AbstractIOMachine {
         SimpleCircuit sc = new SimpleCircuit();
         MachineFrame mf = new MachineFrame();
         registerCustomIngredients(sc, mf);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("FFF", "SIS", "RGR");
         recipe.setIngredient('F', Material.FLINT);
-        recipe.setIngredient('S', sc.getMaterialData());
-        recipe.setIngredient('I', mf.getMaterialData());
+        recipe.setIngredient('S', sc.getMaterial());
+        recipe.setIngredient('I', mf.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
@@ -91,17 +83,17 @@ public class Masher extends AbstractIOMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] {10};
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14, 15};
+        return new int[] {14, 15};
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{41, 42, 43, 44};
+        return new int[] {41, 42, 43, 44};
     }
 
     @Override
@@ -146,7 +138,7 @@ public class Masher extends AbstractIOMachine {
 
     @Override
     public ItemStack getProgressIcon() {
-        return new ItemStack(Material.GOLD_PICKAXE);
+        return new ItemStack(Material.GOLDEN_PICKAXE);
     }
 
     @Override

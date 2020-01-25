@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Math.DoubleHandler;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,7 +23,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class HolographicMonitor extends BaseSTBBlock {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.LIGHT_BLUE);
     private Hologram hologram;
 
     public HolographicMonitor() {
@@ -33,8 +33,8 @@ public class HolographicMonitor extends BaseSTBBlock {
     }
     
 	@Override
-	public MaterialData getMaterialData() {
-		return md;
+	public Material getMaterial() {
+		return Material.LIGHT_BLUE_STAINED_GLASS;
 	}
 
 	@Override
@@ -52,13 +52,13 @@ public class HolographicMonitor extends BaseSTBBlock {
 
 	@Override
 	public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GGG", "LPL", "GGG");
         PowerMonitor monitor = new PowerMonitor();
         registerCustomIngredients(monitor);
         recipe.setIngredient('G', Material.GLASS);
-        recipe.setIngredient('P', monitor.getMaterialData());
-        recipe.setIngredient('L', STBUtil.makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE));
+        recipe.setIngredient('P', monitor.getMaterial());
+        recipe.setIngredient('L', Material.LAPIS_LAZULI);
         return recipe;
 	}
 	
@@ -78,9 +78,11 @@ public class HolographicMonitor extends BaseSTBBlock {
             if (net != null) {
             	double stat = net.getSupply() - net.getDemand();
             	String prefix;
-            	if (stat > 0) prefix = "�2�l+";
-            	else prefix = "�4�l-";
-            	this.hologram.appendTextLine(prefix + " �7" + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t");
+            	
+            	if (stat > 0) prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
+            	else prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
+            	
+            	this.hologram.appendTextLine(prefix + " " + ChatColor.GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t");
             	break;
             }
         }

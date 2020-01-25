@@ -1,26 +1,22 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractIOMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedQuartz;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.FishBait;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 
 public class Fermenter extends AbstractIOMachine {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.STAINED_CLAY, DyeColor.LIME);
-
     public Fermenter() {
     }
 
@@ -37,8 +33,8 @@ public class Fermenter extends AbstractIOMachine {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.LIME_TERRACOTTA;
     }
 
     @Override
@@ -56,13 +52,13 @@ public class Fermenter extends AbstractIOMachine {
         MachineFrame mf = new MachineFrame();
         EnergizedQuartz q = new EnergizedQuartz();
         registerCustomIngredients(mf, q);
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SQM", "IFI", "RGR");
         recipe.setIngredient('S', Material.SUGAR);
-        recipe.setIngredient('Q', q.getMaterialData());
-        recipe.setIngredient('M', Material.BROWN_MUSHROOM);
+        recipe.setIngredient('Q', q.getMaterial());
+        recipe.setIngredient('M', new MaterialChoice(Material.RED_MUSHROOM, Material.BROWN_MUSHROOM));
         recipe.setIngredient('I', Material.IRON_INGOT);
-        recipe.setIngredient('F', mf.getMaterialData());
+        recipe.setIngredient('F', mf.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
@@ -125,13 +121,13 @@ public class Fermenter extends AbstractIOMachine {
 
     @Override
     public ItemStack getProgressIcon() {
-        return new ItemStack(Material.GOLD_HOE);
+        return new ItemStack(Material.GOLDEN_HOE);
     }
     
     @Override
     protected void playActiveParticleEffect() {
         if (getTicksLived() % 20 == 0) {
-            getLocation().getWorld().playEffect(getLocation(), Effect.STEP_SOUND, Material.LEAVES);
+            getLocation().getWorld().playEffect(getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
         }
     }
 }

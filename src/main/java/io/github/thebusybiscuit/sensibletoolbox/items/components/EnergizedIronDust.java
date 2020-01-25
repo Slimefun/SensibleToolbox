@@ -5,12 +5,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedIronDust extends BaseSTBItem {
-    public static final MaterialData md = new MaterialData(Material.SULPHUR);
 
     public EnergizedIronDust() {
     }
@@ -20,8 +18,8 @@ public class EnergizedIronDust extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GUNPOWDER;
     }
 
     @Override
@@ -36,12 +34,12 @@ public class EnergizedIronDust extends BaseSTBItem {
 
     @Override
     public Recipe getRecipe() {
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(1));
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(1));
         InfernalDust dust1 = new InfernalDust();
         IronDust dust2 = new IronDust();
         registerCustomIngredients(dust1, dust2);
-        recipe.addIngredient(dust1.getMaterialData());
-        recipe.addIngredient(dust2.getMaterialData());
+        recipe.addIngredient(dust1.getMaterial());
+        recipe.addIngredient(dust2.getMaterial());
         return recipe;
     }
 

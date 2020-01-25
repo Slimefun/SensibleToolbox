@@ -10,6 +10,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
@@ -76,9 +77,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     protected BaseSTBBlock(ConfigurationSection conf) {
         super(conf);
         setFacing(BlockFace.valueOf(conf.getString("facing", "SELF")));
+        
         if (conf.contains("owner")) {
             setOwner(UUID.fromString(conf.getString("owner")));
         }
+        
         redstoneBehaviour = RedstoneBehaviour.valueOf(conf.getString("redstoneBehaviour", "IGNORE"));
         accessControl = AccessControl.valueOf(conf.getString("accessControl", "PUBLIC"));
         ticksLived = 0;
@@ -546,30 +549,30 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced((ChargeableBlock) this);
         }
 
-        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
-            public void run() {
-                Block b = oldLoc.getBlock();
-                for (int rotation = 0; rotation < 4; rotation++) {
-                    if (labelSigns.get(rotation)) {
-                        Block signBlock = b.getRelative(STBUtil.getRotatedFace(getFacing(), rotation));
-                        if (signBlock.getType() == Material.WALL_SIGN) {
-                            signBlock.setType(Material.AIR);
-                        }
+        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
+        	Block b = oldLoc.getBlock();
+        	
+            for (int rotation = 0; rotation < 4; rotation++) {
+                if (labelSigns.get(rotation)) {
+                    Block signBlock = b.getRelative(STBUtil.getRotatedFace(getFacing(), rotation));
+                    
+                    if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
+                        signBlock.setType(Material.AIR);
                     }
                 }
             }
         });
 
-        Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), new Runnable() {
-            public void run() {
-                Block b = newLoc.getBlock();
-                for (int rotation = 0; rotation < 4; rotation++) {
-                    if (labelSigns.get(rotation)) {
-                        BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
-                        Block signBlock = b.getRelative(face);
-                        if (!placeLabelSign(signBlock, face)) {
-                            labelSigns.set(rotation, false);
-                        }
+        Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), () -> {
+        	Block b = newLoc.getBlock();
+        	
+            for (int rotation = 0; rotation < 4; rotation++) {
+                if (labelSigns.get(rotation)) {
+                    BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
+                    Block signBlock = b.getRelative(face);
+                    
+                    if (!placeLabelSign(signBlock, face)) {
+                        labelSigns.set(rotation, false);
                     }
                 }
             }
@@ -589,6 +592,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     public final void preRegister(LocationManager.BlockAccess blockAccess, Location location, boolean isPlacing) {
         Validate.notNull(blockAccess, "Don't call this method directly");
         location.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
+        
         for (RelativePosition pos : getBlockStructure()) {
             Block auxBlock = getAuxiliaryBlock(location, pos);
             Debugger.getInstance().debug(2, "Multiblock for " + this + " -> " + auxBlock);
@@ -598,11 +602,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         setGUI(createGUI());
 
         // defer this so it's done after the block is actually placed in the world
-        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                lastPower = getLocation().getBlock().getBlockPower();
-            }
+        Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
+        	lastPower = getLocation().getBlock().getBlockPower();
         });
 
         if (needToScanSigns) {
@@ -689,6 +690,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             auxBlock.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
             auxBlock.setType(Material.AIR);
         }
+        
         origin.removeMetadata(BaseSTBBlock.STB_BLOCK, SensibleToolboxPlugin.getInstance());
         origin.setType(Material.AIR);
 
@@ -714,7 +716,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     public final boolean validatePlaceable(Location baseLoc) {
         for (RelativePosition rPos : getBlockStructure()) {
             Block b = getAuxiliaryBlock(baseLoc, rPos);
-            if (b.getType() != Material.AIR && b.getType() != Material.WATER && b.getType() != Material.STATIONARY_WATER) {
+            
+            if (b.getType() != Material.AIR && b.getType() != Material.WATER) {
                 return false;
             }
         }
@@ -751,6 +754,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public final void update(boolean redraw) {
         Location loc = getLocation();
+        
         if (loc != null) {
             if (redraw) {
                 repaint(loc.getBlock());
@@ -847,9 +851,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     protected String[] getSignLabel(BlockFace face) {
         String[] lines = ChatPaginator.wordWrap(makeItemLabel(face), 13);
         String[] res = new String[4];
+        
         for (int i = 0; i < 4; i++) {
             res[i] = i < lines.length ? lines[i] : "";
         }
+        
         return res;
     }
 
@@ -870,13 +876,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
             String[] text = getSignLabel(face);
             Block b1 = b.getRelative(face);
-            if (b1.getType() == Material.WALL_SIGN) {
+            
+            if (Tag.WALL_SIGNS.isTagged(b1.getType())) {
                 Sign sign = (Sign) b1.getState();
+                
                 for (int i = 0; i < text.length; i++) {
                     sign.setLine(i, text[i]);
                 }
+                
                 sign.update();
-            } else {
+            } 
+            else {
                 // no sign here (the sign must have been replaced or broken at some point)
                 labelSigns.set(rotation, false);
             }
@@ -895,14 +905,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     private void reattachLabelSigns(Location loc) {
         Block b = loc.getBlock();
         boolean rescanNeeded = false;
+        
         for (int rotation = 0; rotation < 4; rotation++) {
             if (labelSigns.get(rotation)) {
                 BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
+                
                 if (!placeLabelSign(b.getRelative(face), face)) {
                     rescanNeeded = true;
                 }
             }
         }
+        
         if (rescanNeeded) {
             // not all of the signs could be placed (something in the way?)
             scanForAttachedLabelSigns();
@@ -917,6 +930,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             event.setCancelled(true);
             return false;
         }
+        
         Block signBlock = event.getClickedBlock().getRelative(event.getBlockFace());
         Player player = event.getPlayer();
 
@@ -927,7 +941,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             return false;
         }
 
-        BlockPlaceEvent placeEvent = new BlockPlaceEvent(signBlock, signBlock.getState(), event.getClickedBlock(), event.getItem(), player, true);
+        BlockPlaceEvent placeEvent = new BlockPlaceEvent(signBlock, signBlock.getState(), event.getClickedBlock(), event.getItem(), player, true, event.getHand());
         Bukkit.getPluginManager().callEvent(placeEvent);
         if (placeEvent.isCancelled()) {
             STBUtil.complain(player);
@@ -950,12 +964,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     @SuppressWarnings("deprecation")
 	private boolean placeLabelSign(Block signBlock, BlockFace face) {
-        if (!signBlock.isEmpty() && signBlock.getType() != Material.WALL_SIGN) {
+        if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!
         	Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.SIGN));
             return false;
-        } else {
+        } 
+        else {
         	Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
             // using setTypeIdAndData() here because we don't want to cause a physics update
             signBlock.setTypeIdAndData(Material.WALL_SIGN.getId(), (byte) 0, false);
@@ -964,9 +979,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             s.setFacingDirection(face);
             sign.setData(s);
             String[] text = getSignLabel(face);
+            
             for (int i = 0; i < text.length; i++) {
                 sign.setLine(i, text[i]);
             }
+            
             sign.update(false, false);
             return true;
         }
@@ -980,9 +997,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         Block b = getLocation().getBlock();
         for (BlockFace face : new BlockFace[]{BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH}) {
             Block b1 = b.getRelative(face);
-            if (b1.getType() == Material.WALL_SIGN) {
+            
+            if (Tag.WALL_SIGNS.isTagged(b1.getType())) {
                 Sign sign = (Sign) b.getRelative(face).getState();
                 org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
+                
                 if (s.getAttachedFace() == face.getOppositeFace()) {
                     labelSigns.set(STBUtil.getFaceRotation(getFacing(), face));
                 }
@@ -1018,7 +1037,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * block's orientation as returned by {@link BaseSTBBlock#getFacing()}
      */
     public class RelativePosition {
-        private final int front, up, left;
+    	
+        private final int front;
+        private final int up;
+        private final int left;
 
         public RelativePosition(int front, int up, int left) {
             Validate.isTrue(front != 0 || up != 0 || left != 0, "At least one of front, up, left must be non-zero");

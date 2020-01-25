@@ -4,12 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class IronDust extends BaseSTBItem {
-    private static final MaterialData md = new MaterialData(Material.SULPHUR);
 
     public IronDust() {
         super();
@@ -20,8 +18,8 @@ public class IronDust extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GUNPOWDER;
     }
 
     @Override
@@ -31,7 +29,7 @@ public class IronDust extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Smelt in a Smelter or Furnace", " to get iron ingots"};
+        return new String[] {"Smelt in a Smelter or Furnace", " to get iron ingots"};
     }
 
     @Override

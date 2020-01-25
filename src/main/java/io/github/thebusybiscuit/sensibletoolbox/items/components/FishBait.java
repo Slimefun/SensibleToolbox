@@ -3,13 +3,10 @@ package io.github.thebusybiscuit.sensibletoolbox.items.components;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class FishBait extends BaseSTBItem {
-	
-    private static final MaterialData md = new MaterialData(Material.ROTTEN_FLESH);
 
     public FishBait() {
     }
@@ -18,8 +15,8 @@ public class FishBait extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.ROTTEN_FLESH;
     }
 
     @Override
@@ -29,7 +26,7 @@ public class FishBait extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Used in a Fishing Net", "to catch Fish"};
+        return new String[] {"Used in a Fishing Net", "to catch Fish"};
     }
 
     @Override
