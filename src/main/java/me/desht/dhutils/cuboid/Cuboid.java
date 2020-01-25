@@ -35,6 +35,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 		if (! l1.getWorld().equals(l2.getWorld())) {
 			throw new IllegalArgumentException("locations must be on the same world");
 		}
+		
 		worldName = l1.getWorld().getName();
 		x1 = Math.min(l1.getBlockX(), l2.getBlockX());
 		y1 = Math.min(l1.getBlockY(), l2.getBlockY());
@@ -116,7 +117,8 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String,Object> map = new HashMap<String, Object>();
+		Map<String,Object> map = new HashMap<>();
+		
 		map.put("worldName", worldName);
 		map.put("x1", x1);
 		map.put("y1", y1);
@@ -156,6 +158,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 		int x1 = getUpperX() + 1;
 		int y1 = getUpperY() + 1;
 		int z1 = getUpperZ() + 1;
+		
 		return new Location(getWorld(), getLowerX() + (x1 - getLowerX()) / 2.0,
 		                    getLowerY() + (y1 - getLowerY()) / 2.0,
 		                    getLowerZ() + (z1 - getLowerZ()) / 2.0);
@@ -169,9 +172,11 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 */
 	public World getWorld() {
 		World world = Bukkit.getWorld(worldName);
+		
 		if (world == null) {
 			throw new IllegalStateException("world '" + worldName + "' is not loaded");
 		}
+		
 		return world;
 	}
 
@@ -264,6 +269,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	public Block[] corners() {
 		Block[] res = new Block[8];
 		World w = getWorld();
+		
 		res[0] = w.getBlockAt(x1, y1, z1);
 		res[1] = w.getBlockAt(x1, y1, z2);
 		res[2] = w.getBlockAt(x1, y2, z1);
@@ -272,6 +278,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 		res[5] = w.getBlockAt(x2, y1, z2);
 		res[6] = w.getBlockAt(x2, y2, z1);
 		res[7] = w.getBlockAt(x2, y2, z2);
+		
 		return res;
 	}
 
@@ -286,17 +293,17 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 */
 	public Cuboid expand(CuboidDirection dir, int amount) {
 		switch (dir) {
-		case North:
+		case NORTH:
 			return new Cuboid(worldName, x1 - amount, y1, z1, x2, y2, z2);
-		case South:
+		case SOUTH:
 			return new Cuboid(worldName, x1, y1, z1, x2 + amount, y2, z2);
-		case East:
+		case EAST:
 			return new Cuboid(worldName, x1, y1, z1 - amount, x2, y2, z2);
-		case West:
+		case WEST:
 			return new Cuboid(worldName, x1, y1, z1, x2, y2, z2 + amount);
-		case Down:
+		case DOWN:
 			return new Cuboid(worldName, x1, y1 - amount, z1, x2, y2, z2);
-		case Up:
+		case UP:
 			return new Cuboid(worldName, x1, y1, z1, x2, y2 + amount, z2);
 		default:
 			throw new IllegalArgumentException("invalid direction " + dir);
@@ -323,19 +330,21 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 */
 	public Cuboid outset(CuboidDirection dir, int amount) {
 		Cuboid c;
+		
 		switch (dir) {
-		case Horizontal:
-			c = expand(CuboidDirection.North, amount).expand(CuboidDirection.South, amount).expand(CuboidDirection.East, amount).expand(CuboidDirection.West, amount);
+		case HORIZONTAL:
+			c = expand(CuboidDirection.NORTH, amount).expand(CuboidDirection.SOUTH, amount).expand(CuboidDirection.EAST, amount).expand(CuboidDirection.WEST, amount);
 			break;
-		case Vertical:
-			c = expand(CuboidDirection.Down, amount).expand(CuboidDirection.Up, amount);
+		case VERTICAL:
+			c = expand(CuboidDirection.DOWN, amount).expand(CuboidDirection.UP, amount);
 			break;
-		case Both:
-			c = outset(CuboidDirection.Horizontal, amount).outset(CuboidDirection.Vertical, amount);
+		case BOTH:
+			c = outset(CuboidDirection.HORIZONTAL, amount).outset(CuboidDirection.VERTICAL, amount);
 			break;
 		default:
 			throw new IllegalArgumentException("invalid direction " + dir);
 		}
+		
 		return c;
 	}
 
@@ -401,12 +410,14 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	public byte averageLightLevel() {
 		long total = 0;
 		int n = 0;
+		
 		for (Block b : this) {
 			if (b.isEmpty()) {
 				total += b.getLightLevel();
 				++n;
 			}
 		}
+		
 		return n > 0 ? (byte) (total / n) : 0;
 	}
 
@@ -418,12 +429,12 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 */
 	public Cuboid contract() {
 		return this.
-				contract(CuboidDirection.Down).
-				contract(CuboidDirection.South).
-				contract(CuboidDirection.East).
-				contract(CuboidDirection.Up).
-				contract(CuboidDirection.North).
-				contract(CuboidDirection.West);
+				contract(CuboidDirection.DOWN).
+				contract(CuboidDirection.SOUTH).
+				contract(CuboidDirection.EAST).
+				contract(CuboidDirection.UP).
+				contract(CuboidDirection.NORTH).
+				contract(CuboidDirection.WEST);
 	}
 
 	/**
@@ -435,35 +446,36 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 */
 	public Cuboid contract(CuboidDirection dir) {
 		Cuboid face = getFace(dir.opposite());
+		
 		switch (dir) {
-		case Down:
+		case DOWN:
 			while (face.containsOnly(Material.AIR) && face.getLowerY() > this.getLowerY()) {
-				face = face.shift(CuboidDirection.Down, 1);
+				face = face.shift(CuboidDirection.DOWN, 1);
 			}
 			return new Cuboid(worldName, x1, y1, z1, x2, face.getUpperY(), z2);
-		case Up:
+		case UP:
 			while (face.containsOnly(Material.AIR) && face.getUpperY() < this.getUpperY()) {
-				face = face.shift(CuboidDirection.Up, 1);
+				face = face.shift(CuboidDirection.UP, 1);
 			}
 			return new Cuboid(worldName, x1, face.getLowerY(), z1, x2, y2, z2);
-		case North:
+		case NORTH:
 			while (face.containsOnly(Material.AIR) && face.getLowerX() > this.getLowerX()) {
-				face = face.shift(CuboidDirection.North, 1);
+				face = face.shift(CuboidDirection.NORTH, 1);
 			}
 			return new Cuboid(worldName, x1, y1, z1, face.getUpperX(), y2, z2);
-		case South:
+		case SOUTH:
 			while (face.containsOnly(Material.AIR) && face.getUpperX() < this.getUpperX()) {
-				face = face.shift(CuboidDirection.South, 1);
+				face = face.shift(CuboidDirection.SOUTH, 1);
 			}
 			return new Cuboid(worldName, face.getLowerX(), y1, z1, x2, y2, z2);
-		case East:
+		case EAST:
 			while (face.containsOnly(Material.AIR) && face.getLowerZ() > this.getLowerZ()) {
-				face = face.shift(CuboidDirection.East, 1);
+				face = face.shift(CuboidDirection.EAST, 1);
 			}
 			return new Cuboid(worldName, x1, y1, z1, x2, y2, face.getUpperZ());
-		case West:
+		case WEST:
 			while (face.containsOnly(Material.AIR) && face.getUpperZ() < this.getUpperZ()) {
-				face = face.shift(CuboidDirection.West, 1);
+				face = face.shift(CuboidDirection.WEST, 1);
 			}
 			return new Cuboid(worldName, x1, y1, face.getLowerZ(), x2, y2, z2);
 		default:
@@ -480,17 +492,17 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 */
 	public Cuboid getFace(CuboidDirection dir	) {
 		switch (dir) {
-		case Down:
+		case DOWN:
 			return new Cuboid(worldName, x1, y1, z1, x2, y1, z2);
-		case Up:
+		case UP:
 			return new Cuboid(worldName, x1, y2, z1, x2, y2, z2);
-		case North:
+		case NORTH:
 			return new Cuboid(worldName, x1, y1, z1, x1, y2, z2);
-		case South:
+		case SOUTH:
 			return new Cuboid(worldName, x2, y1, z1, x2, y2, z2);
-		case East:
+		case EAST:
 			return new Cuboid(worldName, x1, y1, z1, x2, y2, z1);
-		case West:
+		case WEST:
 			return new Cuboid(worldName, x1, y1, z2, x2, y2, z2);
 		default:
 			throw new IllegalArgumentException("Invalid direction " + dir);
@@ -566,16 +578,18 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 * @return a list of Chunk objects
 	 */
 	public List<Chunk> getChunks() {
-		List<Chunk> res = new ArrayList<Chunk>();
+		List<Chunk> res = new ArrayList<>();
 
 		World w = getWorld();
 		int x1 = getLowerX() & ~0xf; int x2 = getUpperX() & ~0xf;
 		int z1 = getLowerZ() & ~0xf; int z2 = getUpperZ() & ~0xf;
+		
 		for (int x = x1; x <= x2; x += 16) {
 			for (int z = z1; z <= z2; z += 16) {
 				res.add(w.getChunkAt(x >> 4, z >> 4));
 			}
 		}
+		
 		return res;
 	}
 
@@ -700,6 +714,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	}
 
 	public class CuboidIterator implements Iterator<Block> {
+		
 		private World w;
 		private int baseX, baseY, baseZ;
 		private int x, y, z;
@@ -733,36 +748,45 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 		}
 
 		public void remove() {
-			// nop
+			// nope
 		}
 	}
 
 	public enum CuboidDirection {
 
-		North, East, South, West, Up, Down, Horizontal, Vertical, Both, Unknown;
+		NORTH, 
+		EAST, 
+		SOUTH, 
+		WEST, 
+		UP, 
+		DOWN, 
+		HORIZONTAL, 
+		VERTICAL, 
+		BOTH, 
+		UNKNOWN;
 
 		public CuboidDirection opposite() {
 			switch(this) {
-			case North:
-				return South;
-			case East:
-				return West;
-			case South:
-				return North;
-			case West:
-				return East;
-			case Horizontal:
-				return Vertical;
-			case Vertical:
-				return Horizontal;
-			case Up:
-				return Down;
-			case Down:
-				return Up;
-			case Both:
-				return Both;
+			case NORTH:
+				return SOUTH;
+			case EAST:
+				return WEST;
+			case SOUTH:
+				return NORTH;
+			case WEST:
+				return EAST;
+			case HORIZONTAL:
+				return VERTICAL;
+			case VERTICAL:
+				return HORIZONTAL;
+			case UP:
+				return DOWN;
+			case DOWN:
+				return UP;
+			case BOTH:
+				return BOTH;
 			default:
-				return Unknown;
+				return UNKNOWN;
 			}
 		}
 	}

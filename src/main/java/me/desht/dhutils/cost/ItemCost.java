@@ -1,6 +1,10 @@
 package me.desht.dhutils.cost;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -9,11 +13,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemCost extends Cost {
+	
 	private final ItemStack toMatch;
 	private final boolean matchData;
 	private final boolean matchMeta;
 	private int dropped;
-    private List<ItemStack> taken = new ArrayList<ItemStack>();
+    private List<ItemStack> taken = new ArrayList<>();
 
     public ItemCost(Material mat, double quantity) {
 		super(quantity);
@@ -81,14 +86,17 @@ public class ItemCost extends Cost {
      * @return true if the cost can be met; false otherwise
      */
     public boolean isAffordable(Player player, boolean playerFirst, Inventory... extraInventories) {
-        List<Inventory> invs = new ArrayList<Inventory>(extraInventories.length + 1);
+        List<Inventory> invs = new ArrayList<>(extraInventories.length + 1);
+        
         if (playerFirst) {
             invs.add(player.getInventory());
             invs.addAll(Arrays.asList(extraInventories));
-        } else {
+        } 
+        else {
             invs.addAll(Arrays.asList(extraInventories));
             invs.add(player.getInventory());
         }
+        
         int remainingCheck = (int) getQuantity();
         for (Inventory inv : invs) {
             remainingCheck = getRemaining(remainingCheck, inv);
@@ -96,11 +104,13 @@ public class ItemCost extends Cost {
                 return true;
             }
         }
+        
         return false;
     }
 
     protected int getRemaining(int remainingCheck, Inventory inv) {
         HashMap<Integer, ? extends ItemStack> matchingInvSlots = inv.all(getMaterial());
+        
         for (Entry<Integer, ? extends ItemStack> entry : matchingInvSlots.entrySet()) {
             if (matches(entry.getValue())) {
                 remainingCheck -= entry.getValue().getAmount();
@@ -108,6 +118,7 @@ public class ItemCost extends Cost {
                     break;
             }
         }
+        
         return remainingCheck;
     }
 
@@ -115,11 +126,11 @@ public class ItemCost extends Cost {
 	public void apply(Player player) {
         if (getQuantity() > 0) {
             chargeItems(player.getInventory());
-        } else {
+        } 
+        else {
             dropped = addItems(player.getInventory());
             dropExcess(player, dropped);
         }
-        player.updateInventory();
 	}
 
     /**
@@ -131,17 +142,20 @@ public class ItemCost extends Cost {
      */
     public void apply(Player player, boolean playerFirst, Inventory... extraInventories) {
         Inventory[] invs = new Inventory[extraInventories.length + 1];
+        
         if (playerFirst) {
             invs[0] = player.getInventory();
             System.arraycopy(extraInventories, 0, invs, 1, extraInventories.length);
-        } else {
+        } 
+        else {
             System.arraycopy(extraInventories, 0, invs, 0, extraInventories.length);
             invs[extraInventories.length] = player.getInventory();
         }
 
         if (getQuantity() > 0) {
             chargeItems(invs);
-        } else {
+        } 
+        else {
             dropped = addItems(invs);
             dropExcess(player, dropped);
         }
@@ -149,12 +163,15 @@ public class ItemCost extends Cost {
 
     private int addItems(Inventory... inventories) {
         int remaining = (int) -getQuantity();
+        
         for (Inventory inv : inventories) {
             remaining = addToOneInventory(inv, remaining);
+            
             if (remaining == 0) {
                 break;
             }
         }
+        
         return remaining;
     }
 
@@ -165,10 +182,12 @@ public class ItemCost extends Cost {
 
         for (Inventory inv : inventories) {
             remaining = takeFromOneInventory(inv, remaining);
+            
             if (remaining == 0) {
                 break;
             }
         }
+        
         return remaining;
     }
 
@@ -177,12 +196,15 @@ public class ItemCost extends Cost {
 
 		while (quantity > maxStackSize) {
             Map<Integer, ItemStack> toDrop = inventory.addItem(new ItemStack(getMaterial(), maxStackSize, getData()));
+            
             if (!toDrop.isEmpty()) {
                 // this inventory is full; return the number of items that could not be added
                 return toDrop.get(0).getAmount() + (quantity - maxStackSize);
             }
+            
 			quantity -= maxStackSize;
 		}
+		
         Map<Integer, ItemStack> toDrop = inventory.addItem(new ItemStack(getMaterial(), quantity, getData()));
         return toDrop.isEmpty() ? 0 : toDrop.get(0).getAmount();
 	}
@@ -197,10 +219,12 @@ public class ItemCost extends Cost {
 					entry.getValue().setAmount(-quantity);
                     taken.add(entry.getValue().clone());
 					break;
-				} else {
+				} 
+				else {
                     inventory.removeItem(entry.getValue());
                     taken.add(entry.getValue().clone());
 				}
+				
                 if (quantity == 0) {
                     break;
                 }
@@ -212,18 +236,24 @@ public class ItemCost extends Cost {
 	protected boolean matches(ItemStack stack) {
 		if (toMatch.getType() != stack.getType()) {
 			return false;
-		} else if (matchData && toMatch.getData().getData() != stack.getData().getData()) {
+		} 
+		else if (matchData && toMatch.getData().getData() != stack.getData().getData()) {
 			return false;
-		} else if (matchMeta) {
+		} 
+		else if (matchMeta) {
 			String d1 = stack.hasItemMeta() ? stack.getItemMeta().getDisplayName() : null;
 			String d2 = toMatch.hasItemMeta() ? toMatch.getItemMeta().getDisplayName() : null;
+			
 			if (d1 != null && !d1.equals(d2)) {
 				return false;
-			} else if (d2 != null && !d2.equals(d1)) {
+			} 
+			else if (d2 != null && !d2.equals(d1)) {
 				return false;
 			}
+			
 			return true;
-		} else {
+		} 
+		else {
 			return true;
 		}
 	}

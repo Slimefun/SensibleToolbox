@@ -33,6 +33,7 @@ import com.comphenix.protocol.events.PacketContainer;
  * where you don't want to clutter up the chat window.
  */
 public class ItemMessage {
+	
 	private int interval = 20;  // ticks
 	private static final int DEFAULT_DURATION = 2; // seconds
 	private static final int DEFAULT_PRIORITY = 0;
@@ -111,9 +112,11 @@ public class ItemMessage {
 			// TODO: this doesn't work properly in creative mode.  Need to investigate further
 			// if it can be made to work, but for now, just send an old-fashioned chat message.
 			player.sendMessage(message);
-		} else {
+		} 
+		else {
 			PriorityQueue<MessageRecord> msgQueue = getMessageQueue(player);
 			msgQueue.add(new MessageRecord(message, duration, priority, getNextId(player)));
+			
 			if (msgQueue.size() == 1) {
 				// there was nothing in the queue previously - kick off a NamerTask
 				// (if there was already something in the queue, a new NamerTask will be kicked off
@@ -132,7 +135,7 @@ public class ItemMessage {
 	 */
 	public void setFormats(String... formats){
 		Validate.isTrue(formats.length > 1, "Two formats are minimum!");
-		for(String format : formats){
+		for (String format : formats){
 			Validate.isTrue(format.contains("%s"), "format string \"" + format + "\" must contain a %s");
 		}
 		this.formats = formats;
@@ -155,17 +158,20 @@ public class ItemMessage {
 		if (!player.hasMetadata(METADATA_Q_KEY)) {
 			player.setMetadata(METADATA_Q_KEY, new FixedMetadataValue(plugin, new PriorityQueue<MessageRecord>()));
 		}
+		
 		for (MetadataValue v : player.getMetadata(METADATA_Q_KEY)) {
 			if (v.value() instanceof PriorityQueue<?>) {
 				return (PriorityQueue<MessageRecord>) v.value();
 			}
 		}
+		
 		return null;
 	}
 
 	private void notifyDone(Player player) {
 		PriorityQueue<MessageRecord> msgQueue = getMessageQueue(player);
 		msgQueue.poll();
+		
 		if (!msgQueue.isEmpty()) {
 			MessageRecord rec = importOtherMessageRecord(msgQueue.peek());
 			new NamerTask(player, rec).runTaskTimer(plugin, 1L, interval);
@@ -184,7 +190,8 @@ public class ItemMessage {
 	private MessageRecord importOtherMessageRecord(Object other) {
 		if (other instanceof MessageRecord) {
 			return (MessageRecord) other;
-		} else if (other.getClass().getName().endsWith(".ItemMessage$MessageRecord")) {
+		} 
+		else if (other.getClass().getName().endsWith(".ItemMessage$MessageRecord")) {
 			// looks like the same class as us - we make no assumptions about what package it's in, though
 			try {
 				Method m1 = other.getClass().getMethod("getId");
@@ -200,19 +207,21 @@ public class ItemMessage {
 				e.printStackTrace();
 				return null;
 			}
-		} else {
+		} 
+		else {
 			return null;
 		}
 	}
 
 	private class NamerTask extends BukkitRunnable implements Listener	{
+		
 		private final WeakReference<Player> playerRef;
 		private final String message;
 		private int slot;
 		private int iterations;
 
 		public NamerTask(Player player, MessageRecord rec) {
-			this.playerRef = new WeakReference<Player>(player);
+			this.playerRef = new WeakReference<>(player);
 			this.iterations = Math.max(1, (rec.getDuration() * 20) / interval);
 			this.slot = player.getInventory().getHeldItemSlot();
 			this.message = rec.getMessage();
@@ -245,11 +254,13 @@ public class ItemMessage {
 				if (iterations-- <= 0) {
 					// finished - restore the previous item data and tidy up
 					finish(player);
-				} else {
+				} 
+				else {
 					// refresh the item data
 					refresh(player);
 				}
-			} else {
+			} 
+			else {
 				// player probably disconnected - whatever, we're done here
 				cleanup();
 			}
@@ -273,13 +284,16 @@ public class ItemMessage {
 		private ItemStack makeStack(Player player) {
 			ItemStack stack0 = player.getInventory().getItem(slot);
 			ItemStack stack;
+			
 			if (stack0 == null || stack0.getType() == Material.AIR) {
 				// an empty slot can't display any custom item name, so we need to fake an item
 				// a snow layer is a good choice, since it's visually quite unobtrusive
 				stack = new ItemStack(emptyHandReplacement, 1);
-			} else {
+			} 
+			else {
 				stack = new ItemStack(stack0.getType(), stack0.getAmount(), stack0.getDurability());
 			}
+			
 			ItemMeta meta = Bukkit.getItemFactory().getItemMeta(stack.getType());
 			// fool the client into thinking the item name has changed, so it actually (re)displays it
 			meta.setDisplayName(String.format(formats[iterations % formats.length], message));
@@ -293,6 +307,7 @@ public class ItemMessage {
 			// int field 1: slot number (36 - 44 for player hotbar)
 			setSlot.getIntegers().write(0, 0).write(1, slot + 36);
 			setSlot.getItemModifier().write(0, stack);
+			
 			try {
 				ProtocolLibrary.getProtocolManager().sendServerPacket(player, setSlot);
 			} catch (InvocationTargetException e) {
@@ -302,6 +317,7 @@ public class ItemMessage {
 	}
 
 	public class MessageRecord implements Comparable<Object> {
+		
 		private final String message;
 		private final int duration;
 		private final int priority;
@@ -336,10 +352,12 @@ public class ItemMessage {
 			if (rec != null) {
 				if (this.priority == rec.getPriority()) {
 					return (Long.valueOf(this.id)).compareTo(rec.getId());
-				} else {
+				} 
+				else {
 					return (Integer.valueOf(this.priority)).compareTo(rec.getPriority());
 				}
-			} else {
+			} 
+			else {
 				return 0;
 			}
 		}

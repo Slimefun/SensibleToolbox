@@ -295,7 +295,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     private void harvestLayer(Player player, Block b) {
         Cuboid c = new Cuboid(b.getLocation());
-        c = c.outset(Cuboid.CuboidDirection.Horizontal, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
+        c = c.outset(Cuboid.CuboidDirection.HORIZONTAL, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
 
         for (Block b1 : c) {
             if (!b1.equals(b)) {

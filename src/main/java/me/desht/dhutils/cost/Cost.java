@@ -1,13 +1,14 @@
 package me.desht.dhutils.cost;
 
-import me.desht.dhutils.LogUtils;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.List;
+import me.desht.dhutils.LogUtils;
 
 public abstract class Cost {
 	
@@ -39,33 +40,41 @@ public abstract class Cost {
 
 		if (costType.equals("F")) {
 			return new FoodCost(q);
-		} else if (costType.equals("H")) {
+		} 
+		else if (costType.equals("H")) {
 			return new HealthCost(q);
-		} else if (costType.equals("E")) {
+		} 
+		else if (costType.equals("E")) {
 			return new EconomyCost(q);
-		} else if (costType.equals("X")) {
+		} 
+		else if (costType.equals("X")) {
 			return new ExperienceCost(q);
-		} else if (costType.length() > 1) {
+		} 
+		else if (costType.length() > 1) {
 			// could be a material name or potion name
 			Material mat = Material.matchMaterial(costType);
 			if (mat != null) {
 				if (itemAndQuantity.length > 2 && itemAndQuantity[2].toUpperCase().startsWith("D")) {
 					// item durability
 					return new DurabilityCost(mat, q);
-				} else {
+				} 
+				else {
 					// it's a material name
 					return new ItemCost(mat, data, q);
 				}
-			} else {
+			} 
+			else {
 				PotionEffectType pt = PotionEffectType.getByName(costType);
 				if (pt != null) {
 					// it's a potion name
 					return new PotionCost(pt, data, q);
-				} else {
+				} 
+				else {
 					throw new IllegalArgumentException("Cost: unknown material or potion type: '" + costType + "'");
 				}
 			}
-		} else if (StringUtils.isNumeric(costType)) {
+		} 
+		else if (StringUtils.isNumeric(costType)) {
 			// deprecated case: numeric item ID
 			int id = Integer.parseInt(costType);
 			Material mat = Material.getMaterial(id);
@@ -159,11 +168,14 @@ public abstract class Cost {
 
 	protected double getAdjustedQuantity(int original, double adjust, double min, double max) {
 		double newQuantity = original - adjust;
+		
 		if (newQuantity < min) {
 			newQuantity = min;
-		} else if (newQuantity > max) {
+		} 
+		else if (newQuantity > max) {
 			newQuantity = max;
 		}
+		
 		return newQuantity;
 	}
 }

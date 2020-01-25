@@ -15,9 +15,10 @@ import org.bukkit.plugin.Plugin;
 import com.google.common.base.Joiner;
 
 public class CommandManager {
+	
 	private static final List<String> EMPTY_STRING_LIST = Collections.emptyList();
 
-	private final List<AbstractCommand> cmdList = new ArrayList<AbstractCommand>();
+	private final List<AbstractCommand> cmdList = new ArrayList<>();
 	private Plugin plugin;
 
 	public CommandManager(Plugin plugin) {
@@ -34,10 +35,13 @@ public class CommandManager {
 		if (p == null) {
 			throw new IllegalArgumentException("Unknown package: " + packageName);
 		}
+		
 		List<Class<?>> classes = ClassEnumerator.getClassesForPackage(plugin, p);
+		
 		for (Class<?> c : classes) {
 			if (AbstractCommand.class.isAssignableFrom(c) && !Modifier.isAbstract(c.getModifiers())) {
 				AbstractCommand cmd;
+				
 				try {
 					cmd = (AbstractCommand) c.newInstance();
 					registerCommand(cmd);
@@ -52,34 +56,40 @@ public class CommandManager {
 		boolean res = true;
 
 		List<AbstractCommand> possibleMatches = getPossibleMatches(cmdName, args, true);
-
 		String desc = plugin.getDescription().getFullName();
 
 		if (possibleMatches.size() == 1) {
 			// good - a unique match
 			AbstractCommand cmd = possibleMatches.get(0);
+			
 			if (cmd.matchesArgCount(cmdName, args)) {
 				if (cmd.getPermissionNode() != null) {
 					PermissionUtils.requirePerms(sender, cmd.getPermissionNode());
 				}
+				
 				res = cmd.execute(plugin, sender, cmd.getMatchedArgs());
-			} else {
+			} 
+			else {
 				cmd.showUsage(sender, label);
 			}
-		} else if (possibleMatches.size() == 0) {
+		} 
+		else if (possibleMatches.isEmpty()) {
 			// no match
 			String s = cmdList.size() == 1 ? "" : "s";
 			MiscUtil.errorMessage(sender, cmdList.size() + " possible matching command" + s + " in " + desc + ":");
+			
 			for (AbstractCommand cmd : MiscUtil.asSortedList(cmdList)) {
 				cmd.showUsage(sender, label, "\u2022 ");
 			}
-		} else {
+		} 
+		else {
 			// multiple possible matches
 			MiscUtil.errorMessage(sender, possibleMatches.size() + " possible matching commands in " + desc + ":");
 			for (AbstractCommand cmd : MiscUtil.asSortedList(possibleMatches)) {
 				cmd.showUsage(sender, label, "\u2022 ");
 			}
 		}
+		
 		return res;
 	}
 
@@ -100,30 +110,37 @@ public class CommandManager {
 
 		if (possibleMatches.size() == 0) {
 			return noCompletions(sender);
-		} else if (possibleMatches.size() == 1 && args.length > possibleMatches.get(0).getMatchedCommand().size()) {
+		} 
+		else if (possibleMatches.size() == 1 && args.length > possibleMatches.get(0).getMatchedCommand().size()) {
 			// tab completion to be done by the command itself
 			Debugger.getInstance().debug("tab complete: pass to command: " + possibleMatches.get(0).getMatchedCommand());
 			int from = possibleMatches.get(0).getMatchedCommand().size();
+			
 			try {
 				return possibleMatches.get(0).onTabComplete(plugin, sender, subRange(args, from));
 			} catch (DHUtilsException e) {
 				MiscUtil.errorMessage(sender, e.getMessage());
 				return noCompletions(sender);
 			}
-		} else {
+		} 
+		else {
 			// tab completion done here; try to fill in the subcommand
-			Set<String> completions = new HashSet<String>();
+			Set<String> completions = new HashSet<>();
+			
 			for (AbstractCommand cmd : possibleMatches) {
 				if (cmd.getPermissionNode() != null && !PermissionUtils.isAllowedTo(sender, cmd.getPermissionNode())) {
 					continue;
 				}
+				
 				Debugger.getInstance().debug(2, "add completion: " + cmd);
 				CommandRecord rec = cmd.getMatchedCommand();
+				
 				if (rec.size() >= args.length) {
 					completions.add(cmd.getMatchedCommand().getSubCommand(args.length - 1));
 				}
 //				completions.add(cmd.getMatchedCommand().lastSubCommand());
 			}
+			
 			return MiscUtil.asSortedList(completions);
 		}
 	}
@@ -135,7 +152,7 @@ public class CommandManager {
 	}
 
 	private List<AbstractCommand> getPossibleMatches(String cmdName, String[] args, boolean partialOk) {
-		List<AbstractCommand> possibleMatches = new ArrayList<AbstractCommand>();
+		List<AbstractCommand> possibleMatches = new ArrayList<>();
 
 		for (AbstractCommand cmd : cmdList) {
 			if (cmd.matchesSubCommand(cmdName, args, partialOk)) {
@@ -154,9 +171,10 @@ public class CommandManager {
 
 	static List<String> noCompletions(CommandSender sender) {
 		if (sender instanceof Player) {
-			Player p = (Player)sender;
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BASS, 1.0f, 1.0f);
+			Player p = (Player) sender;
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
 		}
+		
 		return EMPTY_STRING_LIST;
 	}
 }
