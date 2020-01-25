@@ -2,13 +2,14 @@ package io.github.thebusybiscuit.sensibletoolbox.items.energycells;
 
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-
 public class TenKEnergyCell extends EnergyCell {
+	
     public TenKEnergyCell() {
         super();
     }
@@ -39,9 +40,9 @@ public class TenKEnergyCell extends EnergyCell {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WWW", "WSW", "GRG");
-        recipe.setIngredient('W', STBUtil.makeWildCardMaterialData(Material.WOOD));
+        recipe.setIngredient('W', new MaterialChoice(Tag.PLANKS.getValues().toArray(new Material[0])));
         recipe.setIngredient('S', Material.SUGAR);
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);

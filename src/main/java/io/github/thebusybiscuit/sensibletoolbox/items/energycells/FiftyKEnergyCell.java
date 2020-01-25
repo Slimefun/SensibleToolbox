@@ -10,6 +10,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedIronIngot;
 
 public class FiftyKEnergyCell extends EnergyCell {
+	
     public FiftyKEnergyCell() {
         super();
     }
@@ -40,7 +41,7 @@ public class FiftyKEnergyCell extends EnergyCell {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         TenKEnergyCell cell = new TenKEnergyCell();
         cell.setCharge(0.0);
         EnergizedIronIngot ei = new EnergizedIronIngot();

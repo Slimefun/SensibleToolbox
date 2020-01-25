@@ -4,23 +4,20 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class SpeedUpgrade extends MachineUpgrade {
-    private static final MaterialData md = new MaterialData(Material.SUGAR);
 
-    public SpeedUpgrade() {
-    }
+    public SpeedUpgrade() {}
 
     public SpeedUpgrade(ConfigurationSection conf) {
         super(conf);
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.SUGAR;
     }
 
     @Override
@@ -44,11 +41,11 @@ public class SpeedUpgrade extends MachineUpgrade {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         SimpleCircuit sc = new SimpleCircuit();
         registerCustomIngredients(sc);
         recipe.shape("ISI", "IBI", "IGI");
-        recipe.setIngredient('I', Material.IRON_FENCE);
+        recipe.setIngredient('I', Material.IRON_BARS);
         recipe.setIngredient('S', sc.getMaterialData());
         recipe.setIngredient('B', Material.BLAZE_ROD);
         recipe.setIngredient('G', Material.GOLD_INGOT);

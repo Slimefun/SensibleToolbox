@@ -1,17 +1,13 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 
 public class PullerModule extends DirectionalItemRouterModule {
-    private static final Dye md = makeDye(DyeColor.LIME);
-
+	
     public PullerModule() {
     }
 
@@ -33,15 +29,15 @@ public class PullerModule extends DirectionalItemRouterModule {
     public Recipe getRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(bm.getMaterialData());
-        recipe.addIngredient(Material.PISTON_STICKY_BASE);
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(bm.getMaterial());
+        recipe.addIngredient(Material.STICKY_PISTON);
         return recipe;
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.LIME_DYE;
     }
 
     @Override

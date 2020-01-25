@@ -10,7 +10,9 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 public class SilkyBreakerModule extends BreakerModule {
+	
     private static final ItemStack pick = new ItemStack(Material.DIAMOND_PICKAXE, 1);
+    
     static {
         pick.addEnchantment(Enchantment.SILK_TOUCH, 1);
     }
@@ -42,10 +44,10 @@ public class SilkyBreakerModule extends BreakerModule {
 
     @Override
     public Recipe getRecipe() {
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
         BreakerModule b = new BreakerModule();
         registerCustomIngredients(b);
-        recipe.addIngredient(b.getMaterialData());
+        recipe.addIngredient(b.getMaterial());
         recipe.addIngredient(Material.ENCHANTED_BOOK);
         return recipe;
     }

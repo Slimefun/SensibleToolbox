@@ -4,10 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
 
 public class StackModule extends ItemRouterModule {
-    private static final MaterialData md = new MaterialData(Material.CLAY_BRICK);
 
     public StackModule() {
     }
@@ -37,14 +35,14 @@ public class StackModule extends ItemRouterModule {
     public Recipe getRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(bm.getMaterialData());
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(bm.getMaterial());
         recipe.addIngredient(Material.BRICK);
         return recipe;
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.BRICK;
     }
 }

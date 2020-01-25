@@ -1,6 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
-import org.bukkit.DyeColor;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,17 +10,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 
-import java.util.List;
-
 public class DistributorModule extends DirectionalItemRouterModule {
-    private static final Dye md = makeDye(DyeColor.RED);
 
     private int nextNeighbour = 0;
 
@@ -31,8 +27,8 @@ public class DistributorModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.RED_DYE;
     }
 
     @Override
@@ -54,9 +50,9 @@ public class DistributorModule extends DirectionalItemRouterModule {
     public Recipe getRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack());
-        recipe.addIngredient(bm.getMaterialData());
-        recipe.addIngredient(Material.PISTON_STICKY_BASE);
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
+        recipe.addIngredient(bm.getMaterial());
+        recipe.addIngredient(Material.STICKY_PISTON);
         recipe.addIngredient(Material.ARROW);
         return recipe;
     }
@@ -72,12 +68,15 @@ public class DistributorModule extends DirectionalItemRouterModule {
         if (getItemRouter().getNeighbours().size() > 1 && getItemRouter().getBufferItem() != null) {
             int nToInsert = getItemRouter().getStackSize();
             BlockFace face = getNextNeighbour();
+            
             if (face == getFacing()) {
                 return false;  // shouldn't happen...
             }
+            
             Block b = loc.getBlock();
             Block target = b.getRelative(face);
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
+            
             if (stb instanceof STBInventoryHolder) {
                 if (creativeModeBlocked(stb, loc)) {
                     getItemRouter().ejectBuffer(getItemRouter().getFacing());
@@ -88,7 +87,8 @@ public class DistributorModule extends DirectionalItemRouterModule {
                 int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, face.getOppositeFace(), false, getItemRouter().getOwner());
                 getItemRouter().reduceBuffer(nInserted);
                 return nInserted > 0;
-            } else {
+            } 
+            else {
                 // vanilla inventory holder?
                 return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
             }
@@ -100,9 +100,11 @@ public class DistributorModule extends DirectionalItemRouterModule {
     private BlockFace getNextNeighbour() {
         List<BlockFace> neighbours = getItemRouter().getNeighbours();
         nextNeighbour = (nextNeighbour + 1) % neighbours.size();
+        
         if (neighbours.get(nextNeighbour) == getFacing()) {
             nextNeighbour = (nextNeighbour + 1) % neighbours.size();
         }
+        
         return neighbours.get(nextNeighbour);
     }
 }

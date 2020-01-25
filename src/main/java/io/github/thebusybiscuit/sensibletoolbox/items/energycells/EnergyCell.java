@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -19,8 +18,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
-    private static final MaterialData md = new MaterialData(Material.LEATHER_HELMET);
-
+	
     private double charge;
 
     protected EnergyCell() {
@@ -31,6 +29,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
         setCharge(conf.getDouble("charge"));
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("charge", getCharge());
@@ -38,22 +37,19 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.LEATHER_HELMET;
     }
 
     @Override
     public String[] getLore() {
-        return new String[]{"Stores up to " + UnicodeSymbol.ELECTRICITY.toUnicode() + " " + getMaxCharge() + " SCU"};
+        return new String[] {"Stores up to " + UnicodeSymbol.ELECTRICITY.toUnicode() + " " + getMaxCharge() + " SCU"};
     }
 
     @Override
     public String[] getExtraLore() {
         return new String[]{STBUtil.getChargeString(this)};
     }
-
-    @Override
-    public abstract int getMaxCharge();
 
     public abstract Color getCellColor();
 
@@ -82,14 +78,12 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
         }
         return res;
     }
-
-    @SuppressWarnings("deprecation")
+    
 	@Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(true);
             chargeHotbarItems(event.getPlayer());
-            event.getPlayer().updateInventory();
         }
     }
 
@@ -101,7 +95,8 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
                     continue;
                 ItemStack stack = player.getInventory().getItem(slot);
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-                if (item != null && item instanceof Chargeable) {
+                
+                if (item instanceof Chargeable) {
                     Chargeable c = (Chargeable) item;
                     double toTransfer = Math.min(c.getMaxCharge() - c.getCharge(), c.getChargeRate());
                     if (toTransfer > 0) {

@@ -1,20 +1,14 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.components;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class CircuitBoard extends BaseSTBItem {
 	
-    private static final MaterialData md = STBUtil.makeColouredMaterial(Material.CARPET, DyeColor.GREEN);
-
     public CircuitBoard() {
     }
 
@@ -22,8 +16,8 @@ public class CircuitBoard extends BaseSTBItem {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.GREEN_CARPET;
     }
 
     @Override
@@ -33,16 +27,14 @@ public class CircuitBoard extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Used in the construction", "of electronic circuits"};
+        return new String[] {"Used in the construction", "of electronic circuits"};
     }
 
     @Override
     public Recipe getRecipe() {
-        Dye greenDye = new Dye();
-        greenDye.setColor(DyeColor.GREEN);
-        ShapelessRecipe recipe = new ShapelessRecipe(toItemStack(2));
-        recipe.addIngredient(Material.STONE_PLATE);
-        recipe.addIngredient(greenDye);
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(2));
+        recipe.addIngredient(Material.STONE_PRESSURE_PLATE);
+        recipe.addIngredient(Material.GREEN_DYE);
         return recipe;
     }
 }

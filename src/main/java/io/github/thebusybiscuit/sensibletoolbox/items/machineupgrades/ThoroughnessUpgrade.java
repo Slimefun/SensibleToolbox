@@ -4,12 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 
 public class ThoroughnessUpgrade extends MachineUpgrade {
-    private static final MaterialData md = new MaterialData(Material.SPIDER_EYE);
 
     public static final int BONUS_OUTPUT_CHANCE = 8; // percent
 
@@ -21,8 +19,8 @@ public class ThoroughnessUpgrade extends MachineUpgrade {
     }
 
     @Override
-    public MaterialData getMaterialData() {
-        return md;
+    public Material getMaterial() {
+        return Material.SPIDER_EYE;
     }
 
     @Override
@@ -42,14 +40,14 @@ public class ThoroughnessUpgrade extends MachineUpgrade {
 
     @Override
     public Recipe getRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(toItemStack());
+        ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("ICI", "IEI", "IGI");
         IntegratedCircuit ic = new IntegratedCircuit();
         registerCustomIngredients(ic);
-        recipe.setIngredient('I', Material.IRON_FENCE);
+        recipe.setIngredient('I', Material.IRON_BARS);
         recipe.setIngredient('C', ic.getMaterialData());
         recipe.setIngredient('E', Material.SPIDER_EYE);
-        recipe.setIngredient('G', Material.THIN_GLASS);
+        recipe.setIngredient('G', Material.GLASS_PANE);
         return recipe;
     }
 

@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class MaterialWithData implements Cloneable {
 
-	private static final Map<String, MaterialWithData> materialCache = new HashMap<String, MaterialWithData>();
+	private static final Map<String, MaterialWithData> materialCache = new HashMap<>();
 
 	private final int matId;
 	private final short data;
@@ -48,27 +48,35 @@ public class MaterialWithData implements Cloneable {
 
 		if (matAndData[0].matches("^[0-9]+$")) {
 			matId = Integer.parseInt(matAndData[0]);
-		} else {
+		} 
+		else {
 			// we'll look for the material string first in the WorldEdit BlockType class
 			// and if that fails, we'll check for a Bukkit Material,
 			// and if that fails, just throw an IllegalArgumentException
 			BlockType b = BlockType.lookup(matAndData[0], true);
+			
 			if (b == null) {
 				Material m = Material.matchMaterial(matAndData[0]);
+				
 				if (m == null) {
 					throw new IllegalArgumentException("unknown material: " + matAndData[0]);
 				}
+				
 				matId = m.getId();
-			} else {
+			} 
+			else {
 				matId = b.getID();
 			}
 		}
+		
 		if (matAndData.length < 2) {
 			data = 0;
-		} else {
+		} 
+		else {
 			if (matAndData[1].matches("^[0-9]+$")) {
 				data = Short.parseShort(matAndData[1]);
-			} else if (matId == Material.WOOL.getId() || matId == Material.CARPET.getId() || matId == Material.STAINED_CLAY.getId() || matId == 95) {
+			} 
+			else if (matId == Material.WOOL.getId() || matId == Material.CARPET.getId() || matId == Material.STAINED_CLAY.getId() || matId == 95) {
 				// First look for the dye color string in the WorldEdit ClothColor class
 				// and if that fails, check for a Bukkit DyeColor
 				// and if that fails, just throw an IllegalArgumentException
@@ -79,10 +87,12 @@ public class MaterialWithData implements Cloneable {
 						throw new IllegalArgumentException("unknown dye colour: " + matAndData[1]);
 					}
 					data = dc.getWoolData();
-				} else {
+				} 
+				else {
 					data = (byte) cc.getID();
 				}
-			} else {
+			} 
+			else {
 				throw new IllegalArgumentException("invalid data specification: " + matAndData[1]);
 			}
 		}
@@ -99,9 +109,11 @@ public class MaterialWithData implements Cloneable {
 	@FactoryMethod
 	public static MaterialWithData get(String spec) {
 		String key = spec.toLowerCase();
+		
 		if (materialCache.containsKey(key)) {
 			return materialCache.get(key);
-		} else {
+		} 
+		else {
 			MaterialWithData mat = new MaterialWithData(spec);
 			materialCache.put(key, mat);
 			return mat;
@@ -145,7 +157,7 @@ public class MaterialWithData implements Cloneable {
 	}
 
 	public static MaterialWithData get(Block b) {
-		return get(String.format("%d:%d", b.getTypeId(), (short)b.getData()));
+		return get(String.format("%d:%d", b.getTypeId(), (short) b.getData()));
 	}
 
 	/**
