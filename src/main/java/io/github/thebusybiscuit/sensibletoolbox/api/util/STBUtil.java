@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -38,6 +39,7 @@ import com.google.common.collect.Lists;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -53,6 +55,7 @@ import me.desht.dhutils.block.BlockUtil;
  * A collection of miscellaneous utility methods.
  */
 public class STBUtil {
+	
     /**
      * The block faces directly adjacent to a block.
      */
@@ -215,7 +218,7 @@ public class STBUtil {
             case CYAN:
                 return ChatColor.AQUA;
             case GRAY:
-                return ChatColor.GRAY;
+                return ChatColor.DARK_GRAY;
             case GREEN:
                 return ChatColor.DARK_GREEN;
             case LIGHT_BLUE:
@@ -232,7 +235,7 @@ public class STBUtil {
                 return ChatColor.DARK_PURPLE;
             case RED:
                 return ChatColor.DARK_RED;
-            case SILVER:
+            case LIGHT_GRAY:
                 return ChatColor.GRAY;
             case WHITE:
                 return ChatColor.WHITE;
@@ -402,38 +405,6 @@ public class STBUtil {
     }
 
     /**
-     * Create a skull with the given player skin
-     *
-     * @param b      block in which to create the skull
-     * @param name   name of the skin
-     * @param player skull will face the opposite direction the player faces
-     * @return the skull (the caller should call skull.update() when ready)
-     */
-    public static Skull setSkullHead(Block b, String name, Player player) {
-        return setSkullHead(b, name, getFaceFromYaw(player.getLocation().getYaw()).getOppositeFace());
-    }
-
-    /**
-     * Create a skull with the given player skin
-     *
-     * @param b      block in which to create the skull
-     * @param name   name of the skin
-     * @param direction direction the skull should face
-     * @return the skull (the caller should call skull.update() when ready)
-     */
-    public static Skull setSkullHead(Block b, String name, BlockFace direction) {
-        b.setType(Material.SKULL);
-        Skull skull = (Skull) b.getState();
-        skull.setSkullType(SkullType.PLAYER);
-        skull.setOwner(name);
-        org.bukkit.material.Skull sk = (org.bukkit.material.Skull) skull.getData();
-        sk.setFacingDirection(BlockFace.SELF);
-        skull.setData(sk);
-        skull.setRotation(direction);
-        return skull;
-    }
-
-    /**
      * Given a yaw value, get the closest block face for the given yaw.  The yaw value
      * is usually obtained via {@link org.bukkit.Location#getYaw()}
      *
@@ -442,139 +413,25 @@ public class STBUtil {
      */
     public static BlockFace getFaceFromYaw(float yaw) {
         double rot = yaw % 360;
+        
         if (rot < 0) {
             rot += 360;
         }
+        
         if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
             return BlockFace.SOUTH;
-        } else if (45 <= rot && rot < 135) {
+        } 
+        else if (45 <= rot && rot < 135) {
             return BlockFace.WEST;
-        } else if (135 <= rot && rot < 225) {
+        } 
+        else if (135 <= rot && rot < 225) {
             return BlockFace.NORTH;
-        } else if (225 <= rot && rot < 315) {
+        } 
+        else if (225 <= rot && rot < 315) {
             return BlockFace.EAST;
-        } else {
+        } 
+        else {
             throw new IllegalArgumentException("impossible rotation: " + rot);
-        }
-    }
-
-    /**
-     * Get the drops which the given block could produce, given the tool used to break it,
-     * taking into account any silk touch or looting enchantment on the tool as well as the
-     * type of tool.  For blocks which can drop a random number of items, this method
-     * may return a different result each time it's called.
-     *
-     * @param b    the block
-     * @param tool the tool, may be null for an empty hand
-     * @return a list of items which would drop from the block, if broken
-     */
-    @SuppressWarnings("deprecation")
-	public static List<ItemStack> calculateDrops(Block b, ItemStack tool) {
-        List<ItemStack> res = new ArrayList<ItemStack>();
-        if (tool != null && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1 && isObtainable(b.getType())) {
-            res.add(b.getState().getData().toItemStack(1));
-        } else {
-            Random r = new Random();
-            Collection<ItemStack> res2 = tool == null ? b.getDrops() : b.getDrops(tool);
-            // b.getDrops() appears bugged for nether wart
-            if (b.getType() != Material.NETHER_WARTS && res2.isEmpty()) {
-                if (tool != null) {
-                    res2 = b.getDrops();
-                    if (res2.isEmpty()) {
-                        return res;
-                    }
-                } else {
-                    return res;
-                }
-            }
-            int fortune = tool == null ? 0 : tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-            switch (b.getType()) {
-                case DIAMOND_ORE:
-                    res.add(new ItemStack(Material.DIAMOND, getOreMultiplier(fortune, r))); break;
-                case COAL_ORE:
-                    res.add(new ItemStack(Material.COAL, getOreMultiplier(fortune, r))); break;
-                case EMERALD_ORE:
-                    res.add(new ItemStack(Material.EMERALD, getOreMultiplier(fortune, r))); break;
-                case QUARTZ_ORE:
-                    res.add(new ItemStack(Material.QUARTZ, getOreMultiplier(fortune, r))); break;
-                case LAPIS_ORE:
-                    res.add(makeColouredMaterial(Material.INK_SACK, DyeColor.BLUE).toItemStack((r.nextInt(4) + 5) * getOreMultiplier(fortune, r)));
-                    break;
-                case REDSTONE_ORE:
-                    res.add(new ItemStack(Material.REDSTONE, (r.nextInt(2 + fortune) + 4)));
-                    break;
-                case NETHER_WARTS:
-                    if (b.getData() >= 3) {
-                        res.add(new ItemStack(Material.NETHER_STALK, r.nextInt(3 + fortune) + 2));
-                    } else {
-                        res.add(new ItemStack(Material.NETHER_STALK, 1));
-                    }
-                    break;
-                case POTATO:
-                    if (b.getData() >= 7) {
-                        res.add(new ItemStack(Material.POTATO_ITEM, r.nextInt(4 + fortune) + 1));
-                    } else {
-                        res.add(new ItemStack(Material.POTATO_ITEM, 1));
-                    }
-                    break;
-                case CARROT:
-                    if (b.getData() >= 7) {
-                        res.add(new ItemStack(Material.CARROT_ITEM, r.nextInt(4 + fortune) + 1));
-                    } else {
-                        res.add(new ItemStack(Material.CARROT_ITEM, 1));
-                    }
-                    break;
-                case GLOWSTONE:
-                    res.add(new ItemStack(Material.GLOWSTONE_DUST, Math.min(4, r.nextInt(3 + fortune) + 2)));
-                    break;
-                case MELON_BLOCK:
-                    res.add(new ItemStack(Material.MELON, Math.min(9, r.nextInt(5 + fortune) + 3)));
-                    break;
-                case CROPS:
-                    if (b.getData() >= 7) {
-                        res.add(new ItemStack(Material.WHEAT));
-                        res.add(new ItemStack(Material.SEEDS, r.nextInt(4 + fortune)));
-                    } else {
-                        res.add(new ItemStack(Material.SEEDS, 1));
-                    }
-                    break;
-                case GRAVEL:
-                    res.add(new ItemStack(Material.GRAVEL));
-                    if (r.nextInt(100) < gravelChance[Math.min(fortune, gravelChance.length)]) {
-                        res.add(new ItemStack(Material.FLINT));
-                    }
-                    break;
-                default:
-                    res.addAll(tool == null ? b.getDrops() : b.getDrops(tool));
-            }
-        }
-
-        if (Debugger.getInstance().getLevel() >= 2) {
-            Debugger.getInstance().debug(2, "Block " + b + " would drop:");
-            for (ItemStack stack : res) {
-                Debugger.getInstance().debug(2, " - " + stack);
-            }
-        }
-
-        return res;
-    }
-
-    private static int getOreMultiplier(int fortune, Random r) {
-        switch (fortune) {
-            case 1: return r.nextInt(3) == 0 ? 2 : 1;
-            case 2: switch (r.nextInt(4)) {
-                case 0: return 2;
-                case 1: return 3;
-                default: return 1;
-            }
-            case 3: switch (r.nextInt(4)) {
-                case 0: return 2;
-                case 1: return 3;
-                case 2: return 4;
-                default: return 1;
-
-            }
-            default: return 1;
         }
     }
 
@@ -616,13 +473,17 @@ public class STBUtil {
     public static String getChargeString(Chargeable ch) {
         double d = ch.getCharge() / ch.getMaxCharge();
         ChatColor cc;
+        
         if (d < 0.333) {
             cc = ChatColor.RED;
-        } else if (d < 0.666) {
+        } 
+        else if (d < 0.666) {
             cc = ChatColor.GOLD;
-        } else {
+        } 
+        else {
             cc = ChatColor.GREEN;
         }
+        
         return ChatColor.WHITE + "\u2301 " + cc + Math.round(ch.getCharge()) + "/" + ch.getMaxCharge() + " SCU";
     }
 
@@ -648,7 +509,8 @@ public class STBUtil {
         if (stack == null) {
             return "nothing";
         }
-        String res = stack.getAmount() + " x " + me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils.formatItemName(stack, false);
+        
+        String res = stack.getAmount() + " x " + ItemUtils.getItemName(stack);
         return res;
     }
 
@@ -760,13 +622,16 @@ public class STBUtil {
      */
     public static ItemStack makeStack(MaterialData materialData, String title, String... lore) {
         ItemStack stack = materialData.toItemStack(1);
+        
         if (title != null) {
             ItemMeta meta = stack.getItemMeta();
             meta.setDisplayName(title);
-            List<String> newLore = new ArrayList<String>(lore.length);
+            List<String> newLore = new ArrayList<>(lore.length);
+            
             for (String l : lore) {
                 newLore.add(BaseSTBItem.LORE_COLOR + l);
             }
+            
             meta.setLore(newLore);
             stack.setItemMeta(meta);
         }
@@ -792,12 +657,16 @@ public class STBUtil {
      * @return true if the block is an infinite water source
      */
     public static boolean isInfiniteWaterSource(Block block) {
-        if (isLiquidSourceBlock(block) && block.getType() != Material.LAVA && block.getType() != Material.STATIONARY_LAVA) {
+        if (isLiquidSourceBlock(block) && block.getType() != Material.LAVA) {
             int n = 0;
+            
             for (BlockFace face : mainHorizontalFaces) {
                 Block neighbour = block.getRelative(face);
+                
                 if (isLiquidSourceBlock(neighbour)) {
-                    if (++n >= 2) {
+                	n++;
+                	
+                    if (n >= 2) {
                         return true;
                     }
                 }
@@ -943,14 +812,18 @@ public class STBUtil {
 
         int amount = 1;
         boolean glowing = false;
+        
         for (int i = 1; i < fields.length; i++) {
             if (StringUtils.isNumeric(fields[i])) {
                 amount = Integer.parseInt(fields[i]);
-            } else if (fields[i].equalsIgnoreCase("glow")) {
+            } 
+            else if (fields[i].equalsIgnoreCase("glow")) {
                 glowing = true;
             }
         }
+        
         ItemStack stack = mat.toItemStack(amount);
+        
         if (glowing && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
         	ItemGlow.setGlowing(stack, true);
         }
@@ -962,9 +835,11 @@ public class STBUtil {
 	private static MaterialData parseMatAndData(String matData) {
         String[] fields = matData.split("[:()]");
         Material mat = Material.matchMaterial(fields[0]);
+        
         if (mat == null) {
             throw new DHUtilsException("Unknown material " + fields[0]);
         }
+        
         MaterialData res = new MaterialData(mat);
         if (fields.length > 1) {
             if (StringUtils.isNumeric(fields[1])) {
@@ -1009,11 +884,14 @@ public class STBUtil {
     public static int getFaceRotation(BlockFace face1, BlockFace face2) {
         Validate.isTrue(face1.getModY() == 0 && Math.abs(face1.getModX() + face1.getModZ()) == 1, "invalid face " + face1);
         Validate.isTrue(face2.getModY() == 0 && Math.abs(face2.getModX() + face2.getModZ()) == 1, "invalid face " + face2);
+        
         if (face1 == face2) {
             return 0;
-        } else if (face1 == face2.getOppositeFace()) {
+        } 
+        else if (face1 == face2.getOppositeFace()) {
             return 2;
-        } else {
+        } 
+        else {
             return face2 == BlockUtil.getLeft(face1) ? 3 : 1;
         }
     }
@@ -1028,12 +906,18 @@ public class STBUtil {
      */
     public static BlockFace getRotatedFace(BlockFace face, int rotation) {
         Validate.isTrue(face.getModY() == 0 && Math.abs(face.getModX() + face.getModZ()) == 1, "invalid face " + face);
+        
         switch (rotation) {
-            case 0: return face;
-            case 1: return BlockUtil.getLeft(face).getOppositeFace();
-            case 2: return face.getOppositeFace();
-            case 3: return BlockUtil.getLeft(face);
-            default: throw new IllegalArgumentException("invalid rotation" + rotation);
+            case 0: 
+            	return face;
+            case 1: 
+            	return BlockUtil.getLeft(face).getOppositeFace();
+            case 2: 
+            	return face.getOppositeFace();
+            case 3: 
+            	return BlockUtil.getLeft(face);
+            default: 
+            	throw new IllegalArgumentException("invalid rotation" + rotation);
         }
     }
 
@@ -1111,7 +995,7 @@ public class STBUtil {
      * @return true if the block can be used as a cable; false otherwise
      */
     public static boolean isCable(Block block) {
-        return block.getType() == Material.IRON_FENCE;
+        return block.getType() == Material.IRON_BARS;
     }
 
     /**
@@ -1132,23 +1016,6 @@ public class STBUtil {
     }
 
     /**
-     * Check if the given world is a creative world.  This requires an
-     * external plugin to check; currently, only Multiverse is supported.
-     *
-     * @param world the world to check
-     * @return true if the world is a creative world
-     */
-    public static boolean isCreativeWorld(World world) {
-        if (SensibleToolbox.getPluginInstance().getMultiverseCore() != null) {
-            MultiverseCore mvc = SensibleToolbox.getPluginInstance().getMultiverseCore();
-            MultiverseWorld mvw = mvc.getMVWorldManager().getMVWorld(world);
-            return mvw.getGameMode() == GameMode.CREATIVE;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Get the data byte for various items which have a direction: ladders,
      * wall signs, chests, furnaces, droppers, hoppers, dispensers, banners.
      *
@@ -1157,13 +1024,21 @@ public class STBUtil {
      */
     public static byte getDirectionData(BlockFace face) {
         switch (face) {
-            case SELF: case DOWN: return 0;
-            case UP: return 1;
-            case NORTH: return 2;
-            case SOUTH: return 3;
-            case WEST: return 4;
-            case EAST: return 5;
-            default: throw new IllegalArgumentException("invalid direction " + face);
+            case SELF: 
+            case DOWN: 
+            	return 0;
+            case UP: 
+            	return 1;
+            case NORTH: 
+            	return 2;
+            case SOUTH: 
+            	return 3;
+            case WEST: 
+            	return 4;
+            case EAST: 
+            	return 5;
+            default: 
+            	throw new IllegalArgumentException("invalid direction " + face);
         }
     }
 }

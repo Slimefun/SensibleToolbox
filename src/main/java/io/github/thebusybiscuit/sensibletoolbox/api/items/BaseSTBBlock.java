@@ -352,8 +352,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param event the interaction event
      */
     public void onInteractBlock(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SIGN
-                && event.getClickedBlock().getType() != Material.WALL_SIGN && event.getClickedBlock().getType() != Material.SIGN_POST) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK && Tag.SIGNS.isTagged(event.getPlayer().getInventory().getItemInMainHand().getType())
+                && !Tag.STANDING_SIGNS.isTagged(event.getClickedBlock().getType()) && !Tag.WALL_SIGNS.isTagged(event.getClickedBlock().getType())) {
             // attach a label sign
             if (attachLabelSign(event)) {
                 labelSigns.set(STBUtil.getFaceRotation(getFacing(), event.getBlockFace()));
