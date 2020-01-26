@@ -22,9 +22,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Wool;
 
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.sensibletoolbox.api.LightMeterHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -262,8 +261,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 	private void drawPVLayer(Block b) {
         // put a carpet on top of the main block to represent the PV cell
         DyeColor color = pvCellLife > 0 ? getCapColour() : DyeColor.GRAY;
-        MaterialData carpet = STBUtil.makeColouredMaterial(Material.CARPET, color);
-        b.setTypeIdAndData(carpet.getItemTypeId(), carpet.getData(), true);
+        Material carpet = MaterialCollections.getAllCarpetColors().get(color.ordinal());
+        b.setType(carpet);
     }
 
     @Override
@@ -407,7 +406,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             DyeColor dc = colors[effectiveLightLevel];
             ChatColor cc = STBUtil.dyeColorToChatColor(dc);
             double mult = getChargeMultiplier(effectiveLightLevel);
-            return GUIUtil.makeTexture(new Wool(dc),
+            
+            return GUIUtil.makeTexture(MaterialCollections.getAllWoolColors().get(dc.ordinal()),
                     ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(effectiveLightLevel) * 100) + "%",
                     ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
         }

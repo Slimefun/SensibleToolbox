@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -11,18 +12,17 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Cocoa;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.GoldCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class AutoFarm2 extends AutoFarmingMachine {
 	
@@ -31,6 +31,7 @@ public class AutoFarm2 extends AutoFarmingMachine {
     
     static {
     	crops.put(Material.COCOA, Material.COCOA_BEANS);
+    	crops.put(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES);
     	crops.put(Material.SUGAR_CANE, Material.SUGAR_CANE);
     	crops.put(Material.CACTUS, Material.CACTUS);
     }
@@ -99,13 +100,14 @@ public class AutoFarm2 extends AutoFarmingMachine {
     	if (!isJammed()) {
     		for (Block crop : blocks) {
         		if (crops.containsKey(crop.getType())) {
-        			if (crop.getType() == Material.COCOA) {
-        				Cocoa cocoa = (Cocoa) crop.getBlockData();
-        				if (cocoa.getAge() >= cocoa.getMaximumAge()) {
+        			if (crop.getBlockData() instanceof Ageable) {
+        				Ageable ageable = (Ageable) crop.getBlockData();
+        				
+        				if (ageable.getAge() >= ageable.getMaximumAge()) {
         					if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
                 			else break;
         					
-                			cocoa.setAge(0);
+                			ageable.setAge(0);
                 			crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
                     		setJammed(!output(crops.get(crop.getType())));
                 			break;
@@ -135,7 +137,12 @@ public class AutoFarm2 extends AutoFarmingMachine {
 			ItemStack stack = getInventoryItem(slot);
 			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
 				if (stack == null) stack = new ItemStack(m);
-				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (CSCoreLib.randomizer().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
+				int amount = 1;
+				
+				if (!m.isBlock()) {
+					amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
+				}
+				
 				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
 				buffer = null;
 				return true;
