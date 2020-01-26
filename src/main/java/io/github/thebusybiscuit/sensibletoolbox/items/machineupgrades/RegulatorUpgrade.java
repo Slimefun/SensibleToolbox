@@ -41,7 +41,7 @@ public class RegulatorUpgrade extends MachineUpgrade {
         registerCustomIngredients(sc);
         recipe.shape("ISI", "IEI", "IRI");
         recipe.setIngredient('I', Material.IRON_BARS);
-        recipe.setIngredient('S', sc.getMaterialData());
+        recipe.setIngredient('S', sc.getMaterial());
         recipe.setIngredient('E', Material.ENDER_EYE);
         recipe.setIngredient('R', Material.REDSTONE);
         return recipe;

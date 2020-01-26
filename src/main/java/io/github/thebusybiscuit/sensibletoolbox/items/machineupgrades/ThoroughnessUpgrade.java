@@ -45,7 +45,7 @@ public class ThoroughnessUpgrade extends MachineUpgrade {
         IntegratedCircuit ic = new IntegratedCircuit();
         registerCustomIngredients(ic);
         recipe.setIngredient('I', Material.IRON_BARS);
-        recipe.setIngredient('C', ic.getMaterialData());
+        recipe.setIngredient('C', ic.getMaterial());
         recipe.setIngredient('E', Material.SPIDER_EYE);
         recipe.setIngredient('G', Material.GLASS_PANE);
         return recipe;

@@ -1,20 +1,21 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
-import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ParticleEffect;
 
 public class SenderModule extends DirectionalItemRouterModule {
 
@@ -67,7 +68,7 @@ public class SenderModule extends DirectionalItemRouterModule {
             Block target = b.getRelative(getFacing());
             int nToInsert = getItemRouter().getStackSize();
             
-            if (!(SensibleToolbox.getBlockAt(target.getLocation(), true) instanceof STBInventoryHolder) &&allowsItemsThrough(target.getType())) {
+            if (!(SensibleToolbox.getBlockAt(target.getLocation(), true) instanceof STBInventoryHolder) && allowsItemsThrough(target.getType())) {
                 // search for a visible Item Router with an installed Receiver Module
                 ReceiverModule receiver = findReceiver(b);
                 
@@ -88,12 +89,8 @@ public class SenderModule extends DirectionalItemRouterModule {
             } 
             else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
+                
                 if (stb instanceof STBInventoryHolder) {
-                    if (creativeModeBlocked(stb, loc)) {
-                        getItemRouter().ejectBuffer(getItemRouter().getFacing());
-                        return false;
-                    }
-                    
                     ItemStack toInsert = getItemRouter().getBufferItem().clone();
                     toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
                     int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), false, getItemRouter().getOwner());
@@ -110,14 +107,12 @@ public class SenderModule extends DirectionalItemRouterModule {
     }
 
     private void playSenderParticles(ItemRouter src, ItemRouter dest) {
-        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled()) {
-            Location s = src.getLocation();
-            Location d = dest.getLocation();
-            double xOff = (d.getX() - s.getX()) / 2;
-            double zOff = (d.getZ() - s.getZ()) / 2;
-            Location mid = s.add(xOff + 0.5, 0.5, zOff + 0.5);
-            ParticleEffect.RED_DUST.play(mid, (float) xOff / 4, 0, (float) zOff / 4, 0.0f, 15);
-        }
+    	Location s = src.getLocation();
+        Location d = dest.getLocation();
+        double xOff = (d.getX() - s.getX()) / 2;
+        double zOff = (d.getZ() - s.getZ()) / 2;
+        Location mid = s.add(xOff + 0.5, 0.5, zOff + 0.5);
+        s.getWorld().spawnParticle(Particle.REDSTONE, mid.getX(), mid.getY(), mid.getZ(), 15, (float) xOff / 4, 0, (float) zOff / 4, 0, new DustOptions(Color.GREEN, 1.5F));
     }
 
     private ReceiverModule findReceiver(Block b) {
@@ -131,23 +126,7 @@ public class SenderModule extends DirectionalItemRouterModule {
     }
 
     private boolean allowsItemsThrough(Material mat) {
-        if (mat.isTransparent()) return true;
-        switch (mat) {
-            case GLASS:
-            case THIN_GLASS:
-            case STAINED_GLASS:
-            case STAINED_GLASS_PANE:
-            case WATER:
-            case ICE:
-            case WALL_SIGN:
-            case SIGN_POST:
-            case FENCE: case FENCE_GATE:
-            case IRON_FENCE: case NETHER_FENCE:
-                return true;
-		default:
-			break;
-        }
-        return false;
+        return !mat.isOccluding();
     }
 
 }

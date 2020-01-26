@@ -274,6 +274,7 @@ public abstract class CombineHoe extends BaseSTBItem {
             if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, above, BlockProtection.Operation.PLACE)) {
                 continue;
             }
+            
             if (b1.getType() == Material.FARMLAND && above.isEmpty()) {
                 // candidate for sowing
                 above.setType(STBUtil.getCropType(getSeedType()));
@@ -284,10 +285,12 @@ public abstract class CombineHoe extends BaseSTBItem {
                 }
             }
         }
+        
         if (amountLeft < getSeedAmount()) {
             setSeedAmount(amountLeft);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
         }
+        
         ItemStack stack = toItemStack();
         stack.setDurability(durability);
         player.setItemInHand(stack);
@@ -312,11 +315,14 @@ public abstract class CombineHoe extends BaseSTBItem {
     private void tillSoil(Player player, Block b) {
         ItemStack stack = player.getItemInHand();
         short count = 0;
+        
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b1, BlockProtection.Operation.BREAK)) {
                 continue;
             }
+            
             Block above = b1.getRelative(BlockFace.UP);
+            
             if ((b1.getType() == Material.DIRT || b1.getType() == Material.GRASS) && !above.getType().isSolid() && !above.isLiquid()) {
                 b1.setType(Material.FARMLAND);
                 count++;
@@ -327,6 +333,7 @@ public abstract class CombineHoe extends BaseSTBItem {
                     break;
                 }
             }
+            
             if (player.isSneaking()) {
                 break;
             }
@@ -340,6 +347,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     public void damageHeldItem(Player player, short amount) {
         ItemStack stack = player.getItemInHand();
         stack.setDurability((short) (stack.getDurability() + amount));
+        
         if (stack.getDurability() >= stack.getType().getMaxDurability()) {
             player.setItemInHand(null);
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);

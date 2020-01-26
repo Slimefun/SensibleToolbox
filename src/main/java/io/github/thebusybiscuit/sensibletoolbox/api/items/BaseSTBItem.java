@@ -480,26 +480,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * This method is needed sometimes to ensure the player's inventory is
-     * correctly updated on the client following cancellation of certain
-     * events.  Ideally these conditions should be handled by CraftBukkit,
-     * but this isn't always the case.
-     *
-     * @param player the player to update
-     * @deprecated marked deprecated to indicate that it's a hacky workaround
-     */
-    @Deprecated
-    protected final void hackyDelayedInvUpdate(final Player player) {
-        Bukkit.getScheduler().runTask(getProviderPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                //noinspection deprecation
-                player.updateInventory();
-            }
-        });
-    }
-
-    /**
      * Called when an item is newly crafted.  This method can be used to set
      * up some dynamic property of the item which would not otherwise be known
      * at construction time.

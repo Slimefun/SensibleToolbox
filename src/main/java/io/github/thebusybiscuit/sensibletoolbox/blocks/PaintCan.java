@@ -43,9 +43,10 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 	
     private static final int MAX_PAINT_LEVEL = 200;
     private static final int PAINT_PER_DYE = 25;
-    private static final int[] ITEM_SLOTS = new int[]{9, 10};
+    private static final int[] ITEM_SLOTS = {9, 10};
     private static final ItemStack MIX_TEXTURE = new ItemStack(Material.GOLDEN_SHOVEL);
-    private static final ItemStack EMPTY_TEXTURE = STBUtil.makeColouredMaterial(Material.STAINED_GLASS, DyeColor.WHITE).toItemStack();
+    private static final ItemStack EMPTY_TEXTURE = new ItemStack(Material.WHITE_STAINED_GLASS);
+    
     private int paintLevel;
     private DyeColor colour;
     private int levelMonitorId;
@@ -65,6 +66,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         return MAX_PAINT_LEVEL;
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("paintColour", getColour().toString());
@@ -81,6 +83,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         this.paintLevel = paintLevel;
         update(oldLevel == 0 && paintLevel != 0 || oldLevel != 0 && paintLevel == 0);
         updateAttachedLabelSigns();
+        
         if (getPaintLevelMonitor() != null) {
             getPaintLevelMonitor().repaint();
         }
@@ -93,11 +96,14 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     public void setColour(DyeColor colour) {
         DyeColor oldColour = this.colour;
         this.colour = colour;
+        
         if (this.colour != oldColour) {
             update(true);
             updateAttachedLabelSigns();
-            if (getPaintLevelMonitor() != null) {
-                getPaintLevelMonitor().repaint();
+            
+            LevelMonitor monitor = getPaintLevelMonitor();
+            if (monitor != null) {
+                monitor.repaint();
             }
         }
     }
@@ -136,7 +142,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     @Override
     public void onInteractBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack stack = player.getItemInHand();
+        ItemStack stack = event.getItem();
         
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             PaintBrush brush = SensibleToolbox.getItemRegistry().fromItemStack(stack, PaintBrush.class);
@@ -163,13 +169,10 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         }
         
         String[] lore = new String[] { "Combine milk & dye to make paint", "or dye any colourable item", "with existing paint"};
-        gui.addGadget(new ButtonGadget(gui, 12, "Mix or Dye", lore, MIX_TEXTURE, new Runnable() {
-            @Override
-            public void run() {
-                if (tryMix()) {
-                    Location loc = getLocation();
-                    loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
-                }
+        gui.addGadget(new ButtonGadget(gui, 12, "Mix or Dye", lore, MIX_TEXTURE, () -> {
+        	if (tryMix()) {
+                Location loc = getLocation();
+                loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
             }
         }));
         
@@ -346,6 +349,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                 }
             }
         }
+        
         Debugger.getInstance().debug(this + ": dyeable=" + dyeableSlot + " dye=" + dyeSlot + " milk=" + bucketSlot);
 
         if (bucketSlot >= 0 && dyeSlot >= 0) {
@@ -356,13 +360,16 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             int dyeAmount = dyeStack.getAmount();
             int paintPerDye = getItemConfig().getInt("paint_per_dye", PAINT_PER_DYE);
             int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / paintPerDye, dyeAmount);
+            
             if (toUse == 0) {
                 // not enough room for any mixing
                 return false;
             }
+            
             if (getColour() != newColour && getPaintLevel() > 0) {
                 // two different colours - do they mix?
                 DyeColor mixedColour = mixDyes(getColour(), newColour);
+                
                 if (mixedColour == null) {
                     // no - just replace the can's contents with the new colour
                     toUse = Math.min(getMaxPaintLevel() / paintPerDye, dyeAmount);
@@ -417,9 +424,11 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             DyeColor tmp = dye2;
             dye2 = dye1;
             dye1 = tmp;
-        } else if (dye1 == dye2) {
+        } 
+        else if (dye1 == dye2) {
             return dye1;
         }
+        
         Debugger.getInstance().debug(this + ": try mixing: " + dye1 + " " + dye2);
         
         if (dye1 == DyeColor.YELLOW && dye2 == DyeColor.RED) {

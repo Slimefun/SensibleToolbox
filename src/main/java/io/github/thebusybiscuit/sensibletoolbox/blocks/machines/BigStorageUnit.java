@@ -30,7 +30,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMach
 import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import me.desht.dhutils.Debugger;
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
 	
@@ -200,7 +199,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     @Override
     public String[] getExtraLore() {
         if (isLocked() && getStoredItemType() != null) {
-            return new String[] {ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + StringUtils.formatItemName(getStoredItemType(), false)};
+            return new String[] {ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + ItemUtils.getItemName(getStoredItemType())};
         } 
         else {
             return new String[0];
@@ -269,6 +268,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         // 1. move items from input to storage
         int inputSlot = getInputSlots()[0];
         ItemStack stackIn = getInventoryItem(inputSlot);
+        
         if (stackIn != null && (stored == null || stackIn.isSimilar(stored) && !isFull())) {
             double chargeNeeded = getChargePerOperation(stackIn.getAmount());
             
@@ -282,11 +282,6 @@ public class BigStorageUnit extends AbstractProcessingMachine {
                 stackIn.setAmount(stackIn.getAmount() - toPull);
                 setInventoryItem(inputSlot, stackIn);
                 setCharge(getCharge() - chargeNeeded);
-                
-                if (stackIn.getAmount() == 0) {
-                    // workaround to avoid leaving ghost items in the input slot
-                    STBUtil.forceInventoryRefresh(getInventory());
-                }
             }
         }
 
@@ -344,6 +339,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             // dump contents on floor (could make a big mess)
             Location current = getLocation();
             storageAmount = Math.min(4096, storageAmount);  // max 64 stacks will be dropped
+            
             while (storageAmount > 0) {
                 ItemStack stack = stored.clone();
                 stack.setAmount(Math.min(storageAmount, stored.getMaxStackSize()));
@@ -373,8 +369,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         Player player = event.getPlayer();
         ItemStack inHand = event.getItem();
         
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStoredItemType() != null &&
-                hasAccessRights(player) && hasOKItem(player)) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStoredItemType() != null && hasAccessRights(player) && isItemOkay(event.getItem())) {
             // try to extract items from the output stack
             int wanted = player.isSneaking() ? 1 : getStoredItemType().getMaxStackSize();
             int nExtracted = Math.min(wanted, getOutputAmount());
@@ -391,10 +386,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             
             event.setCancelled(true);
         } 
-        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking() &&
-                hasAccessRights(player)) {
+        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking() && hasAccessRights(player)) {
             Long lastInsert = (Long) STBUtil.getMetadataValue(player, STB_LAST_BSU_INSERT);
             long now = System.currentTimeMillis();
+            
             if (inHand.getType() == Material.AIR && lastInsert != null && now - lastInsert < DOUBLE_CLICK_TIME) {
                 rightClickFullInsert(player);
                 event.setCancelled(true);
@@ -412,12 +407,16 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
     }
 
-    private boolean hasOKItem(Player player) {
-        switch (player.getItemInHand().getType()) {
-            case SIGN:
-            case WOOD_AXE:
+    private boolean isItemOkay(ItemStack item) {
+    	if (Tag.SIGNS.isTagged(item.getType())) {
+    		return false;
+    	}
+    	
+        switch (item.getType()) {
+            case WOODEN_AXE:
             case STONE_AXE:
             case IRON_AXE:
+            case GOLDEN_AXE:
             case DIAMOND_AXE:
                 return false;
             default:

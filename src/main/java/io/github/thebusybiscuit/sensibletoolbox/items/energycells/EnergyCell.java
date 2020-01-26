@@ -90,15 +90,17 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
     private void chargeHotbarItems(Player player) {
         if (getCharge() > 0) {
             int held = player.getInventory().getHeldItemSlot();
+            
             for (int slot = 0; slot < 8; slot++) {
-                if (slot == held)
-                    continue;
+                if (slot == held) continue;
+                
                 ItemStack stack = player.getInventory().getItem(slot);
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
                 
                 if (item instanceof Chargeable) {
                     Chargeable c = (Chargeable) item;
                     double toTransfer = Math.min(c.getMaxCharge() - c.getCharge(), c.getChargeRate());
+                    
                     if (toTransfer > 0) {
                         toTransfer = Math.min(toTransfer, getCharge());
                         setCharge(getCharge() - toTransfer);

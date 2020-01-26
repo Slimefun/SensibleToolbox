@@ -87,16 +87,17 @@ public class WateringCan extends BaseSTBItem {
         recipe.setIngredient('B', Material.BOWL);
         return recipe;
     }
-
-    @SuppressWarnings("deprecation")
+    
 	@Override
     public void onInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack newStack = null;
         floodWarning = false;
+        
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
             Block neighbour = block.getRelative(event.getBlockFace());
+            
             if ((neighbour.getType() == Material.WATER) && neighbour.getData() == 0) {
                 // attempt to refill the watering can
                 player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
@@ -218,8 +219,7 @@ public class WateringCan extends BaseSTBItem {
 	private void irrigateSoil(Player player, Block b) {
         b.setData((byte) 8);
     }
-
-    @SuppressWarnings("deprecation")
+	
 	@Override
     public void onItemConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
@@ -228,6 +228,7 @@ public class WateringCan extends BaseSTBItem {
             setWaterLevel(getWaterLevel() - FIRE_EXTINGUISH_AMOUNT);
             MiscUtil.alertMessage(player, "The fire is out!");
         }
+        
         player.setItemInHand(toItemStack());
         player.updateInventory();
         event.setCancelled(true);
@@ -239,11 +240,13 @@ public class WateringCan extends BaseSTBItem {
                 STBUtil.complain(player);
                 break;
             }
+            
             if (b1.getType() == Material.FARMLAND) {
                 if (b1.getData() < 8) b1.setData((byte) (b1.getData() + 1));
                 checkForFlooding(b1);
                 useSomeWater(player, b, 1);
             }
+            
             if (player.isSneaking()) {
                 break; // only water one block if sneaking
             }
@@ -256,14 +259,15 @@ public class WateringCan extends BaseSTBItem {
                 STBUtil.complain(player);
                 break;
             }
+            
             maybeGrowCrop(player, b1);
+            
             if (player.isSneaking()) {
                 break; // only water one block if sneaking
             }
         }
     }
-
-    @SuppressWarnings("deprecation")
+    
 	private void maybeGrowCrop(Player player, Block b) {
         if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
             return;

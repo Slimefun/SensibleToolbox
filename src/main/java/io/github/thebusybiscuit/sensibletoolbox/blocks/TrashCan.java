@@ -78,7 +78,9 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public RelativePosition[] getBlockStructure() {
-        return new RelativePosition[]{new RelativePosition(0, 1, 0)};
+        return new RelativePosition[] {
+        	new RelativePosition(0, 1, 0)
+        };
     }
 
     /**

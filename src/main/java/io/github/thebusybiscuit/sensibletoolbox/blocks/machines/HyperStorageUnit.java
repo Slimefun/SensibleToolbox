@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 
 public class HyperStorageUnit extends BigStorageUnit {
 
@@ -118,7 +118,7 @@ public class HyperStorageUnit extends BigStorageUnit {
         if (getTotalAmount() > 0) {
             String[] l = super.getExtraLore();
             String[] l2 = Arrays.copyOf(l, l.length + 1);
-            l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + StringUtils.formatItemName(getStoredItemType(), false);
+            l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemUtils.getItemName(getStoredItemType());
             return l2;
         } 
         else {

@@ -81,7 +81,6 @@ import io.github.thebusybiscuit.sensibletoolbox.commands.ExamineCommand;
 import io.github.thebusybiscuit.sensibletoolbox.commands.FriendCommand;
 import io.github.thebusybiscuit.sensibletoolbox.commands.GetcfgCommand;
 import io.github.thebusybiscuit.sensibletoolbox.commands.GiveCommand;
-import io.github.thebusybiscuit.sensibletoolbox.commands.ParticleCommand;
 import io.github.thebusybiscuit.sensibletoolbox.commands.RecipeCommand;
 import io.github.thebusybiscuit.sensibletoolbox.commands.RedrawCommand;
 import io.github.thebusybiscuit.sensibletoolbox.commands.RenameCommand;
@@ -459,7 +458,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         cmds.registerCommand(new GetcfgCommand());
         cmds.registerCommand(new SetcfgCommand());
         cmds.registerCommand(new DebugCommand());
-        cmds.registerCommand(new ParticleCommand());
         cmds.registerCommand(new SoundCommand());
         cmds.registerCommand(new RecipeCommand());
         cmds.registerCommand(new ExamineCommand());

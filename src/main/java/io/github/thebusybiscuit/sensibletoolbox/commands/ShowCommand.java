@@ -186,9 +186,11 @@ public class ShowCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         if (args.length >= 2 && args[args.length - 2].equals("-w")) {
             List<String> worlds = new ArrayList<>();
+            
             for (World w : Bukkit.getWorlds()) {
                 worlds.add(w.getName());
             }
+            
             return filterPrefix(sender, worlds, args[args.length - 1]);
         } 
         else if (args.length >= 2 && args[args.length - 2].equals("-id")) {

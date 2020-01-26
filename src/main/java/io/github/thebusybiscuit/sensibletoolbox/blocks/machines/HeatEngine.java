@@ -4,16 +4,15 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.CoalType;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Coal;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.FuelItems;
@@ -31,17 +30,24 @@ public class HeatEngine extends Generator {
     private FuelItems.FuelValues currentFuel;
     
     static {
-    	fuelItems.addFuel(new Coal(CoalType.CHARCOAL).toItemStack(), false, 15, 80);
+    	fuelItems.addFuel(new ItemStack(Material.CHARCOAL), false, 15, 80);
         fuelItems.addFuel(new ItemStack(Material.COAL), false, 15, 120);
+        
         // 1 coal block is slightly more efficient than 9 coal
         fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), true, 15, 1120);
         fuelItems.addFuel(new ItemStack(Material.BLAZE_ROD), true, 15, 180);
         fuelItems.addFuel(new ItemStack(Material.BLAZE_POWDER), true, 22.5, 30);
-        fuelItems.addFuel(new ItemStack(Material.LOG), true, 10, 40);
-        fuelItems.addFuel(new ItemStack(Material.LOG_2), true, 10, 40);
-        fuelItems.addFuel(new ItemStack(Material.WOOD), true, 5, 20);
+        
+        for (Material log : Tag.LOGS.getValues()) {
+        	fuelItems.addFuel(new ItemStack(log), true, 10, 40);
+        }
+        
+        for (Material plank : Tag.PLANKS.getValues()) {
+        	fuelItems.addFuel(new ItemStack(plank), true, 5, 20);
+        }
+        
         fuelItems.addFuel(new ItemStack(Material.STICK), true, 2.5, 20);
-        fuelItems.addFuel(new ItemStack(Material.FIREBALL), true, 50, 20);
+        fuelItems.addFuel(new ItemStack(Material.FIRE_CHARGE), true, 50, 20);
 	}
 
     public HeatEngine() {
@@ -116,10 +122,12 @@ public class HeatEngine extends Generator {
     @Override
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
         if (!super.isValidUpgrade(player, upgrade)) return false;
+        
         if (!(upgrade instanceof RegulatorUpgrade)) {
             STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
             return false;
         }
+        
         return true;
     }
 
@@ -179,7 +187,7 @@ public class HeatEngine extends Generator {
                         break;
                     }
                 }
-            } 
+            }
             else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
@@ -195,6 +203,7 @@ public class HeatEngine extends Generator {
                 }
             }
         }
+        
         super.onServerTick();
     }
 

@@ -31,7 +31,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.Filter;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.EnderBox;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.ItemNames;
@@ -95,6 +94,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         }
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("direction", getFacing().toString());
@@ -118,17 +118,21 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             String what = filter.isWhiteList() ? "white-listed" : "black-listed";
             String s = filter.size() == 1 ? "" : "s";
             lore[0] = ChatColor.GOLD.toString() + filter.size() + " item" + s + " " + what;
+            
             if (isTerminator()) {
                 lore[0] += ", " + ChatColor.BOLD + "Terminating";
             }
+            
             lore[1] = ChatColor.GOLD + filter.getFilterType().getLabel();
             int i = 2;
+            
             for (ItemStack stack : filter.listFiltered()) {
                 int n = i / 2 + 1;
                 String name = ItemNames.lookup(stack);
                 lore[n] = lore[n] == null ? LIST_ITEM + name : lore[n] + " " + LIST_ITEM + name;
                 i++;
             }
+            
             return lore;
         }
     }
@@ -339,11 +343,5 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     protected Location getTargetLocation(Location loc) {
         BlockFace face = getFacing();
         return loc.clone().add(face.getModX(), face.getModY(), face.getModZ());
-    }
-
-    protected boolean creativeModeBlocked(BaseSTBBlock stb, Location loc) {
-        return stb instanceof EnderBox
-                && STBUtil.isCreativeWorld(loc.getWorld())
-                && !SensibleToolbox.getPluginInstance().getConfigCache().isCreativeEnderAccess();
     }
 }

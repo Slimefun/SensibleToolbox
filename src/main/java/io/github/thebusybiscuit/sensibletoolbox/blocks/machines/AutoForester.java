@@ -3,22 +3,25 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialConverter;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class AutoForester extends AutoFarmingMachine {
 	
@@ -85,9 +88,10 @@ public class AutoForester extends AutoFarmingMachine {
     public void onServerTick() {
     	if (!isJammed()) {
     		for (Block log : blocks) {
-        		if (Tags.LOGS.isTagged(log.getType())) {
+        		if (Tag.LOGS.isTagged(log.getType())) {
         			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
         			else break;
+        			
         			List<Location> list = new ArrayList<>();
         			TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
         			
@@ -97,10 +101,10 @@ public class AutoForester extends AutoFarmingMachine {
         				log.getWorld().playEffect(l, Effect.STEP_SOUND, l.getBlock().getType());
         				
         				if (blocks.contains(l.getBlock())) {
-							byte data = l.getBlock().getData();
-							if (l.getBlock().getType() == Material.LOG_2) data = (byte) (data + 4);
-        					l.getBlock().setType(Material.SAPLING);
-        					l.getBlock().setData(data);
+        					Optional<Material> sapling = MaterialConverter.getSaplingFromLog(l.getBlock().getType());
+        					
+        					if (sapling.isPresent()) l.getBlock().setType(sapling.get());
+            				else l.getBlock().setType(Material.AIR);
         				}
         				else l.getBlock().setType(Material.AIR);
         			}
@@ -118,6 +122,7 @@ public class AutoForester extends AutoFarmingMachine {
 			ItemStack stack = getInventoryItem(slot);
 			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
 				if (stack == null) stack = new ItemStack(m);
+				
 				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
 				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
 				buffer = null;
