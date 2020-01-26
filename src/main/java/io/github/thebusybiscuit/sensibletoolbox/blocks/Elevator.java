@@ -11,9 +11,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class Elevator extends BaseSTBBlock implements Colorable {
 	
@@ -28,6 +28,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
         color = DyeColor.valueOf(conf.getString("color"));
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("color", color.toString());
@@ -45,7 +46,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
     @Override
     public Material getMaterial() {
-        return STBUtil.makeColouredMaterial(Material.TERRACOTTA, color);
+        return MaterialCollections.getAllTerracottaColors().get(color.ordinal());
     }
 
     @Override

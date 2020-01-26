@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -15,11 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.IronCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class AutoFarm extends AutoFarmingMachine {
 	
@@ -30,6 +30,7 @@ public class AutoFarm extends AutoFarmingMachine {
     	crops.put(Material.WHEAT, Material.WHEAT);
     	crops.put(Material.POTATOES, Material.POTATO);
     	crops.put(Material.CARROTS, Material.CARROT);
+    	crops.put(Material.BEETROOTS, Material.BEETROOT);
     }
     
     private Set<Block> blocks;
@@ -123,7 +124,7 @@ public class AutoFarm extends AutoFarmingMachine {
 			ItemStack stack = getInventoryItem(slot);
 			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
 				if (stack == null) stack = new ItemStack(m);
-				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (CSCoreLib.randomizer().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
+				int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1): (stack.getMaxStackSize() - stack.getAmount());
 				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
 				buffer = null;
 				return true;

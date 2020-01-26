@@ -1,20 +1,21 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
+import java.util.Optional;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.Tag;
-import org.bukkit.TreeSpecies;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialConverter;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractIOMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
@@ -29,8 +30,12 @@ public class Sawmill extends AbstractIOMachine {
 
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
-        for (TreeSpecies species : TreeSpecies.values()) {
-            crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeLog(species).toItemStack(1), STBUtil.makePlank(species).toItemStack(6), 60));
+        for (Material log : Tag.LOGS.getValues()) {
+        	Optional<Material> planks = MaterialConverter.getPlanksFromLog(log);
+            
+        	if (planks.isPresent()) {
+        		crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(log), new ItemStack(planks.get(), 6), 60));
+        	}
         }
         
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
@@ -39,7 +44,7 @@ public class Sawmill extends AbstractIOMachine {
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_BUTTON), new ItemStack(Material.WOOD, 1), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WORKBENCH), new ItemStack(Material.WOOD, 4), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.SIGN), new ItemStack(Material.WOOD, 2), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CHEST), new ItemStack(Material.WOOD, 8), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CHEST), new ItemStack(Material.OAK_PLANKS, 8), 40));
     }
 
     @Override

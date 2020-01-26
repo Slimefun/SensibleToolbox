@@ -21,6 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
@@ -303,7 +304,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         for (Block b1 : c) {
             if (!b1.equals(b)) {
                 if (STBUtil.isPlant(b1.getType()) || Tag.LEAVES.isTagged(b1.getType())) {
-                    if (SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.BREAK)) {
+                    if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK)) {
                         b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
                         b1.breakNaturally();
                     }
@@ -317,7 +318,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         short count = 0;
         
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-            if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b1, BlockProtection.Operation.BREAK)) {
+            if (!SensibleToolbox.getProtectionManager().hasPermission(player, b1, ProtectableAction.BREAK_BLOCK)) {
                 continue;
             }
             
@@ -326,9 +327,11 @@ public abstract class CombineHoe extends BaseSTBItem {
             if ((b1.getType() == Material.DIRT || b1.getType() == Material.GRASS) && !above.getType().isSolid() && !above.isLiquid()) {
                 b1.setType(Material.FARMLAND);
                 count++;
+                
                 if (!above.isEmpty()) {
                     above.breakNaturally();
                 }
+                
                 if (stack.getDurability() + count >= stack.getType().getMaxDurability()) {
                     break;
                 }

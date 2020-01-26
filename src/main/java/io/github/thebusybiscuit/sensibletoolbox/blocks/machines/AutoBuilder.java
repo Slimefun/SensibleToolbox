@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
@@ -44,7 +45,9 @@ public class AutoBuilder extends BaseSTBMachine {
 
     private AutoBuilderMode buildMode;
     private Cuboid workArea;
-    private int buildX, buildY, buildZ;
+    private int buildX;
+    private int buildY;
+    private int buildZ;
     private int invSlot;  // the inventory slot index (into getInputSlots()) being pulled from
     private BuilderStatus status = BuilderStatus.NO_WORKAREA;
     private int baseScuPerOp;
@@ -238,8 +241,7 @@ public class AutoBuilder extends BaseSTBMachine {
             updateAttachedLabelSigns();
         }
     }
-
-    @SuppressWarnings("deprecation")
+    
 	@Override
     public void onServerTick() {
         if (isRedstoneActive() && getStatus() == BuilderStatus.RUNNING && workArea != null) {
@@ -258,6 +260,7 @@ public class AutoBuilder extends BaseSTBMachine {
                     // just skip over any "unbreakable" blocks (bedrock, ender portal etc.)
                     if (STBUtil.getMaterialHardness(b.getType()) < Double.MAX_VALUE) {
                         scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
+                        
                         if (scuNeeded > getCharge()) {
                             advanceBuildPos = false;
                         } 
@@ -633,7 +636,7 @@ public class AutoBuilder extends BaseSTBMachine {
         }
 
         public ItemStack makeTexture() {
-            return STBUtil.makeColouredMaterial(Material.WOOL, color).toItemStack();
+            return new ItemStack(MaterialCollections.getAllWoolColors().get(color.ordinal()));
         }
 
         public DyeColor getColor() {
