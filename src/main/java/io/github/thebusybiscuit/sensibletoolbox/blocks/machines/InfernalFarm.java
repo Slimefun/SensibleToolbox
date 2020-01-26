@@ -14,10 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.GoldCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 
 public class InfernalFarm extends AutoFarmingMachine {
 	

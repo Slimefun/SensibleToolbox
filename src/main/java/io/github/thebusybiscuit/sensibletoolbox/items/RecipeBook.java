@@ -89,7 +89,7 @@ public class RecipeBook extends BaseSTBItem {
     public static final int PREV_PAGE_SLOT = 52;
     public static final int NEXT_PAGE_SLOT = 53;
     // slots for the recipe display page
-    private static final int[] RECIPE_SLOTS = new int[]{10, 11, 12, 19, 20, 21, 28, 29, 30};
+    private static final int[] RECIPE_SLOTS = {10, 11, 12, 19, 20, 21, 28, 29, 30};
     public static final int TYPE_SLOT = 23;
     public static final int RESULT_SLOT = 25;
     public static final int NEXT_RECIPE_SLOT = 18;
@@ -109,12 +109,12 @@ public class RecipeBook extends BaseSTBItem {
     private InventoryGUI gui;
     private boolean fabricationAvailable;
     private boolean fabricationFree;
-    private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<ItemAndRecipeNumber>();
+    private final Deque<ItemAndRecipeNumber> trail = new ArrayDeque<>();
     private Player player;
     private int inventorySlot;
-    private final List<InventoryHolder> resourceInventories = Lists.newArrayList();
-    private final Set<String> providerNames = Sets.newHashSet();
-    private final List<ItemStack> currentIngredients = Lists.newArrayList();
+    private final List<InventoryHolder> resourceInventories = new ArrayList<>();
+    private final Set<String> providerNames = new HashSet<>();
+    private final List<ItemStack> currentIngredients = new ArrayList<>();
 
     /**
      * Constructs a new recipe book.
@@ -137,6 +137,7 @@ public class RecipeBook extends BaseSTBItem {
      */
     public RecipeBook(ConfigurationSection conf) {
         super(conf);
+        
         fabricationAvailable = fabricationFree = false;
         page = conf.getInt("page");
         viewingItem = conf.getInt("viewingItem");
@@ -163,19 +164,23 @@ public class RecipeBook extends BaseSTBItem {
      */
     public static void buildRecipes() {
         Iterator<Recipe> iter = Bukkit.recipeIterator();
-        Set<ItemStack> itemSet = new HashSet<ItemStack>();
+        Set<ItemStack> itemSet = new HashSet<>();
+        
         while (iter.hasNext()) {
             Recipe recipe = iter.next();
             ItemStack stack = recipe.getResult().clone();
             stack.setAmount(1);
             itemSet.add(stack);
         }
+        
         CustomRecipeManager crm = CustomRecipeManager.getManager();
         for (ItemStack stack : crm.getAllResults()) {
             itemSet.add(stack);
         }
+        
         fullItemList.addAll(itemSet);
         Collections.sort(fullItemList, new StackComparator());
+        
         for (int i = 0; i < fullItemList.size(); i++) {
             itemListPos.put(fullItemList.get(i), i);
         }
@@ -183,13 +188,17 @@ public class RecipeBook extends BaseSTBItem {
 
     private void buildFilteredList() {
         String filterString = recipeNameFilter.toLowerCase();
+        
         if (filterString.isEmpty() && recipeTypeFilter == RecipeType.ALL) {
             filteredItems = fullItemList;
-        } else {
-            filteredItems = new ArrayList<ItemStack>();
+        } 
+        else {
+            filteredItems = new ArrayList<>();
+            
             for (ItemStack stack : fullItemList) {
                 if (filterString.isEmpty() || ItemNames.lookup(stack).toLowerCase().contains(filterString)) {
                     BaseSTBItem stbItem = SensibleToolbox.getItemRegistry().fromItemStack(stack);
+                    
                     if (includeItem(stbItem)) {
                         filteredItems.add(stack);
                     }
@@ -301,10 +310,12 @@ public class RecipeBook extends BaseSTBItem {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block clicked = event.getClickedBlock();
             boolean isWorkbench = STBUtil.canFabricateWith(clicked);
+            
             if (clicked != null && STBUtil.isInteractive(clicked.getType()) && !isWorkbench && !event.getPlayer().isSneaking()) {
                 // allow opening doors, throwing levers etc. with a recipe book in hand
                 return;
             }
+            
             openBook(event.getPlayer(), isWorkbench ? clicked : null);
             setInventorySlot(event.getPlayer().getInventory().getHeldItemSlot());
             event.setCancelled(true);
@@ -341,6 +352,7 @@ public class RecipeBook extends BaseSTBItem {
         else {
             drawRecipePage();
         }
+        
         gui.show(player);
     }
 
@@ -367,11 +379,13 @@ public class RecipeBook extends BaseSTBItem {
 
     private boolean hasFabricatorInInventory(Player player) {
         PlayerInventory inv = player.getInventory();
+        
         for (int slot = 0; slot < 36; slot++) {
             if (STBUtil.canFabricateWith(inv.getItem(slot))) {
                 return true;
             }
         }
+        
         return false;
     }
 
@@ -383,7 +397,8 @@ public class RecipeBook extends BaseSTBItem {
                 viewingItem = itemListPos.get(inSlot);
                 recipeNumber = 0;
                 drawRecipePage();
-            } else {
+            } 
+            else {
                 LogUtils.warning("could not find item " + inSlot + " in the recipe list!");
             }
         } 
@@ -395,7 +410,8 @@ public class RecipeBook extends BaseSTBItem {
                     if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {
                         tryFabrication(viewingRecipe);
                     }
-                } else if (inSlot != null) {
+                } 
+                else if (inSlot != null) {
                     // drill down into the description for an item in the recipe
                     if (inSlot.getDurability() == 32767 && !itemListPos.containsKey(inSlot)) {
                         inSlot.setDurability(inSlot.getType().getMaxDurability());
@@ -422,6 +438,7 @@ public class RecipeBook extends BaseSTBItem {
         String[] shape = recipe.getShape();
         Map<Character, ItemStack> map = recipe.getIngredientMap();
         currentIngredients.clear();
+        
         for (int i = 0; i < shape.length; i++) {
             for (int j = 0; j < shape[i].length(); j++) {
                 char c = shape[i].charAt(j);
@@ -431,6 +448,7 @@ public class RecipeBook extends BaseSTBItem {
                 gui.getInventory().setItem(slot, makeGuiIngredient(ingredient));
             }
         }
+        
         gui.getInventory().setItem(TYPE_SLOT, SHAPED_ICON);
     }
 
@@ -438,11 +456,13 @@ public class RecipeBook extends BaseSTBItem {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(recipe.getResult());
         List<ItemStack> ingredients = recipe.getIngredientList();
         currentIngredients.clear();
+        
         for (int i = 0; i < ingredients.size(); i++) {
             ItemStack ingredient = getIngredient(item, ingredients.get(i));
             currentIngredients.add(ingredient);
             gui.getInventory().setItem(RECIPE_SLOTS[i], makeGuiIngredient(ingredient));
         }
+        
         gui.getInventory().setItem(TYPE_SLOT, SHAPELESS_ICON);
     }
 
@@ -472,13 +492,15 @@ public class RecipeBook extends BaseSTBItem {
         ItemStack processor = new ItemStack(getMaterial());
         ItemMeta meta = processor.getItemMeta();
         meta.setDisplayName(ChatColor.YELLOW + item.getItemName());
-        List<String> lore = Lists.newArrayList();
+        List<String> lore = new ArrayList<>();
         lore.add(STBItemRegistry.LORE_PREFIX + item.getProviderPlugin().getName() + " (STB) item");
+        
         if (item instanceof AbstractProcessingMachine) {
             AbstractProcessingMachine machine = (AbstractProcessingMachine) item;
             lore.add(ChatColor.WHITE.toString() + machine.getScuPerTick() + " SCU/t over " + recipe.getProcessingTime() / 20.0 + "s");
             lore.add(ChatColor.WHITE.toString() + "Total SCU: " + machine.getScuPerTick() * recipe.getProcessingTime());
         }
+        
         meta.setLore(lore);
         processor.setItemMeta(meta);
         gui.getInventory().setItem(TYPE_SLOT, processor);
@@ -561,6 +583,7 @@ public class RecipeBook extends BaseSTBItem {
             
             costs.add(cost);
         }
+        
         if (ok) {
             List<ItemStack> taken = new ArrayList<>();
             

@@ -46,7 +46,7 @@ public class SpeedUpgrade extends MachineUpgrade {
         registerCustomIngredients(sc);
         recipe.shape("ISI", "IBI", "IGI");
         recipe.setIngredient('I', Material.IRON_BARS);
-        recipe.setIngredient('S', sc.getMaterialData());
+        recipe.setIngredient('S', sc.getMaterial());
         recipe.setIngredient('B', Material.BLAZE_ROD);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;

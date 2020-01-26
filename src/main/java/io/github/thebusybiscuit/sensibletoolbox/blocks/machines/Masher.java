@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -41,13 +42,18 @@ public class Masher extends AbstractIOMachine {
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.IRON_INGOT), new IronDust().toItemStack(), 120));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_INGOT), new GoldDust().toItemStack(), 80));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOL), new ItemStack(Material.STRING, 4), 60));
+        
+        for (Material wool : Tag.WOOL.getValues()) {
+        	crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(wool), new ItemStack(Material.STRING, 4), 60));
+        }
+        
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LAPIS_ORE), new ItemStack(Material.LAPIS_LAZULI, 8), 80));
-//        crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES), greenDye, 40));
-//        crm.addCustomRecipe(new SimpleCustomRecipe(this, STBUtil.makeWildCardItemStack(Material.LEAVES_2), greenDye, 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LEAVES), greenDye, 40), true);
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LEAVES_2), greenDye, 40), true);
+//      
+        for (Material leaves : Tag.LEAVES.getValues()) {
+        	crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(leaves), new ItemStack(Material.GREEN_DYE), 40), true);    
+        }
+        
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.QUARTZ), qd.toItemStack(), 120));
     }
 

@@ -1,7 +1,8 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
-import java.util.List;
+import java.util.Collection;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class BreakerModule extends DirectionalItemRouterModule {
@@ -29,18 +30,23 @@ public class BreakerModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         Block b = getTargetLocation(loc).getBlock();
+        
         if (b.isEmpty() || b.isLiquid() || STBUtil.getMaterialHardness(b.getType()) == Double.MAX_VALUE) {
             return false;
         }
-        List<ItemStack> d = STBUtil.calculateDrops(b, getBreakerTool());
+        
+        Collection<ItemStack> d = b.getDrops(getBreakerTool());
+        
         if (d.isEmpty()) {
             return false;
         }
-        ItemStack[] drops = d.toArray(new ItemStack[d.size()]);
+        
+        ItemStack[] drops = d.toArray(new ItemStack[0]);
         ItemStack mainDrop = drops[0];
         ItemStack inBuffer = getItemRouter().getBufferItem();
+        
         if (inBuffer == null || inBuffer.isSimilar(mainDrop) && inBuffer.getAmount() < inBuffer.getMaxStackSize()) {
-            if (getFilter().shouldPass(mainDrop) && SensibleToolbox.getBlockProtection().playerCanBuild(getItemRouter().getOwner(), b, BlockProtection.Operation.BREAK)) {
+            if (getFilter().shouldPass(mainDrop) && SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(getItemRouter().getOwner()), b, ProtectableAction.BREAK_BLOCK)) {
                 if (inBuffer == null) {
                     getItemRouter().setBufferItem(mainDrop);
                 } 
@@ -60,6 +66,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
                 for (int i = 1; i < drops.length; i++) {
                     b.getWorld().dropItemNaturally(b.getLocation(), drops[i]);
                 }
+                
                 return true;
             }
         }

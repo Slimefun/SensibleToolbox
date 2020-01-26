@@ -295,7 +295,7 @@ public class AutoBuilder extends BaseSTBMachine {
                                 advanceBuildPos = false;
                             } 
                             else {
-                                b.setTypeIdAndData(item.getTypeId(), (byte) item.getDurability(), true);
+                                b.setType(item.getType());
                                 b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                             }
                         }

@@ -82,7 +82,8 @@ public abstract class Cost {
 			LogUtils.warning("Cost: Numeric item ID in cost spec '" + costSpec + "' is deprecated and will cease to work " +
 					"in a future release; please use material name '" + mat + "' instead of item ID " + id + ".");
 			return new ItemCost(mat, data, q);
-		} else {
+		} 
+		else {
 			throw new IllegalArgumentException("Cost: unknown cost type '" + costType + "'");
 		}
 	}

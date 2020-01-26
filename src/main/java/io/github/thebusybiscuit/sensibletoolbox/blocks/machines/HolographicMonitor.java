@@ -1,20 +1,18 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import me.mrCookieSlime.CSCoreLibPlugin.general.Math.DoubleHandler;
 
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
+import io.github.thebusybiscuit.cscorelib2.math.DoubleHandler;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;

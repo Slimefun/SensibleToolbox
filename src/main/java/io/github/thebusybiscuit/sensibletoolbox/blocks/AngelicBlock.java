@@ -69,23 +69,20 @@ public class AngelicBlock extends BaseSTBBlock {
             Block b = loc.getBlock();
             
             if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.PLACE_BLOCK)) {
-                ItemStack stack = p.getItemInHand();
+                ItemStack stack = event.getItem();
+                
                 if (stack.getAmount() > 1) {
                     stack.setAmount(stack.getAmount() - 1);
-                    p.setItemInHand(stack);
                 } 
                 else {
-                    p.setItemInHand(new ItemStack(Material.AIR));
+                    stack.setAmount(0);
                 }
                 
                 b.setType(getMaterial());
                 placeBlock(b, event.getPlayer(), STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
             }
-        } 
-        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            // no direct placing but we need to ensure the player's inventory looks OK
-            hackyDelayedInvUpdate(event.getPlayer());
         }
+        
         event.setCancelled(true);
     }
 
@@ -100,6 +97,7 @@ public class AngelicBlock extends BaseSTBBlock {
             breakBlock(false);
             STBUtil.giveItems(p, toItemStack());
         }
+        
         event.setCancelled(true);
     }
 

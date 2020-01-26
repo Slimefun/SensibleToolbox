@@ -68,10 +68,6 @@ public class SorterModule extends DirectionalItemRouterModule {
             int nInserted;
             
             if (stb instanceof STBInventoryHolder) {
-                if (creativeModeBlocked(stb, loc)) {
-                    getItemRouter().ejectBuffer(getItemRouter().getFacing());
-                    return false;
-                }
                 ItemStack toInsert = getItemRouter().getBufferItem().clone();
                 toInsert.setAmount(Math.min(nToInsert, toInsert.getAmount()));
                 nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), true, getItemRouter().getOwner());

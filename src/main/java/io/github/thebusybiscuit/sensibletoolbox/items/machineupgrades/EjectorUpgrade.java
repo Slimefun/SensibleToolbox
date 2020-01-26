@@ -37,6 +37,7 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
         direction = BlockFace.valueOf(conf.getString("direction"));
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("direction", getFacing().toString());
@@ -75,7 +76,7 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
         registerCustomIngredients(sc);
         recipe.shape("ISI", "IBI", "IGI");
         recipe.setIngredient('I', Material.IRON_BARS);
-        recipe.setIngredient('S', sc.getMaterialData());
+        recipe.setIngredient('S', sc.getMaterial());
         recipe.setIngredient('B', Material.PISTON);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;

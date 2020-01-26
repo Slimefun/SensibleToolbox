@@ -52,13 +52,14 @@ public class ChargeCommand extends AbstractCommand {
             
             stb = LocationManager.getManager().get(b.getLocation());
             
-            if (stb != null && stb instanceof Chargeable) {
+            if (stb instanceof Chargeable) {
                 c = (Chargeable) stb;
             }
         }
         DHValidate.notNull(c, "Nothing suitable to charge.");
         int max = c.getMaxCharge();
         int amount;
+        
         if (args.length > 0) {
             try {
                 amount = Integer.parseInt(args[0]);

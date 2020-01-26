@@ -6,7 +6,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedIronIngot;
 
 public class FiftyKEnergyCell extends EnergyCell {
@@ -47,8 +46,8 @@ public class FiftyKEnergyCell extends EnergyCell {
         EnergizedIronIngot ei = new EnergizedIronIngot();
         registerCustomIngredients(cell, ei);
         recipe.shape("III", "CCC", "GRG");
-        recipe.setIngredient('I', ei.getMaterialData());
-        recipe.setIngredient('C', STBUtil.makeWildCardMaterialData(cell));
+        recipe.setIngredient('I', ei.getMaterial());
+        recipe.setIngredient('C', cell.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
