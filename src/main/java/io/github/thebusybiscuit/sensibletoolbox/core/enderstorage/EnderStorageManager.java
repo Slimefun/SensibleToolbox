@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -14,33 +15,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import io.github.thebusybiscuit.sensibletoolbox.items.EnderBag;
-import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 
 public class EnderStorageManager implements Listener {
-	
+
     public static final int MAX_ENDER_FREQUENCY = 1000;
     public static final int BAG_SIZE = 54;
     private static final String ENDER_STORAGE_DIR = "enderstorage";
     private final File storageDir;
 
-    private final Map<Integer,GlobalEnderHolder> globalInvs = Maps.newHashMap();
-    private final Map<UUID, Map<Integer, PlayerEnderHolder>> playerInvs = Maps.newHashMap();
-    private final Set<EnderStorageHolder> updateNeeded = Sets.newHashSet();
+    private final Map<Integer, GlobalEnderHolder> globalInvs = new HashMap<>();
+    private final Map<UUID, Map<Integer, PlayerEnderHolder>> playerInvs = new HashMap<>();
+    private final Set<EnderStorageHolder> updateNeeded = new HashSet<>();
 
-    private static final FilenameFilter uuidFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return MiscUtil.looksLikeUUID(name);
-        }
-    };
+    private static final FilenameFilter uuidFilter = (dir, name) -> MiscUtil.looksLikeUUID(name);
 
     public EnderStorageManager(SensibleToolboxPlugin plugin) {
         storageDir = new File(plugin.getDataFolder(), ENDER_STORAGE_DIR);
@@ -62,7 +54,8 @@ public class EnderStorageManager implements Listener {
             try {
                 h.loadInventory();
                 globalInvs.put(frequency, h);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 LogUtils.severe("Can't load global ender storage: " + h.getSaveFile());
                 return null;
             }
@@ -83,7 +76,8 @@ public class EnderStorageManager implements Listener {
             try {
                 h.loadInventory();
                 map.put(frequency, h);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 LogUtils.severe("Can't load player ender storage: " + h.getSaveFile());
                 return null;
             }
@@ -98,18 +92,21 @@ public class EnderStorageManager implements Listener {
 
         // migrate any old data in the bagofholding folder to personal ender channel "1"
         File oldDir = new File(plugin.getDataFolder(), EnderBag.BAG_SAVE_DIR);
+
         if (oldDir.exists()) {
             for (File f : oldDir.listFiles(uuidFilter)) {
                 File newDir = new File(storageDir, f.getName());
                 mkdir(newDir);
                 File newFile = new File(newDir, "1");
-                DHValidate.isTrue(f.renameTo(newFile), "can't move " + f + " to " + newFile);
+                Validate.isTrue(f.renameTo(newFile), "can't move " + f + " to " + newFile);
             }
+
             for (File f : oldDir.listFiles()) {
                 if (!f.delete()) {
                     LogUtils.warning("can't delete unwanted file: " + f);
                 }
             }
+
             if (!oldDir.delete()) {
                 LogUtils.warning("can't delete old bagofholding directory");
             }
@@ -117,7 +114,7 @@ public class EnderStorageManager implements Listener {
     }
 
     void mkdir(File dir) {
-        DHValidate.isTrue(dir.mkdir(), "can't create directory: " + dir);
+        Validate.isTrue(dir.mkdir(), "can't create directory: " + dir);
     }
 
     void setChanged(EnderStorageHolder holder) {

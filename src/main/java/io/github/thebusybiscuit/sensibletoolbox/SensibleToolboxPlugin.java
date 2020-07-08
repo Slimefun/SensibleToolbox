@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -167,7 +168,6 @@ import io.github.thebusybiscuit.sensibletoolbox.slimefun.SlimefunBridge;
 import me.desht.dhutils.ConfigurationListener;
 import me.desht.dhutils.ConfigurationManager;
 import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.LogUtils;
@@ -312,7 +312,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         configCache = new ConfigCache(this);
         configCache.processConfig();
 
-        MiscUtil.init(this);
         MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
 
         LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
@@ -489,10 +488,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     @Override
     public Object onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
         if (key.equals("save_interval")) {
-            DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
+            Validate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
         }
         else if (key.equals("energy.tick_rate")) {
-            DHValidate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
+            Validate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
         }
         else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
