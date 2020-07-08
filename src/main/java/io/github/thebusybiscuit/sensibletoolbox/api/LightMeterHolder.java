@@ -3,6 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api;
 import org.bukkit.inventory.ItemStack;
 
 public interface LightMeterHolder {
+
     /**
      * Get the slot in the block's GUI where a light meter can be displayed.
      *

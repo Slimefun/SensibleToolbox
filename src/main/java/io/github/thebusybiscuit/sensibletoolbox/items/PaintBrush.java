@@ -12,7 +12,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
-import org.bukkit.material.MaterialData;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
@@ -43,7 +41,7 @@ import me.desht.dhutils.IconMenu;
 import me.desht.dhutils.MiscUtil;
 
 public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEventHandler {
-	
+
     private int paintLevel;
     private DyeColor colour;
     private Painting editingPainting = null;
@@ -85,10 +83,6 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         return false;
     }
 
-    public boolean allowWoodStaining() {
-        return getItemConfig() != null && getItemConfig().getBoolean("wood_staining");
-    }
-
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration res = super.freeze();
@@ -109,23 +103,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 
     @Override
     public String[] getLore() {
-        return allowWoodStaining() ?
-                new String[] {
-                        "Paints colourable blocks:",
-                        " - wool, carpet, stained clay/glass",
-                        "And planks/wood slabs:",
-                        " - grey/white/brown/pink/orange/black",
-                        "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush",
-                } :
-                new String[] {
-                        "Paints colourable blocks:",
-                        " Wool, carpet, stained clay/glass",
-                        "R-click block: paint up to " + getMaxBlocksAffected() + " blocks",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush",
-                };
+        return new String[] { "Paints colourable blocks:", " Wool, carpet, stained clay/glass", "R-click block: paint up to " + getMaxBlocksAffected() + " blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush", };
     }
 
     @Override
@@ -156,36 +134,36 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        
+
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block b = event.getClickedBlock();
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation(), true);
-            
+
             if (stb instanceof PaintCan) {
                 refillFromCan((PaintCan) stb);
-            } 
+            }
             else if (okToColor(b, stb)) {
                 int painted;
                 // Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
                 if (player.isSneaking()) {
                     // paint a single block
                     painted = paintBlocks(player, b);
-                } 
+                }
                 else {
                     // paint multiple blocks around the clicked block
                     Block[] blocks = findBlocksAround(b);
                     painted = paintBlocks(player, blocks);
                 }
-                
+
                 if (painted > 0) {
                     player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
                 }
             }
-        } 
+        }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
             setPaintLevel(0);
         }
-        
+
         player.setItemInHand(toItemStack());
         event.setCancelled(true);
     }
@@ -195,53 +173,30 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             // we don't want blocks which happen to use a Colorable material to be paintable
             return false;
         }
-        
+
         if (getBlockColour(b) == getColour() || getPaintLevel() <= 0) {
             return false;
         }
-        
-        return STBUtil.isColorable(b.getType())
-                || b.getType() == Material.GLASS
-                || b.getType() == Material.THIN_GLASS
-                || allowWoodStaining() && isStainableWood(b.getType()) && okWoodStain(getColour());
-    }
 
-    private boolean isStainableWood(Material mat) {
-        switch (mat) {
-            case WOOD: case WOOD_STEP: case WOOD_DOUBLE_STEP:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private boolean okWoodStain(DyeColor colour) {
-        switch (colour) {
-            case BLACK: case WHITE: case GRAY:
-            case PINK: case ORANGE: case BROWN:
-                return true;
-            default:
-                return false;
-        }
+        return STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.GLASS_PANE;
     }
 
     private void refillFromCan(PaintCan can) {
         int needed;
         if (this.getColour() == can.getColour()) {
             needed = this.getMaxPaintLevel() - this.getPaintLevel();
-        } else {
+        }
+        else {
             this.setPaintLevel(0);
             needed = this.getMaxPaintLevel();
         }
         int actual = Math.min(needed, can.getPaintLevel());
-        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColour() +
-                "; try to fill brush with " + needed + ", actual = " + actual);
+        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColour() + "; try to fill brush with " + needed + ", actual = " + actual);
         if (actual > 0) {
             this.setColour(can.getColour());
             this.setPaintLevel(this.getPaintLevel() + actual);
             can.setPaintLevel(can.getPaintLevel() - actual);
-            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColour() +
-                    ", can now = " + can.getPaintLevel() + " " + can.getColour());
+            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColour() + ", can now = " + can.getPaintLevel() + " " + can.getColour());
         }
     }
 
@@ -254,18 +209,18 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         if (e instanceof Colorable) {
             ((Colorable) e).setColor(getColour());
             paintUsed = 1;
-        } 
+        }
         else if (e instanceof Painting) {
             Art a = ((Painting) e).getArt();
             if (getPaintLevel() >= a.getBlockHeight() * a.getBlockWidth()) {
                 IconMenu menu = buildMenu((Painting) e);
                 menu.open(event.getPlayer());
-            } 
+            }
             else {
                 Location loc = e.getLocation().add(0, -a.getBlockHeight() / 2.0, 0);
                 HoloMessage.popup(event.getPlayer(), loc, ChatColor.RED + "Not enough paint!");
             }
-        } 
+        }
         else if (e instanceof Wolf) {
             Wolf wolf = (Wolf) e;
             wolf.setCollarColor(getColour());
@@ -286,16 +241,10 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     }
 
     private void find(Block b, Material mat, Set<Block> blocks, int max) {
-        if (b.getType() != mat || getBlockColour(b) == getColour()) {
-            return;
-        } 
-        else if (blocks.contains(b)) {
-            return;
-        } 
-        else if (blocks.size() > max) {
+        if (b.getType() != mat || getBlockColour(b) == getColour() || blocks.contains(b) || blocks.size() > max) {
             return;
         }
-        
+
         blocks.add(b);
         find(b.getRelative(BlockFace.UP), mat, blocks, max);
         find(b.getRelative(BlockFace.EAST), mat, blocks, max);
@@ -305,62 +254,42 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         find(b.getRelative(BlockFace.DOWN), mat, blocks, max);
     }
 
-    @SuppressWarnings("deprecation")
-	private DyeColor getBlockColour(Block b) {
+    private DyeColor getBlockColour(Block b) {
         if (STBUtil.isColorable(b.getType())) {
             return DyeColor.getByWoolData(b.getData());
-        } 
-        else if (isStainableWood(b.getType())) {
-            switch (b.getData() & 0x07) {
-                case 0: return DyeColor.GRAY; // Oak
-                case 1: return DyeColor.BROWN; // Spruce
-                case 2: return DyeColor.WHITE; // Birch
-                case 3: return DyeColor.PINK; // Jungle
-                case 4: return DyeColor.ORANGE; // Acacia
-                case 5: return DyeColor.BLACK; // Dark Oak
-            }
-        } 
+        }
         else {
             return null;
         }
-        
-        return STBUtil.isColorable(b.getType()) ? DyeColor.getByWoolData(b.getData()) : null;
     }
 
     @SuppressWarnings("deprecation")
-	private int paintBlocks(Player player, Block... blocks) {
+    private int paintBlocks(Player player, Block... blocks) {
         int painted = 0;
-        
+
         for (Block b : blocks) {
             if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
                 continue;
             }
-            
+
             Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
-            
-            if (stb != null && stb instanceof Colorable) {
+
+            if (stb instanceof Colorable) {
                 ((Colorable) stb).setColor(getColour());
-            } 
-            else if (isStainableWood(b.getType())) {
-                int data = b.getData() & 0xf8;
-                data |= getWoodType(getColour()).getData();
-                b.setData((byte) data);
-            } 
+            }
             else {
                 if (b.getType() == Material.GLASS) {
                     b.setType(Material.STAINED_GLASS);
-                } 
+                }
                 else if (b.getType() == Material.THIN_GLASS) {
                     b.setType(Material.STAINED_GLASS_PANE);
                 }
-                
-                b.setData(getColour().getWoolData());
             }
-            
+
             painted++;
             setPaintLevel(getPaintLevel() - 1);
-            
+
             if (getPaintLevel() <= 0) {
                 break;
             }
@@ -368,40 +297,22 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         return painted;
     }
 
-    private TreeSpecies getWoodType(DyeColor colour) {
-        switch (colour) {
-            case GRAY: 
-            	return TreeSpecies.GENERIC; // oak
-            case BROWN: 
-            	return TreeSpecies.REDWOOD; // spruce
-            case WHITE: 
-            	return TreeSpecies.BIRCH;
-            case PINK: 
-            	return TreeSpecies.JUNGLE;
-            case ORANGE: 
-            	return TreeSpecies.ACACIA;
-            case BLACK: 
-            	return TreeSpecies.DARK_OAK;
-            default: 
-            	return TreeSpecies.GENERIC;
-        }
-    }
-
     @Override
     public void onOptionClick(IconMenu.OptionClickEvent event) {
         Validate.notNull(editingPainting, "Editing painting should be non-null here!");
         String artName = event.getName();
-        
+
         try {
             Art art = Art.valueOf(artName);
             editingPainting.setArt(art);
             setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
             event.getPlayer().setItemInHand(toItemStack());
             event.getPlayer().playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             MiscUtil.errorMessage(event.getPlayer(), "Invalid artwork: " + artName);
         }
-        
+
         event.setWillClose(true);
         event.setWillDestroy(true);
         editingPainting = null;
@@ -412,23 +323,23 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         Art[] other = getOtherArt(painting.getArt());
         IconMenu menu = new IconMenu("Select Artwork", STBUtil.roundUp(other.length, 9), this, getProviderPlugin());
         int pos = 0;
-        
+
         for (Art a : other) {
             menu.setOption(pos++, new ItemStack(Material.PAINTING), a.name(), "");
         }
-        
+
         return menu;
     }
 
     private static Art[] getOtherArt(Art art) {
         List<Art> l = new ArrayList<>();
-        
+
         for (Art a : Art.values()) {
             if (a.getBlockWidth() == art.getBlockWidth() && a.getBlockHeight() == art.getBlockHeight() && a != art) {
                 l.add(a);
             }
         }
-        
+
         return l.toArray(new Art[0]);
     }
 }

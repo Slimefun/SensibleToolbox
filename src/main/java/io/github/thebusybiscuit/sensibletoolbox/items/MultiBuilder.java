@@ -48,7 +48,7 @@ import me.desht.dhutils.block.BlockUtil;
 import me.desht.dhutils.cost.ItemCost;
 
 public class MultiBuilder extends BaseSTBItem implements Chargeable {
-	
+
     public static final int MAX_BUILD_BLOCKS = 9;
     public static final int DEF_SCU_PER_OPERATION = 40;
     private static final Map<UUID, LinkedBlockingQueue<SwapRecord>> swapQueues = new HashMap<>();
@@ -67,19 +67,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         charge = conf.getDouble("charge");
         String s = conf.getString("material");
         mat = s.isEmpty() ? null : thawMaterialData(s);
-    }
-
-    @SuppressWarnings("deprecation")
-	private MaterialData thawMaterialData(String s) {
-        String[] f = s.split(":");
-        Material mat = Material.valueOf(f[0]);
-        byte data = f.length > 1 ? Byte.parseByte(f[1]) : 0;
-        return mat.getNewData(data);
-    }
-
-    @SuppressWarnings("deprecation")
-	private String freezeMaterialData(MaterialData mat) {
-        return mat.getItemType().toString() + ":" + Byte.toString(mat.getData());
     }
 
     public Mode getMode() {
@@ -124,28 +111,18 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     @Override
     public String[] getLore() {
         switch (getMode()) {
-            case BUILD:
-                return new String[]{
-                        "L-click block: " + ChatColor.RESET + "preview",
-                        "R-click block: " + ChatColor.RESET + "build",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "build one",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "EXCHANGE mode"
-                };
-            case EXCHANGE:
-                return new String[]{
-                        "L-click block: " + ChatColor.RESET + "exchange one block",
-                        "R-click block: " + ChatColor.RESET + "exchange many blocks",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "set target block",
-                        UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "BUILD mode"
-                };
-            default:
-                return new String[0];
+        case BUILD:
+            return new String[] { "L-click block: " + ChatColor.RESET + "preview", "R-click block: " + ChatColor.RESET + "build", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "build one", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "EXCHANGE mode" };
+        case EXCHANGE:
+            return new String[] { "L-click block: " + ChatColor.RESET + "exchange one block", "R-click block: " + ChatColor.RESET + "exchange many blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "set target block", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "BUILD mode" };
+        default:
+            return new String[0];
         }
     }
 
     @Override
     public String[] getExtraLore() {
-        return new String[] {STBUtil.getChargeString(this)};
+        return new String[] { STBUtil.getChargeString(this) };
     }
 
     @Override
@@ -172,58 +149,58 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     @Override
     public String getDisplaySuffix() {
         switch (getMode()) {
-            case BUILD:
-                return "Build";
-            case EXCHANGE:
-                String s = mat == null ? "" : " [" + ItemNames.lookup(mat.toItemStack(1)) + "]";
-                return "Swap " + s;
-            default:
-                return null;
+        case BUILD:
+            return "Build";
+        case EXCHANGE:
+            String s = mat == null ? "" : " [" + ItemNames.lookup(mat.toItemStack(1)) + "]";
+            return "Swap " + s;
+        default:
+            return null;
         }
     }
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         switch (getMode()) {
-            case BUILD:
-                handleBuildMode(event);
-                break;
-            case EXCHANGE:
-                handleExchangeMode(event);
-                break;
+        case BUILD:
+            handleBuildMode(event);
+            break;
+        case EXCHANGE:
+            handleExchangeMode(event);
+            break;
         }
     }
 
     @Override
     public void onItemHeld(PlayerItemHeldEvent event) {
         int delta = event.getNewSlot() - event.getPreviousSlot();
-        
+
         if (delta == 0) {
             return;
-        } 
+        }
         else if (delta >= 6) {
             delta -= 9;
-        } 
+        }
         else if (delta <= -6) {
             delta += 9;
         }
-        
+
         delta = (delta > 0) ? 1 : -1;
         int o = getMode().ordinal() + delta;
-        
+
         if (o < 0) {
             o = Mode.values().length - 1;
-        } 
+        }
         else if (o >= Mode.values().length) {
             o = 0;
         }
-        
+
         setMode(Mode.values()[o]);
         event.getPlayer().setItemInHand(toItemStack());
     }
 
     @SuppressWarnings("deprecation")
-	private void handleExchangeMode(PlayerInteractEvent event) {
+    private void handleExchangeMode(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block clicked = event.getClickedBlock();
 
@@ -232,7 +209,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // set the target material
                 mat = clicked.getType().getNewData(clicked.getData());
                 player.setItemInHand(toItemStack());
-            } 
+            }
             else if (mat != null) {
                 // replace multiple blocks
                 int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
@@ -240,9 +217,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 startSwap(event.getPlayer(), this, clicked, mat, layers);
                 Debugger.getInstance().debug(this + ": replacing " + layers + " layers of blocks");
             }
-            
+
             event.setCancelled(true);
-        } 
+        }
         else if (event.getAction() == Action.LEFT_CLICK_BLOCK && mat != null) {
             // replace a single block
             startSwap(event.getPlayer(), this, clicked, mat, 0);
@@ -251,13 +228,13 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     @SuppressWarnings("deprecation")
-	private void startSwap(Player player, MultiBuilder builder, Block origin, MaterialData target, int maxBlocks) {
+    private void startSwap(Player player, MultiBuilder builder, Block origin, MaterialData target, int maxBlocks) {
         LinkedBlockingQueue<SwapRecord> queue = swapQueues.get(player.getWorld().getUID());
         if (queue == null) {
             queue = new LinkedBlockingQueue<>();
             swapQueues.put(player.getWorld().getUID(), queue);
         }
-        
+
         if (queue.isEmpty()) {
             new QueueSwapper(queue).runTaskTimer(SensibleToolbox.getPluginInstance(), 1L, 1L);
         }
@@ -268,16 +245,15 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     @SuppressWarnings("deprecation")
-	private int howMuchDoesPlayerHave(Player p, MaterialData mat) {
+    private int howMuchDoesPlayerHave(Player p, MaterialData mat) {
         int amount = 0;
-        
+
         for (ItemStack stack : p.getInventory()) {
-            if (stack != null && !stack.hasItemMeta() && stack.getType() == mat.getItemType() &&
-                    (losesDataWhenBroken(mat) || stack.getData().getData() == mat.getData())) {
+            if (stack != null && !stack.hasItemMeta() && stack.getType() == mat.getItemType() && (losesDataWhenBroken(mat) || stack.getData().getData() == mat.getData())) {
                 amount += stack.getAmount();
             }
         }
-        
+
         return amount;
     }
 
@@ -292,13 +268,13 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         // we won't replace any block which can hold items, or any STB block, or any unbreakable block
         if (SensibleToolbox.getBlockAt(b.getLocation(), true) != null) {
             return false;
-        } 
+        }
         else if (VanillaInventoryUtils.isVanillaInventory(b)) {
             return false;
-        } 
-        else if (STBUtil.getMaterialHardness(b.getType()) == Double.MAX_VALUE) {
+        }
+        else if (b.getType().getHardness() >= 3600000) {
             return false;
-        } 
+        }
         else {
             return SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.BREAK);
         }
@@ -309,91 +285,86 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Set<Block> blocks = getBuildCandidates(player, event.getClickedBlock(), event.getBlockFace());
-            
+
             if (!blocks.isEmpty()) {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     doBuild(player, event.getClickedBlock(), blocks);
-                } 
+                }
                 else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     showBuildPreview(player, blocks);
                 }
             }
-            
+
             event.setCancelled(true);
         }
     }
 
     private void showBuildPreview(Player player, Set<Block> blocks) {
         Bukkit.getScheduler().runTask(getProviderPlugin(), () -> {
-        	for (Block b : blocks) {
+            for (Block b : blocks) {
                 player.sendBlockChange(b.getLocation(), Material.WHITE_STAINED_GLASS.createBlockData());
             }
         });
-        
+
         Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
-        	for (Block b : blocks) {
+            for (Block b : blocks) {
                 player.sendBlockChange(b.getLocation(), b.getBlockData());
             }
         }, 20L);
     }
 
-    @SuppressWarnings("deprecation")
-	private void doBuild(Player player, Block source, Set<Block> actualBlocks) {
+    private void doBuild(Player player, Block source, Set<Block> actualBlocks) {
         MaterialData matData = source.getType().getNewData(source.getData());
         ItemStack inHand = player.getItemInHand();
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         // we know at this point that the tool has sufficient charge and that the player has sufficient material
         setCharge(getCharge() - chargeNeeded);
-        ItemCost cost = losesDataWhenBroken(matData) ?
-                new ItemCost(matData.getItemType(), actualBlocks.size()) :
-                new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
+        ItemCost cost = losesDataWhenBroken(matData) ? new ItemCost(matData.getItemType(), actualBlocks.size()) : new ItemCost(new ItemStack(source.getType(), actualBlocks.size(), source.getData()));
         cost.apply(player);
-        
+
         for (Block b : actualBlocks) {
             b.setTypeIdAndData(source.getType().getId(), source.getData(), true);
         }
-        
+
         player.setItemInHand(toItemStack());
         player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f);
     }
 
-    @SuppressWarnings("deprecation")
-	private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
+    private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
         int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
         int max = MAX_BUILD_BLOCKS + sharpness * 3;
         MaterialData matData = clickedBlock.getType().getNewData(clickedBlock.getData());
         double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
-        
+
         if (ch == 0) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.5f);
             return Collections.emptySet();
         }
-        
+
         max = Math.min(Math.min(max, howMuchDoesPlayerHave(player, matData)), ch);
         return floodFill(player, clickedBlock.getRelative(blockFace), blockFace.getOppositeFace(), getBuildFaces(blockFace), max);
     }
 
-    @SuppressWarnings("deprecation")
-	private Set<Block> floodFill(Player player, Block origin, BlockFace face, BlockFace[] faces, int max) {
+    private Set<Block> floodFill(Player player, Block origin, BlockFace face, BlockFace[] faces, int max) {
         Block b = origin.getRelative(face);
         LinkedBlockingQueue<Block> queue = new LinkedBlockingQueue<>();
         queue.add(origin);
         Set<Block> result = new HashSet<>();
-        
+
         while (!queue.isEmpty()) {
             Block b0 = queue.poll();
             Block b1 = b0.getRelative(face);
             if (result.size() >= max) {
                 break;
             }
-            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.LONG_GRASS) && b1.getType() == b.getType() && b1.getData() == b.getData() && !result.contains(b0) && canReplace(player, b0)) {
+            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.TALL_GRASS) && b1.getType() == b.getType() && !result.contains(b0) && canReplace(player, b0)) {
                 result.add(b0);
-                
+
                 for (BlockFace f : faces) {
                     if (!player.isSneaking() || filterFace(player, face, f)) {
-                    	queue.add(b0.getRelative(f));
+                        queue.add(b0.getRelative(f));
                     }
                 }
             }
@@ -404,29 +375,33 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private boolean filterFace(Player player, BlockFace clickedFace, BlockFace face) {
         switch (clickedFace) {
-            case NORTH: case SOUTH: case EAST: case WEST:
-                BlockUtil.BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
-                double frac = pos.point.getY() % 1;
-                if (frac > 0.85 || frac < 0.15) {
-                    return face.getModY() != 0;
-                } 
-                else {
-                    return face.getModY() == 0;
-                }
-            case UP: case DOWN:
-                BlockFace playerFace = getRotation(player.getLocation());
-                switch (playerFace) {
-                    case EAST: 
-                    case WEST: 
-                    	return face.getModZ() == 0;
-                    case NORTH: 
-                    case SOUTH: 
-                    	return face.getModX() == 0;
-				default:
-					break;
-                }
-		default:
-			break;
+        case NORTH:
+        case SOUTH:
+        case EAST:
+        case WEST:
+            BlockUtil.BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
+            double frac = pos.point.getY() % 1;
+            if (frac > 0.85 || frac < 0.15) {
+                return face.getModY() != 0;
+            }
+            else {
+                return face.getModY() == 0;
+            }
+        case UP:
+        case DOWN:
+            BlockFace playerFace = getRotation(player.getLocation());
+            switch (playerFace) {
+            case EAST:
+            case WEST:
+                return face.getModZ() == 0;
+            case NORTH:
+            case SOUTH:
+                return face.getModX() == 0;
+            default:
+                break;
+            }
+        default:
+            break;
         }
         return true;
     }
@@ -436,19 +411,19 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         if (rot < 0) {
             rot += 360;
         }
-        
+
         if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
             return BlockFace.NORTH;
-        } 
+        }
         else if (45 <= rot && rot < 135) {
             return BlockFace.EAST;
-        } 
+        }
         else if (135 <= rot && rot < 225) {
             return BlockFace.SOUTH;
-        } 
+        }
         else if (225 <= rot && rot < 315) {
             return BlockFace.WEST;
-        } 
+        }
         else {
             throw new IllegalArgumentException("impossible rotation: " + rot);
         }
@@ -456,44 +431,45 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private BlockFace[] getBuildFaces(BlockFace face) {
         switch (face) {
-            case NORTH: 
-            case SOUTH:
-                return BuildFaces.ns;
-            case EAST: 
-            case WEST:
-                return BuildFaces.ew;
-            case UP: 
-            case DOWN:
-                return BuildFaces.ud;
-		default:
-			break;
+        case NORTH:
+        case SOUTH:
+            return BuildFaces.ns;
+        case EAST:
+        case WEST:
+            return BuildFaces.ew;
+        case UP:
+        case DOWN:
+            return BuildFaces.ud;
+        default:
+            break;
         }
         throw new IllegalArgumentException("invalid face: " + face);
     }
 
     private enum Mode {
-        BUILD, EXCHANGE
+        BUILD,
+        EXCHANGE
     }
 
     private static class BuildFaces {
-    	
-        private static final BlockFace[] ns = {BlockFace.EAST, BlockFace.DOWN, BlockFace.WEST, BlockFace.UP};
-        private static final BlockFace[] ew = {BlockFace.NORTH, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.UP};
-        private static final BlockFace[] ud = {BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH};
-    
+
+        private static final BlockFace[] ns = { BlockFace.EAST, BlockFace.DOWN, BlockFace.WEST, BlockFace.UP };
+        private static final BlockFace[] ew = { BlockFace.NORTH, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.UP };
+        private static final BlockFace[] ud = { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
+
     }
 
     private class QueueSwapper extends BukkitRunnable {
-    	
+
         private final LinkedBlockingQueue<SwapRecord> queue;
-        private final ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE);  // ensure we can mine anything
+        private final ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE); // ensure we can mine anything
 
         public QueueSwapper(LinkedBlockingQueue<SwapRecord> queue) {
             this.queue = queue;
         }
 
         @SuppressWarnings("deprecation")
-		@Override
+        @Override
         public void run() {
             boolean didWork = false;
 
@@ -509,9 +485,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                     continue;
                 }
                 Block b = rec.block;
-                if (b.getType() == rec.target.getItemType() && b.getData() == rec.target.getData()
-                        || rec.builder.getCharge() < rec.chargeNeeded
-                        || !canReplace(rec.player, rec.block)) {
+                if (b.getType() == rec.target.getItemType() && b.getData() == rec.target.getData() || rec.builder.getCharge() < rec.chargeNeeded || !canReplace(rec.player, rec.block)) {
                     continue;
                 }
 
@@ -520,7 +494,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 PlayerInventory inventory = rec.player.getInventory();
                 if (slot < 0 || inventory.getItem(slot) == null) {
                     slot = getSlotForItem(rec.player, rec.target);
-                    
+
                     if (slot == -1) {
                         // player is out of materials to swap: scan the queue and remove any other
                         // records for this player & material, to avoid constant inventory rescanning
@@ -534,7 +508,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                         continue;
                     }
                 }
-                
+
                 ItemStack item = inventory.getItem(slot);
                 item.setAmount(item.getAmount() - 1);
                 inventory.setItem(slot, item.getAmount() > 0 ? item : null);
@@ -547,12 +521,12 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // give materials to the player...
                 if (builderItem.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1) {
                     tool.addEnchantment(Enchantment.SILK_TOUCH, 1);
-                } 
+                }
                 else {
                     tool.removeEnchantment(Enchantment.SILK_TOUCH);
                 }
-                
-                for (ItemStack stack : STBUtil.calculateDrops(b, tool)) {
+
+                for (ItemStack stack : b.getDrops(tool)) {
                     STBUtil.giveItems(rec.player, stack);
                 }
 
@@ -566,7 +540,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                         for (int y = -1; y <= 1; y++) {
                             for (int z = -1; z <= 1; z++) {
                                 Block b1 = b.getRelative(x, y, z);
-                                
+
                                 if ((x != 0 || y != 0 || z != 0) && b1.getType() == rec.source.getItemType() && b1.getData() == rec.source.getData() && STBUtil.isExposed(b1)) {
                                     queue.offer(new SwapRecord(rec.player, b1, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded));
                                 }
@@ -580,10 +554,10 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         @SuppressWarnings("deprecation")
-		private int getSlotForItem(Player player, MaterialData from) {
+        private int getSlotForItem(Player player, MaterialData from) {
             for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
                 ItemStack stack = player.getInventory().getItem(slot);
-                
+
                 if (stack != null && stack.getType() == from.getItemType() && (losesDataWhenBroken(from) || stack.getDurability() == from.getData()) && !stack.hasItemMeta()) {
                     return slot;
                 }
@@ -593,7 +567,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private class SwapRecord {
-    	
+
         private final Player player;
         private final Block block;
         private final MaterialData source;

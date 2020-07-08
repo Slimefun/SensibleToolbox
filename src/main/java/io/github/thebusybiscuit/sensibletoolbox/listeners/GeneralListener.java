@@ -56,6 +56,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
 public class GeneralListener extends STBBaseListener {
+
     private static final String LAST_PISTON_EXTEND = "STB_Last_Piston_Extend";
 
     public GeneralListener(SensibleToolboxPlugin plugin) {
@@ -70,7 +71,7 @@ public class GeneralListener extends STBBaseListener {
                 item.onInteractItem(event);
             }
         }
-        
+
         Block clicked = event.getClickedBlock();
         if (!event.isCancelled() && clicked != null) {
             BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation(), true);
@@ -95,7 +96,7 @@ public class GeneralListener extends STBBaseListener {
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         ItemStack stack = event.getItem();
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-        
+
         if (item != null) {
             item.onItemConsume(event);
         }
@@ -106,7 +107,7 @@ public class GeneralListener extends STBBaseListener {
         if (event.getPlayer().isSneaking()) {
             ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-            
+
             if (item != null) {
                 item.onItemHeld(event);
                 event.setCancelled(true);
@@ -120,7 +121,7 @@ public class GeneralListener extends STBBaseListener {
         if (stb != null) {
             if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.BREAK)) {
                 stb.onBlockDamage(event);
-            } 
+            }
             else {
                 event.setCancelled(true);
             }
@@ -133,10 +134,10 @@ public class GeneralListener extends STBBaseListener {
         if (stb != null) {
             if (!(stb instanceof BaseSTBBlock)) {
                 event.setCancelled(true);
-            } 
+            }
             else if (!stb.checkPlayerPermission(event.getPlayer(), ItemAction.PLACE)) {
                 event.setCancelled(true);
-            } 
+            }
             else if (!((BaseSTBBlock) stb).validatePlaceable(event.getBlock().getLocation())) {
                 event.setCancelled(true);
             }
@@ -151,7 +152,7 @@ public class GeneralListener extends STBBaseListener {
             // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
             Validate.isTrue(stb instanceof BaseSTBBlock, "trying to place a non-block STB item? " + stb.getItemTypeID());
             ((BaseSTBBlock) stb).placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
-            
+
             if (event.isCancelled()) {
                 throw new IllegalStateException("You must not change the cancellation status of a STB block place event!");
             }
@@ -195,7 +196,8 @@ public class GeneralListener extends STBBaseListener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (STBUtil.isCable(event.getBlock())) {
             plugin.getEnergyNetManager().onCableRemoved(event.getBlock());
-        } else {
+        }
+        else {
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getPlayer().getItemInHand());
             if (item != null) {
                 item.onBreakBlockWithItem(event);
@@ -213,19 +215,19 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
-        	Block b = event.getBlock();
+            Block b = event.getBlock();
             WallSign sign = (WallSign) b.getState().getData();
-            
+
             Block attachedTo = b.getRelative(sign.getFacing());
             BaseSTBBlock item = LocationManager.getManager().get(attachedTo.getLocation());
-            
+
             if (item != null) {
                 boolean ret = item.onSignChange(event);
-                
+
                 if (ret) {
                     // pop the sign off next tick; it's done its job
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                    	b.setType(Material.AIR);
+                        b.setType(Material.AIR);
                         b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(b.getType()));
                     });
                 }
@@ -236,10 +238,10 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onLabelSignBroken(BlockBreakEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
-        	WallSign sign = (WallSign) event.getBlock().getState().getData();
+            WallSign sign = (WallSign) event.getBlock().getState().getData();
             Block b2 = event.getBlock().getRelative(sign.getFacing());
             BaseSTBBlock stb = LocationManager.getManager().get(b2.getLocation());
-            
+
             if (stb != null) {
                 stb.detachLabelSign(sign.getFacing().getOppositeFace());
             }
@@ -252,12 +254,12 @@ public class GeneralListener extends STBBaseListener {
         BaseSTBBlock item = LocationManager.getManager().get(block.getLocation());
         if (item != null) {
             item.handlePhysicsEvent(event);
-        } 
+        }
         else {
             if (block.getType() == Material.LEVER) {
                 Directional l = (Directional) block.getState().getData();
                 item = LocationManager.getManager().get(block.getRelative(l.getFacing()).getLocation());
-                
+
                 if (item != null) {
                     event.setCancelled(true);
                 }
@@ -268,7 +270,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onFlow(BlockFromToEvent event) {
         BaseSTBBlock item = LocationManager.getManager().get(event.getToBlock().getLocation());
-        
+
         if (item != null) {
             // this prevents things like the carpet layer on a solar cell being washed off
             event.setCancelled(true);
@@ -281,7 +283,7 @@ public class GeneralListener extends STBBaseListener {
         while (iter.hasNext()) {
             Block b = iter.next();
             BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
-            
+
             if (stb != null) {
                 if (stb.onEntityExplode(event)) {
                     stb.breakBlock(ThreadLocalRandom.current().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
@@ -321,7 +323,8 @@ public class GeneralListener extends STBBaseListener {
                     Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
                     event.getInventory().setResult(null);
                     break;
-                } else if (item instanceof Chargeable && result instanceof Chargeable) {
+                }
+                else if (item instanceof Chargeable && result instanceof Chargeable) {
                     // add the ingredient's charge to the final item's charge
                     finalSCU += ((Chargeable) item).getCharge();
                 }
@@ -335,7 +338,8 @@ public class GeneralListener extends STBBaseListener {
         }
 
         // and ensure vanilla items can't be used in place of custom STB ingredients
-        // (e.g. paper can't be used to craft item router modules, even though a blank module uses paper for its material)
+        // (e.g. paper can't be used to craft item router modules, even though a blank module uses paper for its
+        // material)
         if (result != null) {
             for (ItemStack ingredient : event.getInventory().getMatrix()) {
                 if (ingredient != null) {
@@ -369,7 +373,7 @@ public class GeneralListener extends STBBaseListener {
                         }
                     }
                 }
-            } 
+            }
             else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getCursor());
                 if (item != null && !item.isWearable()) {
@@ -382,10 +386,16 @@ public class GeneralListener extends STBBaseListener {
     private int findNewSlot(InventoryClickEvent event) {
         int from = -1, to = -2;
         switch (event.getSlotType()) {
-            case QUICKBAR: from = 9; to = 35; break;
-            case CONTAINER: from = 0; to = 8; break;
-		default:
-			break;
+        case QUICKBAR:
+            from = 9;
+            to = 35;
+            break;
+        case CONTAINER:
+            from = 0;
+            to = 8;
+            break;
+        default:
+            break;
         }
         for (int i = from; i <= to; i++) {
             if (event.getWhoClicked().getInventory().getItem(i) == null) {
@@ -447,10 +457,10 @@ public class GeneralListener extends STBBaseListener {
     private STBInventoryGUI getGUIForInventoryEvent(InventoryEvent event) {
         if (event.getInventory().getHolder() instanceof STBGUIHolder) {
             return (STBInventoryGUI) ((STBGUIHolder) event.getInventory().getHolder()).getGUI();
-        } 
+        }
         else if (event.getInventory().getHolder() instanceof Player) {
             return (STBInventoryGUI) STBInventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
-        } 
+        }
         else {
             return null;
         }
@@ -459,7 +469,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getItem());
-        
+
         if (item != null && !item.isEnchantable()) {
             event.setCancelled(true);
         }
@@ -470,11 +480,11 @@ public class GeneralListener extends STBBaseListener {
         // work around CB bug where event is called multiple times for a block
         Long when = (Long) STBUtil.getMetadataValue(event.getBlock(), LAST_PISTON_EXTEND);
         long now = System.currentTimeMillis();
-        if (when != null && now - when < 50) {  // 50 ms = 1 tick
+        if (when != null && now - when < 50) { // 50 ms = 1 tick
             return;
         }
         event.getBlock().setMetadata(LAST_PISTON_EXTEND, new FixedMetadataValue(plugin, now));
-        
+
         for (int i = event.getBlocks().size(); i > 0; i--) {
             Block moving = event.getBlock().getRelative(event.getDirection(), i);
             Block to = moving.getRelative(event.getDirection());
@@ -482,47 +492,43 @@ public class GeneralListener extends STBBaseListener {
             if (stb != null) {
                 switch (stb.getPistonMoveReaction()) {
                 case MOVE:
-                	// this has to be deferred, because it's possible that this piston extension was caused
-                	// by a STB block ticking, and modifying the tickers list directly would throw a CME
-                	Bukkit.getScheduler().runTask(plugin, () ->
-                		LocationManager.getManager().moveBlock(stb, moving.getLocation(), to.getLocation())
-                    );
-                	break;
+                    // this has to be deferred, because it's possible that this piston extension was caused
+                    // by a STB block ticking, and modifying the tickers list directly would throw a CME
+                    Bukkit.getScheduler().runTask(plugin, () -> LocationManager.getManager().moveBlock(stb, moving.getLocation(), to.getLocation()));
+                    break;
                 case BLOCK:
-                	event.setCancelled(true);
-                	return; // if this one blocks, all subsequent blocks do too
+                    event.setCancelled(true);
+                    return; // if this one blocks, all subsequent blocks do too
                 case BREAK:
-                	stb.breakBlock(true);
-                	break;
-				default:
-					break;
+                    stb.breakBlock(true);
+                    break;
+                default:
+                    break;
                 }
             }
         }
     }
-    
-	@EventHandler(ignoreCancelled = true)
+
+    @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
         if (event.isSticky()) {
             BaseSTBBlock stb = LocationManager.getManager().get(event.getRetractLocation());
-            
+
             if (stb != null) {
                 switch (stb.getPistonMoveReaction()) {
                 case MOVE:
-                	BlockFace dir = event.getDirection().getOppositeFace();
-                	Location to = event.getRetractLocation().add(dir.getModX(), dir.getModY(), dir.getModZ());
-                	Bukkit.getScheduler().runTask(plugin, () ->
-                		LocationManager.getManager().moveBlock(stb, event.getRetractLocation(), to)
-                	);
-                	break;
+                    BlockFace dir = event.getDirection().getOppositeFace();
+                    Location to = event.getRetractLocation().add(dir.getModX(), dir.getModY(), dir.getModZ());
+                    Bukkit.getScheduler().runTask(plugin, () -> LocationManager.getManager().moveBlock(stb, event.getRetractLocation(), to));
+                    break;
                 case BLOCK:
-                	event.setCancelled(true);
-                	break;
+                    event.setCancelled(true);
+                    break;
                 case BREAK:
-                	stb.breakBlock(true);
-                	break;
-				default:
-					break;
+                    stb.breakBlock(true);
+                    break;
+                default:
+                    break;
                 }
             }
         }

@@ -222,7 +222,7 @@ public class VanillaInventoryUtils {
         
         if (side == BlockFace.UP) {
             // ingredient slot
-            if (!STBUtil.isPotionIngredient(stack.getData())) {
+            if (!STBUtil.isPotionIngredient(stack.getType())) {
                 excess = stack;
             } 
             else {
