@@ -30,6 +30,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.ChatPaginator;
 
+import com.google.common.util.concurrent.SettableFuture;
+
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
@@ -48,7 +50,7 @@ import me.desht.dhutils.PersistableLocation;
  * world.
  */
 public abstract class BaseSTBBlock extends BaseSTBItem {
-	
+
     public static final String STB_BLOCK = "STB_Block";
     public static final String STB_MULTI_BLOCK = "STB_MultiBlock_Origin";
     private boolean needToScanSigns;
@@ -77,15 +79,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     protected BaseSTBBlock(ConfigurationSection conf) {
         super(conf);
         setFacing(BlockFace.valueOf(conf.getString("facing", "SELF")));
-        
+
         if (conf.contains("owner")) {
             setOwner(UUID.fromString(conf.getString("owner")));
         }
-        
+
         redstoneBehaviour = RedstoneBehaviour.valueOf(conf.getString("redstoneBehaviour", "IGNORE"));
         accessControl = AccessControl.valueOf(conf.getString("accessControl", "PUBLIC"));
         ticksLived = 0;
-        needToScanSigns = !conf.contains("labels");  // coming from pre-v0.0.4
+        needToScanSigns = !conf.contains("labels"); // coming from pre-v0.0.4
         byte faces = (byte) conf.getInt("labels", 0);
         labelSigns.or(BitSet.valueOf(new byte[] { faces }));
     }
@@ -117,7 +119,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Set this block's redstone behaviour; whether it ignores the presence of a redstone signal,
      * or requires the signal to be low or high to operate.
      *
-     * @param redstoneBehaviour the new desired redstone behaviour
+     * @param redstoneBehaviour
+     *            the new desired redstone behaviour
      */
     public final void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
         this.redstoneBehaviour = redstoneBehaviour;
@@ -138,7 +141,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Set this block's access control; whether players other than the owner may access the
      * block's GUI or insert/extract items from it.
      *
-     * @param accessControl the new desired access control
+     * @param accessControl
+     *            the new desired access control
      */
     public final void setAccessControl(AccessControl accessControl) {
         this.accessControl = accessControl;
@@ -169,7 +173,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Get the direction that this block faces.  Note that the block may not
+     * Get the direction that this block faces. Note that the block may not
      * necessarily have any visual representation of a facing direction.
      * <p/>
      * An STB block's initial facing direction is determined by the
@@ -182,18 +186,19 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Set the direction that this block faces.  Note that the block may not
+     * Set the direction that this block faces. Note that the block may not
      * necessarily have any visual representation of a facing direction, but
      * label signs can be useful indicator.
      *
-     * @param facing the desired new facing direction
+     * @param facing
+     *            the desired new facing direction
      */
     public final void setFacing(BlockFace facing) {
         this.facing = facing;
     }
 
     /**
-     * Get the UUID of the player who owns this block.  The initial owner of
+     * Get the UUID of the player who owns this block. The initial owner of
      * an STB block is the player who placed it.
      *
      * @return the owning player's UUID, or null if the block has not been placed yet
@@ -205,14 +210,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     /**
      * Set the UUID of the owning player
      *
-     * @param owner the new owning player's UUID
+     * @param owner
+     *            the new owning player's UUID
      */
     public final void setOwner(UUID owner) {
         this.owner = owner;
     }
 
     /**
-     * Get the number of ticks since this block was placed in the world.  This
+     * Get the number of ticks since this block was placed in the world. This
      * will return 0 if called on a block which has not yet been placed, or
      * on a block whose {@link #getTickRate()} method returns 0.
      *
@@ -223,49 +229,47 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Check if this block may be interacted with by the given player.  If the
+     * Check if this block may be interacted with by the given player. If the
      * player has the permission node "stb.access.any" then this method will
      * always return true.
      *
-     * @param player the player to check
+     * @param player
+     *            the player to check
      * @return true if the block may be accessed
      */
     public final boolean hasAccessRights(Player player) {
         switch (getAccessControl()) {
-            case PUBLIC:
-                return true;
-            case PRIVATE:
-                return getOwner().equals(player.getUniqueId())
-                        || player.hasPermission("stb.access.any");
-            case RESTRICTED:
-                return getOwner().equals(player.getUniqueId())
-                        || player.hasPermission("stb.access.any")
-                        || SensibleToolbox.getFriendManager().isFriend(getOwner(), player.getUniqueId());
-            default:
-                return false;
+        case PUBLIC:
+            return true;
+        case PRIVATE:
+            return getOwner().equals(player.getUniqueId()) || player.hasPermission("stb.access.any");
+        case RESTRICTED:
+            return getOwner().equals(player.getUniqueId()) || player.hasPermission("stb.access.any") || SensibleToolbox.getFriendManager().isFriend(getOwner(), player.getUniqueId());
+        default:
+            return false;
         }
     }
 
     /**
      * Check if this block may be interacted with by the player of the given
-     * UUID, based on its current security settings.  Note that no player
+     * UUID, based on its current security settings. Note that no player
      * permission check is done here; see
      * {@link BaseSTBItem#checkPlayerPermission(org.bukkit.entity.Player, me.desht.sensibletoolbox.api.items.BaseSTBItem.ItemAction)}.
      *
-     * @param uuid the UUID to check
+     * @param uuid
+     *            the UUID to check
      * @return true if the block may be accessed
      */
     public final boolean hasAccessRights(UUID uuid) {
         switch (getAccessControl()) {
-            case PUBLIC:
-                return true;
-            case PRIVATE:
-                return uuid == null || getOwner().equals(uuid);
-            case RESTRICTED:
-                return uuid == null || getOwner().equals(uuid)
-                        || SensibleToolbox.getFriendManager().isFriend(getOwner(), uuid);
-            default:
-                return false;
+        case PUBLIC:
+            return true;
+        case PRIVATE:
+            return uuid == null || getOwner().equals(uuid);
+        case RESTRICTED:
+            return uuid == null || getOwner().equals(uuid) || SensibleToolbox.getFriendManager().isFriend(getOwner(), uuid);
+        default:
+            return false;
         }
     }
 
@@ -277,58 +281,60 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public final boolean isRedstoneActive() {
         switch (getRedstoneBehaviour()) {
-            case IGNORE:
-                return true;
-            case HIGH:
-                return getLocation().getBlock().isBlockIndirectlyPowered();
-            case LOW:
-                return !getLocation().getBlock().isBlockIndirectlyPowered();
-            case PULSED:
-                return pulsing;
-            default:
-                return false;
+        case IGNORE:
+            return true;
+        case HIGH:
+            return getLocation().getBlock().isBlockIndirectlyPowered();
+        case LOW:
+            return !getLocation().getBlock().isBlockIndirectlyPowered();
+        case PULSED:
+            return pulsing;
+        default:
+            return false;
         }
     }
 
     /**
-     * Called when an STB block receives a damage event.  The default
+     * Called when an STB block receives a damage event. The default
      * behaviour is to ignore the event.
      *
-     * @param event the block damage event
+     * @param event
+     *            the block damage event
      */
-    public void onBlockDamage(BlockDamageEvent event) {
-    }
+    public void onBlockDamage(BlockDamageEvent event) {}
 
     /**
      * Called when an STB block receives a physics event, i.e. a neighbouring
-     * block has changed state in some way.  The default behaviour is to
+     * block has changed state in some way. The default behaviour is to
      * ignore the event.
      *
-     * @param event the block physics event
+     * @param event
+     *            the block physics event
      */
-    public void onBlockPhysics(BlockPhysicsEvent event) {
-    }
+    public void onBlockPhysics(BlockPhysicsEvent event) {}
 
     /**
      * Called when the redstone power being supplied to an STB block changes.
      *
-     * @param oldPower the block's current power level
-     * @param newPower the block's new power level
+     * @param oldPower
+     *            the block's current power level
+     * @param newPower
+     *            the block's new power level
      */
-    public void onRedstonePowerChanged(int oldPower, int newPower) {
-    }
+    public void onRedstonePowerChanged(int oldPower, int newPower) {}
 
     /**
      * Don't call this method directly; override
      * {@link #onBlockPhysics(org.bukkit.event.block.BlockPhysicsEvent)}
      * instead.
      *
-     * @param event the the block physics event
+     * @param event
+     *            the the block physics event
      */
     public final void handlePhysicsEvent(BlockPhysicsEvent event) {
         int power = event.getBlock().getBlockPower();
         if (power != lastPower) {
-        	Debugger.getInstance().debug(this + " redstone power change: " + lastPower + "->" + power);
+            Debugger.getInstance().debug(this + " redstone power change: " + lastPower + "->" + power);
             onRedstonePowerChanged(lastPower, power);
             if (lastPower == 0 && power > 0 && getRedstoneBehaviour() == RedstoneBehaviour.PULSED) {
                 pulsing = true;
@@ -341,19 +347,19 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Called when an STB block is interacted with by a player.  The default
+     * Called when an STB block is interacted with by a player. The default
      * behaviour allows for the block to be labelled by left-clicking it with
-     * a sign in hand.  If you override this method and want to keep this
+     * a sign in hand. If you override this method and want to keep this
      * behaviour, be sure to call super.onInteractBlock().
      * <p/>
      * Note that cancelling this event will also prevent the block from being
      * broken by normal means.
      *
-     * @param event the interaction event
+     * @param event
+     *            the interaction event
      */
     public void onInteractBlock(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK && Tag.SIGNS.isTagged(event.getPlayer().getInventory().getItemInMainHand().getType())
-                && !Tag.STANDING_SIGNS.isTagged(event.getClickedBlock().getType()) && !Tag.WALL_SIGNS.isTagged(event.getClickedBlock().getType())) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK && Tag.SIGNS.isTagged(event.getPlayer().getInventory().getItemInMainHand().getType()) && !Tag.STANDING_SIGNS.isTagged(event.getClickedBlock().getType()) && !Tag.WALL_SIGNS.isTagged(event.getClickedBlock().getType())) {
             // attach a label sign
             if (attachLabelSign(event)) {
                 labelSigns.set(STBUtil.getFaceRotation(getFacing(), event.getBlockFace()));
@@ -363,10 +369,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Called when a sign attached to an STB block is updated.  The default
+     * Called when a sign attached to an STB block is updated. The default
      * behaviour is to ignore the event.
      *
-     * @param event the sign change event
+     * @param event
+     *            the sign change event
      * @return true if the sign should be popped off the block
      */
     public boolean onSignChange(SignChangeEvent event) {
@@ -374,11 +381,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Called when this STB block has been hit by an explosion.  The default
+     * Called when this STB block has been hit by an explosion. The default
      * behaviour is to return true; STB blocks will break and drop their item
      * form if hit by an explosion.
      *
-     * @param event the explosion event
+     * @param event
+     *            the explosion event
      * @return true if the explosion should cause the block to break, false otherwise
      */
     public boolean onEntityExplode(EntityExplodeEvent event) {
@@ -386,8 +394,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Get a list of extra blocks this STB block has.  By default this returns
-     * an empty list, but multi-block structures should override this.  Each
+     * Get a list of extra blocks this STB block has. By default this returns
+     * an empty list, but multi-block structures should override this. Each
      * element of the list is a vector containing a relative offset from the
      * item's base location.
      *
@@ -398,7 +406,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * This method should not be called directly.  It is automatically called
+     * This method should not be called directly. It is automatically called
      * every tick for every block placed in the world for which
      * {@link #getTickRate()} returns a non-zero value.
      */
@@ -411,42 +419,41 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * any STB block where {@link #getTickRate()} returns a non-zero value.
      * Override this method to define any periodic behaviour of the block.
      */
-    public void onServerTick() {
-    }
+    public void onServerTick() {}
 
     /**
      * Defines the rate at which the block ticks. {@link #onServerTick()} will
-     * be called this frequently.  Override this method to have the block
-     * tick at the desired frequency.  The default rate of 0 means that the
+     * be called this frequently. Override this method to have the block
+     * tick at the desired frequency. The default rate of 0 means that the
      * block will not tick at all.
      */
     public int getTickRate() {
         return 0;
     }
 
-//    /**
-//     * Called when the chunk that an STB block is in gets loaded.
-//     */
-//    public void onChunkLoad() {
-//    }
-//
-//    /**
-//     * Called when the chunk that an STB block is in gets unloaded.
-//     */
-//    public void onChunkUnload() {
-//    }
+    // /**
+    // * Called when the chunk that an STB block is in gets loaded.
+    // */
+    // public void onChunkLoad() {
+    // }
+    //
+    // /**
+    // * Called when the chunk that an STB block is in gets unloaded.
+    // */
+    // public void onChunkUnload() {
+    // }
 
     /**
-     * Called when an STB block has completely burned away.  This is called
+     * Called when an STB block has completely burned away. This is called
      * with EventPriority.MONITOR; do not attempt to cancel this event.
      *
-     * @param event the block burn event
+     * @param event
+     *            the block burn event
      */
-    public void onBlockBurnt(BlockBurnEvent event) {
-    }
+    public void onBlockBurnt(BlockBurnEvent event) {}
 
     /**
-     * Get the location of the base block of this STB block.  This could be
+     * Get the location of the base block of this STB block. This could be
      * null if called on an STB Block object which has not yet been placed in
      * the world (i.e. in item form).
      *
@@ -459,7 +466,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     /**
      * Get the location relative to this block in the given direction.
      *
-     * @param face the direction
+     * @param face
+     *            the direction
      * @return the relative location
      */
     public final Location getRelativeLocation(BlockFace face) {
@@ -467,7 +475,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Get a persistable location for the base block of this STB block.  This
+     * Get a persistable location for the base block of this STB block. This
      * could be null if called on an STB Block object which has not yet been
      * placed in the world (i.e. in item form).
      *
@@ -483,8 +491,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * {@link #placeBlock(org.bukkit.block.Block, org.bukkit.entity.Player,
      * org.bukkit.block.BlockFace)} method.
      *
-     * @param loc the base block location
-     * @throws IllegalArgumentException if the new location is null or the block's current location is non-null
+     * @param loc
+     *            the base block location
+     * @throws IllegalArgumentException
+     *             if the new location is null or the block's current location is non-null
      */
     public final void setLocation(LocationManager.BlockAccess blockAccess, Location loc) {
         Validate.notNull(blockAccess, "Don't call this method directly");
@@ -501,20 +511,24 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         Block b = loc.getBlock();
         int dx = 0, dz = 0;
         switch (getFacing()) {
-            case NORTH:
-                dz = -pos.getFront(); dx = -pos.getLeft();
-                break;
-            case SOUTH:
-                dz = pos.getFront(); dx = pos.getLeft();
-                break;
-            case EAST:
-                dz = -pos.getLeft(); dx = pos.getFront();
-                break;
-            case WEST:
-                dz = pos.getLeft(); dx = -pos.getFront();
-                break;
-		default:
-			break;
+        case NORTH:
+            dz = -pos.getFront();
+            dx = -pos.getLeft();
+            break;
+        case SOUTH:
+            dz = pos.getFront();
+            dx = pos.getLeft();
+            break;
+        case EAST:
+            dz = -pos.getLeft();
+            dx = pos.getFront();
+            break;
+        case WEST:
+            dz = pos.getLeft();
+            dx = -pos.getFront();
+            break;
+        default:
+            break;
         }
         return b.getRelative(dx, pos.getUp(), dz);
     }
@@ -522,8 +536,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     /**
      * Don't call this method directly.
      *
-     * @param oldLoc the block's previous location
-     * @param newLoc the block's new location
+     * @param oldLoc
+     *            the block's previous location
+     * @param newLoc
+     *            the block's new location
      */
     public final void moveTo(LocationManager.BlockAccess blockAccess, final Location oldLoc, final Location newLoc) {
         Validate.notNull(blockAccess, "Don't call this method directly");
@@ -550,12 +566,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
 
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
-        	Block b = oldLoc.getBlock();
-        	
+            Block b = oldLoc.getBlock();
+
             for (int rotation = 0; rotation < 4; rotation++) {
                 if (labelSigns.get(rotation)) {
                     Block signBlock = b.getRelative(STBUtil.getRotatedFace(getFacing(), rotation));
-                    
+
                     if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
                         signBlock.setType(Material.AIR);
                     }
@@ -564,13 +580,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         });
 
         Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), () -> {
-        	Block b = newLoc.getBlock();
-        	
+            Block b = newLoc.getBlock();
+
             for (int rotation = 0; rotation < 4; rotation++) {
                 if (labelSigns.get(rotation)) {
                     BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
                     Block signBlock = b.getRelative(face);
-                    
+
                     if (!placeLabelSign(signBlock, face)) {
                         labelSigns.set(rotation, false);
                     }
@@ -581,18 +597,20 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     /**
      * Don't call this method directly; it is implicitly called when a block
-     * is registered with STB.  Override {@link #onBlockRegistered(org.bukkit.Location, boolean)}
+     * is registered with STB. Override {@link #onBlockRegistered(org.bukkit.Location, boolean)}
      * if you need to run a specific task on registration.
      *
-     * @param location the location where the block has been registered
-     * @param isPlacing if true, this is being called because the block is
-     *                  being placed by a player; if false, because the block
-     *                  is being restored from persisted data
+     * @param location
+     *            the location where the block has been registered
+     * @param isPlacing
+     *            if true, this is being called because the block is
+     *            being placed by a player; if false, because the block
+     *            is being restored from persisted data
      */
     public final void preRegister(LocationManager.BlockAccess blockAccess, Location location, boolean isPlacing) {
         Validate.notNull(blockAccess, "Don't call this method directly");
         location.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
-        
+
         for (RelativePosition pos : getBlockStructure()) {
             Block auxBlock = getAuxiliaryBlock(location, pos);
             Debugger.getInstance().debug(2, "Multiblock for " + this + " -> " + auxBlock);
@@ -603,7 +621,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         // defer this so it's done after the block is actually placed in the world
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
-        	lastPower = getLocation().getBlock().getBlockPower();
+            lastPower = getLocation().getBlock().getBlockPower();
         });
 
         if (needToScanSigns) {
@@ -617,37 +635,41 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     /**
      * Called when an STB block has been broken and is being unregistered. The
      * block's location and GUI (if any) are still valid at this point, but
-     * all physical blocks have been set to AIR.  Use this method to perform
+     * all physical blocks have been set to AIR. Use this method to perform
      * any block-specific shutdown tasks, e.g. drop items from inventory.
      *
-     * @param location location of the base (primary) block of this STB block
+     * @param location
+     *            location of the base (primary) block of this STB block
      */
-    public void onBlockUnregistered(Location location) {
-    }
+    public void onBlockUnregistered(Location location) {}
 
     /**
      * Called when an STB block has been registered with the location manager
-     * after being placed.  The physical block has not necessarily been drawn
+     * after being placed. The physical block has not necessarily been drawn
      * in the world at this point, but {@link #getLocation()} will return the
      * block's location.
      *
-     * @param location the location where the block has been registered
-     * @param isPlacing if true, this is being called because the block is
-     *                  being placed by a player; if false, because the block
-     *                  is being restored from persisted data
+     * @param location
+     *            the location where the block has been registered
+     * @param isPlacing
+     *            if true, this is being called because the block is
+     *            being placed by a player; if false, because the block
+     *            is being restored from persisted data
      */
-    public void onBlockRegistered(Location location, boolean isPlacing) {
-    }
+    public void onBlockRegistered(Location location, boolean isPlacing) {}
 
     /**
-     * Do the basic initialisation for a newly-placed STB block.  This method
-     * does not actually place the physical block in the world.  This is
+     * Do the basic initialisation for a newly-placed STB block. This method
+     * does not actually place the physical block in the world. This is
      * automatically called when a block is placed by a player, but it can be
      * directly if a block should be placed by some other means.
      *
-     * @param block the world block where this STB block is being placed
-     * @param player the player placing the block
-     * @param facing the direction that the block should face
+     * @param block
+     *            the world block where this STB block is being placed
+     * @param player
+     *            the player placing the block
+     * @param facing
+     *            the direction that the block should face
      */
     public final void placeBlock(final Block block, Player player, BlockFace facing) {
         setFacing(facing);
@@ -663,12 +685,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     /**
      * Cause this STB block to break, removing it, any auxiliary blocks and
-     * any attached label signs from the world.  This is automatically called
+     * any attached label signs from the world. This is automatically called
      * when a block is broken by a player, but can be called directly if the
      * block should be broken by some other means.
      *
-     * @param dropItem if true, drop the block's item form as a collectable
-     *                 item
+     * @param dropItem
+     *            if true, drop the block's item form as a collectable
+     *            item
      */
     public final void breakBlock(boolean dropItem) {
         Location baseLoc = this.getLocation();
@@ -690,7 +713,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             auxBlock.removeMetadata(STB_MULTI_BLOCK, SensibleToolboxPlugin.getInstance());
             auxBlock.setType(Material.AIR);
         }
-        
+
         origin.removeMetadata(BaseSTBBlock.STB_BLOCK, SensibleToolboxPlugin.getInstance());
         origin.setType(Material.AIR);
 
@@ -710,13 +733,14 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Validate that this STB block (which may be a multi-block structure) is
      * placeable at the given location.
      *
-     * @param baseLoc the location of the STB block's base block
+     * @param baseLoc
+     *            the location of the STB block's base block
      * @return true if the STB block is placeable; false otherwise
      */
     public final boolean validatePlaceable(Location baseLoc) {
         for (RelativePosition rPos : getBlockStructure()) {
             Block b = getAuxiliaryBlock(baseLoc, rPos);
-            
+
             if (b.getType() != Material.AIR && b.getType() != Material.WATER) {
                 return false;
             }
@@ -731,8 +755,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         BaseSTBBlock that = (BaseSTBBlock) o;
 
-        if (persistableLocation != null ? !persistableLocation.equals(that.persistableLocation) : that.persistableLocation != null)
-            return false;
+        if (persistableLocation != null ? !persistableLocation.equals(that.persistableLocation) : that.persistableLocation != null) return false;
 
         return true;
     }
@@ -746,15 +769,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Mark this block as having been modified and thus in need of saving.
      * This should be called whenever a serializable field of a block is
      * modified to ensure that the change is saved to persistent storage.
-     *<p>
+     * <p>
      * This method is a no-op if the block is not actually placed in the
      * world, i.e. it's a item in an inventory
      *
-     * @param redraw if true, also redraw the block in the world
+     * @param redraw
+     *            if true, also redraw the block in the world
      */
     public final void update(boolean redraw) {
         Location loc = getLocation();
-        
+
         if (loc != null) {
             if (redraw) {
                 repaint(loc.getBlock());
@@ -768,17 +792,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * you override this method (to repaint auxiliary blocks), be sure to call
      * the superclass method.
      *
-     * @param block the base (primary) block of this STB block
+     * @param block
+     *            the base (primary) block of this STB block
      */
-    @SuppressWarnings("deprecation")
-	public void repaint(Block block) {
-        // maybe one day Bukkit will have a block set method which takes a MaterialData
-        block.setTypeIdAndData(getMaterialData().getItemTypeId(), getMaterialData().getData(), true);
+    public void repaint(Block block) {
+        block.setType(getMaterial(), true);
     }
 
     /**
      * Define whether this STB block can be pushed or pulled by a piston, and if
-     * doing so would break it.  The default behaviour is to allow movement;
+     * doing so would break it. The default behaviour is to allow movement;
      * override this in subclasses to modify the behaviour.
      *
      * @return the move reaction: one of MOVE, BLOCK, or BREAK
@@ -790,7 +813,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     /**
      * Define whether this block supports the given redstone behaviour mode.
      *
-     * @param behaviour the mode to check
+     * @param behaviour
+     *            the mode to check
      * @return true if the block supports this behaviour; false otherwise
      */
     public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
@@ -798,7 +822,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Builds the inventory-based GUI for this block.  Override in subclasses.
+     * Builds the inventory-based GUI for this block. Override in subclasses.
      *
      * @return the GUI object (may be null if this block doesn't have a GUI)
      */
@@ -807,9 +831,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Define whether this block is flammable.  This can be used to override the
+     * Define whether this block is flammable. This can be used to override the
      * flammability of blocks, i.e. to make an STB block non-flammable even
-     * if its base material is flammable.  The default behaviour is to return
+     * if its base material is flammable. The default behaviour is to return
      * false; i.e. STB blocks are <em>not</em> flammable by default.
      *
      * @return true if the block should be flammable; false otherwise
@@ -819,7 +843,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     /**
-     * Check if this block is due to be removed.  This will be set to true by
+     * Check if this block is due to be removed. This will be set to true by
      * the {@link #breakBlock(boolean)} method to indicate that the block will
      * be removed by the end of this server tick.
      *
@@ -831,36 +855,35 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     @Override
     public String toString() {
-        return "STB " + getItemName() + " @ " +
-                (getLocation() == null ? "(null)" : formatLocation(getLocation()));
+        return "STB " + getItemName() + " @ " + (getLocation() == null ? "(null)" : formatLocation(getLocation()));
     }
 
-    private String formatLocation(Location loc)
-    {
-      return String.format("%d,%d,%d,%s", new Object[] { Integer.valueOf(loc.getBlockX()), Integer.valueOf(loc.getBlockY()), Integer.valueOf(loc.getBlockZ()), loc.getWorld().getName() });
+    private String formatLocation(Location loc) {
+        return String.format("%d,%d,%d,%s", Integer.valueOf(loc.getBlockX()), Integer.valueOf(loc.getBlockY()), Integer.valueOf(loc.getBlockZ()), loc.getWorld().getName());
     }
 
-	/**
-     * Get the label text for the block's label sign.  The default behaviour
+    /**
+     * Get the label text for the block's label sign. The default behaviour
      * is simply to put the block's item name on the first line of the sign;
      * override this in subclasses if you want a customised sign label.
      *
-     * @param face the face to which the sign is attached
+     * @param face
+     *            the face to which the sign is attached
      * @return a 4-line string array of sign label text
      */
     protected String[] getSignLabel(BlockFace face) {
         String[] lines = ChatPaginator.wordWrap(makeItemLabel(face), 13);
         String[] res = new String[4];
-        
+
         for (int i = 0; i < 4; i++) {
             res[i] = i < lines.length ? lines[i] : "";
         }
-        
+
         return res;
     }
 
     /**
-     * Updates any attached label signs.  Call this method when some data that
+     * Updates any attached label signs. Call this method when some data that
      * is represented on a label sign is changed.
      */
     protected void updateAttachedLabelSigns() {
@@ -876,16 +899,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
             String[] text = getSignLabel(face);
             Block b1 = b.getRelative(face);
-            
+
             if (Tag.WALL_SIGNS.isTagged(b1.getType())) {
                 Sign sign = (Sign) b1.getState();
-                
+
                 for (int i = 0; i < text.length; i++) {
                     sign.setLine(i, text[i]);
                 }
-                
+
                 sign.update();
-            } 
+            }
             else {
                 // no sign here (the sign must have been replaced or broken at some point)
                 labelSigns.set(rotation, false);
@@ -905,17 +928,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     private void reattachLabelSigns(Location loc) {
         Block b = loc.getBlock();
         boolean rescanNeeded = false;
-        
+
         for (int rotation = 0; rotation < 4; rotation++) {
             if (labelSigns.get(rotation)) {
                 BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
-                
+
                 if (!placeLabelSign(b.getRelative(face), face)) {
                     rescanNeeded = true;
                 }
             }
         }
-        
+
         if (rescanNeeded) {
             // not all of the signs could be placed (something in the way?)
             scanForAttachedLabelSigns();
@@ -924,13 +947,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     @SuppressWarnings("deprecation")
-	private boolean attachLabelSign(PlayerInteractEvent event) {
+    private boolean attachLabelSign(PlayerInteractEvent event) {
         if (event.getBlockFace().getModY() != 0) {
             // only support placing a label sign on the side of a machine, not the top
             event.setCancelled(true);
             return false;
         }
-        
+
         Block signBlock = event.getClickedBlock().getRelative(event.getBlockFace());
         Player player = event.getPlayer();
 
@@ -962,16 +985,15 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         return true;
     }
 
-    @SuppressWarnings("deprecation")
-	private boolean placeLabelSign(Block signBlock, BlockFace face) {
+    private boolean placeLabelSign(Block signBlock, BlockFace face) {
         if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!
-        	Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
+            Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.SIGN));
             return false;
-        } 
+        }
         else {
-        	Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
+            Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
             // using setTypeIdAndData() here because we don't want to cause a physics update
             signBlock.setTypeIdAndData(Material.WALL_SIGN.getId(), (byte) 0, false);
             Sign sign = (Sign) signBlock.getState();
@@ -979,11 +1001,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             s.setFacingDirection(face);
             sign.setData(s);
             String[] text = getSignLabel(face);
-            
+
             for (int i = 0; i < text.length; i++) {
                 sign.setLine(i, text[i]);
             }
-            
+
             sign.update(false, false);
             return true;
         }
@@ -995,13 +1017,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             return;
         }
         Block b = getLocation().getBlock();
-        for (BlockFace face : new BlockFace[]{BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH}) {
+        for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH }) {
             Block b1 = b.getRelative(face);
-            
+
             if (Tag.WALL_SIGNS.isTagged(b1.getType())) {
                 Sign sign = (Sign) b.getRelative(face).getState();
                 org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
-                
+
                 if (s.getAttachedFace() == face.getOppositeFace()) {
                     labelSigns.set(STBUtil.getFaceRotation(getFacing(), face));
                 }
@@ -1013,31 +1035,30 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Don't call this method directly; it is automatically called when a
      * label sign attached the block is broken.
      *
-     * @param face the face to which the sign was attached
+     * @param face
+     *            the face to which the sign was attached
      */
     public void detachLabelSign(BlockFace face) {
-    	Debugger.getInstance().debug(this + ": detach label sign on face " + face);
+        Debugger.getInstance().debug(this + ": detach label sign on face " + face);
         labelSigns.set(STBUtil.getFaceRotation(getFacing(), face), false);
         update(false);
     }
 
-    private static final UnicodeSymbol[] faceSymbols = {UnicodeSymbol.SQUARE, UnicodeSymbol.ARROW_RIGHT, UnicodeSymbol.ARROW_DOWN, UnicodeSymbol.ARROW_LEFT};
+    private static final UnicodeSymbol[] faceSymbols = { UnicodeSymbol.SQUARE, UnicodeSymbol.ARROW_RIGHT, UnicodeSymbol.ARROW_DOWN, UnicodeSymbol.ARROW_LEFT };
 
     private String makeItemLabel(BlockFace face) {
         int rotation = STBUtil.getFaceRotation(getFacing(), face);
-        return rotation == 1 ?
-                ChatColor.DARK_BLUE + getItemName() + faceSymbols[rotation].toUnicode() :
-                ChatColor.DARK_BLUE + faceSymbols[rotation].toUnicode() + getItemName();
+        return rotation == 1 ? ChatColor.DARK_BLUE + getItemName() + faceSymbols[rotation].toUnicode() : ChatColor.DARK_BLUE + faceSymbols[rotation].toUnicode() + getItemName();
     }
 
     /**
      * Represents the relative position of an auxiliary block from a
-     * multi-block structure.  The position is relative to the block's base
+     * multi-block structure. The position is relative to the block's base
      * location as returned by {@link BaseSTBBlock#getLocation()} and the
      * block's orientation as returned by {@link BaseSTBBlock#getFacing()}
      */
     public class RelativePosition {
-    	
+
         private final int front;
         private final int up;
         private final int left;

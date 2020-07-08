@@ -2,7 +2,6 @@ package io.github.thebusybiscuit.sensibletoolbox.core;
 
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -11,13 +10,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
@@ -27,14 +21,11 @@ import com.google.common.collect.Maps;
 import io.github.thebusybiscuit.sensibletoolbox.api.ItemRegistry;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.attributes.AttributeStorage;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
 public class STBItemRegistry implements ItemRegistry {
-	
+
     public static final UUID STB_ATTRIBUTE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
     public static final String LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
     public static final int MAX_ITEM_ID_LENGTH = 32;
@@ -59,24 +50,26 @@ public class STBItemRegistry implements ItemRegistry {
         String id = item.getItemTypeID();
 
         if (configPrefix != null) {
-        	if (!plugin.getConfig().contains(configPrefix + "." + item.getItemTypeID())) {
-        		plugin.getConfig().set(configPrefix + "." + item.getItemTypeID(), true);
-        		plugin.saveConfig();
-        	}
-        	if (!plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) return;
+            if (!plugin.getConfig().contains(configPrefix + "." + item.getItemTypeID())) {
+                plugin.getConfig().set(configPrefix + "." + item.getItemTypeID(), true);
+                plugin.saveConfig();
+            }
+            if (!plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) return;
         }
 
         Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
         Constructor<? extends BaseSTBItem> ctor0, ctor1;
-        
+
         try {
             ctor0 = item.getClass().getConstructor();
-        } catch (NoSuchMethodException e) {
+        }
+        catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("class " + item.getClass() + " does not have a 0-argument constructor!");
         }
         try {
             ctor1 = item.getClass().getConstructor(ConfigurationSection.class);
-        } catch (NoSuchMethodException e) {
+        }
+        catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("class " + item.getClass() + " does not have a 1-argument (ConfigurationSection) constructor!");
         }
         ReflectionDetails details = new ReflectionDetails(item.getClass(), ctor0, ctor1);
@@ -100,7 +93,8 @@ public class STBItemRegistry implements ItemRegistry {
             registerPermission(permissionPrefix, BaseSTBItem.ItemAction.INTERACT_BLOCK, id);
             try {
                 LocationManager.getManager().loadDeferredBlocks(id);
-            } catch (SQLException e) {
+            }
+            catch (SQLException e) {
                 LogUtils.severe("There was a problem restoring blocks of type '" + id + "' from persisted storage:");
                 e.printStackTrace();
             }
@@ -123,7 +117,6 @@ public class STBItemRegistry implements ItemRegistry {
         if (!isSTBItem(stack)) {
             return null;
         }
-        Configuration conf = getItemAttributes(stack);
         BaseSTBItem item = getItemById(conf.getString("*TYPE"), conf);
         if (item != null) {
             item.storeEnchants(stack);
@@ -131,14 +124,14 @@ public class STBItemRegistry implements ItemRegistry {
         return item;
     }
 
-    @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public <T extends BaseSTBItem> T fromItemStack(ItemStack stack, Class<T> type) {
         BaseSTBItem item = fromItemStack(stack);
+
         if (item != null && type.isAssignableFrom(item.getClass())) {
-            //noinspection unchecked
-            return (T) item;
-        } else {
+            return type.cast(item);
+        }
+        else {
             return null;
         }
     }
@@ -156,7 +149,8 @@ public class STBItemRegistry implements ItemRegistry {
         }
         try {
             return conf == null ? details.ctor0arg.newInstance() : details.ctor1arg.newInstance(conf);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             LogUtils.warning("failed to create STB item from item ID: " + id);
             e.printStackTrace();
             return null;
@@ -170,47 +164,7 @@ public class STBItemRegistry implements ItemRegistry {
 
     @Override
     public boolean isSTBItem(ItemStack stack, Class<? extends BaseSTBItem> c) {
-        if (stack == null || !stack.hasItemMeta()) {
-            return false;
-        }
-        ItemMeta im = stack.getItemMeta();
-        if (im.hasLore()) {
-            List<String> lore = im.getLore();
-            if (!lore.isEmpty() && lore.get(0).startsWith(LORE_PREFIX)) {
-                if (c != null) {
-                    Configuration conf = getItemAttributes(stack);
-                    ReflectionDetails details = reflectionDetailsMap.get(conf.getString("*TYPE"));
-                    return details != null && c.isAssignableFrom(details.clazz);
-                } else {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    private Configuration getItemAttributes(ItemStack stack) {
-        AttributeStorage storage = AttributeStorage.newTarget(stack, STB_ATTRIBUTE_ID);
-        YamlConfiguration conf = new YamlConfiguration();
-        try {
-            String s = storage.getData("");
-            if (s != null) {
-                conf.loadFromString(s);
-                if (Debugger.getInstance().getLevel() > 2) {
-                    Debugger.getInstance().debug(3, "get item attributes for " + STBUtil.describeItemStack(stack) + ":");
-                    for (String k : conf.getKeys(false)) {
-                        Debugger.getInstance().debug(3, "- " + k + " = " + conf.get(k));
-                    }
-                }
-                return conf;
-            } else {
-                throw new IllegalStateException("ItemStack " + stack + " has no STB attribute data!");
-            }
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            return new MemoryConfiguration();
-        }
+        return c.isInstance(fromItemStack(stack));
     }
 
     public Plugin getPlugin(BaseSTBItem item) {
@@ -230,7 +184,7 @@ public class STBItemRegistry implements ItemRegistry {
     }
 
     private class ReflectionDetails {
-    	
+
         private final Class<? extends BaseSTBItem> clazz;
         private final Constructor<? extends BaseSTBItem> ctor0arg;
         private final Constructor<? extends BaseSTBItem> ctor1arg;

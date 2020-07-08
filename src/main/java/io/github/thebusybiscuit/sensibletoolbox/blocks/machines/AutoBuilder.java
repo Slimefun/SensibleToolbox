@@ -35,7 +35,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 
 public class AutoBuilder extends BaseSTBMachine {
-	
+
     private static final int LANDMARKER_SLOT_1 = 10;
     private static final int LANDMARKER_SLOT_2 = 12;
     public static final int MODE_SLOT = 14;
@@ -48,7 +48,7 @@ public class AutoBuilder extends BaseSTBMachine {
     private int buildX;
     private int buildY;
     private int buildZ;
-    private int invSlot;  // the inventory slot index (into getInputSlots()) being pulled from
+    private int invSlot; // the inventory slot index (into getInputSlots()) being pulled from
     private BuilderStatus status = BuilderStatus.NO_WORKAREA;
     private int baseScuPerOp;
 
@@ -114,7 +114,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Can build or clear", "an area.  Use Land Markers", "to define the area"};
+        return new String[] { "Can build or clear", "an area.  Use Land Markers", "to define the area" };
     }
 
     @Override
@@ -164,14 +164,14 @@ public class AutoBuilder extends BaseSTBMachine {
 
         gui.addGadget(new AutoBuilderGadget(gui, MODE_SLOT));
         gui.addGadget(new ButtonGadget(gui, START_BUTTON_SLOT, "Start", null, null, () -> {
-        	if (getStatus() == BuilderStatus.RUNNING) {
+            if (getStatus() == BuilderStatus.RUNNING) {
                 stop(false);
-            } 
+            }
             else {
                 startup();
             }
         }));
-        
+
         ChatColor c = STBUtil.dyeColorToChatColor(status.getColor());
         gui.addLabel(ChatColor.WHITE + "Status: " + c + status, STATUS_SLOT, status.makeTexture(), status.getText());
 
@@ -241,69 +241,69 @@ public class AutoBuilder extends BaseSTBMachine {
             updateAttachedLabelSigns();
         }
     }
-    
-	@Override
+
+    @Override
     public void onServerTick() {
         if (isRedstoneActive() && getStatus() == BuilderStatus.RUNNING && workArea != null) {
             Block b = getLocation().getWorld().getBlockAt(buildX, buildY, buildZ);
             double scuNeeded = 0.0;
             boolean advanceBuildPos = true;
-        	OfflinePlayer owner = Bukkit.getOfflinePlayer(getOwner());
-            
+            OfflinePlayer owner = Bukkit.getOfflinePlayer(getOwner());
+
             switch (getBuildMode()) {
-                case CLEAR:
-                	if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.BREAK_BLOCK)) {
-                        setStatus(BuilderStatus.NO_PERMISSION);
-                        return;
+            case CLEAR:
+                if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.BREAK_BLOCK)) {
+                    setStatus(BuilderStatus.NO_PERMISSION);
+                    return;
+                }
+
+                // just skip over any "unbreakable" blocks (bedrock, ender portal etc.)
+                if (b.getType().getHardness() < 3600000) {
+                    scuNeeded = baseScuPerOp * b.getType().getHardness();
+
+                    if (scuNeeded > getCharge()) {
+                        advanceBuildPos = false;
                     }
-                	
-                    // just skip over any "unbreakable" blocks (bedrock, ender portal etc.)
-                    if (STBUtil.getMaterialHardness(b.getType()) < Double.MAX_VALUE) {
-                        scuNeeded = baseScuPerOp * STBUtil.getMaterialHardness(b.getType());
-                        
-                        if (scuNeeded > getCharge()) {
+                    else if (b.getType() != Material.AIR) {
+                        b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
+                        BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+
+                        if (stb != null) {
+                            stb.breakBlock(false);
+                        }
+                        else {
+                            b.setType(Material.AIR);
+                        }
+                    }
+                }
+                break;
+            case FILL:
+            case WALLS:
+            case FRAME:
+                if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.PLACE_BLOCK)) {
+                    setStatus(BuilderStatus.NO_PERMISSION);
+                    return;
+                }
+
+                if (shouldBuildHere()) {
+                    scuNeeded = baseScuPerOp;
+                    if (scuNeeded > getCharge()) {
+                        advanceBuildPos = false;
+                    }
+                    else if (b.isEmpty() || b.isLiquid()) {
+                        ItemStack item = fetchNextBuildItem();
+
+                        if (item == null) {
+                            setStatus(BuilderStatus.NO_INVENTORY);
                             advanceBuildPos = false;
-                        } 
-                        else if (b.getType() != Material.AIR) {
+                        }
+                        else {
+                            b.setType(item.getType());
                             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-                            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
-                            
-                            if (stb != null) {
-                                stb.breakBlock(false);
-                            } 
-                            else {
-                                b.setType(Material.AIR);
-                            }
                         }
                     }
-                    break;
-                case FILL:
-                case WALLS:
-                case FRAME:
-                	if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.PLACE_BLOCK)) {
-                        setStatus(BuilderStatus.NO_PERMISSION);
-                        return;
-                    }
-                    
-                    if (shouldBuildHere()) {
-                        scuNeeded = baseScuPerOp;
-                        if (scuNeeded > getCharge()) {
-                            advanceBuildPos = false;
-                        } 
-                        else if (b.isEmpty() || b.isLiquid()) {
-                            ItemStack item = fetchNextBuildItem();
-                            
-                            if (item == null) {
-                                setStatus(BuilderStatus.NO_INVENTORY);
-                                advanceBuildPos = false;
-                            } 
-                            else {
-                                b.setType(item.getType());
-                                b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-                            }
-                        }
-                    }
-                    break;
+                }
+                break;
             }
 
             if (scuNeeded <= getCharge()) {
@@ -312,17 +312,16 @@ public class AutoBuilder extends BaseSTBMachine {
 
             if (advanceBuildPos) {
                 buildX++;
-                
+
                 if (buildX > workArea.getUpperX()) {
                     buildX = workArea.getLowerX();
                     buildZ++;
-                    
+
                     if (buildZ > workArea.getUpperZ()) {
                         buildZ = workArea.getLowerZ();
                         buildY += getBuildMode().getYDirection();
-                        
-                        if (getBuildMode().getYDirection() < 0 && buildY < workArea.getLowerY()
-                                || getBuildMode().getYDirection() > 0 && buildY > workArea.getUpperY()) {
+
+                        if (getBuildMode().getYDirection() < 0 && buildY < workArea.getLowerY() || getBuildMode().getYDirection() > 0 && buildY > workArea.getUpperY()) {
                             // finished!
                             stop(true);
                         }
@@ -336,14 +335,14 @@ public class AutoBuilder extends BaseSTBMachine {
 
     private boolean shouldBuildHere() {
         switch (getBuildMode()) {
-            case FILL:
-                return true;
-            case WALLS:
-                return onOuterFace();
-            case FRAME:
-                return onOuterEdge();
-            default:
-                return false;
+        case FILL:
+            return true;
+        case WALLS:
+            return onOuterFace();
+        case FRAME:
+            return onOuterEdge();
+        default:
+            return false;
         }
     }
 
@@ -369,35 +368,35 @@ public class AutoBuilder extends BaseSTBMachine {
 
     private ItemStack fetchNextBuildItem() {
         ItemStack stack = getGUI().getItem(getInputSlots()[invSlot]);
-        
+
         if (stack == null) {
             int scanSlot = invSlot;
-            
+
             for (int i = 0; i < getInputSlots().length; i++) {
                 scanSlot++;
-                
+
                 if (scanSlot >= getInputSlots().length) {
                     scanSlot = 0;
                 }
-                
+
                 if (getGUI().getItem(getInputSlots()[scanSlot]) != null) {
                     break;
                 }
             }
-            
+
             if (scanSlot == invSlot) {
                 return null;
-            } 
+            }
             else {
                 invSlot = scanSlot;
                 stack = getGUI().getItem(getInputSlots()[invSlot]);
             }
         }
-        
+
         if (stack.getAmount() == 1) {
             setInventoryItem(getInputSlots()[invSlot], null);
             return stack;
-        } 
+        }
         else {
             ItemStack res = stack.clone();
             res.setAmount(1);
@@ -425,26 +424,26 @@ public class AutoBuilder extends BaseSTBMachine {
         if (lm1 != null && lm2 != null) {
             Location loc1 = lm1.getMarkedLocation();
             Location loc2 = lm2.getMarkedLocation();
-            
+
             if (!loc1.getWorld().equals(loc2.getWorld())) {
                 return BuilderStatus.LM_WORLDS_DIFFERENT;
             }
-            
+
             Location ourLoc = getLocation();
             Cuboid w = new Cuboid(loc1, loc2);
-            
+
             if (w.contains(ourLoc)) {
                 return BuilderStatus.TOO_NEAR;
             }
-            
+
             if (!w.outset(Cuboid.CuboidDirection.BOTH, MAX_DISTANCE).contains(ourLoc)) {
                 return BuilderStatus.TOO_FAR;
             }
-            
+
             workArea = w;
             setupLandMarkerLabel(getGUI(), loc1, loc2);
             return BuilderStatus.READY;
-        } 
+        }
         else {
             setupLandMarkerLabel(getGUI(), null, null);
             return BuilderStatus.NO_WORKAREA;
@@ -454,12 +453,11 @@ public class AutoBuilder extends BaseSTBMachine {
     private void setupLandMarkerLabel(InventoryGUI gui, Location loc1, Location loc2) {
         if (workArea == null) {
             gui.addLabel("Land Markers", 11, null, "Place two Land Markers", "in these slots, set", "to two opposite corners", "of the area to work.");
-        } 
+        }
         else {
             int v = workArea.volume();
             String s = v == 1 ? "" : "s";
-            gui.addLabel("Land Markers", 11, null, "Work Area:",
-                    MiscUtil.formatLocation(loc1), MiscUtil.formatLocation(loc2), v + " block" + s);
+            gui.addLabel("Land Markers", 11, null, "Work Area:", MiscUtil.formatLocation(loc1), MiscUtil.formatLocation(loc2), v + " block" + s);
         }
     }
 
@@ -480,15 +478,15 @@ public class AutoBuilder extends BaseSTBMachine {
                         stack.setAmount(1);
                         getGUI().getInventory().setItem(slot, stack);
                     }
-                } 
+                }
                 else if (inSlot != null) {
                     getGUI().getInventory().setItem(slot, null);
                 }
                 setStatus(setupWorkArea());
             }
-            
+
             return false; // we just put a copy of the land marker into the builder
-        } 
+        }
         else {
             return super.onSlotClick(player, slot, click, inSlot, onCursor);
         }
@@ -506,12 +504,12 @@ public class AutoBuilder extends BaseSTBMachine {
         if (item instanceof LandMarker && getStatus() != BuilderStatus.RUNNING) {
             if (((LandMarker) item).getMarkedLocation() != null) {
                 insertLandMarker(toInsert);
-            } 
+            }
             else {
                 STBUtil.complain((Player) player, "Land Marker doesn't have a location set!");
             }
-            return 0;  // we just put a copy of the land marker into the builder
-        } 
+            return 0; // we just put a copy of the land marker into the builder
+        }
         else {
             return super.onShiftClickInsert(player, slot, toInsert);
         }
@@ -520,11 +518,11 @@ public class AutoBuilder extends BaseSTBMachine {
     private void insertLandMarker(ItemStack toInsert) {
         ItemStack stack = toInsert.clone();
         stack.setAmount(1);
-        
+
         if (getInventoryItem(LANDMARKER_SLOT_1) == null) {
             setInventoryItem(LANDMARKER_SLOT_1, stack);
             setStatus(setupWorkArea());
-        } 
+        }
         else if (getInventoryItem(LANDMARKER_SLOT_2) == null) {
             setInventoryItem(LANDMARKER_SLOT_2, stack);
             setStatus(setupWorkArea());
@@ -537,7 +535,7 @@ public class AutoBuilder extends BaseSTBMachine {
             setInventoryItem(slot, null);
             setStatus(BuilderStatus.NO_WORKAREA);
             return false;
-        } 
+        }
         else {
             return super.onShiftClickExtract(player, slot, toExtract);
         }
@@ -549,8 +547,7 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     @Override
-    public void onGUIOpened(HumanEntity player) {
-    }
+    public void onGUIOpened(HumanEntity player) {}
 
     @Override
     public void onGUIClosed(HumanEntity player) {
@@ -558,25 +555,25 @@ public class AutoBuilder extends BaseSTBMachine {
             highlightWorkArea((Player) player);
         }
     }
-    
-	private void highlightWorkArea(Player p) {
+
+    private void highlightWorkArea(Player p) {
         if (workArea != null) {
             Block[] corners = workArea.corners();
-            
+
             for (Block b : corners) {
                 p.sendBlockChange(b.getLocation(), Material.LIME_STAINED_GLASS.createBlockData());
             }
-            
+
             Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
-            	if (p.isOnline()) {
+                if (p.isOnline()) {
                     for (Block b : corners) {
                         p.sendBlockChange(b.getLocation(), Material.GREEN_STAINED_GLASS.createBlockData());
                     }
                 }
             }, 25L);
-            
+
             Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
-            	if (p.isOnline()) {
+                if (p.isOnline()) {
                     for (Block b : corners) {
                         p.sendBlockChange(b.getLocation(), b.getBlockData());
                     }
@@ -593,7 +590,7 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     public enum AutoBuilderMode {
-    	
+
         CLEAR(-1),
         FILL(1),
         WALLS(1),
@@ -611,7 +608,7 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     public enum BuilderStatus {
-    	
+
         READY(DyeColor.LIME, "Ready to Operate!"),
         NO_WORKAREA(DyeColor.YELLOW, "No work area has", "been defined yet"),
         NO_INVENTORY(DyeColor.RED, "Out of building material!", "Place more blocks in", "the inventory and", "press Start to resume"),
@@ -651,17 +648,13 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     public class AutoBuilderGadget extends CyclerGadget<AutoBuilderMode> {
-    	
+
         protected AutoBuilderGadget(InventoryGUI gui, int slot) {
             super(gui, slot, "Build Mode");
-            add(AutoBuilderMode.CLEAR, ChatColor.YELLOW, Material.WHITE_STAINED_GLASS,
-                    "Clear all blocks", "in the work area");
-            add(AutoBuilderMode.FILL, ChatColor.YELLOW, Material.BRICK,
-                    "Use inventory to replace", "all empty blocks", "in the work area");
-            add(AutoBuilderMode.WALLS, ChatColor.YELLOW, Material.COBBLESTONE_WALL,
-                    "Use inventory to build", "walls around the", "the work area");
-            add(AutoBuilderMode.FRAME, ChatColor.YELLOW, Material.OAK_FENCE,
-                    "Use inventory to build", "a frame around the", "the work area");
+            add(AutoBuilderMode.CLEAR, ChatColor.YELLOW, Material.WHITE_STAINED_GLASS, "Clear all blocks", "in the work area");
+            add(AutoBuilderMode.FILL, ChatColor.YELLOW, Material.BRICK, "Use inventory to replace", "all empty blocks", "in the work area");
+            add(AutoBuilderMode.WALLS, ChatColor.YELLOW, Material.COBBLESTONE_WALL, "Use inventory to build", "walls around the", "the work area");
+            add(AutoBuilderMode.FRAME, ChatColor.YELLOW, Material.OAK_FENCE, "Use inventory to build", "a frame around the", "the work area");
             setInitialValue(((AutoBuilder) gui.getOwningBlock()).getBuildMode());
         }
 

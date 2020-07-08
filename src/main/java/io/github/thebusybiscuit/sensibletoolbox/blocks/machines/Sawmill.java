@@ -20,9 +20,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class Sawmill extends AbstractIOMachine {
-	
-    public Sawmill() {
-    }
+
+    public Sawmill() {}
 
     public Sawmill(ConfigurationSection conf) {
         super(conf);
@@ -31,18 +30,18 @@ public class Sawmill extends AbstractIOMachine {
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
         for (Material log : Tag.LOGS.getValues()) {
-        	Optional<Material> planks = MaterialConverter.getPlanksFromLog(log);
-            
-        	if (planks.isPresent()) {
-        		crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(log), new ItemStack(planks.get(), 6), 60));
-        	}
+            Optional<Material> planks = MaterialConverter.getPlanksFromLog(log);
+
+            if (planks.isPresent()) {
+                crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(log), new ItemStack(planks.get(), 6), 60));
+            }
         }
-        
+
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_PLATE), new ItemStack(Material.WOOD, 2), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_BUTTON), new ItemStack(Material.WOOD, 1), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WORKBENCH), new ItemStack(Material.WOOD, 4), 40));
+        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CRAFTING_TABLE), new ItemStack(Material.WOOD, 4), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.SIGN), new ItemStack(Material.WOOD, 2), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CHEST), new ItemStack(Material.OAK_PLANKS, 8), 40));
     }
@@ -64,17 +63,17 @@ public class Sawmill extends AbstractIOMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -101,7 +100,7 @@ public class Sawmill extends AbstractIOMachine {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Processes wooden items"};
+        return new String[] { "Processes wooden items" };
     }
 
     @Override

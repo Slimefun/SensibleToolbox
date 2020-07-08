@@ -23,7 +23,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
  * Collection of miscellaneous recipe-related utility methods.
  */
 public class RecipeUtil {
-	
+
     private static final Set<Material> vanillaSmelts = new HashSet<>();
     private static final Map<ItemStack, List<ItemStack>> reverseCustomSmelts = new HashMap<>();
 
@@ -41,7 +41,7 @@ public class RecipeUtil {
 
             // add custom furnace recipes
             ItemStack stack = item.getSmeltingResult();
-            
+
             if (stack != null) {
                 Bukkit.addRecipe(new FurnaceRecipe(item.getKey(), stack, item.getMaterial(), 0, 200));
                 recordReverseSmelt(stack, item.toItemStack());
@@ -56,10 +56,10 @@ public class RecipeUtil {
 
     public static void findVanillaFurnaceMaterials() {
         Iterator<Recipe> iter = Bukkit.recipeIterator();
-        
+
         while (iter.hasNext()) {
             Recipe r = iter.next();
-            
+
             if (r instanceof FurnaceRecipe) {
                 Material mat = ((FurnaceRecipe) r).getInput().getType();
                 vanillaSmelts.add(mat);
@@ -72,7 +72,7 @@ public class RecipeUtil {
         if (!reverseCustomSmelts.containsKey(result)) {
             reverseCustomSmelts.put(result, new ArrayList<>());
         }
-        
+
         reverseCustomSmelts.get(result).add(ingredient);
     }
 
@@ -81,7 +81,8 @@ public class RecipeUtil {
      * via a vanilla furnace recipe, possibly one which was added by an STB
      * item.
      *
-     * @param stack the item stack to check
+     * @param stack
+     *            the item stack to check
      * @return a list of the ingredients which could be smelted into the item
      */
     public static List<ItemStack> getSmeltingIngredientsFor(ItemStack stack) {
@@ -91,10 +92,11 @@ public class RecipeUtil {
 
     /**
      * Check if vanilla items of the given material may be smelted in a
-     * furnace (or smelter).  "Vanilla" means an item stack with no custom
+     * furnace (or smelter). "Vanilla" means an item stack with no custom
      * metadata defined, in particular STB item metadata.
      *
-     * @param mat the material to check
+     * @param mat
+     *            the material to check
      * @return true if vanilla items of the material may be smelted
      */
     public static boolean isVanillaSmelt(Material mat) {
@@ -103,22 +105,24 @@ public class RecipeUtil {
 
     public static String makeRecipeKey(ItemStack item) {
         String res = item.getType().toString();
-        
+
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             res += ":" + item.getItemMeta().getDisplayName();
         }
-        
+
         return res;
     }
 
     public static String makeRecipeKey(boolean ignoreData, ItemStack item) {
-    	if (item == null) return "";
-    	
+        if (item == null) {
+            return "";
+        }
+
         String res = item.getType().toString();
         if (!ignoreData && item.getDurability() != 32767) {
             res += ":" + item.getDurability();
         }
-        
+
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             res += ":" + item.getItemMeta().getDisplayName();
         }

@@ -1,20 +1,20 @@
 package io.github.thebusybiscuit.sensibletoolbox;
 
 /*
-    This file is part of SensibleToolbox
-
-    SensibleToolbox is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    SensibleToolbox is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with SensibleToolbox.  If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of SensibleToolbox
+ * 
+ * SensibleToolbox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SensibleToolbox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SensibleToolbox. If not, see <http://www.gnu.org/licenses/>.
  */
 
 import java.lang.reflect.InvocationTargetException;
@@ -197,7 +197,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public static SensibleToolboxPlugin getInstance() {
         return instance;
     }
-    
+
     public void registerItems() {
         String CONFIG_NODE = "items_enabled";
         String PERMISSION_NODE = "stb";
@@ -291,22 +291,22 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new AdvancedFarm(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new InfernalFarm(), this, CONFIG_NODE, PERMISSION_NODE);
         itemRegistry.registerItem(new AutoFarm2(), this, CONFIG_NODE, PERMISSION_NODE);
-        
+
         if (isProtocolLibEnabled()) {
-        	itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
+            itemRegistry.registerItem(new SoundMuffler(), this, CONFIG_NODE, PERMISSION_NODE);
         }
         if (isHolographicDisplaysEnabled()) {
-        	itemRegistry.registerItem(new HolographicMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
+            itemRegistry.registerItem(new HolographicMonitor(), this, CONFIG_NODE, PERMISSION_NODE);
         }
     }
 
     @Override
     public void onEnable() {
-    	instance = this;
+        instance = this;
 
         LogUtils.init(this);
         new Metrics(this, 6354);
-        
+
         configManager = new ConfigurationManager(this, this);
 
         configCache = new ConfigCache(this);
@@ -319,9 +319,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         Debugger.getInstance().setPrefix("[STB] ");
         Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
-        
+
         if (getConfig().getInt("debug_level") > 0) {
-        	Debugger.getInstance().setTarget(getServer().getConsoleSender());
+            Debugger.getInstance().setTarget(getServer().getConsoleSender());
         }
 
         // try to hook other plugins
@@ -343,7 +343,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         try {
             LocationManager.getManager().load();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             getLogger().log(Level.SEVERE, "An Error occured while loading Locations...", e);
             setEnabled(false);
             return;
@@ -358,7 +359,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             RecipeUtil.findVanillaFurnaceMaterials();
             RecipeUtil.setupRecipes();
             RecipeBook.buildRecipes();
-            
+
             protectionManager = new ProtectionManager(getServer());
         });
 
@@ -367,9 +368,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         Bukkit.getScheduler().runTaskTimer(this, friendManager::save, 60L, 300L);
 
         scheduleEnergyNetTicker();
-        
+
         if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
-        	SlimefunBridge.initiate();
+            new SlimefunBridge(this);
         }
 
         inited = true;
@@ -379,22 +380,23 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         if (!inited) {
             return;
         }
+
         for (Player p : Bukkit.getOnlinePlayers()) {
             // Any open inventory GUI's must be closed -
             // if they stay open after server reload, event dispatch will probably not work,
             // allowing fake items to be removed from them - not a good thing
             InventoryGUI gui = STBInventoryGUI.getOpenGUI(p);
-            
+
             if (gui != null) {
                 gui.hide(p);
                 p.closeInventory();
             }
         }
-        
+
         if (soundMufflerListener != null) {
-        	soundMufflerListener.clear();
+            soundMufflerListener.clear();
         }
-        
+
         LocationManager.getManager().save();
         LocationManager.getManager().shutdown();
 
@@ -404,6 +406,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         instance = null;
     }
+
     private void registerEventListeners() {
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new GeneralListener(this), this);
@@ -415,26 +418,26 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         pm.registerEvents(new AnvilListener(this), this);
         uuidTracker = new PlayerUUIDTracker(this);
         pm.registerEvents(uuidTracker, this);
-        
+
         if (isProtocolLibEnabled()) {
             soundMufflerListener = new SoundMufflerListener(this);
             soundMufflerListener.start();
         }
-        
+
         enderStorageManager = new EnderStorageManager(this);
         pm.registerEvents(enderStorageManager, this);
     }
 
     private void setupProtocolLib() {
         Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
-        
+
         if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
             protocolLibEnabled = true;
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
         }
         if (protocolLibEnabled) {
-            if (getConfig().getBoolean("options.glowing_items"))ItemGlow.init(this);
-        } 
+            if (getConfig().getBoolean("options.glowing_items")) ItemGlow.init(this);
+        }
         else {
             LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
             LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
@@ -471,7 +474,8 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
             return cmds.dispatch(sender, command, label, args);
-        } catch (DHUtilsException e) {
+        }
+        catch (DHUtilsException e) {
             MiscUtil.errorMessage(sender, e.getMessage());
             return true;
         }
@@ -486,16 +490,16 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public Object onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
         if (key.equals("save_interval")) {
             DHValidate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
-        } 
+        }
         else if (key.equals("energy.tick_rate")) {
             DHValidate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
-        } 
+        }
         else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
         }
         else if (key.equals("default_access")) {
             getEnumValue(newVal.toString().toUpperCase(), AccessControl.class);
-        } 
+        }
         else if (key.equals("default_redstone")) {
             getEnumValue(newVal.toString().toUpperCase(), RedstoneBehaviour.class);
         }
@@ -503,16 +507,17 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     @SuppressWarnings({ "unchecked" })
-	private <T> T getEnumValue(String value, Class<T> c) {
+    private <T> T getEnumValue(String value, Class<T> c) {
         try {
             Method m = c.getMethod("valueOf", String.class);
-            //noinspection unchecked
+            // noinspection unchecked
             return (T) m.invoke(null, value);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
                 e.printStackTrace();
                 throw new DHUtilsException(e.getMessage());
-            } 
+            }
             else {
                 throw new DHUtilsException("Unknown value: " + value);
             }
@@ -524,59 +529,90 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         if (key.equals("debug_level")) {
             Debugger dbg = Debugger.getInstance();
             dbg.setLevel((Integer) newVal);
-            
+
             if (dbg.getLevel() > 0) {
                 dbg.setTarget(getServer().getConsoleSender());
-            } 
+            }
             else {
                 dbg.setTarget(null);
             }
-        } 
+        }
         else if (key.equals("save_interval")) {
             LocationManager.getManager().setSaveInterval((Integer) newVal);
-        } 
+        }
         else if (key.equals("energy.tick_rate")) {
             scheduleEnergyNetTicker();
-        } 
+        }
         else if (key.startsWith("gui.texture.")) {
             STBInventoryGUI.buildStockTextures();
         }
         else if (key.equals("default_access")) {
             getConfigCache().setDefaultAccess(AccessControl.valueOf(newVal.toString().toUpperCase()));
-        } 
+        }
         else if (key.equals("default_redstone")) {
             getConfigCache().setDefaultRedstone(RedstoneBehaviour.valueOf(newVal.toString().toUpperCase()));
-        } 
+        }
         else if (key.equals("particle_effects")) {
             getConfigCache().setParticleLevel((Integer) newVal);
-        } 
+        }
         else if (key.equals("noisy_machines")) {
             getConfigCache().setNoisyMachines((Boolean) newVal);
-        } 
+        }
         else if (key.equals("creative_ender_access")) {
             getConfigCache().setCreativeEnderAccess((Boolean) newVal);
         }
     }
 
     private void scheduleEnergyNetTicker() {
-        if (energyTask != null) energyTask.cancel();
-        
+        if (energyTask != null) {
+            energyTask.cancel();
+        }
+
         enetManager.setTickRate(getConfig().getLong("energy.tick_rate", EnergyNetManager.DEFAULT_TICK_RATE));
         energyTask = Bukkit.getScheduler().runTaskTimer(this, enetManager::tick, 1L, enetManager.getTickRate());
     }
 
-    public ConfigurationManager getConfigManager() 			{			return configManager;				}
-    public EnderStorageManager getEnderStorageManager() 	{			return enderStorageManager;			}
-    public STBItemRegistry getItemRegistry() 				{			return itemRegistry;				}
-    public FriendManager getFriendManager() 				{			return friendManager;				}
-    public EnergyNetManager getEnergyNetManager() 			{			return enetManager;					}
-    public ConfigCache getConfigCache() 					{			return configCache;					}
-    public IDTracker getScuRelayIDTracker() 				{			return scuRelayIDTracker;			}
-    public SoundMufflerListener getSoundMufflerListener() 	{			return soundMufflerListener;		}
-    public PlayerUUIDTracker getUuidTracker() 				{			return uuidTracker;					}
-    public ProtectionManager getProtectionManager()			{			return protectionManager;			}
-    
-	public boolean isGlowingEnabled() {
-		return isProtocolLibEnabled() && getConfig().getBoolean("options.glowing_items");
-	}
+    public ConfigurationManager getConfigManager() {
+        return configManager;
+    }
+
+    public EnderStorageManager getEnderStorageManager() {
+        return enderStorageManager;
+    }
+
+    public STBItemRegistry getItemRegistry() {
+        return itemRegistry;
+    }
+
+    public FriendManager getFriendManager() {
+        return friendManager;
+    }
+
+    public EnergyNetManager getEnergyNetManager() {
+        return enetManager;
+    }
+
+    public ConfigCache getConfigCache() {
+        return configCache;
+    }
+
+    public IDTracker getScuRelayIDTracker() {
+        return scuRelayIDTracker;
+    }
+
+    public SoundMufflerListener getSoundMufflerListener() {
+        return soundMufflerListener;
+    }
+
+    public PlayerUUIDTracker getUuidTracker() {
+        return uuidTracker;
+    }
+
+    public ProtectionManager getProtectionManager() {
+        return protectionManager;
+    }
+
+    public boolean isGlowingEnabled() {
+        return isProtocolLibEnabled() && getConfig().getBoolean("options.glowing_items");
+    }
 }

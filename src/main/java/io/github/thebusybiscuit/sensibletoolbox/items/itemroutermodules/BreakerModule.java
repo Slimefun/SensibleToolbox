@@ -14,14 +14,12 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class BreakerModule extends DirectionalItemRouterModule {
-	
+
     private static final ItemStack pick = new ItemStack(Material.DIAMOND_PICKAXE, 1);
 
-    public BreakerModule() {
-    }
+    public BreakerModule() {}
 
     public BreakerModule(ConfigurationSection conf) {
         super(conf);
@@ -30,26 +28,26 @@ public class BreakerModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         Block b = getTargetLocation(loc).getBlock();
-        
-        if (b.isEmpty() || b.isLiquid() || STBUtil.getMaterialHardness(b.getType()) == Double.MAX_VALUE) {
+
+        if (b.isEmpty() || b.isLiquid() || b.getType().getHardness() >= 3600000) {
             return false;
         }
-        
+
         Collection<ItemStack> d = b.getDrops(getBreakerTool());
-        
+
         if (d.isEmpty()) {
             return false;
         }
-        
+
         ItemStack[] drops = d.toArray(new ItemStack[0]);
         ItemStack mainDrop = drops[0];
         ItemStack inBuffer = getItemRouter().getBufferItem();
-        
+
         if (inBuffer == null || inBuffer.isSimilar(mainDrop) && inBuffer.getAmount() < inBuffer.getMaxStackSize()) {
             if (getFilter().shouldPass(mainDrop) && SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(getItemRouter().getOwner()), b, ProtectableAction.BREAK_BLOCK)) {
                 if (inBuffer == null) {
                     getItemRouter().setBufferItem(mainDrop);
-                } 
+                }
                 else {
                     int toAdd = Math.min(mainDrop.getAmount(), inBuffer.getMaxStackSize() - inBuffer.getAmount());
                     getItemRouter().setBufferAmount(inBuffer.getAmount() + toAdd);
@@ -59,14 +57,14 @@ public class BreakerModule extends DirectionalItemRouterModule {
                         b.getWorld().dropItemNaturally(b.getLocation(), stack);
                     }
                 }
-                
+
                 b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                 b.setType(Material.AIR);
-                
+
                 for (int i = 1; i < drops.length; i++) {
                     b.getWorld().dropItemNaturally(b.getLocation(), drops[i]);
                 }
-                
+
                 return true;
             }
         }
@@ -85,12 +83,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[] { 
-        		"Insert into an Item Router", 
-        		"Breaks the block in its", 
-        		"configured direction and", 
-        		"pulls it into the item router"
-        };
+        return new String[] { "Insert into an Item Router", "Breaks the block in its", "configured direction and", "pulls it into the item router" };
     }
 
     @Override

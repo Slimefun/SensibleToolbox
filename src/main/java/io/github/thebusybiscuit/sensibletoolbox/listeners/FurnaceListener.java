@@ -21,33 +21,32 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Recipe.RecipeCalculator;
 
 /**
  * Contains event handlers to ensure vanilla and STB items behave correctly
- * in furnaces.  Many STB items are smeltable, but use vanilla materials which
+ * in furnaces. Many STB items are smeltable, but use vanilla materials which
  * are not; we must ensure that those vanilla items can't be smelted.
  */
 public class FurnaceListener extends STBBaseListener {
-	
+
     public FurnaceListener(SensibleToolboxPlugin plugin) {
         super(plugin);
     }
 
-
-    @EventHandler(ignoreCancelled=true)
+    @EventHandler(ignoreCancelled = true)
     public void onFurnaceInsert(final InventoryClickEvent event) {
         if (event.getInventory().getType() != InventoryType.FURNACE) {
             return;
         }
-        
+
         if (event.getRawSlot() == 0 && event.getCursor().getType() != Material.AIR) {
             if (!validateSmeltingIngredient(event.getCursor())) {
                 event.setCancelled(true);
             }
-        } 
+        }
         else if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 if (!validateSmeltingIngredient(event.getCurrentItem()) && !STBUtil.isFuel(event.getCurrentItem().getType())) {
                     event.setCancelled(true);
                     int newSlot = findNewSlot(event);
-                    
+
                     if (newSlot >= 0) {
                         event.getWhoClicked().getInventory().setItem(newSlot, event.getCurrentItem());
                         event.setCurrentItem(null);
@@ -57,12 +56,12 @@ public class FurnaceListener extends STBBaseListener {
         }
     }
 
-    @EventHandler(ignoreCancelled=true)
+    @EventHandler(ignoreCancelled = true)
     public void onFurnaceInsert(InventoryDragEvent event) {
         if (event.getInventory().getType() != InventoryType.FURNACE) {
             return;
         }
-        
+
         if (event.getOldCursor().getType() != Material.AIR) {
             for (int slot : event.getRawSlots()) {
                 if (slot == 0 && !validateSmeltingIngredient(event.getOldCursor())) {
@@ -82,7 +81,7 @@ public class FurnaceListener extends STBBaseListener {
         if (event.getSource().getHolder() instanceof Hopper) {
             Block b1 = ((BlockState) event.getSource().getHolder()).getBlock();
             Block b2 = ((BlockState) event.getDestination().getHolder()).getBlock();
-            
+
             if (b1.getY() == b2.getY() + 1) {
                 // hopper above the furnace - trying to insert items to be smelted
                 if (!validateSmeltingIngredient(event.getItem())) {
@@ -106,7 +105,7 @@ public class FurnaceListener extends STBBaseListener {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
         if (item != null) {
             return item.getSmeltingResult() != null;
-        } 
+        }
         else {
             // vanilla item - need to ensure it's actually smeltable (i.e. wasn't added
             // as a furnace recipe because it's the material for some custom STB item)
@@ -117,26 +116,26 @@ public class FurnaceListener extends STBBaseListener {
     private int findNewSlot(InventoryClickEvent event) {
         int from = -1;
         int to = -2;
-        
+
         switch (event.getSlotType()) {
-            case QUICKBAR: 
-            	from = 9; 
-            	to = 35; 
-            	break;
-            case CONTAINER: 
-            	from = 0; 
-            	to = 8; 
-            	break;
-		default:
-			break;
+        case QUICKBAR:
+            from = 9;
+            to = 35;
+            break;
+        case CONTAINER:
+            from = 0;
+            to = 8;
+            break;
+        default:
+            break;
         }
-        
+
         for (int i = from; i <= to; i++) {
             if (event.getWhoClicked().getInventory().getItem(i) == null) {
                 return i;
             }
         }
-        
+
         return -1;
     }
 }
