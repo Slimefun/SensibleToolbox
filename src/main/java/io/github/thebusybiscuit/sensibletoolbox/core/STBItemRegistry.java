@@ -117,7 +117,9 @@ public class STBItemRegistry implements ItemRegistry {
         if (!isSTBItem(stack)) {
             return null;
         }
-        BaseSTBItem item = getItemById(conf.getString("*TYPE"), conf);
+        
+        // TODO: persistent data id storage
+        
         if (item != null) {
             item.storeEnchants(stack);
         }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,7 +30,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
@@ -68,7 +68,7 @@ public class ShowCommand extends AbstractCommand {
 
             if (hasOption("w")) {
                 World w = Bukkit.getWorld(getStringOption("w"));
-                DHValidate.notNull(w, "Unknown world: " + getStringOption("w"));
+                Validate.notNull(w, "Unknown world: " + getStringOption("w"));
                 show(pager, w, id);
             }
             else {
@@ -111,6 +111,7 @@ public class ShowCommand extends AbstractCommand {
             Player player = (Player) sender;
             // try to show either the held item or the targeted block
             item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
+
             if (item == null) {
                 Block b = player.getTargetBlock((Set<Material>) null, 10);
                 item = LocationManager.getManager().get(b.getLocation(), true);
@@ -120,14 +121,14 @@ public class ShowCommand extends AbstractCommand {
             try {
                 Location loc = MiscUtil.parseLocation(locStr);
                 item = LocationManager.getManager().get(loc);
-                DHValidate.notNull(item, "No STB block at " + locStr);
+                Validate.notNull(item, "No STB block at " + locStr);
             }
             catch (IllegalArgumentException e) {
                 throw new DHUtilsException(e.getMessage());
             }
         }
 
-        DHValidate.notNull(item, "No valid STB item/block found");
+        Validate.notNull(item, "No valid STB item/block found");
 
         YamlConfiguration conf = item.freeze();
         pager.add(ChatColor.AQUA.toString() + item + ":");

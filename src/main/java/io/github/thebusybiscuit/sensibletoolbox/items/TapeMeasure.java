@@ -18,7 +18,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 
 public class TapeMeasure extends BaseSTBItem {
-	
+
     private String world;
     private int x;
     private int y;
@@ -60,14 +60,14 @@ public class TapeMeasure extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: set anchor", "R-click block: get measurement"};
+        return new String[] { UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: set anchor", "R-click block: get measurement" };
     }
 
     @Override
     public String[] getExtraLore() {
         if (world != null) {
-            return new String[] {ChatColor.WHITE + "Anchor point: " + ChatColor.GOLD + world + "," + x + "," + y + "," + z};
-        } 
+            return new String[] { ChatColor.WHITE + "Anchor point: " + ChatColor.GOLD + world + "," + x + "," + y + "," + z };
+        }
         else {
             return new String[0];
         }
@@ -81,25 +81,25 @@ public class TapeMeasure extends BaseSTBItem {
         recipe.setIngredient('I', Material.IRON_INGOT);
         return recipe;
     }
-    
-	@Override
+
+    @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getPlayer().isSneaking()) {
                 setAnchor(event.getClickedBlock());
                 event.getPlayer().setItemInHand(toItemStack());
                 MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point set.");
-            } 
+            }
             else {
                 makeMeasurement(event.getPlayer(), event.getClickedBlock());
             }
-        } 
+        }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             setAnchor(null);
             event.getPlayer().setItemInHand(toItemStack());
             MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point cleared.");
         }
-        
+
         event.setCancelled(true);
     }
 
@@ -111,9 +111,7 @@ public class TapeMeasure extends BaseSTBItem {
             int zOff = b.getZ() - z;
             Location anchorLoc = new Location(b.getWorld(), x, y, z);
             double dist = b.getLocation().distance(anchorLoc);
-            MiscUtil.statusMessage(p,
-                    String.format("Measurement: " + ChatColor.WHITE + "X=%d Y=%d Z=%d total=%.2f",
-                            xOff, yOff, zOff, dist));
+            MiscUtil.statusMessage(p, String.format("Measurement: " + ChatColor.WHITE + "X=%d Y=%d Z=%d total=%.2f", xOff, yOff, zOff, dist));
         }
     }
 
@@ -123,7 +121,7 @@ public class TapeMeasure extends BaseSTBItem {
             x = clickedBlock.getX();
             y = clickedBlock.getY();
             z = clickedBlock.getZ();
-        } 
+        }
         else {
             world = null;
         }

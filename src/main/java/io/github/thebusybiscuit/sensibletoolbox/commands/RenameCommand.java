@@ -1,5 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.commands;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -8,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.items.EnderLeash;
-import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
@@ -29,12 +29,12 @@ public class RenameCommand extends AbstractCommand {
         ItemStack stack = player.getItemInHand();
         EnderLeash el = SensibleToolbox.getItemRegistry().fromItemStack(stack, EnderLeash.class);
 
-        DHValidate.isTrue(el != null, "You are not holding an Ender Leash.");
-        DHValidate.isTrue(el.getCapturedEntityType() != null, "You don't have a captured animal to rename.");
+        Validate.isTrue(el != null, "You are not holding an Ender Leash.");
+        Validate.isTrue(el.getCapturedEntityType() != null, "You don't have a captured animal to rename.");
 
         if (!player.hasPermission("stb.commands.rename.free")) {
             int needed = plugin.getConfig().getInt("rename_level_cost");
-            DHValidate.isTrue(player.getLevel() >= needed, "You need " + needed + " levels to rename an animal.");
+            Validate.isTrue(player.getLevel() >= needed, "You need " + needed + " levels to rename an animal.");
             player.setLevel(player.getLevel() - needed);
         }
 

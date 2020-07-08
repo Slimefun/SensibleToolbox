@@ -19,7 +19,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.DHValidate;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
@@ -58,7 +57,7 @@ public class ChargeCommand extends AbstractCommand {
             }
         }
 
-        DHValidate.notNull(c, "Nothing suitable to charge.");
+        Validate.notNull(c, "Nothing suitable to charge.");
         int max = c.getMaxCharge();
         int amount;
 

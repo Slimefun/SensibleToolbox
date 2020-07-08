@@ -24,8 +24,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SiliconWafer;
 
 public class PVCell extends BaseSTBItem {
 
-    public static final int MAX_LIFESPAN = 24000 * 9;  // 9 minecraft days; 3 real hours
-//    private static final int MAX_LIFESPAN = 2000; // 100 real seconds (testing)
+    public static final int MAX_LIFESPAN = 24000 * 9; // 9 minecraft days; 3 real hours
+    // private static final int MAX_LIFESPAN = 2000; // 100 real seconds (testing)
 
     private int lifespan;
 
@@ -69,7 +69,7 @@ public class PVCell extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Photovoltaic Cell", "Insert into a solar generator", "R-click solar: insert directly"};
+        return new String[] { "Photovoltaic Cell", "Insert into a solar generator", "R-click solar: insert directly" };
     }
 
     @Override
@@ -90,23 +90,22 @@ public class PVCell extends BaseSTBItem {
         return recipe;
     }
 
-
     @Override
     public boolean isWearable() {
         return false;
     }
-    
-	@Override
+
+    @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
-            
+
             if (event.getClickedBlock() != null) {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), true);
-                
+
                 if (stb instanceof BasicSolarCell) {
                     int nInserted = ((BasicSolarCell) stb).insertItems(event.getItem(), event.getBlockFace(), false, player.getUniqueId());
-                    
+
                     if (nInserted > 0) {
                         player.setItemInHand(null);
                         player.playSound(event.getClickedBlock().getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.6f);
@@ -122,12 +121,12 @@ public class PVCell extends BaseSTBItem {
     public ItemStack toItemStack(int amount) {
         ItemStack res = super.toItemStack(amount);
         ItemMeta meta = res.getItemMeta();
-        
+
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(Color.NAVY);
             res.setItemMeta(meta);
         }
-        
+
         STBUtil.levelToDurability(res, lifespan, MAX_LIFESPAN);
         return res;
     }
@@ -135,15 +134,16 @@ public class PVCell extends BaseSTBItem {
     /**
      * Create a nicely formatted string representing a cell's lifetime.
      *
-     * @param lifespan the life span
+     * @param lifespan
+     *            the life span
      * @return a formatted string
      */
     public static String formatCellLife(int lifespan) {
         int sec = lifespan / 20;
-        
+
         if (sec >= 60) {
             return ChatColor.RESET + "Lifetime: " + ChatColor.YELLOW.toString() + (sec / 60) + " min";
-        } 
+        }
         else {
             return ChatColor.RESET + "Lifetime: " + ChatColor.YELLOW.toString() + sec + " sec";
         }
