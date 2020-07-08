@@ -20,7 +20,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.Thoroughne
  * an internal processing store, and places resulting items in its output slots.
  */
 public abstract class AbstractIOMachine extends AbstractProcessingMachine {
-	
+
     // a stack of items which can't be placed into output due to lack of space
     private final Deque<ItemStack> pendingItems = new ArrayDeque<>();
 
@@ -69,7 +69,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             if (!pendingItems.isEmpty()) {
                 // try to move previously jammed items into output
                 pushItemIntoOutput(pendingItems.pop(), false);
-            } 
+            }
             else if (getProcessing() != null && getProgress() <= 0) {
                 // done processing - try to move new items into output
                 ProcessingResult recipe = getCustomRecipeFor(getProcessing());
@@ -87,7 +87,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         for (ItemStack stack : pendingItems) {
             loc.getWorld().dropItemNaturally(loc, stack);
         }
-        
+
         super.onBlockUnregistered(loc);
     }
 
@@ -98,7 +98,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
         if (addBonus) {
             Random rnd = ThreadLocalRandom.current();
-            
+
             if (rnd.nextInt(100) < getThoroughnessAmount() * ThoroughnessUpgrade.BONUS_OUTPUT_CHANCE) {
                 // bonus item(s), yay!
                 int bonus = rnd.nextInt(result.getAmount()) + 1;
@@ -108,23 +108,23 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
         while (result.getAmount() > 0) {
             int slot = findOutputSlot(result, true);
-            
+
             if (slot >= 0) {
                 // good, there's space to move (at least some of) the item
                 ItemStack inOutput = getInventoryItem(slot);
-                
+
                 if (inOutput == null) {
                     inOutput = result.clone();
                     result.setAmount(0);
-                } 
+                }
                 else {
                     int toAdd = Math.min(result.getAmount(), inOutput.getMaxStackSize() - inOutput.getAmount());
                     inOutput.setAmount(inOutput.getAmount() + toAdd);
                     result.setAmount(result.getAmount() - toAdd);
                 }
-                
+
                 setInventoryItem(slot, inOutput);
-            } 
+            }
             else {
                 // no space!
                 setJammed(true);
@@ -144,14 +144,14 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
         ItemStack toProcess = stack.clone();
         toProcess.setAmount(1);
         ProcessingResult recipe = getCustomRecipeFor(toProcess);
-        
+
         if (recipe == null) {
             // shouldn't happen but...
             getLocation().getWorld().dropItemNaturally(getLocation(), stack);
             setInventoryItem(inputSlot, null);
             return;
         }
-        
+
         setProcessing(toProcess);
         getProgressMeter().setMaxProgress(recipe.getProcessingTime());
         setProgress(recipe.getProcessingTime());
@@ -160,7 +160,6 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
 
         update(false);
     }
-
 
     @Override
     public boolean acceptsItemType(ItemStack item) {

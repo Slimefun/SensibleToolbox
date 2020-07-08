@@ -24,14 +24,14 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class ChargeCommand extends AbstractCommand {
-	
+
     public ChargeCommand() {
         super("stb charge", 0, 1);
         setPermissionNode("stb.commands.charge");
         setUsage("/<command> charge <amount>");
     }
 
-	@Override
+    @Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         notFromConsole(sender);
 
@@ -39,48 +39,52 @@ public class ChargeCommand extends AbstractCommand {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
         BaseSTBBlock stb = null;
         Chargeable c = null;
+
         if (item instanceof Chargeable) {
             c = (Chargeable) item;
-        } 
+        }
         else {
             Block b = player.getTargetBlock((Set<Material>) null, 10);
-            
+
             if (Tag.WALL_SIGNS.isTagged(b.getType()) || Tag.STANDING_SIGNS.isTagged(b.getType())) {
                 Sign s = (Sign) b.getState();
                 b = b.getRelative(((Attachable) s.getData()).getAttachedFace());
             }
-            
+
             stb = LocationManager.getManager().get(b.getLocation());
-            
+
             if (stb instanceof Chargeable) {
                 c = (Chargeable) stb;
             }
         }
+
         DHValidate.notNull(c, "Nothing suitable to charge.");
         int max = c.getMaxCharge();
         int amount;
-        
+
         if (args.length > 0) {
             try {
                 amount = Integer.parseInt(args[0]);
                 Validate.isTrue(amount >= 0 && amount <= max, "Must be in range 0-" + max);
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 throw new DHUtilsException("Invalid value: " + args[0] + " - " + e.getMessage());
             }
-        } 
+        }
         else {
             amount = max;
         }
 
         c.setCharge(amount);
-        
+
         if (item != null) {
             player.setItemInHand(item.toItemStack());
-        } 
+        }
         else if (stb != null) {
             stb.update(true);
             MiscUtil.statusMessage(player, "&6" + stb.getItemName() + "&- charged to " + STBUtil.getChargeString(c));
         }
+
         return true;
     }
 }

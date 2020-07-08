@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -9,9 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.Tag;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Skull;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -238,7 +236,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             return 0;
         }
         else {
-            HashMap<Integer, ItemStack> excess = getGUI().getInventory().addItem(toInsert);
+            Map<Integer, ItemStack> excess = getGUI().getInventory().addItem(toInsert);
             int inserted = toInsert.getAmount();
 
             for (ItemStack stack : excess.values()) {

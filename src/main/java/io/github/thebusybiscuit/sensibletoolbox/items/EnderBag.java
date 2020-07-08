@@ -16,12 +16,11 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorage;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderTunable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.EnderBox;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public class EnderBag extends BaseSTBItem implements EnderTunable {
-    
+
     public static final String BAG_SAVE_DIR = "bagofholding";
     public static final int BAG_SIZE = 54;
 
@@ -65,10 +64,7 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-        		"R-click: open bag",
-        		UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click ender box: sync " + UnicodeSymbol.NUMBER.toUnicode()
-        };
+        return new String[] { "R-click: open bag", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click ender box: sync " + UnicodeSymbol.NUMBER.toUnicode() };
     }
 
     @Override
@@ -99,8 +95,8 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
     public void setGlobal(boolean global) {
         this.global = global;
     }
-    
-	@Override
+
+    @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block clicked = event.getClickedBlock();
@@ -109,7 +105,7 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
             if (clicked != null) {
                 // shift-right-click an ender bag against an ender box to copy its frequency
                 EnderBox box = SensibleToolbox.getBlockAt(clicked.getLocation(), EnderBox.class, true);
-                
+
                 if (box != null && player.isSneaking()) {
                     if (getEnderFrequency() != box.getEnderFrequency()) {
                         setEnderFrequency(box.getEnderFrequency());
@@ -117,18 +113,16 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
                         player.setItemInHand(toItemStack(player.getItemInHand().getAmount()));
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
                     }
-                    
+
                     event.setCancelled(true);
                     return;
-                } 
-                else if (STBUtil.isInteractive(clicked.getType())) {
+                }
+                else if (clicked.getType().isInteractable()) {
                     return;
                 }
             }
 
-            Inventory inv = isGlobal() ?
-                    EnderStorage.getEnderInventory(getEnderFrequency()) :
-                    EnderStorage.getEnderInventory(player, getEnderFrequency());
+            Inventory inv = isGlobal() ? EnderStorage.getEnderInventory(getEnderFrequency()) : EnderStorage.getEnderInventory(player, getEnderFrequency());
             player.openInventory(inv);
             event.setCancelled(true);
         }

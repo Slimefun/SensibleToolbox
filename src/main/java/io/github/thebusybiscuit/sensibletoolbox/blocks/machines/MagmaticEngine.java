@@ -1,7 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -21,16 +20,16 @@ import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 
 public class MagmaticEngine extends Generator {
-	
-	private static final int TICK_FREQUENCY = 10;
+
+    private static final int TICK_FREQUENCY = 10;
     private final double slowBurnThreshold;
     private FuelItems.FuelValues currentFuel;
-	private static final FuelItems fuelItems = new FuelItems();
+    private static final FuelItems fuelItems = new FuelItems();
 
     static {
         fuelItems.addFuel(new ItemStack(Material.LAVA_BUCKET), true, 16, 1000);
     }
-    
+
     public MagmaticEngine() {
         super();
         currentFuel = null;
@@ -44,20 +43,25 @@ public class MagmaticEngine extends Generator {
         }
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
-	
+
+    @Override
+    public FuelItems getFuelItems() {
+        return fuelItems;
+    }
+
     @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {43, 44};
+        return new int[] { 43, 44 };
     }
 
     @Override
@@ -97,9 +101,7 @@ public class MagmaticEngine extends Generator {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Converts Lava into power",
-        };
+        return new String[] { "Converts Lava into power", };
     }
 
     @Override
@@ -167,7 +169,7 @@ public class MagmaticEngine extends Generator {
                         break;
                     }
                 }
-            } 
+            }
             else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
@@ -175,12 +177,12 @@ public class MagmaticEngine extends Generator {
                 setProgress(getProgress() - burnRate);
                 setCharge(getCharge() + currentFuel.getCharge() * burnRate);
                 playActiveParticleEffect();
-                
+
                 if (getProgress() <= 0) {
                     // fuel burnt
-                	ItemStack bucket = getInventoryItem(getOutputSlots()[0]);
-                	if (bucket == null) bucket = new ItemStack(Material.BUCKET);
-                	else bucket.setAmount(bucket.getAmount() + 1);
+                    ItemStack bucket = getInventoryItem(getOutputSlots()[0]);
+                    if (bucket == null) bucket = new ItemStack(Material.BUCKET);
+                    else bucket.setAmount(bucket.getAmount() + 1);
                     setInventoryItem(getOutputSlots()[0], bucket);
                     setProcessing(null);
                     update(false);
@@ -191,20 +193,20 @@ public class MagmaticEngine extends Generator {
     }
 
     private double getBurnRate() {
-    	return getCharge() < slowBurnThreshold ? 1.0: 1.15 - (getCharge() / getMaxCharge());
+        return getCharge() < slowBurnThreshold ? 1.0 : 1.15 - (getCharge() / getMaxCharge());
     }
 
     private void pullItemIntoProcessing(int inputSlot) {
-    	if (getInventoryItem(getOutputSlots()[0]) != null && getInventoryItem(getOutputSlots()[0]).getAmount() >= getInventoryItem(getOutputSlots()[0]).getMaxStackSize()) return;
+        if (getInventoryItem(getOutputSlots()[0]) != null && getInventoryItem(getOutputSlots()[0]).getAmount() >= getInventoryItem(getOutputSlots()[0]).getMaxStackSize()) return;
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
-        
+
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
             // Regulator prevents pulling fuel in unless there's definitely
             // enough room to store the charge that would be generated
             return;
         }
-        
+
         setProcessing(makeProcessingItem(currentFuel, stack));
         getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
         setProgress(currentFuel.getBurnTime());
@@ -220,10 +222,6 @@ public class MagmaticEngine extends Generator {
         meta.setLore(Arrays.asList(ChatColor.GRAY.toString() + ChatColor.ITALIC + fuel.toString()));
         toProcess.setItemMeta(meta);
         return toProcess;
-    }
-    
-    public Set<ItemStack> getFuelInformation() {
-    	return fuelItems.fuelItems;
     }
 
 }

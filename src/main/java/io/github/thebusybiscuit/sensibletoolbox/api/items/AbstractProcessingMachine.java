@@ -19,7 +19,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
  * Represents a machine with a progress bar to indicate how much of this work cycle is done.
  */
 public abstract class AbstractProcessingMachine extends BaseSTBMachine {
-	
+
     private static final long PROGRESS_INTERVAL = 10;
     private double progress; // ticks remaining till this work cycle is done
     private int progressMeterId;
@@ -49,7 +49,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     public abstract int getProgressCounterSlot();
 
     /**
-     * Define the item used to display the progress bar.  This material must
+     * Define the item used to display the progress bar. This material must
      * have a durability, e.g. a tool or armour item.
      *
      * @return the item stack used to display the progress bar
@@ -58,7 +58,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
 
     /**
      * Define the base amount of SCU consumed per server tick while this
-     * machine is actively processing.  This may be modified by upgrades
+     * machine is actively processing. This may be modified by upgrades
      * installed in the machine.
      */
     public double getScuPerTick() {
@@ -79,7 +79,8 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      * Update the machine's progress; set the ticks remaining until this work
      * cycle is complete.
      *
-     * @param progress the ticks remaining until completion
+     * @param progress
+     *            the ticks remaining until completion
      */
     public final void setProgress(double progress) {
         this.progress = Math.max(0, progress);
@@ -98,7 +99,8 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     /**
      * Set the item to be processed.
      *
-     * @param item the item to be processed, or null to process nothing
+     * @param item
+     *            the item to be processed, or null to process nothing
      */
     public final void setProcessing(ItemStack item) {
         this.processing = item;
@@ -134,7 +136,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     }
 
     /**
-     * Get the ejection interval, in server ticks, for this machine.  Machines
+     * Get the ejection interval, in server ticks, for this machine. Machines
      * which have difficulty ejecting items may automatically raise this interval
      * to avoid wasting CPU cycles on repeated futile attempts.
      *
@@ -175,14 +177,14 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     }
 
     /**
-     * Handle auto ejecting items from the output slot(s).  This is typically called
+     * Handle auto ejecting items from the output slot(s). This is typically called
      * by implementing subclasses at the end of their onServerTick() implementation.
      */
     protected void handleAutoEjection() {
         if (getTicksLived() % getEjectionInterval() != 0) {
             return;
         }
-        
+
         boolean ejectFailed = false;
         if (getAutoEjectDirection() != null && getAutoEjectDirection() != BlockFace.SELF) {
             for (int slot : getOutputSlots()) {
@@ -192,7 +194,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
                         stack.setAmount(stack.getAmount() - 1);
                         setInventoryItem(slot, stack);
                         setJammed(false);
-                    } 
+                    }
                     else {
                         ejectFailed = true;
                     }
@@ -210,18 +212,16 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
         Block target = loc.getBlock();
         ItemStack item = result.clone();
         item.setAmount(1);
-        
+
         if (!target.getType().isSolid() || Tag.WALL_SIGNS.isTagged(target.getType())) {
             // no (solid) block there - just drop the item
             Item i = loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), item);
             i.setVelocity(new Vector(0, 0, 0));
             return true;
-        } 
+        }
         else {
             BaseSTBBlock stb = LocationManager.getManager().get(loc);
-            int nInserted = stb instanceof STBInventoryHolder ?
-                    ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) :
-                    VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false, getOwner());
+            int nInserted = stb instanceof STBInventoryHolder ? ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) : VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false, getOwner());
             return nInserted > 0;
         }
     }

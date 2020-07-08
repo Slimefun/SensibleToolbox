@@ -20,11 +20,10 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.DirectionGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class EjectorUpgrade extends MachineUpgrade implements Directional {
-	
+
     public static final int DIRECTION_LABEL_SLOT = 2;
     private BlockFace direction;
 
@@ -66,7 +65,7 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Place in a machine block ", "Auto-ejects finished items", "L-Click block: set ejection direction"};
+        return new String[] { "Place in a machine block ", "Auto-ejects finished items", "L-Click block: set ejection direction" };
     }
 
     @Override
@@ -88,13 +87,13 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
             setFacingDirection(event.getBlockFace().getOppositeFace());
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
-        } 
+        }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             // open ejector configuration GUI
             Block b = event.getClickedBlock();
             BaseSTBMachine machine = b == null ? null : SensibleToolbox.getBlockAt(b.getLocation(), BaseSTBMachine.class, true);
-            
-            if (b == null || machine == null && !STBUtil.isInteractive(b.getType())) {
+
+            if (b == null || machine == null && !b.getType().isInteractable()) {
                 InventoryGUI gui = createGUI(event.getPlayer());
                 gui.show(event.getPlayer());
                 event.setCancelled(true);

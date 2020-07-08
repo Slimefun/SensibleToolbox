@@ -39,7 +39,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.PermissionUtils;
 
 public class EnderLeash extends BaseSTBItem {
-	
+
     private YamlConfiguration capturedConf;
 
     public EnderLeash() {
@@ -60,7 +60,7 @@ public class EnderLeash extends BaseSTBItem {
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration res = super.freeze();
-        
+
         if (capturedConf != null) {
             for (String k : capturedConf.getKeys(false)) {
                 res.set(k, capturedConf.get(k));
@@ -81,10 +81,7 @@ public class EnderLeash extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Capture and store one peaceful animal",
-                "Right-click: " + ChatColor.RESET + "capture/release animal"
-        };
+        return new String[] { "Capture and store one peaceful animal", "Right-click: " + ChatColor.RESET + "capture/release animal" };
     }
 
     @Override
@@ -102,8 +99,7 @@ public class EnderLeash extends BaseSTBItem {
         return capturedConf != null;
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         Entity target = event.getRightClicked();
         Player player = event.getPlayer();
@@ -112,15 +108,18 @@ public class EnderLeash extends BaseSTBItem {
                 Animals animal = (Animals) target;
                 if (!checkLeash(animal)) {
                     STBUtil.complain(player, "Can't capture a leashed animal!");
-                } else if (!verifyOwner(player, animal)) {
+                }
+                else if (!verifyOwner(player, animal)) {
                     STBUtil.complain(player, "This animal is owned by someone else!");
-                } else {
+                }
+                else {
                     capturedConf = freezeEntity(animal);
                     target.getWorld().playEffect(target.getLocation(), Effect.ENDER_SIGNAL, 0);
                     target.remove();
                     player.setItemInHand(this.toItemStack());
                 }
-            } else {
+            }
+            else {
                 // workaround CB bug to ensure client is updated properly
                 STBUtil.complain(event.getPlayer(), "Ender Leash already has a captured animal");
                 player.updateInventory();
@@ -144,7 +143,8 @@ public class EnderLeash extends BaseSTBItem {
             if (leashHolder instanceof LeashHitch) {
                 leashHolder.remove();
                 animal.getWorld().dropItemNaturally(animal.getLocation(), new ItemStack(Material.LEAD));
-            } else {
+            }
+            else {
                 return false;
             }
         }
@@ -153,7 +153,7 @@ public class EnderLeash extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !STBUtil.isInteractive(event.getClickedBlock().getType())) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getClickedBlock().getType().isInteractable()) {
             if (capturedConf != null && capturedConf.contains("type")) {
                 Block where = event.getClickedBlock().getRelative(event.getBlockFace());
                 EntityType type = EntityType.valueOf(capturedConf.getString("type"));
@@ -189,33 +189,33 @@ public class EnderLeash extends BaseSTBItem {
             }
         }
         switch (target.getType()) {
-            case SHEEP:
-                conf.set("sheared", ((Sheep) target).isSheared());
-                conf.set("color", ((Sheep) target).getColor().toString());
-                break;
-            case OCELOT:
-                conf.set("catType", ((Ocelot) target).getCatType().toString());
-                break;
-            case PIG:
-                conf.set("saddled", ((Pig) target).hasSaddle());
-                break;
-            case WOLF:
-                conf.set("collar", ((Wolf) target).getCollarColor().toString());
-                conf.set("sitting", ((Wolf) target).isSitting());
-                break;
-            case HORSE:
-                Horse h = (Horse) target;
-                conf.set("horseStyle", h.getStyle().toString());
-                conf.set("horseVariant", h.getVariant().toString());
-                conf.set("horseColor", h.getColor().toString());
-                conf.set("chest", h.isCarryingChest());
-                conf.set("jumpStrength", h.getJumpStrength());
-                conf.set("domestication", h.getDomestication());
-                conf.set("maxDomestication", h.getMaxDomestication());
-                conf.set("inventory", BukkitSerialization.toBase64(h.getInventory()));
-                break;
-		default:
-			break;
+        case SHEEP:
+            conf.set("sheared", ((Sheep) target).isSheared());
+            conf.set("color", ((Sheep) target).getColor().toString());
+            break;
+        case OCELOT:
+            conf.set("catType", ((Ocelot) target).getCatType().toString());
+            break;
+        case PIG:
+            conf.set("saddled", ((Pig) target).hasSaddle());
+            break;
+        case WOLF:
+            conf.set("collar", ((Wolf) target).getCollarColor().toString());
+            conf.set("sitting", ((Wolf) target).isSitting());
+            break;
+        case HORSE:
+            Horse h = (Horse) target;
+            conf.set("horseStyle", h.getStyle().toString());
+            conf.set("horseVariant", h.getVariant().toString());
+            conf.set("horseColor", h.getColor().toString());
+            conf.set("chest", h.isCarryingChest());
+            conf.set("jumpStrength", h.getJumpStrength());
+            conf.set("domestication", h.getDomestication());
+            conf.set("maxDomestication", h.getMaxDomestication());
+            conf.set("inventory", BukkitSerialization.toBase64(h.getInventory()));
+            break;
+        default:
+            break;
         }
         return conf;
     }
@@ -239,48 +239,49 @@ public class EnderLeash extends BaseSTBItem {
         }
 
         switch (entity.getType()) {
-            case PIG:
-                ((Pig) entity).setSaddle(conf.getBoolean("saddled"));
-                break;
-            case SHEEP:
-                ((Sheep) entity).setSheared(conf.getBoolean("sheared"));
-                ((Sheep) entity).setColor(DyeColor.valueOf(conf.getString("color")));
-                break;
-            case OCELOT:
-                ((Ocelot) entity).setCatType(Ocelot.Type.valueOf(conf.getString("catType")));
-                break;
-            case WOLF:
-                ((Wolf) entity).setSitting(conf.getBoolean("sitting"));
-                ((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collar")));
-                break;
-            case HORSE:
-                Horse h = (Horse) entity;
-                h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
-                h.setVariant(Horse.Variant.valueOf(conf.getString("horseVariant")));
-                h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-                h.setCarryingChest(conf.getBoolean("chest"));
-                h.setJumpStrength(conf.getDouble("jumpStrength"));
-                h.setDomestication(conf.getInt("domestication"));
-                h.setMaxDomestication(conf.getInt("maxDomestication"));
-                // separate saddle & armor entries are obsolete now
-                if (conf.contains("saddle")) {
-                    h.getInventory().setSaddle(new ItemStack(Material.getMaterial(conf.getString("saddle"))));
+        case PIG:
+            ((Pig) entity).setSaddle(conf.getBoolean("saddled"));
+            break;
+        case SHEEP:
+            ((Sheep) entity).setSheared(conf.getBoolean("sheared"));
+            ((Sheep) entity).setColor(DyeColor.valueOf(conf.getString("color")));
+            break;
+        case OCELOT:
+            ((Ocelot) entity).setCatType(Ocelot.Type.valueOf(conf.getString("catType")));
+            break;
+        case WOLF:
+            ((Wolf) entity).setSitting(conf.getBoolean("sitting"));
+            ((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collar")));
+            break;
+        case HORSE:
+            Horse h = (Horse) entity;
+            h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
+            h.setVariant(Horse.Variant.valueOf(conf.getString("horseVariant")));
+            h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
+            h.setCarryingChest(conf.getBoolean("chest"));
+            h.setJumpStrength(conf.getDouble("jumpStrength"));
+            h.setDomestication(conf.getInt("domestication"));
+            h.setMaxDomestication(conf.getInt("maxDomestication"));
+            // separate saddle & armor entries are obsolete now
+            if (conf.contains("saddle")) {
+                h.getInventory().setSaddle(new ItemStack(Material.getMaterial(conf.getString("saddle"))));
+            }
+            if (conf.contains("armor")) {
+                h.getInventory().setArmor(new ItemStack(Material.getMaterial(conf.getString("armor"))));
+            }
+            try {
+                Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
+                for (int i = 0; i < h.getInventory().getSize(); i++) {
+                    h.getInventory().setItem(i, inv.getItem(i));
                 }
-                if (conf.contains("armor")) {
-                    h.getInventory().setArmor(new ItemStack(Material.getMaterial(conf.getString("armor"))));
-                }
-                try {
-                    Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
-                    for (int i = 0; i < h.getInventory().getSize(); i++) {
-                        h.getInventory().setItem(i, inv.getItem(i));
-                    }
-                } catch (IOException e) {
-                    LogUtils.warning("could not restore horse inventory!");
-                    e.printStackTrace();
-                }
-                break;
-		default:
-			break;
+            }
+            catch (IOException e) {
+                LogUtils.warning("could not restore horse inventory!");
+                e.printStackTrace();
+            }
+            break;
+        default:
+            break;
         }
     }
 
@@ -292,8 +293,9 @@ public class EnderLeash extends BaseSTBItem {
                 name = " (" + name + ")";
             }
             String l = ChatColor.WHITE + "Captured: " + ChatColor.GOLD + getCapturedEntityType().toString() + name;
-            return new String[]{l};
-        } else {
+            return new String[] { l };
+        }
+        else {
             return new String[0];
         }
     }

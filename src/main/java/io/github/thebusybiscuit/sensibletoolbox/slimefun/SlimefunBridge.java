@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.slimefun;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -17,14 +17,13 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.STBFurnaceRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.BioEngine;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.HeatEngine;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.MagmaticEngine;
+import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.Generator;
 import io.github.thebusybiscuit.sensibletoolbox.items.RecipeBook;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
+import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.cscorelib2.recipes.MinecraftRecipe;
 
 public final class SlimefunBridge implements SlimefunAddon {
@@ -41,7 +40,7 @@ public final class SlimefunBridge implements SlimefunAddon {
             BaseSTBItem item = SensibleToolboxPlugin.getInstance().getItemRegistry().getItemById(id);
             Category category = item.toItemStack().getType().isBlock() ? blocks : items;
             List<ItemStack> recipe = new ArrayList<>();
-            RecipeType recipeType = null;
+            RecipeType recipeType = RecipeType.NULL;
             Recipe r = item.getRecipe();
 
             if (r != null) {
@@ -105,29 +104,13 @@ public final class SlimefunBridge implements SlimefunAddon {
 
             SlimefunItem sfItem = null;
 
-            if (id.equalsIgnoreCase("bioengine")) {
-                Set<ItemStack> fuels = ((BioEngine) item).getFuelInformation();
-                if (fuels.size() % 2 != 0) {
-                    fuels.add(null);
-                }
-
-                sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
+            if (item instanceof Generator) {
+                List<ItemStack> fuels = ((Generator) item).getFuelInformation();
+                sfItem = new STBSlimefunGenerator(category, new SlimefunItemStack(id.toUpperCase(Locale.ROOT), item.toItemStack()), recipeType, recipe.toArray(new ItemStack[0]), fuels);
             }
-            else if (id.equalsIgnoreCase("magmaticengine")) {
-                Set<ItemStack> fuels = ((MagmaticEngine) item).getFuelInformation();
-                if (fuels.size() % 2 != 0) fuels.add(null);
-                sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
+            else {
+                sfItem = new STBSlimefunItem(category, new SlimefunItemStack(id.toUpperCase(Locale.ROOT), item.toItemStack()), recipeType, recipe.toArray(new ItemStack[0]));
             }
-            else if (id.equalsIgnoreCase("heatengine")) {
-                Set<ItemStack> fuels = ((HeatEngine) item).getFuelInformation();
-                if (fuels.size() % 2 != 0) fuels.add(null);
-                sfItem = new ExcludedGadget(category, item.toItemStack(), id.toUpperCase(), null, null, fuels.toArray(new ItemStack[fuels.size()]));
-            }
-            else sfItem = new ExcludedBlock(category, item.toItemStack(), id.toUpperCase(), null, null);
-
-            sfItem.setUseableInWorkbench(true);
-            sfItem.setRecipeType(recipeType);
-            sfItem.setRecipe(recipe.toArray(new ItemStack[recipe.size()]));
 
             if (r != null) {
                 sfItem.setRecipeOutput(r.getResult());

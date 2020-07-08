@@ -10,6 +10,7 @@ import java.util.Collection;
  * STB machine to process it.
  */
 public interface CustomRecipe extends Recipe {
+    
     /**
      * Get the time in server ticks needed to make this recipe.
      *
