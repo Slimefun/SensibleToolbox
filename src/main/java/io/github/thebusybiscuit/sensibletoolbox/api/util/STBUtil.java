@@ -166,6 +166,8 @@ public class STBUtil {
             return Material.PUMPKIN_STEM;
         case MELON_SEEDS:
             return Material.MELON_STEM;
+        case BEETROOT_SEEDS:
+            return Material.BEETROOTS;
         default:
             return null;
         }

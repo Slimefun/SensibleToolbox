@@ -20,7 +20,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 import me.desht.dhutils.MiscUtil;
 
 public class LandMarker extends BaseSTBItem {
-	
+
     private Location loc;
 
     public LandMarker() {
@@ -33,10 +33,12 @@ public class LandMarker extends BaseSTBItem {
             World w = Bukkit.getWorld(worldId);
             if (w != null) {
                 loc = new Location(w, conf.getInt("x"), conf.getInt("y"), conf.getInt("z"));
-            } else {
+            }
+            else {
                 loc = null;
             }
-        } else {
+        }
+        else {
             loc = null;
         }
     }
@@ -67,7 +69,7 @@ public class LandMarker extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Stores positions via Sensible GPS","R-Click block: store position","R-Click air: clear position"};
+        return new String[] { "Stores positions via Sensible GPS", "R-Click block: store position", "R-Click air: clear position" };
     }
 
     @Override
@@ -98,18 +100,18 @@ public class LandMarker extends BaseSTBItem {
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        
+
         if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) && getMarkedLocation() != null) {
             setMarkedLocation(null);
             player.setItemInHand(toItemStack());
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 0.6f);
-        } 
+        }
         else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
             setMarkedLocation(event.getClickedBlock().getLocation());
             player.setItemInHand(toItemStack());
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.5f);
         }
-        
+
         event.setCancelled(true);
     }
 }

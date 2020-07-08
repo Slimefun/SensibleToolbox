@@ -1,7 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -22,33 +21,33 @@ import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 
 public class HeatEngine extends Generator {
-	
+
     private static final int TICK_FREQUENCY = 10;
     private final double slowBurnThreshold;
-	private static final FuelItems fuelItems = new FuelItems();
+    private static final FuelItems fuelItems = new FuelItems();
 
     private FuelItems.FuelValues currentFuel;
-    
+
     static {
-    	fuelItems.addFuel(new ItemStack(Material.CHARCOAL), false, 15, 80);
+        fuelItems.addFuel(new ItemStack(Material.CHARCOAL), false, 15, 80);
         fuelItems.addFuel(new ItemStack(Material.COAL), false, 15, 120);
-        
+
         // 1 coal block is slightly more efficient than 9 coal
         fuelItems.addFuel(new ItemStack(Material.COAL_BLOCK), true, 15, 1120);
         fuelItems.addFuel(new ItemStack(Material.BLAZE_ROD), true, 15, 180);
         fuelItems.addFuel(new ItemStack(Material.BLAZE_POWDER), true, 22.5, 30);
-        
+
         for (Material log : Tag.LOGS.getValues()) {
-        	fuelItems.addFuel(new ItemStack(log), true, 10, 40);
+            fuelItems.addFuel(new ItemStack(log), true, 10, 40);
         }
-        
+
         for (Material plank : Tag.PLANKS.getValues()) {
-        	fuelItems.addFuel(new ItemStack(plank), true, 5, 20);
+            fuelItems.addFuel(new ItemStack(plank), true, 5, 20);
         }
-        
+
         fuelItems.addFuel(new ItemStack(Material.STICK), true, 2.5, 20);
         fuelItems.addFuel(new ItemStack(Material.FIRE_CHARGE), true, 50, 20);
-	}
+    }
 
     public HeatEngine() {
         super();
@@ -56,25 +55,30 @@ public class HeatEngine extends Generator {
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
 
-	public HeatEngine(ConfigurationSection conf) {
+    public HeatEngine(ConfigurationSection conf) {
         super(conf);
         if (getProgress() > 0) currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
 
     @Override
+    public FuelItems getFuelItems() {
+        return fuelItems;
+    }
+
+    @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0];  // no output slot
+        return new int[0]; // no output slot
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {43, 44};
+        return new int[] { 43, 44 };
     }
 
     @Override
@@ -114,20 +118,18 @@ public class HeatEngine extends Generator {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Converts burnable items to power"
-        };
+        return new String[] { "Converts burnable items to power" };
     }
 
     @Override
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
         if (!super.isValidUpgrade(player, upgrade)) return false;
-        
+
         if (!(upgrade instanceof RegulatorUpgrade)) {
             STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
             return false;
         }
-        
+
         return true;
     }
 
@@ -195,7 +197,7 @@ public class HeatEngine extends Generator {
                 setProgress(getProgress() - burnRate);
                 setCharge(getCharge() + currentFuel.getCharge() * burnRate);
                 playActiveParticleEffect();
-                
+
                 if (getProgress() <= 0) {
                     // fuel burnt
                     setProcessing(null);
@@ -203,24 +205,24 @@ public class HeatEngine extends Generator {
                 }
             }
         }
-        
+
         super.onServerTick();
     }
 
     private double getBurnRate() {
-    	return getCharge() < slowBurnThreshold ? 1.0: 1.15 - (getCharge() / getMaxCharge());
+        return getCharge() < slowBurnThreshold ? 1.0 : 1.15 - (getCharge() / getMaxCharge());
     }
 
     private void pullItemIntoProcessing(int inputSlot) {
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
-        
+
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
             // Regulator prevents pulling fuel in unless there's definitely
             // enough room to store the charge that would be generated
             return;
         }
-        
+
         setProcessing(makeProcessingItem(currentFuel, stack));
         getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
         setProgress(currentFuel.getBurnTime());
@@ -236,10 +238,6 @@ public class HeatEngine extends Generator {
         meta.setLore(Arrays.asList(ChatColor.GRAY.toString() + ChatColor.ITALIC + fuel.toString()));
         toProcess.setItemMeta(meta);
         return toProcess;
-    }
-    
-    public Set<ItemStack> getFuelInformation() {
-    	return fuelItems.fuelItems;
     }
 
 }

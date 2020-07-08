@@ -28,7 +28,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 
 public class SCURelay extends BatteryBox {
-	
+
     private static final int TRANSPONDER_LABEL_SLOT = 43;
     private static final int TRANSPONDER_SLOT = 44;
     private UUID worldID = null;
@@ -117,9 +117,8 @@ public class SCURelay extends BatteryBox {
         if (relayData == null || relayData.block1 == null || relayData.block2 == null) {
             return 0;
         }
-        
-        if (relayData.block1.worldID != relayData.block2.worldID
-                && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
+
+        if (relayData.block1.worldID != relayData.block2.worldID && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
             return 0;
         }
         return 500;
@@ -134,10 +133,10 @@ public class SCURelay extends BatteryBox {
     @Override
     public void setCharge(double charge) {
         RelayData relayData = (RelayData) getTracker().get(relayId);
-        
+
         if (relayData != null) {
             relayData.chargeLevel = charge;
-            
+
             if (relayData.block1 != null) {
                 relayData.block1.notifyCharge();
             }
@@ -156,23 +155,23 @@ public class SCURelay extends BatteryBox {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR) {
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
-        } 
+        }
         else {
             super.onInteractItem(event);
         }
     }
 
-//    @Override
-//    public void onInteractBlock(PlayerInteractEvent event) {
-//        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-//            for (Map.Entry<Integer, RelayData> e : relayMap.entrySet()) {
-//                System.out.println(e.getKey() + ": charge = " + e.getValue().chargeLevel);
-//                System.out.println("  " + e.getValue().block1);
-//                System.out.println("  " + e.getValue().block2);
-//            }
-//        }
-//        super.onInteractBlock(event);
-//    }
+    // @Override
+    // public void onInteractBlock(PlayerInteractEvent event) {
+    // if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+    // for (Map.Entry<Integer, RelayData> e : relayMap.entrySet()) {
+    // System.out.println(e.getKey() + ": charge = " + e.getValue().chargeLevel);
+    // System.out.println(" " + e.getValue().block1);
+    // System.out.println(" " + e.getValue().block2);
+    // }
+    // }
+    // super.onInteractBlock(event);
+    // }
 
     @Override
     public int[] getInputSlots() {
@@ -197,33 +196,33 @@ public class SCURelay extends BatteryBox {
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         boolean res = super.onSlotClick(player, slot, click, inSlot, onCursor);
-        
+
         if (res) {
             rescanTransponder();
         }
-        
+
         return res;
     }
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         int inserted = super.onShiftClickInsert(player, slot, toInsert);
-        
+
         if (inserted > 0) {
             rescanTransponder();
         }
-        
+
         return inserted;
     }
 
     @Override
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
         boolean res = super.onShiftClickExtract(player, slot, toExtract);
-        
+
         if (res) {
             rescanTransponder();
         }
-        
+
         return res;
     }
 
@@ -235,7 +234,7 @@ public class SCURelay extends BatteryBox {
     private void drawTransponder(InventoryGUI gui) {
         if (hasTransponder) {
             gui.setItem(TRANSPONDER_SLOT, new SubspaceTransponder().toItemStack());
-        } 
+        }
         else {
             gui.setItem(TRANSPONDER_SLOT, null);
         }
@@ -249,29 +248,29 @@ public class SCURelay extends BatteryBox {
     @Override
     public int insertItems(ItemStack toInsert, BlockFace side, boolean sorting, UUID uuid) {
         int n = super.insertItems(toInsert, side, sorting, uuid);
-        
+
         if (n > 0) {
             rescanTransponder();
         }
-        
+
         return n;
     }
 
     @Override
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
         ItemStack stack = super.extractItems(face, receiver, amount, uuid);
-        
+
         if (stack != null) {
             rescanTransponder();
         }
-        
+
         return stack;
     }
 
     private void rescanTransponder() {
         // defer this since we need to ensure the inventory slot is actually updated
         Bukkit.getScheduler().runTask(getProviderPlugin(), () -> {
-        	SubspaceTransponder str = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(TRANSPONDER_SLOT), SubspaceTransponder.class);
+            SubspaceTransponder str = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(TRANSPONDER_SLOT), SubspaceTransponder.class);
             hasTransponder = str != null;
         });
     }
@@ -295,17 +294,15 @@ public class SCURelay extends BatteryBox {
 
     private void updateInfoLabel(RelayData data) {
         String locStr = "(unknown)";
-        
+
         if (this.equals(data.block1)) {
             locStr = data.block2 == null ? "(not placed)" : MiscUtil.formatLocation(data.block2.getLocation());
-        } 
+        }
         else if (this.equals(data.block2)) {
             locStr = data.block1 == null ? "(not placed)" : MiscUtil.formatLocation(data.block1.getLocation());
         }
-        
-        getGUI().addLabel("SCU Relay : #" + relayId, 0, null,
-                ChatColor.DARK_AQUA + "Partner Location: " + locStr,
-                "Relay will only accept/supply power", "when both partners are placed");
+
+        getGUI().addLabel("SCU Relay : #" + relayId, 0, null, ChatColor.DARK_AQUA + "Partner Location: " + locStr, "Relay will only accept/supply power", "when both partners are placed");
     }
 
     @Override
@@ -330,18 +327,18 @@ public class SCURelay extends BatteryBox {
     public void onBlockRegistered(Location location, boolean isPlacing) {
         super.onBlockRegistered(location, isPlacing);
         RelayData relayData = (RelayData) getTracker().get(relayId);
-        
+
         if (relayData.block1 == null) {
             relayData.block1 = this;
-        } 
+        }
         else if (relayData.block2 == null) {
             relayData.block2 = this;
-        } 
+        }
         else {
             // shouldn't happen!
             LogUtils.warning("trying to register more than 2 SCU relays of ID " + relayId);
         }
-        
+
         updateInfoLabels(relayData);
         worldID = location.getWorld().getUID();
     }
@@ -354,22 +351,22 @@ public class SCURelay extends BatteryBox {
         if (relayData != null) {
             if (this.equals(relayData.block1)) {
                 relayData.block1 = null;
-            } 
+            }
             else if (this.equals(relayData.block2)) {
                 relayData.block2 = null;
-            } 
+            }
             else {
                 // shouldn't happen!
                 LogUtils.warning("relay loc for ID " + relayId + " doesn't match placed relays");
             }
-            
+
             updateInfoLabels(relayData);
-        } 
+        }
         else {
             // shouldn't happen!
             LogUtils.warning("can't find any register SCU relay of ID " + relayId);
         }
-        
+
         worldID = null;
 
         super.onBlockUnregistered(loc);
@@ -379,17 +376,17 @@ public class SCURelay extends BatteryBox {
         if (relayData.block1 != null) {
             relayData.block1.updateInfoLabel(relayData);
         }
-        
+
         if (relayData.block2 != null) {
             relayData.block2.updateInfoLabel(relayData);
         }
     }
 
     private class RelayData {
-    	
+
         SCURelay block1;
         SCURelay block2;
         double chargeLevel;
-        
+
     }
 }

@@ -9,7 +9,7 @@ import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class ExamineCommand extends AbstractCommand {
-	
+
     public ExamineCommand() {
         super("stb examine", 0, 0);
         setUsage("/stb examine");

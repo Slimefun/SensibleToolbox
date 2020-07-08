@@ -1,7 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -22,26 +21,26 @@ import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 
 public class BioEngine extends Generator {
-	
-	private static final int TICK_FREQUENCY = 10;
-	private static final FuelItems fuelItems = new FuelItems();
+
+    private static final int TICK_FREQUENCY = 10;
+    private static final FuelItems fuelItems = new FuelItems();
     private final double slowBurnThreshold;
     private FuelItems.FuelValues currentFuel;
 
     static {
-        fuelItems .addFuel(new ItemStack(Material.ROTTEN_FLESH), true, 2, 60);
+        fuelItems.addFuel(new ItemStack(Material.ROTTEN_FLESH), true, 2, 60);
         fuelItems.addFuel(new ItemStack(Material.SPIDER_EYE), true, 2.5, 60);
         fuelItems.addFuel(new ItemStack(Material.BONE), true, 2, 60);
         fuelItems.addFuel(new ItemStack(Material.INK_SAC), true, 3, 60);
         fuelItems.addFuel(new ItemStack(Material.COCOA_BEANS), true, 3, 60);
         fuelItems.addFuel(new ItemStack(Material.SLIME_BALL), true, 6, 80);
-        
+
         for (Material leaves : Tag.LEAVES.getValues()) {
-        	fuelItems.addFuel(new ItemStack(leaves), true, 6, 40);
+            fuelItems.addFuel(new ItemStack(leaves), true, 6, 40);
         }
-        
+
         for (Material sapling : Tag.SAPLINGS.getValues()) {
-        	fuelItems.addFuel(new ItemStack(sapling), true, 6, 60);
+            fuelItems.addFuel(new ItemStack(sapling), true, 6, 60);
         }
 
         fuelItems.addFuel(new ItemStack(Material.SEAGRASS), true, 4, 80);
@@ -64,22 +63,22 @@ public class BioEngine extends Generator {
         fuelItems.addFuel(new ItemStack(Material.NETHER_WART), true, 12, 140);
         fuelItems.addFuel(new ItemStack(Material.DIRT), true, 0.5, 20);
         fuelItems.addFuel(new ItemStack(Material.GRASS), true, 0.5, 20);
-        
+
         for (Material flower : Tag.SMALL_FLOWERS.getValues()) {
-        	 fuelItems.addFuel(new ItemStack(flower), true, 11, 80);
+            fuelItems.addFuel(new ItemStack(flower), true, 11, 80);
         }
-        
+
         for (Material flower : Tag.TALL_FLOWERS.getValues()) {
-        	 fuelItems.addFuel(new ItemStack(flower), true, 11, 80);
+            fuelItems.addFuel(new ItemStack(flower), true, 11, 80);
         }
-       
+
         fuelItems.addFuel(new ItemStack(Material.RED_MUSHROOM), true, 11, 80);
         fuelItems.addFuel(new ItemStack(Material.BROWN_MUSHROOM), true, 11, 80);
         fuelItems.addFuel(new ItemStack(Material.VINE), true, 8, 80);
         fuelItems.addFuel(new ItemStack(Material.CACTUS), true, 8, 100);
         fuelItems.addFuel(new ItemStack(Material.LILY_PAD), true, 8, 80);
     }
-    
+
     public BioEngine() {
         super();
         currentFuel = null;
@@ -93,10 +92,15 @@ public class BioEngine extends Generator {
         }
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
-	
+
+    @Override
+    public FuelItems getFuelItems() {
+        return fuelItems;
+    }
+
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] { 10 };
     }
 
     @Override
@@ -106,7 +110,7 @@ public class BioEngine extends Generator {
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {43, 44};
+        return new int[] { 43, 44 };
     }
 
     @Override
@@ -148,9 +152,7 @@ public class BioEngine extends Generator {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Converts organic Materials into power",
-        };
+        return new String[] { "Converts organic Materials into power", };
     }
 
     @Override
@@ -218,7 +220,7 @@ public class BioEngine extends Generator {
                         break;
                     }
                 }
-            } 
+            }
             else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
@@ -226,7 +228,7 @@ public class BioEngine extends Generator {
                 setProgress(getProgress() - burnRate);
                 setCharge(getCharge() + currentFuel.getCharge() * burnRate);
                 playActiveParticleEffect();
-                
+
                 if (getProgress() <= 0) {
                     // fuel burnt
                     setProcessing(null);
@@ -238,19 +240,19 @@ public class BioEngine extends Generator {
     }
 
     private double getBurnRate() {
-    	return getCharge() < slowBurnThreshold ? 1.0: 1.15 - (getCharge() / getMaxCharge());
+        return getCharge() < slowBurnThreshold ? 1.0 : 1.15 - (getCharge() / getMaxCharge());
     }
 
     private void pullItemIntoProcessing(int inputSlot) {
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
-        
+
         if (getRegulatorAmount() > 0 && getCharge() + currentFuel.getTotalFuelValue() >= getMaxCharge() && getCharge() > 0) {
             // Regulator prevents pulling fuel in unless there's definitely
             // enough room to store the charge that would be generated
             return;
         }
-        
+
         setProcessing(makeProcessingItem(currentFuel, stack));
         getProgressMeter().setMaxProgress(currentFuel.getBurnTime());
         setProgress(currentFuel.getBurnTime());
@@ -266,9 +268,5 @@ public class BioEngine extends Generator {
         meta.setLore(Arrays.asList(ChatColor.GRAY.toString() + ChatColor.ITALIC + fuel.toString()));
         toProcess.setItemMeta(meta);
         return toProcess;
-    }
-    
-    public Set<ItemStack> getFuelInformation() {
-    	return fuelItems.fuelItems;
     }
 }

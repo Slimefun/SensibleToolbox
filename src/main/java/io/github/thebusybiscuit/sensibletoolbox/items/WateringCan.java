@@ -177,7 +177,6 @@ public class WateringCan extends BaseSTBItem {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void maybeGrowTallCrop(Player player, Block b) {
         // check if we can make this cactus or sugar cane grow
 
@@ -286,7 +285,9 @@ public class WateringCan extends BaseSTBItem {
         }
 
         if (ThreadLocalRandom.current().nextInt(100) < GROW_CHANCE) {
-            if (b.getData() < 7) b.setData((byte) (b.getData() + 1));
+            if (b.getData() < 7) {
+                b.setData((byte) (b.getData() + 1));
+            }
         }
 
         checkForFlooding(b.getRelative(BlockFace.DOWN));

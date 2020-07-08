@@ -18,7 +18,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
-	
+
     private double charge;
 
     protected EnergyCell() {
@@ -43,12 +43,12 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Stores up to " + UnicodeSymbol.ELECTRICITY.toUnicode() + " " + getMaxCharge() + " SCU"};
+        return new String[] { "Stores up to " + UnicodeSymbol.ELECTRICITY.toUnicode() + " " + getMaxCharge() + " SCU" };
     }
 
     @Override
     public String[] getExtraLore() {
-        return new String[]{STBUtil.getChargeString(this)};
+        return new String[] { STBUtil.getChargeString(this) };
     }
 
     public abstract Color getCellColor();
@@ -78,8 +78,8 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
         }
         return res;
     }
-    
-	@Override
+
+    @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(true);
@@ -90,17 +90,17 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
     private void chargeHotbarItems(Player player) {
         if (getCharge() > 0) {
             int held = player.getInventory().getHeldItemSlot();
-            
+
             for (int slot = 0; slot < 8; slot++) {
                 if (slot == held) continue;
-                
+
                 ItemStack stack = player.getInventory().getItem(slot);
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-                
+
                 if (item instanceof Chargeable) {
                     Chargeable c = (Chargeable) item;
                     double toTransfer = Math.min(c.getMaxCharge() - c.getCharge(), c.getChargeRate());
-                    
+
                     if (toTransfer > 0) {
                         toTransfer = Math.min(toTransfer, getCharge());
                         setCharge(getCharge() - toTransfer);

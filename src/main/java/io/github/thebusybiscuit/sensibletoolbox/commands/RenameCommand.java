@@ -13,7 +13,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class RenameCommand extends AbstractCommand {
-	
+
     public RenameCommand() {
         super("stb rename", 1, 1);
         setPermissionNode("stb.commands.rename");

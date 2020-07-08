@@ -19,7 +19,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 
 public class AdvancedSenderModule extends DirectionalItemRouterModule {
-	
+
     private static final int RANGE = 24;
     private static final int RANGE2 = RANGE * RANGE;
     private Location linkedLoc;
@@ -30,10 +30,12 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 
     public AdvancedSenderModule(ConfigurationSection conf) {
         super(conf);
+
         if (conf.contains("linkedLoc")) {
             try {
                 linkedLoc = MiscUtil.parseLocation(conf.getString("linkedLoc"));
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 linkedLoc = null;
             }
         }
@@ -60,15 +62,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Insert into an Item Router",
-                "Sends items to a linked Receiver Module",
-                " anywhere within a " + RANGE + "-block radius",
-                " (line of sight is not needed)",
-                "L-Click item router with installed",
-                " Receiver Module: " + ChatColor.RESET + " Link Adv. Sender",
-                UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click: " + ChatColor.RESET + " Unlink Adv. Sender"
-        };
+        return new String[] { "Insert into an Item Router", "Sends items to a linked Receiver Module", " anywhere within a " + RANGE + "-block radius", " (line of sight is not needed)", "L-Click item router with installed", " Receiver Module: " + ChatColor.RESET + " Link Adv. Sender", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click: " + ChatColor.RESET + " Unlink Adv. Sender" };
     }
 
     @Override
@@ -95,19 +89,18 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             if (rtr != null && rtr.getReceiver() != null) {
                 linkToRouter(rtr);
                 event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
-            } 
+            }
             else {
                 STBUtil.complain(event.getPlayer());
             }
             event.setCancelled(true);
-        } 
+        }
         else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
             event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
             event.setCancelled(true);
-        } 
-        else if (event.getPlayer().getItemInHand().getAmount() == 1 &&
-                (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        }
+        else if (event.getPlayer().getItemInHand().getAmount() == 1 && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             super.onInteractItem(event);
         }
     }
@@ -117,9 +110,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     }
 
     protected boolean inRange(Location ourLoc) {
-        return ourLoc != null &&
-                ourLoc.getWorld().equals(linkedLoc.getWorld()) &&
-                ourLoc.distanceSquared(linkedLoc) <= RANGE2;
+        return ourLoc != null && ourLoc.getWorld().equals(linkedLoc.getWorld()) && ourLoc.distanceSquared(linkedLoc) <= RANGE2;
     }
 
     @Override
@@ -130,10 +121,12 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             }
 
             ItemRouter otherRouter = SensibleToolbox.getBlockAt(linkedLoc, ItemRouter.class, false);
+
             if (otherRouter != null) {
                 if (!inRange(loc)) {
                     return false;
                 }
+
                 ReceiverModule mod = otherRouter.getReceiver();
                 if (mod != null) {
                     return sendItems(mod) > 0;

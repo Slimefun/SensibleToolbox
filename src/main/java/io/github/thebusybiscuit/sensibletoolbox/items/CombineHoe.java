@@ -124,11 +124,13 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.getClickedBlock() == null || !STBUtil.isInteractive(event.getClickedBlock().getType())) {
+            if (event.getClickedBlock() == null || !event.getClickedBlock().getType().isInteractable()) {
                 gui = GUIUtil.createGUI(event.getPlayer(), this, 9, getInventoryTitle());
+
                 for (int i = 0; i < gui.getInventory().getSize(); i++) {
                     gui.setSlotType(i, InventoryGUI.SlotType.ITEM);
                 }
+
                 populateSeedBag(gui);
                 gui.show(event.getPlayer());
             }
@@ -147,10 +149,12 @@ public abstract class CombineHoe extends BaseSTBItem {
 
         if (Tag.LEAVES.isTagged(b.getType())) {
             harvestLayer(player, b);
+
             if (!player.isSneaking()) {
                 harvestLayer(player, b.getRelative(BlockFace.UP));
                 harvestLayer(player, b.getRelative(BlockFace.DOWN));
             }
+
             damageHeldItem(player, (short) 1);
         }
         else if (STBUtil.isPlant(b.getType())) {
@@ -245,12 +249,15 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     private void populateSeedBag(InventoryGUI gui) {
         Inventory inv = gui.getInventory();
+
         if (getSeedType() != null && getSeedAmount() > 0) {
             int nFullStacks = getSeedAmount() / getSeedType().getMaxStackSize();
             int remainder = getSeedAmount() % getSeedType().getMaxStackSize();
+
             for (int i = 0; i < nFullStacks && i < inv.getSize(); i++) {
                 inv.setItem(i, new ItemStack(getSeedType(), getSeedType().getMaxStackSize()));
             }
+
             if (remainder > 0 && nFullStacks < inv.getSize()) {
                 inv.setItem(nFullStacks, new ItemStack(getSeedType(), remainder));
             }
@@ -272,7 +279,6 @@ public abstract class CombineHoe extends BaseSTBItem {
             if (b1.getType() == Material.FARMLAND && above.isEmpty()) {
                 // candidate for sowing
                 above.setType(STBUtil.getCropType(getSeedType()));
-                above.setData((byte) 0);
                 amountLeft--;
                 if (amountLeft == 0) {
                     break;

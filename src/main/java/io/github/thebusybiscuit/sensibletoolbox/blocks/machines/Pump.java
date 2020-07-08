@@ -20,9 +20,9 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
 
 public class Pump extends AbstractProcessingMachine {
-	
+
     private static final int PUMP_FILL_TIME = 40; // 40 ticks to fill a bucket
-    private BlockFace pumpFace = BlockFace.DOWN;  // will be configurable later
+    private BlockFace pumpFace = BlockFace.DOWN; // will be configurable later
 
     public Pump() {
         super();
@@ -59,17 +59,17 @@ public class Pump extends AbstractProcessingMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -124,9 +124,7 @@ public class Pump extends AbstractProcessingMachine {
 
     @Override
     public String[] getLore() {
-        return new String[] {
-            "Pumps liquids into a bucket"
-        };
+        return new String[] { "Pumps liquids into a bucket" };
     }
 
     @Override
@@ -162,7 +160,7 @@ public class Pump extends AbstractProcessingMachine {
             // pull a bucket from the input stack into processing
             ItemStack toProcess = makeProcessingItem(toPump, stackIn.getType());
             setProcessing(toProcess);
-            
+
             if (toProcess != null) {
                 getProgressMeter().setMaxProgress(PUMP_FILL_TIME);
                 setProgress(PUMP_FILL_TIME);
@@ -178,7 +176,6 @@ public class Pump extends AbstractProcessingMachine {
             playActiveParticleEffect();
         }
 
-
         if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
             // done processing - try to move filled container into output
             ItemStack result = getProcessing();
@@ -188,7 +185,7 @@ public class Pump extends AbstractProcessingMachine {
                 setProcessing(null);
                 update(false);
                 replacePumpedBlock(toPump);
-            } 
+            }
             else {
                 setJammed(true);
             }
@@ -202,10 +199,10 @@ public class Pump extends AbstractProcessingMachine {
     private Block findNextBlockToPump() {
         switch (getRelativeLocation(pumpFace).getBlock().getType()) {
         case LAVA:
-        	List<Location> list = new ArrayList<>();
-        	list.add(getRelativeLocation(pumpFace));
-        	Vein.calculate(getRelativeLocation(pumpFace), getRelativeLocation(pumpFace), list, 128);
-        	return list.get(list.size() - 1).getBlock();
+            List<Location> list = new ArrayList<>();
+            list.add(getRelativeLocation(pumpFace));
+            Vein.calculate(getRelativeLocation(pumpFace), getRelativeLocation(pumpFace), list, 128);
+            return list.get(list.size() - 1).getBlock();
         default:
             return getRelativeLocation(pumpFace).getBlock();
         }
@@ -216,14 +213,14 @@ public class Pump extends AbstractProcessingMachine {
             return;
         }
         switch (block.getType()) {
-            case WATER:
-                block.setType(Material.AIR);
-                break;
-            case LAVA:
-                block.setType(Material.STONE);
-                break;
-            default:
-                break;
+        case WATER:
+            block.setType(Material.AIR);
+            break;
+        case LAVA:
+            block.setType(Material.STONE);
+            break;
+        default:
+            break;
         }
     }
 
@@ -233,29 +230,29 @@ public class Pump extends AbstractProcessingMachine {
         }
         Material res;
         switch (container) {
-            case BUCKET:
-                switch (toPump.getType()) {
-                    case LAVA:
-                        res = Material.LAVA_BUCKET;
-                        break;
-                    case WATER:
-                        res = Material.WATER_BUCKET;
-                        break;
-                    default:
-                        res = null;
-                }
+        case BUCKET:
+            switch (toPump.getType()) {
+            case LAVA:
+                res = Material.LAVA_BUCKET;
                 break;
-            case GLASS_BOTTLE:
-                switch (toPump.getType()) {
-                    case WATER:
-                        res = Material.POTION;
-                        break;
-                    default:
-                        res = null;
-                }
+            case WATER:
+                res = Material.WATER_BUCKET;
                 break;
             default:
                 res = null;
+            }
+            break;
+        case GLASS_BOTTLE:
+            switch (toPump.getType()) {
+            case WATER:
+                res = Material.POTION;
+                break;
+            default:
+                res = null;
+            }
+            break;
+        default:
+            res = null;
         }
 
         return res == null ? null : new ItemStack(res);

@@ -7,16 +7,18 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import java.util.*;
 
 /**
- * This class manages custom recipes known to STB.  A custom recipe requires a
+ * This class manages custom recipes known to STB. A custom recipe requires a
  * machine (object which subclasses BaseSTBMachine) to produce the result.
  * Custom recipes may be shaped (ShapedCustomRecipe) or more commonly
  * shapeless (ShapelessCustomRecipe).
  */
 public class CustomRecipeManager {
+
     // maps a STB item ID to the custom recipes that STB item knows about
-    private static final Map<String, CustomRecipeCollection> map = new HashMap<String, CustomRecipeCollection>();
+    private static final Map<String, CustomRecipeCollection> map = new HashMap<>();
+
     // maps an item to all the custom recipes for it
-    private static final Map<ItemStack, List<CustomRecipe>> reverseMap = new HashMap<ItemStack, List<CustomRecipe>>();
+    private static final Map<ItemStack, List<CustomRecipe>> reverseMap = new HashMap<>();
     private static CustomRecipeManager instance;
 
     /**
@@ -39,8 +41,10 @@ public class CustomRecipeManager {
     /**
      * Add a custom recipe for some STB machine.
      *
-     * @param recipe the recipe to add
-     * @param allowWild allow wildcarded data values
+     * @param recipe
+     *            the recipe to add
+     * @param allowWild
+     *            allow wildcarded data values
      */
     public void addCustomRecipe(CustomRecipe recipe, boolean allowWild) {
         CustomRecipeCollection collection = map.get(recipe.getProcessorID());
@@ -60,7 +64,8 @@ public class CustomRecipeManager {
     /**
      * Add a custom recipe for some STB machine.
      *
-     * @param recipe the recipe to add
+     * @param recipe
+     *            the recipe to add
      */
     public void addCustomRecipe(CustomRecipe recipe) {
         addCustomRecipe(recipe, false);
@@ -69,20 +74,23 @@ public class CustomRecipeManager {
     /**
      * Get all known custom recipes which will make the given item.
      *
-     * @param result the item for which to find recipes for
+     * @param result
+     *            the item for which to find recipes for
      * @return a list of custom recipes which can make the given item
      */
     public List<CustomRecipe> getRecipesFor(ItemStack result) {
         List<CustomRecipe> res = reverseMap.get(makeSingle(result));
-        return res == null ? new ArrayList<CustomRecipe>() : new ArrayList<CustomRecipe>(res);
+        return res == null ? new ArrayList<>() : new ArrayList<>(res);
     }
 
     /**
      * Get the result (including processing time) for the given machine and
      * ingredients.
      *
-     * @param machine an STB machine
-     * @param ingredients some items to process
+     * @param machine
+     *            an STB machine
+     * @param ingredients
+     *            some items to process
      * @return the resulting item, if any (may be null if no match)
      */
     public ProcessingResult getRecipe(BaseSTBMachine machine, ItemStack... ingredients) {
@@ -93,8 +101,10 @@ public class CustomRecipeManager {
     /**
      * Check if the given machine can make anything with the given items.
      *
-     * @param machine an STB machine
-     * @param ingredients some items to process
+     * @param machine
+     *            an STB machine
+     * @param ingredients
+     *            some items to process
      * @return true if the machine has a recipe to process the items; false otherwise
      */
     public boolean hasRecipe(BaseSTBMachine machine, ItemStack... ingredients) {

@@ -23,9 +23,9 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
 
 public class AutoForester extends AutoFarmingMachine {
-	
+
     private static final int RADIUS = 5;
-    
+
     private Set<Block> blocks;
     private Material buffer;
 
@@ -37,7 +37,7 @@ public class AutoForester extends AutoFarmingMachine {
         super(conf);
         blocks = new HashSet<>();
     }
-    
+
     @Override
     public Material getMaterial() {
         return Material.BROWN_TERRACOTTA;
@@ -50,17 +50,13 @@ public class AutoForester extends AutoFarmingMachine {
 
     @Override
     public String[] getLore() {
-        return new String[] {
-                "Automatically harvests and replants",
-                "Trees",
-                "in a " + RADIUS + "x" + RADIUS + " Radius 2 Blocks above the Machine"
-        };
+        return new String[] { "Automatically harvests and replants", "Trees", "in a " + RADIUS + "x" + RADIUS + " Radius 2 Blocks above the Machine" };
     }
 
     @Override
     public Recipe getRecipe() {
-    	MachineFrame frame = new MachineFrame();
-    	registerCustomIngredients(frame);
+        MachineFrame frame = new MachineFrame();
+        registerCustomIngredients(frame);
         ShapedRecipe res = new ShapedRecipe(getKey(), toItemStack());
         res.shape("A A", "IFI", "RGR");
         res.setIngredient('R', Material.REDSTONE);
@@ -70,67 +66,67 @@ public class AutoForester extends AutoFarmingMachine {
         res.setIngredient('F', frame.getMaterial());
         return res;
     }
-    
+
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
-    	int i = RADIUS / 2;
-    	for (int x = -i; x <= i; x++) {
-    		for (int z = -i; z <= i; z++) {
-        		blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
-        	}
-    	}
-    	
-    	super.onBlockRegistered(location, isPlacing);
+        int i = RADIUS / 2;
+        for (int x = -i; x <= i; x++) {
+            for (int z = -i; z <= i; z++) {
+                blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
+            }
+        }
+
+        super.onBlockRegistered(location, isPlacing);
     }
 
-	@Override
+    @Override
     public void onServerTick() {
-    	if (!isJammed()) {
-    		for (Block log : blocks) {
-        		if (Tag.LOGS.isTagged(log.getType())) {
-        			if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
-        			else break;
-        			
-        			List<Location> list = new ArrayList<>();
-        			TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
-        			
-        			for (Location l: list) {
-        				buffer = l.getBlock().getType();
-                		setJammed(!output(buffer));
-        				log.getWorld().playEffect(l, Effect.STEP_SOUND, l.getBlock().getType());
-        				
-        				if (blocks.contains(l.getBlock())) {
-        					Optional<Material> sapling = MaterialConverter.getSaplingFromLog(l.getBlock().getType());
-        					
-        					if (sapling.isPresent()) l.getBlock().setType(sapling.get());
-            				else l.getBlock().setType(Material.AIR);
-        				}
-        				else l.getBlock().setType(Material.AIR);
-        			}
-        			break;
-        		}
-        	}
-    	}
-    	else if (buffer != null) setJammed(!output(buffer));
-    	
+        if (!isJammed()) {
+            for (Block log : blocks) {
+                if (Tag.LOGS.isTagged(log.getType())) {
+                    if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
+                    else break;
+
+                    List<Location> list = new ArrayList<>();
+                    TreeCalculator.getTree(log.getLocation(), log.getLocation(), list);
+
+                    for (Location l : list) {
+                        buffer = l.getBlock().getType();
+                        setJammed(!output(buffer));
+                        log.getWorld().playEffect(l, Effect.STEP_SOUND, l.getBlock().getType());
+
+                        if (blocks.contains(l.getBlock())) {
+                            Optional<Material> sapling = MaterialConverter.getSaplingFromLog(l.getBlock().getType());
+
+                            if (sapling.isPresent()) l.getBlock().setType(sapling.get());
+                            else l.getBlock().setType(Material.AIR);
+                        }
+                        else l.getBlock().setType(Material.AIR);
+                    }
+                    break;
+                }
+            }
+        }
+        else if (buffer != null) setJammed(!output(buffer));
+
         super.onServerTick();
     }
-    
-	private boolean output(Material m) {
-		for (int slot: getOutputSlots()) {
-			ItemStack stack = getInventoryItem(slot);
-			if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-				if (stack == null) stack = new ItemStack(m);
-				
-				setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + 1));
-				buffer = null;
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	@Override
+
+    private boolean output(Material m) {
+        for (int slot : getOutputSlots()) {
+            ItemStack stack = getInventoryItem(slot);
+            if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
+                if (stack == null) stack = new ItemStack(m);
+
+                setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + 1));
+                buffer = null;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public double getScuPerCycle() {
         return 250.0;
     }
