@@ -37,6 +37,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -362,8 +363,8 @@ public class RecipeBook extends BaseSTBItem {
         }
         for (BlockFace face : STBUtil.directFaces) {
             Block b = fabricationBlock.getRelative(face);
-            if (VanillaInventoryUtils.isVanillaInventory(b) && SensibleToolbox.getBlockProtection().isInventoryAccessible(player, b)) {
-                resourceInventories.add(VanillaInventoryUtils.getVanillaInventoryFor(b).getHolder());
+            if (VanillaInventoryUtils.isVanillaInventory(b) && SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.ACCESS_INVENTORIES)) {
+                resourceInventories.add(VanillaInventoryUtils.getVanillaInventory(b).map(Inventory::getHolder).get());
             }
             else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
@@ -562,7 +563,7 @@ public class RecipeBook extends BaseSTBItem {
                     vanillaInventories.add(inv);
                 }
             }
-            else if (h instanceof BlockState && SensibleToolbox.getBlockProtection().isInventoryAccessible(player, ((BlockState) h).getBlock())) {
+            else if (h instanceof BlockState && SensibleToolbox.getProtectionManager().hasPermission(player, ((BlockState) h).getBlock(), ProtectableAction.ACCESS_INVENTORIES)) {
                 vanillaInventories.add(h.getInventory());
             }
         }

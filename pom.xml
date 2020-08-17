@@ -6,12 +6,26 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.thebusybiscuit</groupId>
     <artifactId>SensibleToolbox</artifactId>
+
     <version>UNOFFICIAL</version>
+    <inceptionYear>2014</inceptionYear>
+    <packaging>jar</packaging>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Spigot properties -->
+        <spigot.version>1.16.2</spigot.version>
+        <spigot.javadocs>https://hub.spigotmc.org/javadocs/spigot/</spigot.javadocs>
+
+        <!-- Default settings for sonarcloud.io -->
+        <sonar.projectKey>TheBusyBiscuit_SensibleToolbox</sonar.projectKey>
+        <sonar.organization>thebusybiscuit-github</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.log.level>DEBUG</sonar.log.level>
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <issueManagement>
@@ -59,9 +73,25 @@
         <finalName>${project.name} v${project.version}</finalName>
 
         <plugins>
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <excludes>
+                        <!-- package info files are only important for Javadocs -->
+                        <!-- We can safely exclude them from the final jar -->
+                        <exclude>**/package-info.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- Attach sources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -88,6 +118,16 @@
                             <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.cscorelib2</shadedPattern>
                         </relocation>
                     </relocations>
+
+                    <!-- Exclude unneeded metadata files from shaded dependencies -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
 
                 <executions>
@@ -98,6 +138,28 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Javadocs Settings -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+
+                <configuration>
+                    <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
+                    <destDir>docs</destDir>
+
+                    <doctitle>SensibleToolbox - Javadocs</doctitle>
+                    <windowtitle>SensibleToolbox - Javadocs</windowtitle>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <additionalJOption>-html5</additionalJOption>
+
+                    <!-- We can reference Bukkit's API in our Javadocs -->
+                    <links>
+                        <link>${spigot.javadocs}</link>
+                    </links>
+                </configuration>
             </plugin>
         </plugins>
 
@@ -126,7 +188,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <version>${spigot.version}-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -140,7 +202,7 @@
         <dependency>
             <groupId>com.github.TheBusyBiscuit</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>03c08ed6f1</version>
+            <version>RC-15</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -171,7 +233,7 @@
         <dependency>
             <groupId>com.github.thebusybiscuit</groupId>
             <artifactId>CS-CoreLib2</artifactId>
-            <version>0.23.2</version>
+            <version>0.25</version>
             <scope>compile</scope>
         </dependency>
 

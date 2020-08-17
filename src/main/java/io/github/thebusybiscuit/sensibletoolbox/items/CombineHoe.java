@@ -272,7 +272,8 @@ public abstract class CombineHoe extends BaseSTBItem {
         int amountLeft = getSeedAmount();
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             Block above = b1.getRelative(BlockFace.UP);
-            if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, above, BlockProtection.Operation.PLACE)) {
+
+            if (!SensibleToolbox.getProtectionManager().hasPermission(player, above, ProtectableAction.PLACE_BLOCK)) {
                 continue;
             }
 
@@ -280,6 +281,7 @@ public abstract class CombineHoe extends BaseSTBItem {
                 // candidate for sowing
                 above.setType(STBUtil.getCropType(getSeedType()));
                 amountLeft--;
+
                 if (amountLeft == 0) {
                     break;
                 }

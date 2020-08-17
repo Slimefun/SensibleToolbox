@@ -26,6 +26,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.Dye;
 import org.bukkit.material.Wool;
 
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollection;
+import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.AccessControlGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
@@ -108,7 +110,13 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
     @Override
     public Material getMaterial() {
-        return getPaintLevel() > 0 ? new Wool(colour) : STBUtil.makeColouredMaterial(Material.STAINED_GLASS, colour);
+        MaterialCollection materials = MaterialCollections.getAllStainedGlassColors();
+
+        if (getPaintLevel() > 0) {
+            materials = MaterialCollections.getAllWoolColors();
+        }
+
+        return materials.get(colour.ordinal());
     }
 
     @Override
