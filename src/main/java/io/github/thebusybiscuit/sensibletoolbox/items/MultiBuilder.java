@@ -30,10 +30,10 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
@@ -267,7 +267,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             return false;
         }
         else {
-            return SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.BREAK);
+            return SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK);
         }
     }
 

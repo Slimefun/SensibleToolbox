@@ -28,6 +28,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -263,12 +264,11 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         }
     }
 
-    @SuppressWarnings("deprecation")
     private int paintBlocks(Player player, Block... blocks) {
         int painted = 0;
 
         for (Block b : blocks) {
-            if (!SensibleToolbox.getBlockProtection().playerCanBuild(player, b, BlockProtection.Operation.PLACE)) {
+            if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
                 continue;
             }
 
@@ -282,7 +282,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                 if (b.getType() == Material.GLASS) {
                     b.setType(Material.STAINED_GLASS);
                 }
-                else if (b.getType() == Material.THIN_GLASS) {
+                else if (b.getType() == Material.GLASS_PANE) {
                     b.setType(Material.STAINED_GLASS_PANE);
                 }
             }

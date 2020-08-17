@@ -130,48 +130,6 @@ public class SensibleToolbox {
     }
 
     /**
-     * Register a new item with SensibleToolbox. The item must be a subclass
-     * of {@link BaseSTBItem}.
-     *
-     * @param plugin the plugin doing the registration
-     * @param item   an instance of the item to be registered
-     * @deprecated use {@link ItemRegistry#registerItem(io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin)}
-     */
-    @Deprecated
-    public static void registerItem(Plugin plugin, BaseSTBItem item) {
-        getItemRegistry().registerItem(item, plugin);
-    }
-
-    /**
-     * Register an item with Sensible Toolbox.  The item must be a subclass of
-     * {@link BaseSTBItem}.
-     *
-     * @param plugin     the plugin doing the registration
-     * @param item       an instance of the item to be registered
-     * @param configNode the parent configuration node prefix controlling enablement
-     * @deprecated use {@link ItemRegistry#registerItem(io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String)}
-     */
-    @Deprecated
-    public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode) {
-        getItemRegistry().registerItem(item, plugin, configNode);
-    }
-
-    /**
-     * Register an item with Sensible Toolbox.  The item must be a subclass of
-     * {@link BaseSTBItem}.
-     *
-     * @param plugin         the plugin doing the registration
-     * @param item           an instance of the item to be registered
-     * @param configNode     the parent configuration node prefix controlling enablement
-     * @param permissionNode the permission node prefix for registering item permissions
-     * @deprecated use {@link ItemRegistry#registerItem(io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem, org.bukkit.plugin.Plugin, String, String)}
-     */
-    @Deprecated
-    public static void registerItem(Plugin plugin, BaseSTBItem item, String configNode, String permissionNode) {
-        getItemRegistry().registerItem(item, plugin, configNode, permissionNode);
-    }
-
-    /**
      * Get the friend manager object.  This object is responsible for managing
      * the trust relationships between players, primarily to support
      * Restricted access mode on STB blocks.

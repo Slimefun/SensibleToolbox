@@ -14,6 +14,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -73,12 +74,11 @@ public class GeneralListener extends STBBaseListener {
         }
 
         Block clicked = event.getClickedBlock();
-        if (!event.isCancelled() && clicked != null) {
+        if (event.useInteractedBlock() != Result.DENY && clicked != null) {
             BaseSTBBlock stb = LocationManager.getManager().get(clicked.getLocation(), true);
-            if (stb != null) {
-                if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT_BLOCK)) {
-                    stb.onInteractBlock(event);
-                }
+
+            if (stb != null && stb.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT_BLOCK)) {
+                stb.onInteractBlock(event);
             }
         }
     }
