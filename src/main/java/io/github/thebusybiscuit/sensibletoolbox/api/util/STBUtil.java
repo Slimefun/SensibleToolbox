@@ -52,8 +52,6 @@ public class STBUtil {
      */
     public static final BlockFace[] allHorizontalFaces = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH };
 
-    private static final int gravelChance[] = new int[] { 0, 14, 25, 100 };
-
     /**
      * Check if the given material is a crop which can grow and/or be harvested.
      *
@@ -62,7 +60,7 @@ public class STBUtil {
      * @return true if the material is a crop
      */
     public static boolean isCrop(Material m) {
-        return m == Material.WHEAT || m == Material.CARROT || m == Material.POTATO || m == Material.PUMPKIN_STEM || m == Material.MELON_STEM || m == Material.BEETROOT;
+        return m == Material.WHEAT || m == Material.CARROTS || m == Material.POTATOES || m == Material.PUMPKIN_STEM || m == Material.MELON_STEM || m == Material.BEETROOTS || m == Material.SWEET_BERRY_BUSH;
     }
 
     /**
@@ -584,7 +582,7 @@ public class STBUtil {
         }
 
         String[] fields = spec.split(",");
-        MaterialData mat = parseMatAndData(fields[0]);
+        Material material = Material.matchMaterial(fields[0]);
 
         int amount = 1;
         boolean glowing = false;
@@ -598,7 +596,7 @@ public class STBUtil {
             }
         }
 
-        ItemStack stack = mat.toItemStack(amount);
+        ItemStack stack = new ItemStack(material, amount);
 
         if (glowing && SensibleToolboxPlugin.getInstance().isProtocolLibEnabled()) {
             ItemGlow.setGlowing(stack, true);

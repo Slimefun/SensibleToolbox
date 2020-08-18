@@ -15,6 +15,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -29,8 +31,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.ChatPaginator;
-
-import com.google.common.util.concurrent.SettableFuture;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
@@ -989,17 +989,21 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!
             Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
-            signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.SIGN));
+            signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.OAK_SIGN));
             return false;
         }
         else {
             Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
-            // using setTypeIdAndData() here because we don't want to cause a physics update
-            signBlock.setTypeIdAndData(Material.WALL_SIGN.getId(), (byte) 0, false);
+
+            BlockData data = Material.OAK_WALL_SIGN.createBlockData(bd -> {
+                if (bd instanceof WallSign) {
+                    ((WallSign) bd).setFacing(face);
+                }
+            });
+
+            signBlock.setBlockData(data);
             Sign sign = (Sign) signBlock.getState();
-            org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
-            s.setFacingDirection(face);
-            sign.setData(s);
+
             String[] text = getSignLabel(face);
 
             for (int i = 0; i < text.length; i++) {
@@ -1018,13 +1022,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
         Block b = getLocation().getBlock();
         for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH }) {
-            Block b1 = b.getRelative(face);
+            Block neighbour = b.getRelative(face);
 
-            if (Tag.WALL_SIGNS.isTagged(b1.getType())) {
-                Sign sign = (Sign) b.getRelative(face).getState();
-                org.bukkit.material.Sign s = (org.bukkit.material.Sign) sign.getData();
+            if (Tag.WALL_SIGNS.isTagged(neighbour.getType())) {
+                WallSign sign = (WallSign) neighbour.getBlockData();
 
-                if (s.getAttachedFace() == face.getOppositeFace()) {
+                if (sign.getFacing() == face.getOppositeFace()) {
                     labelSigns.set(STBUtil.getFaceRotation(getFacing(), face));
                 }
             }
