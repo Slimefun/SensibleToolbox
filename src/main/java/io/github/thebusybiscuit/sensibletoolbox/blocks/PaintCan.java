@@ -225,7 +225,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     private boolean validItem(ItemStack item) {
-        return !item.hasItemMeta() && (STBUtil.isColorable(item.getType()) || item.getType() == Material.MILK_BUCKET || item.getType() == Material.INK_SACK || item.getType() == Material.GLASS || item.getType() == Material.THIN_GLASS);
+        return !item.hasItemMeta() && (STBUtil.isColorable(item.getType()) || item.getType() == Material.MILK_BUCKET || MaterialCollections.getAllDyeColors().contains(item.getType()) || item.getType() == Material.GLASS || item.getType() == Material.THIN_GLASS);
     }
 
     @Override
@@ -317,7 +317,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                 if (stack.getType() == Material.MILK_BUCKET && !stack.hasItemMeta() && bucketSlot == -1) {
                     bucketSlot = slot;
                 }
-                else if (stack.getType() == Material.INK_SACK && !stack.hasItemMeta() && dyeSlot == -1) {
+                else if (MaterialCollections.getAllDyeColors().contains(stack.getType()) && !stack.hasItemMeta() && dyeSlot == -1) {
                     dyeSlot = slot;
                 }
                 else if (validItem(stack) && dyeableSlot == -1) {

@@ -32,7 +32,6 @@ import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.HoloMessage;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.PaintCan;

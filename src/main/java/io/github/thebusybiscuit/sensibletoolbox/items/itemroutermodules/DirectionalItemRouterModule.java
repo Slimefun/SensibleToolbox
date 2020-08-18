@@ -29,7 +29,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.Filter;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
@@ -158,13 +157,13 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             // set module direction based on clicked block face
             setFacingDirection(event.getBlockFace().getOppositeFace());
-            event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+            event.getPlayer().getInventory().setItem(event.getHand(), toItemStack(event.getItem().getAmount()));
             event.setCancelled(true);
         }
         else if (event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
             // unset module direction
             setFacingDirection(BlockFace.SELF);
-            event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+            event.getPlayer().getInventory().setItem(event.getHand(), toItemStack(event.getItem().getAmount()));
             event.setCancelled(true);
         }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -179,44 +178,36 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     }
 
     private InventoryGUI createGUI(Player player) {
-        InventoryGUI gui = GUIUtil.createGUI(player, this, 36, ChatColor.DARK_RED + "Module Configuration");
+        InventoryGUI inventory = GUIUtil.createGUI(player, this, 36, ChatColor.DARK_RED + "Module Configuration");
 
-        gui.addGadget(new ToggleButton(gui, 28, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, new ToggleButton.ToggleListener() {
-
-            @Override
-            public boolean run(boolean newValue) {
-                if (getFilter() != null) {
-                    getFilter().setWhiteList(newValue);
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }));
-
-        gui.addGadget(new FilterTypeGadget(gui, 29));
-        gui.addGadget(new ToggleButton(gui, 30, isTerminator(), ON_BUTTON, OFF_BUTTON, new ToggleButton.ToggleListener() {
-
-            @Override
-            public boolean run(boolean newValue) {
-                setTerminator(newValue);
+        inventory.addGadget(new ToggleButton(inventory, 28, getFilter().isWhiteList(), WHITE_BUTTON, BLACK_BUTTON, newValue -> {
+            if (getFilter() != null) {
+                getFilter().setWhiteList(newValue);
                 return true;
             }
+            else {
+                return false;
+            }
         }));
 
-        gui.addLabel("Filtered Items", FILTER_LABEL_SLOT, null, "Place up to 9 items", "in the filter " + UnicodeSymbol.ARROW_RIGHT.toUnicode());
-        for (int slot : filterSlots) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
-        }
-        populateFilterInventory(gui.getInventory());
+        inventory.addGadget(new FilterTypeGadget(inventory, 29));
+        inventory.addGadget(new ToggleButton(inventory, 30, isTerminator(), ON_BUTTON, OFF_BUTTON, newValue -> {
+            setTerminator(newValue);
+            return true;
+        }));
 
-        gui.addLabel("Module Direction", DIRECTION_LABEL_SLOT, null, "Set the direction that", "the module works in", "once installed in an", "Item Router");
+        inventory.addLabel("Filtered Items", FILTER_LABEL_SLOT, null, "Place up to 9 items", "in the filter " + UnicodeSymbol.ARROW_RIGHT.toUnicode());
+        for (int slot : filterSlots) {
+            inventory.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+        }
+        populateFilterInventory(inventory.getInventory());
+
+        inventory.addLabel("Module Direction", DIRECTION_LABEL_SLOT, null, "Set the direction that", "the module works in", "once installed in an", "Item Router");
         ItemStack texture = new ItemStack(new ItemRouter().getMaterial());
         GUIUtil.setDisplayName(texture, "No Direction");
-        gui.addGadget(new DirectionGadget(gui, 16, texture));
+        inventory.addGadget(new DirectionGadget(inventory, 16, texture));
 
-        return gui;
+        return inventory;
     }
 
     private void populateFilterInventory(Inventory inv) {
@@ -275,6 +266,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
         for (int slot : filterSlots) {
             ItemStack stack = gui.getInventory().getItem(slot);
+
             if (stack != null) {
                 filter.addItem(stack);
             }
