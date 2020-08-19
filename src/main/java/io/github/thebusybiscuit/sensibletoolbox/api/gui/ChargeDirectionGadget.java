@@ -12,12 +12,14 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
  * for a STB device which can hold an energy cell.
  */
 public class ChargeDirectionGadget extends CyclerGadget<ChargeDirection> {
-	
+
     /**
      * Constructs a charge direction gadget.
      *
-     * @param gui the GUI that the gadget belongs to
-     * @param slot the GUI slot that the gadget occupies
+     * @param gui
+     *            the GUI that the gadget belongs to
+     * @param slot
+     *            the GUI slot that the gadget occupies
      */
     public ChargeDirectionGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Charge");

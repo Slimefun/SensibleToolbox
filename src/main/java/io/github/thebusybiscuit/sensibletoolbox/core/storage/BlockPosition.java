@@ -6,6 +6,7 @@ import org.bukkit.Location;
  * Stores the X,Y,Z position of a block - no world information
  */
 public class BlockPosition {
+
     private final int x, y, z;
 
     public BlockPosition(int x, int y, int z) {

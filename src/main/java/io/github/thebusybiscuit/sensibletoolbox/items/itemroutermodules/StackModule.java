@@ -7,8 +7,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 public class StackModule extends ItemRouterModule {
 
-    public StackModule() {
-    }
+    public StackModule() {}
 
     public StackModule(ConfigurationSection conf) {
         super(conf);
@@ -21,14 +20,7 @@ public class StackModule extends ItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Insert into an Item Router",
-                "Passive module; each stack module",
-                "doubles the number of items moved",
-                "per operation, up to the item's max",
-                "stack size.",
-                "Any modules over 6 are ignored.",
-        };
+        return new String[] { "Insert into an Item Router", "Passive module; each stack module", "doubles the number of items moved", "per operation, up to the item's max", "stack size.", "Any modules over 6 are ignored.", };
     }
 
     @Override

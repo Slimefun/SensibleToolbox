@@ -21,7 +21,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
 public abstract class STBEnderStorageHolder implements EnderStorageHolder {
-	
+
     private final int frequency;
     private final EnderStorageManager manager;
     private Inventory inventory;
@@ -32,7 +32,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     }
 
     @SuppressWarnings("resource")
-	void loadInventory() throws IOException {
+    void loadInventory() throws IOException {
         File saveFile = getSaveFile();
         if (saveFile.exists()) {
             String encoded = new Scanner(saveFile).useDelimiter("\\A").next();
@@ -42,8 +42,9 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
                 inventory.setItem(i, savedInv.getItem(i));
             }
             Debugger.getInstance().debug("loaded " + this + " from " + saveFile);
-        } else {
-            // no saved inventory -  player must not have used the bag before
+        }
+        else {
+            // no saved inventory - player must not have used the bag before
             inventory = Bukkit.createInventory(this, EnderStorageManager.BAG_SIZE, getInventoryTitle());
             saveInventory();
         }
@@ -53,6 +54,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
         final String encoded = BukkitSerialization.toBase64(getInventory());
         final File saveFile = getSaveFile();
         Bukkit.getScheduler().runTaskAsynchronously(SensibleToolboxPlugin.getInstance(), new Runnable() {
+
             @Override
             public void run() {
                 try {
@@ -62,7 +64,8 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
                     }
                     Files.write(encoded, saveFile, Charset.forName("UTF-8"));
                     Debugger.getInstance().debug("saved " + this + " to " + saveFile);
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     LogUtils.severe("Can't save ender storage " + this + ": " + e.getMessage());
                 }
             }
@@ -96,7 +99,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
         ItemStack stack = VanillaInventoryUtils.pullFromInventory(getInventory(), amount, receiver, null);
         if (stack != null) {
-           setChanged();
+            setChanged();
         }
         return stack;
     }
@@ -121,6 +124,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     }
 
     public abstract File getSaveFile();
+
     public abstract String getInventoryTitle();
 
     @Override

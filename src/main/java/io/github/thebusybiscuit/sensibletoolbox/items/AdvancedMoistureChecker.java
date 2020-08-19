@@ -6,9 +6,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 public class AdvancedMoistureChecker extends MoistureChecker {
-	
-    public AdvancedMoistureChecker() {
-    }
+
+    public AdvancedMoistureChecker() {}
 
     public AdvancedMoistureChecker(ConfigurationSection conf) {
         super(conf);

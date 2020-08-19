@@ -19,7 +19,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
  * Top-level collection of utility methods for Sensible Toolbox.
  */
 public class SensibleToolbox {
-	
+
     private static SensibleToolboxPlugin instance;
 
     /**
@@ -30,12 +30,12 @@ public class SensibleToolbox {
     public static SensibleToolboxPlugin getPluginInstance() {
         if (instance == null) {
             instance = (SensibleToolboxPlugin) Bukkit.getPluginManager().getPlugin("SensibleToolbox");
-            
+
             if (instance == null || !instance.isEnabled()) {
                 throw new IllegalStateException("SensibleToolbox plugin is not available!");
             }
         }
-        
+
         return instance;
     }
 
@@ -53,7 +53,8 @@ public class SensibleToolbox {
      * Given an item stack, get the SensibleToolbox object for that item, if
      * any.
      *
-     * @param stack the item stack
+     * @param stack
+     *            the item stack
      * @return the SensibleToolbox object, or null if the item is not a STB item
      * @deprecated use {@link ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack)}
      */
@@ -66,7 +67,8 @@ public class SensibleToolbox {
      * Given an item stack and item type, get the SensibleToolbox object for
      * that item and type, if any.
      *
-     * @param stack the item stack
+     * @param stack
+     *            the item stack
      * @return the SensibleToolbox object, or null if the item is not a STB item of the given type
      * @deprecated use {@link ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack, Class)}
      */
@@ -78,7 +80,8 @@ public class SensibleToolbox {
     /**
      * Given a location, return the STB block at that location, if any.
      *
-     * @param location the location to check
+     * @param location
+     *            the location to check
      * @return the STB block at that location, or null if there is none
      */
     public static BaseSTBBlock getBlockAt(Location location) {
@@ -88,10 +91,12 @@ public class SensibleToolbox {
     /**
      * Given a location, return the STB block at that location, if any.
      *
-     * @param location the location to check
-     * @param checkSign if true and the location contains a sign, then also
-     *                  check the location of the block the sign is attached
-     *                  to
+     * @param location
+     *            the location to check
+     * @param checkSign
+     *            if true and the location contains a sign, then also
+     *            check the location of the block the sign is attached
+     *            to
      * @return the STB block at that location, or null if there is none
      */
     public static BaseSTBBlock getBlockAt(Location location, boolean checkSign) {
@@ -101,11 +106,14 @@ public class SensibleToolbox {
     /**
      * Given a location, return the STB block at that location, if any.
      *
-     * @param location the location to check
-     * @param type the block must be an instance or a subclass of this type
-     * @param checkSign if true and the location contains a sign, then also
-     *                  check the location of the block the sign is attached
-     *                  to
+     * @param location
+     *            the location to check
+     * @param type
+     *            the block must be an instance or a subclass of this type
+     * @param checkSign
+     *            if true and the location contains a sign, then also
+     *            check the location of the block the sign is attached
+     *            to
      * @return the STB block at that location, or null if there is no block of the given type
      */
     public static <T extends BaseSTBBlock> T getBlockAt(Location location, Class<T> type, boolean checkSign) {
@@ -113,16 +121,17 @@ public class SensibleToolbox {
     }
 
     /**
-     * Given a UUID, attempt to get the player name for that UUID.  This will
+     * Given a UUID, attempt to get the player name for that UUID. This will
      * only succeed if that player has previously connected to this server,
-     * in which case the last known name for the UUID will be returned.  If
+     * in which case the last known name for the UUID will be returned. If
      * the player has changed their name since last logging in, this change
      * will not be reflected in the return value for this method.
      * <p/>
      * This method does not require contacting any external servers, so is
      * safe to call from the main server thread.
      *
-     * @param uuid the UUID to check
+     * @param uuid
+     *            the UUID to check
      * @return the last known player name for this UUID, if any (null if name not known)
      */
     public static String getPlayerNameFromUUID(UUID uuid) {
@@ -130,7 +139,7 @@ public class SensibleToolbox {
     }
 
     /**
-     * Get the friend manager object.  This object is responsible for managing
+     * Get the friend manager object. This object is responsible for managing
      * the trust relationships between players, primarily to support
      * Restricted access mode on STB blocks.
      *
@@ -143,13 +152,14 @@ public class SensibleToolbox {
     /**
      * Get the energy net for the given block.
      *
-     * @param block the block to check
+     * @param block
+     *            the block to check
      */
     public static EnergyNet getEnergyNet(Block block) {
         return getPluginInstance().getEnergyNetManager().getEnergyNet(block);
     }
 
-	public static ProtectionManager getProtectionManager() {
-		return getPluginInstance().getProtectionManager();
-	}
+    public static ProtectionManager getProtectionManager() {
+        return getPluginInstance().getProtectionManager();
+    }
 }

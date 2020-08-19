@@ -7,9 +7,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 public class PullerModule extends DirectionalItemRouterModule {
-	
-    public PullerModule() {
-    }
+
+    public PullerModule() {}
 
     public PullerModule(ConfigurationSection conf) {
         super(conf);

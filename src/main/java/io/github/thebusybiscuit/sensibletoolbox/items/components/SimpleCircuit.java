@@ -9,11 +9,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class SimpleCircuit extends BaseSTBItem {
 
-    public SimpleCircuit() {
-    }
+    public SimpleCircuit() {}
 
-    public SimpleCircuit(ConfigurationSection conf) {
-    }
+    public SimpleCircuit(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -27,7 +25,7 @@ public class SimpleCircuit extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Used as a component in", "various machinery "};
+        return new String[] { "Used as a component in", "various machinery " };
     }
 
     @Override

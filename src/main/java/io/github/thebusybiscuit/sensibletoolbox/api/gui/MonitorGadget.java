@@ -6,6 +6,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
  * Abstract base class for all clickable gadgets.
  */
 public abstract class MonitorGadget extends Gadget {
+
     private final BaseSTBItem owner;
     private boolean repaintNeeded = true;
 
@@ -36,7 +37,7 @@ public abstract class MonitorGadget extends Gadget {
     }
 
     /**
-     * Note that this monitor needs a repaint.  This method should be called
+     * Note that this monitor needs a repaint. This method should be called
      * by the owning STB item/block whenever the quantity being monitored
      * changes.
      */

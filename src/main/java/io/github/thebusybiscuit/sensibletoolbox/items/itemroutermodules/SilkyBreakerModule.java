@@ -10,9 +10,9 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 public class SilkyBreakerModule extends BreakerModule {
-	
+
     private static final ItemStack pick = new ItemStack(Material.DIAMOND_PICKAXE, 1);
-    
+
     static {
         pick.addEnchantment(Enchantment.SILK_TOUCH, 1);
     }
@@ -32,14 +32,7 @@ public class SilkyBreakerModule extends BreakerModule {
 
     @Override
     public String[] getLore() {
-        return new String[] {
-                "Insert into an Item Router",
-                "Silk touches a block in its",
-                " configured direction and",
-                " pulls it into the item router.",
-                "NOTE: must use a Silk Touch",
-                "  enchanted book to craft."
-        };
+        return new String[] { "Insert into an Item Router", "Silk touches a block in its", " configured direction and", " pulls it into the item router.", "NOTE: must use a Silk Touch", "  enchanted book to craft." };
     }
 
     @Override

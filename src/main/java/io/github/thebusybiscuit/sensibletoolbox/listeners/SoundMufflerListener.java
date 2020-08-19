@@ -17,7 +17,7 @@ import io.github.thebusybiscuit.sensibletoolbox.blocks.SoundMuffler;
 import me.desht.dhutils.Debugger;
 
 public class SoundMufflerListener extends PacketAdapter implements Listener {
-	
+
     private final Set<SoundMuffler> mufflers = new HashSet<>();
 
     public SoundMufflerListener(Plugin plugin) {
@@ -36,7 +36,8 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
                 if (loc.getWorld().equals(sm.getLocation().getWorld()) && loc.distanceSquared(sm.getLocation()) < distance) {
                     if (sm.getVolume() == 0) {
                         event.setCancelled(true);
-                    } else {
+                    }
+                    else {
                         event.getPacket().getFloat().write(0, (float) sm.getVolume() / 100.0f);
                     }
                 }

@@ -39,7 +39,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.SunlightLevels;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
-	
+
     private static final int PV_CELL_SLOT = 1;
     private static final int LIGHT_METER_SLOT = 13;
 
@@ -76,7 +76,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[0];  // maybe one day
+        return new int[0]; // maybe one day
     }
 
     @Override
@@ -87,33 +87,33 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         boolean res = super.onSlotClick(player, slot, click, inSlot, onCursor);
-        
+
         if (res) {
             rescanPVCell();
         }
-        
+
         return res;
     }
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         int inserted = super.onShiftClickInsert(player, slot, toInsert);
-        
+
         if (inserted > 0) {
             rescanPVCell();
         }
-        
+
         return inserted;
     }
 
     @Override
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
         boolean res = super.onShiftClickExtract(player, slot, toExtract);
-        
+
         if (res) {
             rescanPVCell();
         }
-        
+
         return res;
     }
 
@@ -130,11 +130,11 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public int insertItems(ItemStack toInsert, BlockFace side, boolean sorting, UUID uuid) {
         int n = super.insertItems(toInsert, side, sorting, uuid);
-        
+
         if (n > 0) {
             rescanPVCell();
         }
-        
+
         return n;
     }
 
@@ -156,9 +156,9 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     private void rescanPVCell() {
         // defer this since we need to ensure the inventory slot is actually updated
         Bukkit.getScheduler().runTask(getProviderPlugin(), () -> {
-        	PVCell cell = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
+            PVCell cell = SensibleToolbox.getItemRegistry().fromItemStack(getGUI().getItem(PV_CELL_SLOT), PVCell.class);
             int pvl = cell == null ? 0 : cell.getLifespan();
-            
+
             if (pvl != pvCellLife) {
                 boolean doRedraw = pvl == 0 || pvCellLife == 0;
                 pvCellLife = pvl;
@@ -173,7 +173,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             PVCell pvCell = new PVCell();
             pvCell.setLifespan(pvCellLife);
             gui.setItem(PV_CELL_SLOT, pvCell.toItemStack());
-        } 
+        }
         else {
             gui.setItem(PV_CELL_SLOT, null);
         }
@@ -196,7 +196,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ",  ChatColor.RESET +"  - extract PV cell"};
+        return new String[] { "Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ", ChatColor.RESET + "  - extract PV cell" };
     }
 
     @Override
@@ -204,10 +204,10 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         String[] l = super.getExtraLore();
         String[] l2 = new String[l.length + 1];
         System.arraycopy(l, 0, l2, 0, l.length);
-        
+
         if (pvCellLife == 0) {
             l2[l.length] = ChatColor.GRAY.toString() + ChatColor.ITALIC + "No PV Cell installed";
-        } 
+        }
         else {
             l2[l.length] = PVCell.formatCellLife(pvCellLife);
         }
@@ -258,7 +258,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         return 20;
     }
 
-	private void drawPVLayer(Block b) {
+    private void drawPVLayer(Block b) {
         // put a carpet on top of the main block to represent the PV cell
         DyeColor color = pvCellLife > 0 ? getCapColour() : DyeColor.GRAY;
         Material carpet = MaterialCollections.getAllCarpetColors().get(color.ordinal());
@@ -287,7 +287,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public RelativePosition[] getBlockStructure() {
-        return new RelativePosition[]{new RelativePosition(0, 1, 0)};
+        return new RelativePosition[] { new RelativePosition(0, 1, 0) };
     }
 
     @Override
@@ -318,11 +318,11 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
         if (pvCellLife > 0 && getCharge() < getMaxCharge() && isRedstoneActive()) {
             double toAdd = getPowerOutput() * getTickRate() * getChargeMultiplier(getLightLevel());
-            
+
             if (toAdd > 0) {
                 setCharge(getCharge() + toAdd);
                 pvCellLife = Math.min(PVCell.MAX_LIFESPAN, Math.max(0, pvCellLife - getTickRate()));
-                
+
                 if (pvCellLife == 0) {
                     update(true);
                 }
@@ -345,22 +345,22 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         Block b = getLocation().getBlock().getRelative(BlockFace.UP);
         byte newLight = SunlightLevels.getSunlightLevel(b.getWorld());
         byte lightFromSky = b.getLightFromSky();
-        
+
         if (lightFromSky < 14) {
-            newLight = 0;  // block is excessively shaded
-        } 
+            newLight = 0; // block is excessively shaded
+        }
         else if (lightFromSky < 15) {
-            newLight--;    // partially shaded
+            newLight--; // partially shaded
         }
-        
+
         if (b.getWorld().hasStorm()) {
-            newLight -= 3;  // raining: big efficiency drop
+            newLight -= 3; // raining: big efficiency drop
         }
-        
+
         if (newLight < 0) {
             newLight = 0;
         }
-        
+
         if (newLight != effectiveLightLevel) {
             getLightMeter().repaintNeeded();
             effectiveLightLevel = newLight;
@@ -398,23 +398,19 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public ItemStack getLightMeterIndicator() {
         if (pvCellLife == 0) {
-            return GUIUtil.makeTexture(Material.BLACK_WOOL,
-                    ChatColor.WHITE + "No PV Cell inserted!",
-                    ChatColor.GRAY + "Insert a PV Cell in the top left");
-        } 
+            return GUIUtil.makeTexture(Material.BLACK_WOOL, ChatColor.WHITE + "No PV Cell inserted!", ChatColor.GRAY + "Insert a PV Cell in the top left");
+        }
         else {
             DyeColor dc = colors[effectiveLightLevel];
             ChatColor cc = STBUtil.dyeColorToChatColor(dc);
             double mult = getChargeMultiplier(effectiveLightLevel);
-            
-            return GUIUtil.makeTexture(MaterialCollections.getAllWoolColors().get(dc.ordinal()),
-                    ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(effectiveLightLevel) * 100) + "%",
-                    ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
+
+            return GUIUtil.makeTexture(MaterialCollections.getAllWoolColors().get(dc.ordinal()), ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(effectiveLightLevel) * 100) + "%", ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
         }
     }
 
     /**
-     * Return the maximum SCU per tick that this solar can generate.  Note
+     * Return the maximum SCU per tick that this solar can generate. Note
      * time of day, weather and sky visibilty can all reduce the actual power
      * output.
      *
@@ -426,16 +422,16 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     private double getChargeMultiplier(byte light) {
         switch (light) {
-            case 15:
-                return 1.0;
-            case 14:
-                return 0.75;
-            case 13:
-                return 0.5;
-            case 12:
-                return 0.25;
-            default:
-                return 0.0;
+        case 15:
+            return 1.0;
+        case 14:
+            return 0.75;
+        case 13:
+            return 0.5;
+        case 12:
+            return 0.25;
+        default:
+            return 0.0;
         }
     }
 
@@ -455,13 +451,13 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     }
 
     private static final DyeColor[] colors = new DyeColor[16];
-    
+
     static {
         colors[15] = DyeColor.LIME;
         colors[14] = DyeColor.YELLOW;
         colors[13] = DyeColor.ORANGE;
         colors[12] = DyeColor.RED;
-        for (int i= 0; i < 12; i++) {
+        for (int i = 0; i < 12; i++) {
             colors[i] = DyeColor.GRAY;
         }
     }

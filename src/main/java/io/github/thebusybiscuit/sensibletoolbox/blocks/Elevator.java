@@ -16,7 +16,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 
 public class Elevator extends BaseSTBBlock implements Colorable {
-	
+
     private DyeColor color;
 
     public Elevator() {
@@ -56,12 +56,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Links to other elevators",
-                " directly above or below",
-                "Press Space to go up",
-                "Press Shift to go down"
-        };
+        return new String[] { "Links to other elevators", " directly above or below", "Press Space to go up", "Press Shift to go down" };
     }
 
     @Override
@@ -78,7 +73,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
         Block b = getLocation().getBlock();
         Elevator res = null;
-        
+
         while (b.getY() > 0 && b.getY() < b.getWorld().getMaxHeight()) {
             b = b.getRelative(direction);
             if (b.getType().isSolid()) {

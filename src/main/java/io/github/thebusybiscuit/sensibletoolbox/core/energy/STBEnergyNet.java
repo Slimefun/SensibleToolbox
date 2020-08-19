@@ -21,7 +21,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import me.desht.dhutils.Debugger;
 
 public class STBEnergyNet implements EnergyNet {
-	
+
     public static final String STB_ENET_ID = "STB_ENet_ID";
     public static final int MAX_BLOCKS_IN_CABLE = 512;
     private static int freeID = 1;
@@ -53,7 +53,8 @@ public class STBEnergyNet implements EnergyNet {
         for (Object o : blocks) {
             if (o instanceof Block) {
                 enet.addCable((Block) o);
-            } else if (o instanceof AdjacentMachine) {
+            }
+            else if (o instanceof AdjacentMachine) {
                 AdjacentMachine rec = (AdjacentMachine) o;
                 enet.addMachine(rec.getMachine(), rec.getDirection());
             }
@@ -64,11 +65,13 @@ public class STBEnergyNet implements EnergyNet {
     }
 
     /**
-     * Recursively scan blocks attached to this block for cables and machines.  Machines are added to the
+     * Recursively scan blocks attached to this block for cables and machines. Machines are added to the
      * list of discovered blocks, but scanning stops where a machine is encountered.
      *
-     * @param b          the block being checked
-     * @param discovered set of discovered blocks so far
+     * @param b
+     *            the block being checked
+     * @param discovered
+     *            set of discovered blocks so far
      */
     private static void recursiveScan(Block b, Set<Object> discovered, BlockFace fromDir) {
         if (discovered.size() > MAX_BLOCKS_IN_CABLE || discovered.contains(b)) {
@@ -80,7 +83,8 @@ public class STBEnergyNet implements EnergyNet {
             if (machine != null) {
                 discovered.add(new AdjacentMachine(machine, fromDir));
             }
-        } else {
+        }
+        else {
             discovered.add(b);
             for (BlockFace face : STBUtil.directFaces) {
                 recursiveScan(b.getRelative(face), discovered, face.getOppositeFace());
@@ -100,13 +104,13 @@ public class STBEnergyNet implements EnergyNet {
             for (BlockFace face : machine.getFacesForNet(this)) {
                 if (machine.acceptsEnergy(face)) {
                     energySinks.add(machine);
-                } else if (machine.suppliesEnergy(face)) {
+                }
+                else if (machine.suppliesEnergy(face)) {
                     energySources.add(machine);
                 }
             }
         }
-        Debugger.getInstance().debug("Energy net #" + getNetID() + ": found "
-                + energySources.size() + " sources and " + energySinks.size() + " sinks");
+        Debugger.getInstance().debug("Energy net #" + getNetID() + ": found " + energySources.size() + " sources and " + energySinks.size() + " sinks");
     }
 
     @Override
@@ -219,7 +223,8 @@ public class STBEnergyNet implements EnergyNet {
                 double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * tickRate);
                 sink.setCharge(sink.getCharge() + toGive);
             }
-        } else {
+        }
+        else {
             // more demand than supply!
             for (ChargeableBlock source : energySources) {
                 double toTake = Math.min(source.getCharge(), source.getChargeRate() * tickRate);

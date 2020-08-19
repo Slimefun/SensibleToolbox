@@ -19,7 +19,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.NumericGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 
 public class SoundMuffler extends BaseSTBBlock {
-	
+
     public static final int DISTANCE = 8;
     private int volume; // 0-100
 
@@ -38,6 +38,7 @@ public class SoundMuffler extends BaseSTBBlock {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_AQUA + getItemName());
         gui.addGadget(new NumericGadget(gui, 0, "Volume", new IntRange(0, 100), getVolume(), 10, 1, new NumericGadget.NumericListener() {
+
             @Override
             public boolean run(int newValue) {
                 setVolume(newValue);
@@ -74,11 +75,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Reduces the volume of all sounds",
-                "within a " + DISTANCE + "-block radius",
-                "R-click: " + ChatColor.RESET + " open configuration"
-        };
+        return new String[] { "Reduces the volume of all sounds", "within a " + DISTANCE + "-block radius", "R-click: " + ChatColor.RESET + " open configuration" };
     }
 
     @Override

@@ -8,14 +8,17 @@ import org.bukkit.inventory.ItemStack;
  * with a defined chance of being produced.
  */
 public class SupplementaryResult {
+
     private final ItemStack result;
-    private final int chance;  // out of 1000
+    private final int chance; // out of 1000
 
     /**
      * Create a supplementary result.
      *
-     * @param result the item that may be produced
-     * @param chance the chance, out of 1000, that the item will be produced
+     * @param result
+     *            the item that may be produced
+     * @param chance
+     *            the chance, out of 1000, that the item will be produced
      */
     public SupplementaryResult(ItemStack result, int chance) {
         Validate.isTrue(chance > 0 && chance <= 1000, "chance out of range: must be 0 < chance <= 1000");

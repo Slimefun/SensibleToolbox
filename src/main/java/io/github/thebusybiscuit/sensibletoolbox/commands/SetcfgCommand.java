@@ -34,7 +34,8 @@ public class SetcfgCommand extends AbstractCommand {
                 List<String> list = new ArrayList<String>(args.length - 1);
                 list.addAll(Arrays.asList(args).subList(1, args.length));
                 configManager.set(key, list);
-            } else {
+            }
+            else {
                 configManager.set(key, val);
             }
             Object res = configManager.get(key);
@@ -42,10 +43,12 @@ public class SetcfgCommand extends AbstractCommand {
             if (key.startsWith("items_enabled.")) {
                 MiscUtil.statusMessage(sender, "Changes will take effect when server is reloaded/restarted");
             }
-        } catch (DHUtilsException e) {
+        }
+        catch (DHUtilsException e) {
             MiscUtil.errorMessage(sender, e.getMessage());
             MiscUtil.errorMessage(sender, "Use /stb getcfg to list all valid keys");
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             MiscUtil.errorMessage(sender, e.getMessage());
         }
         return true;
@@ -55,12 +58,12 @@ public class SetcfgCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         ConfigurationSection config = plugin.getConfig();
         switch (args.length) {
-            case 1:
-                return getConfigCompletions(sender, config, args[0]);
-            case 2:
-                return getConfigValueCompletions(sender, args[0], config.get(args[0]), "", args[1]);
-            default:
-                return noCompletions(sender);
+        case 1:
+            return getConfigCompletions(sender, config, args[0]);
+        case 2:
+            return getConfigValueCompletions(sender, args[0], config.get(args[0]), "", args[1]);
+        default:
+            return noCompletions(sender);
         }
     }
 }

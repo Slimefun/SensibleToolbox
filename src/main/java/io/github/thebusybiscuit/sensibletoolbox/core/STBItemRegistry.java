@@ -117,9 +117,9 @@ public class STBItemRegistry implements ItemRegistry {
         if (!isSTBItem(stack)) {
             return null;
         }
-        
+
         // TODO: persistent data id storage
-        
+
         if (item != null) {
             item.storeEnchants(stack);
         }

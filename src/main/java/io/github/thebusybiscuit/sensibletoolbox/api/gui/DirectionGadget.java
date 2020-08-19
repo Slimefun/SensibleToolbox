@@ -14,19 +14,19 @@ import com.google.common.collect.Maps;
 
 /**
  * A GUI gadget which allows the facing direction of a directional item to be
- * changed.  This is actually a compound gadget: a central button with six
+ * changed. This is actually a compound gadget: a central button with six
  * surrounding toggle buttons.
  */
 public class DirectionGadget extends ClickableGadget {
+
     private final ItemStack mainTexture;
-    private final Map<Integer,BlockFace> directionSlots = Maps.newHashMap();
+    private final Map<Integer, BlockFace> directionSlots = Maps.newHashMap();
     private boolean allowSelf;
 
     public DirectionGadget(InventoryGUI gui, int slot, ItemStack mainTexture) {
         super(gui, slot);
         Validate.isTrue(gui.getOwningItem() instanceof Directional, "DirectionalGadget can only be used on a directional item!");
-        Validate.isTrue(slot >= 9 && slot < gui.getInventory().getSize() - 9 && slot % 9 > 0 && slot % 9 < 8,
-                "DirectionalGadget can't be placed at edge of inventory window!");
+        Validate.isTrue(slot >= 9 && slot < gui.getInventory().getSize() - 9 && slot % 9 > 0 && slot % 9 < 8, "DirectionalGadget can't be placed at edge of inventory window!");
         this.mainTexture = mainTexture;
         this.allowSelf = true;
         directionSlots.put(slot - 10, BlockFace.UP);
@@ -36,7 +36,7 @@ public class DirectionGadget extends ClickableGadget {
         directionSlots.put(slot + 8, BlockFace.DOWN);
         directionSlots.put(slot + 9, BlockFace.SOUTH);
 
-        for (Map.Entry<Integer,BlockFace> e : directionSlots.entrySet()) {
+        for (Map.Entry<Integer, BlockFace> e : directionSlots.entrySet()) {
             gui.addGadget(makeDirectionButton(gui, e.getKey(), e.getValue()));
         }
     }
@@ -72,7 +72,8 @@ public class DirectionGadget extends ClickableGadget {
      * Set whether this gadget allows SELF (i.e. no direction) to be used as a
      * direction for the owning item.
      *
-     * @param allowSelf true if SELF is a valid direction for the item; false otherwise
+     * @param allowSelf
+     *            true if SELF is a valid direction for the item; false otherwise
      */
     public void setAllowSelf(boolean allowSelf) {
         this.allowSelf = allowSelf;
@@ -82,10 +83,10 @@ public class DirectionGadget extends ClickableGadget {
         ItemStack trueStack = GUIUtil.makeTexture(Material.ORANGE_WOOL, ChatColor.YELLOW + face.toString());
         ItemStack falseStack = GUIUtil.makeTexture(Material.LIGHT_GRAY_WOOL, ChatColor.YELLOW + face.toString());
         final Directional owner = (Directional) gui.getOwningItem();
-        
+
         return new ToggleButton(gui, slot, owner.getFacing() == face, trueStack, falseStack, new ToggleButton.ToggleListener() {
-            
-        	@Override
+
+            @Override
             public boolean run(boolean newValue) {
                 // acts sort of like a radio button - switching one on switches all other
                 // off, but switching one off leaves all switch off
@@ -94,17 +95,17 @@ public class DirectionGadget extends ClickableGadget {
                 }
                 if (newValue) {
                     owner.setFacingDirection(face);
-                    
+
                     for (int otherSlot : directionSlots.keySet()) {
                         if (slot != otherSlot) {
                             ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
                         }
                     }
-                } 
+                }
                 else {
                     owner.setFacingDirection(BlockFace.SELF);
                 }
-                
+
                 return true;
             }
         });

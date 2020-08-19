@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import java.util.UUID;
 
 public class UpdateRecord {
+
     private final Operation op;
     private final UUID worldID;
     private final int x;
@@ -29,7 +30,8 @@ public class UpdateRecord {
             this.x = loc.getBlockX();
             this.y = loc.getBlockY();
             this.z = loc.getBlockZ();
-        } else {
+        }
+        else {
             this.worldID = null;
             this.x = this.y = this.z = 0;
         }
@@ -45,8 +47,7 @@ public class UpdateRecord {
         if (x != that.x) return false;
         if (y != that.y) return false;
         if (z != that.z) return false;
-        if (worldID != null ? !worldID.equals(that.worldID) : that.worldID != null)
-            return false;
+        if (worldID != null ? !worldID.equals(that.worldID) : that.worldID != null) return false;
 
         return true;
     }
@@ -99,11 +100,11 @@ public class UpdateRecord {
     @Override
     public String toString() {
         switch (op) {
-            case FINISH:
-            case COMMIT:
-                return op.toString();
-            default:
-                return String.format("%s %s,%d,%d,%d %s", op.toString(), worldID, x, y, z, type);
+        case FINISH:
+        case COMMIT:
+            return op.toString();
+        default:
+            return String.format("%s %s,%d,%d,%d %s", op.toString(), worldID, x, y, z, type);
         }
     }
 
@@ -112,6 +113,7 @@ public class UpdateRecord {
     }
 
     public enum Operation {
+
         INSERT,
         UPDATE,
         DELETE,

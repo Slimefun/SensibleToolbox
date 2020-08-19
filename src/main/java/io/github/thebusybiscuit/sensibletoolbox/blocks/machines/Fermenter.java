@@ -16,9 +16,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.FishBait;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 
 public class Fermenter extends AbstractIOMachine {
-	
-    public Fermenter() {
-    }
+
+    public Fermenter() {}
 
     public Fermenter(ConfigurationSection conf) {
         super(conf);
@@ -26,7 +25,7 @@ public class Fermenter extends AbstractIOMachine {
 
     @Override
     public void addCustomRecipes(CustomRecipeManager crm) {
-    	FishBait bait = new FishBait();
+        FishBait bait = new FishBait();
 
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.SPIDER_EYE), new ItemStack(Material.FERMENTED_SPIDER_EYE), 220));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.ROTTEN_FLESH), bait.toItemStack(), 200));
@@ -44,7 +43,7 @@ public class Fermenter extends AbstractIOMachine {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Ferments various Item and is also", "used for the Creation of Fish Bait"};
+        return new String[] { "Ferments various Item and is also", "used for the Creation of Fish Bait" };
     }
 
     @Override
@@ -66,17 +65,17 @@ public class Fermenter extends AbstractIOMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -123,7 +122,7 @@ public class Fermenter extends AbstractIOMachine {
     public ItemStack getProgressIcon() {
         return new ItemStack(Material.GOLDEN_HOE);
     }
-    
+
     @Override
     protected void playActiveParticleEffect() {
         if (getTicksLived() % 20 == 0) {

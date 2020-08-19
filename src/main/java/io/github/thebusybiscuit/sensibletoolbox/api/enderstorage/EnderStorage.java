@@ -14,7 +14,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
  * to any custom STB ender inventory.
  */
 public class EnderStorage {
-	
+
     public static final int MAX_ENDER_FREQUENCY = 1000;
 
     /**
@@ -23,8 +23,10 @@ public class EnderStorage {
      * returned by the Bukkit
      * {@link org.bukkit.entity.Player#getEnderChest()} method.
      *
-     * @param player the player
-     * @param frequency the ender frequency to use
+     * @param player
+     *            the player
+     * @param frequency
+     *            the ender frequency to use
      * @return an ender inventory
      */
     public static Inventory getEnderInventory(OfflinePlayer player, int frequency) {
@@ -32,11 +34,12 @@ public class EnderStorage {
     }
 
     /**
-     * Get the global ender inventory for the given frequency.  Note that this
+     * Get the global ender inventory for the given frequency. Note that this
      * inventory is <em>not</em> related to the inventory returned by the
      * Bukkit {@link org.bukkit.entity.Player#getEnderChest()} method.
      *
-     * @param frequency the ender frequency to use
+     * @param frequency
+     *            the ender frequency to use
      * @return an ender inventory
      */
     public static Inventory getEnderInventory(int frequency) {
@@ -47,8 +50,10 @@ public class EnderStorage {
      * Get the personal ender inventory holder for the given player and
      * frequency.
      *
-     * @param player the player
-     * @param frequency the ender frequency to use
+     * @param player
+     *            the player
+     * @param frequency
+     *            the ender frequency to use
      * @return a personal ender inventory holder
      */
     public static EnderStorageHolder getEnderStorageHolder(OfflinePlayer player, int frequency) {
@@ -58,7 +63,8 @@ public class EnderStorage {
     /**
      * Get the global ender inventory holder for the given frequency.
      *
-     * @param frequency the ender frequency to use
+     * @param frequency
+     *            the ender frequency to use
      * @return a global ender inventory holder
      */
     public static EnderStorageHolder getEnderStorageHolder(int frequency) {

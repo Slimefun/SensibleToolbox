@@ -6,11 +6,10 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
 
 public abstract class ItemRouterModule extends BaseSTBItem {
-	
+
     private ItemRouter itemRouter;
 
-    protected ItemRouterModule() {
-    }
+    protected ItemRouterModule() {}
 
     public ItemRouterModule(ConfigurationSection conf) {
         super(conf);

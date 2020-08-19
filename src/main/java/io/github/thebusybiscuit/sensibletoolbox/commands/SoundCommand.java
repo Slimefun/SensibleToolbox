@@ -11,7 +11,7 @@ import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class SoundCommand extends AbstractCommand {
-	
+
     public SoundCommand() {
         super("stb sound", 1, 3);
         setUsage("/<command> sound <sound-name> [<volume>] [<pitch>]");
@@ -26,7 +26,8 @@ public class SoundCommand extends AbstractCommand {
             float volume = args.length > 1 ? Float.parseFloat(args[1]) : 1.0f;
             float pitch = args.length > 2 ? Float.parseFloat(args[2]) : 1.0f;
             ((Player) sender).playSound(((Player) sender).getLocation(), sound, volume, pitch);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             throw new DHUtilsException(e.getMessage());
         }
         return true;
@@ -36,7 +37,8 @@ public class SoundCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         if (args.length == 1) {
             return getEnumCompletions(sender, Sound.class, args[0]);
-        } else {
+        }
+        else {
             return noCompletions(sender);
         }
     }

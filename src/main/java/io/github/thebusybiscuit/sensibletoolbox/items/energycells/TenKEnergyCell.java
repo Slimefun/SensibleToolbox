@@ -9,7 +9,7 @@ import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 
 public class TenKEnergyCell extends EnergyCell {
-	
+
     public TenKEnergyCell() {
         super();
     }

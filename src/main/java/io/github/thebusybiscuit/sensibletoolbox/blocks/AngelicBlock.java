@@ -24,8 +24,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 public class AngelicBlock extends BaseSTBBlock {
 
-    public AngelicBlock() {
-    }
+    public AngelicBlock() {}
 
     public AngelicBlock(ConfigurationSection conf) {
         super(conf);
@@ -43,10 +42,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "R-click: " + ChatColor.RESET + " place block in the air",
-                "L-click block: " + ChatColor.RESET + " insta-break"
-        };
+        return new String[] { "R-click: " + ChatColor.RESET + " place block in the air", "L-click block: " + ChatColor.RESET + " insta-break" };
     }
 
     @Override
@@ -58,8 +54,8 @@ public class AngelicBlock extends BaseSTBBlock {
         recipe.setIngredient('O', Material.OBSIDIAN);
         return recipe;
     }
-    
-	@Override
+
+    @Override
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             // place the block in the air 2 blocks in the direction the player is looking at
@@ -67,22 +63,22 @@ public class AngelicBlock extends BaseSTBBlock {
             Vector v = p.getLocation().getDirection().normalize().multiply(2.0);
             Location loc = p.getEyeLocation().add(v);
             Block b = loc.getBlock();
-            
+
             if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.PLACE_BLOCK)) {
                 ItemStack stack = event.getItem();
-                
+
                 if (stack.getAmount() > 1) {
                     stack.setAmount(stack.getAmount() - 1);
-                } 
+                }
                 else {
                     stack.setAmount(0);
                 }
-                
+
                 b.setType(getMaterial());
                 placeBlock(b, event.getPlayer(), STBUtil.getFaceFromYaw(p.getLocation().getYaw()).getOppositeFace());
             }
         }
-        
+
         event.setCancelled(true);
     }
 
@@ -91,13 +87,13 @@ public class AngelicBlock extends BaseSTBBlock {
         // the angelic block has just been hit by a player - insta-break it
         Player p = event.getPlayer();
         Block b = event.getBlock();
-        
+
         if (SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.BREAK_BLOCK)) {
             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
             breakBlock(false);
             STBUtil.giveItems(p, toItemStack());
         }
-        
+
         event.setCancelled(true);
     }
 
@@ -113,7 +109,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
     @Override
     public void onServerTick() {
-    	getLocation().getWorld().playEffect(getLocation().add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
+        getLocation().getWorld().playEffect(getLocation().add(0.5, 0.5, 0.5), Effect.SMOKE, BlockFace.UP);
         super.onServerTick();
     }
 }

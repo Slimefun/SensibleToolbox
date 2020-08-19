@@ -7,6 +7,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import java.io.File;
 
 public class GlobalEnderHolder extends STBEnderStorageHolder {
+
     public GlobalEnderHolder(EnderStorageManager manager, int frequency) {
         super(manager, frequency);
     }

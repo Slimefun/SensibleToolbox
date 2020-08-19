@@ -8,6 +8,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import java.io.File;
 
 public class PlayerEnderHolder extends STBEnderStorageHolder {
+
     private final OfflinePlayer player;
 
     protected PlayerEnderHolder(EnderStorageManager manager, OfflinePlayer player, int frequency) {

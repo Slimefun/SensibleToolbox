@@ -19,9 +19,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.QuartzDust;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class Masher extends AbstractIOMachine {
-	
-    public Masher() {
-    }
+
+    public Masher() {}
 
     public Masher(ConfigurationSection conf) {
         super(conf);
@@ -42,18 +41,18 @@ public class Masher extends AbstractIOMachine {
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.IRON_INGOT), new IronDust().toItemStack(), 120));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_ORE), new GoldDust().toItemStack(2), 80));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GOLD_INGOT), new GoldDust().toItemStack(), 80));
-        
+
         for (Material wool : Tag.WOOL.getValues()) {
-        	crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(wool), new ItemStack(Material.STRING, 4), 60));
+            crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(wool), new ItemStack(Material.STRING, 4), 60));
         }
-        
+
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.GLOWSTONE), new ItemStack(Material.GLOWSTONE_DUST, 4), 60));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.LAPIS_ORE), new ItemStack(Material.LAPIS_LAZULI, 8), 80));
-//      
+        //
         for (Material leaves : Tag.LEAVES.getValues()) {
-        	crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(leaves), new ItemStack(Material.GREEN_DYE), 40), true);    
+            crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(leaves), new ItemStack(Material.GREEN_DYE), 40), true);
         }
-        
+
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.QUARTZ), qd.toItemStack(), 120));
     }
 
@@ -69,7 +68,7 @@ public class Masher extends AbstractIOMachine {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Grinds ores and other ", "resources into dusts"};
+        return new String[] { "Grinds ores and other ", "resources into dusts" };
     }
 
     @Override
@@ -89,17 +88,17 @@ public class Masher extends AbstractIOMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14, 15};
+        return new int[] { 14, 15 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -153,12 +152,12 @@ public class Masher extends AbstractIOMachine {
             getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_SKELETON_HORSE_AMBIENT, 1.0f, 0.5f);
         }
     }
-    
-//    TODO: Fix particles
-//    @Override
-//    protected void playActiveParticleEffect() {
-//        if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
-//            ParticleEffect.LARGE_SMOKE.play(getLocation().add(0.5, 1.0, 0.5), 0.2f, 1.0f, 0.2f, 0.001f, 5);
-//        }
-//    }
+
+    // TODO: Fix particles
+    // @Override
+    // protected void playActiveParticleEffect() {
+    // if (((SensibleToolboxPlugin) getProviderPlugin()).isProtocolLibEnabled() && getTicksLived() % 20 == 0) {
+    // ParticleEffect.LARGE_SMOKE.play(getLocation().add(0.5, 1.0, 0.5), 0.2f, 1.0f, 0.2f, 0.001f, 5);
+    // }
+    // }
 }

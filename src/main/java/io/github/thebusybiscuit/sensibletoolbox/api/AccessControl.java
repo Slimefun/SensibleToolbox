@@ -13,7 +13,7 @@ public enum AccessControl {
      */
     PRIVATE,
     /**
-     * Only the owner and owner's friends may access this block.  See
+     * Only the owner and owner's friends may access this block. See
      * {@link me.desht.sensibletoolbox.api.FriendManager}
      */
     RESTRICTED,

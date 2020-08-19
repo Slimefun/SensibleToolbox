@@ -14,9 +14,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-//package com.sk89q.util;
+// package com.sk89q.util;
 package me.desht.dhutils;
 
 import java.util.Collection;
@@ -28,9 +28,10 @@ import java.util.Map;
  * @author sk89q
  */
 public class StringUtil {
+
     /**
      * Trim a string if it is longer than a certain length.
-     *  
+     * 
      * @param str
      * @param len
      * @return
@@ -51,8 +52,7 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
-    public static String joinString(String[] str, String delimiter,
-            int initialIndex) {
+    public static String joinString(String[] str, String delimiter, int initialIndex) {
         if (str.length == 0) {
             return "";
         }
@@ -69,11 +69,10 @@ public class StringUtil {
      * @param str
      * @param delimiter
      * @param initialIndex
-     * @param quote 
+     * @param quote
      * @return
      */
-    public static String joinQuotedString(String[] str, String delimiter,
-            int initialIndex, String quote) {
+    public static String joinQuotedString(String[] str, String delimiter, int initialIndex, String quote) {
         if (str.length == 0) {
             return "";
         }
@@ -106,8 +105,7 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
-    public static String joinString(Object[] str, String delimiter,
-            int initialIndex) {
+    public static String joinString(Object[] str, String delimiter, int initialIndex) {
         if (str.length == 0) {
             return "";
         }
@@ -126,8 +124,7 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
-    public static String joinString(int[] str, String delimiter,
-            int initialIndex) {
+    public static String joinString(int[] str, String delimiter, int initialIndex) {
         if (str.length == 0) {
             return "";
         }
@@ -146,8 +143,7 @@ public class StringUtil {
      * @param initialIndex
      * @return
      */
-    public static String joinString(Collection<?> str, String delimiter,
-            int initialIndex) {
+    public static String joinString(Collection<?> str, String delimiter, int initialIndex) {
         if (str.size() == 0) {
             return "";
         }
@@ -167,19 +163,27 @@ public class StringUtil {
     }
 
     /**
-     * <p>Find the Levenshtein distance between two Strings.</p>
+     * <p>
+     * Find the Levenshtein distance between two Strings.
+     * </p>
      *
-     * <p>This is the number of changes needed to change one String into
+     * <p>
+     * This is the number of changes needed to change one String into
      * another, where each change is a single character modification (deletion,
-     * insertion or substitution).</p>
+     * insertion or substitution).
+     * </p>
      *
-     * <p>The previous implementation of the Levenshtein distance algorithm
-     * was from <a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a></p>
+     * <p>
+     * The previous implementation of the Levenshtein distance algorithm
+     * was from <a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a>
+     * </p>
      *
-     * <p>Chas Emerick has written an implementation in Java, which avoids an OutOfMemoryError
+     * <p>
+     * Chas Emerick has written an implementation in Java, which avoids an OutOfMemoryError
      * which can occur when my Java implementation is used with very large strings.<br>
      * This implementation of the Levenshtein distance algorithm
-     * is from <a href="http://www.merriampark.com/ldjava.htm">http://www.merriampark.com/ldjava.htm</a></p>
+     * is from <a href="http://www.merriampark.com/ldjava.htm">http://www.merriampark.com/ldjava.htm</a>
+     * </p>
      *
      * <pre>
      * StringUtil.getLevenshteinDistance(null, *)             = IllegalArgumentException
@@ -195,10 +199,13 @@ public class StringUtil {
      * StringUtil.getLevenshteinDistance("hello", "hallo")    = 1
      * </pre>
      *
-     * @param s  the first String, must not be null
-     * @param t  the second String, must not be null
+     * @param s
+     *            the first String, must not be null
+     * @param t
+     *            the second String, must not be null
      * @return result distance
-     * @throws IllegalArgumentException if either String input <code>null</code>
+     * @throws IllegalArgumentException
+     *             if either String input <code>null</code>
      */
     public static int getLevenshteinDistance(String s, String t) {
         if (s == null || t == null) {
@@ -230,7 +237,8 @@ public class StringUtil {
 
         if (n == 0) {
             return m;
-        } else if (m == 0) {
+        }
+        else if (m == 0) {
             return n;
         }
 
@@ -258,8 +266,7 @@ public class StringUtil {
                 cost = s.charAt(i - 1) == t_j ? 0 : 1;
                 // minimum of cell to the left+1, to the top+1, diagonally left
                 // and up +cost
-                d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1]
-                        + cost);
+                d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
             }
 
             // copy current distance counts to 'previous row' distance counts

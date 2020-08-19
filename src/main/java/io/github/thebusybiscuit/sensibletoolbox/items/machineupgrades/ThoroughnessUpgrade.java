@@ -11,8 +11,7 @@ public class ThoroughnessUpgrade extends MachineUpgrade {
 
     public static final int BONUS_OUTPUT_CHANCE = 8; // percent
 
-    public ThoroughnessUpgrade() {
-    }
+    public ThoroughnessUpgrade() {}
 
     public ThoroughnessUpgrade(ConfigurationSection conf) {
         super(conf);
@@ -30,12 +29,7 @@ public class ThoroughnessUpgrade extends MachineUpgrade {
 
     @Override
     public String[] getLore() {
-        return new String[] {
-                "Place in a machine block",
-                "Speed: x0.7",
-                "Power Usage: x1.6",
-                "Bonus Output: +" + BONUS_OUTPUT_CHANCE + "%"
-        };
+        return new String[] { "Place in a machine block", "Speed: x0.7", "Power Usage: x1.6", "Bonus Output: +" + BONUS_OUTPUT_CHANCE + "%" };
     }
 
     @Override

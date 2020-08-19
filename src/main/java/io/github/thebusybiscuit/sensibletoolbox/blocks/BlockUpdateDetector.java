@@ -24,7 +24,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import me.desht.dhutils.Debugger;
 
 public class BlockUpdateDetector extends BaseSTBBlock {
-	
+
     private long lastPulse;
     private int duration;
     private int quiet;
@@ -79,19 +79,12 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Emits a redstone pulse when",
-                " an adjacent block updates",
-                "R-click block: " + ChatColor.RESET + "configure BUD"
-        };
+        return new String[] { "Emits a redstone pulse when", " an adjacent block updates", "R-click block: " + ChatColor.RESET + "configure BUD" };
     }
 
     @Override
     public String[] getExtraLore() {
-        return new String[]{
-                "Pulse duration: " + ChatColor.GOLD + getDuration() + " ticks",
-                "Sleep time after pulse: " + ChatColor.GOLD + getQuiet() + " ticks",
-        };
+        return new String[] { "Pulse duration: " + ChatColor.GOLD + getDuration() + " ticks", "Sleep time after pulse: " + ChatColor.GOLD + getQuiet() + " ticks", };
     }
 
     @Override
@@ -115,9 +108,9 @@ public class BlockUpdateDetector extends BaseSTBBlock {
             lastPulse = timeNow;
             active = true;
             repaint(b);
-            
+
             Bukkit.getScheduler().runTaskLater(getProviderPlugin(), () -> {
-            	active = false;
+                active = false;
                 repaint(b);
             }, duration);
         }
@@ -136,6 +129,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
         gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.NumericListener() {
+
             @Override
             public boolean run(int newValue) {
                 setDuration(newValue);
@@ -143,6 +137,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
             }
         }));
         gui.addGadget(new NumericGadget(gui, 0, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.NumericListener() {
+
             @Override
             public boolean run(int newValue) {
                 setQuiet(newValue);

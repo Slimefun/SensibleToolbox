@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
  * to make that item.
  */
 public class ProcessingResult {
+
     private final ItemStack result;
     private final int processingTime; // in ticks
 
@@ -17,7 +18,7 @@ public class ProcessingResult {
 
     /**
      * Get the base processing time, in ticks, that the machine takes to make the
-     * item.  This time may be modified by any upgrades in the machine.
+     * item. This time may be modified by any upgrades in the machine.
      *
      * @return the base processing time, in ticks
      */

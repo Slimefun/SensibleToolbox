@@ -9,6 +9,7 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.TrashCan;
 
 public class TrashCanListener extends STBBaseListener {
+
     public TrashCanListener(SensibleToolboxPlugin plugin) {
         super(plugin);
     }
@@ -26,6 +27,7 @@ public class TrashCanListener extends STBBaseListener {
         final TrashCan can = TrashCan.getTrashCan(event.getDestination());
         if (can != null) {
             Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
                 @Override
                 public void run() {
                     can.emptyTrash(false);

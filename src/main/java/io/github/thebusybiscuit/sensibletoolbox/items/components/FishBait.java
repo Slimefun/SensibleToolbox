@@ -8,11 +8,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class FishBait extends BaseSTBItem {
 
-    public FishBait() {
-    }
+    public FishBait() {}
 
-    public FishBait(ConfigurationSection conf) {
-    }
+    public FishBait(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -26,7 +24,7 @@ public class FishBait extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Used in a Fishing Net", "to catch Fish"};
+        return new String[] { "Used in a Fishing Net", "to catch Fish" };
     }
 
     @Override

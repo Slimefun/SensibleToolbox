@@ -6,7 +6,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 public class DiamondCombineHoe extends CombineHoe {
-	
+
     public DiamondCombineHoe() {
         super();
     }

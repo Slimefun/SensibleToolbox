@@ -5,15 +5,17 @@ import org.apache.commons.lang.Validate;
 import io.github.thebusybiscuit.sensibletoolbox.api.LightMeterHolder;
 
 /**
- * Measures the light intensity for an STB block.  The GUI that this gadget
+ * Measures the light intensity for an STB block. The GUI that this gadget
  * is added to must be owned by an STB block which implements
  * {@link io.github.thebusybiscuit.sensibletoolbox.api.LightMeterHolder}.
  */
 public class LightMeter extends MonitorGadget {
+
     /**
      * Constructs a new light meter gadget.
      *
-     * @param gui the GUI which holds this gadget
+     * @param gui
+     *            the GUI which holds this gadget
      */
     public LightMeter(InventoryGUI gui) {
         super(gui);
@@ -28,6 +30,6 @@ public class LightMeter extends MonitorGadget {
 
     @Override
     public int[] getSlots() {
-        return new int[]{((LightMeterHolder) getOwner()).getLightMeterSlot()};
+        return new int[] { ((LightMeterHolder) getOwner()).getLightMeterSlot() };
     }
 }

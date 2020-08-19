@@ -4,6 +4,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.gui;
  * Abstract base class for all gadgets.
  */
 public abstract class Gadget {
+
     private final InventoryGUI gui;
     private boolean enabled = true;
 
@@ -23,7 +24,8 @@ public abstract class Gadget {
     /**
      * Set if this gadget responds to any clicks.
      *
-     * @param enabled true if this gadget should be enabled; false otherwise
+     * @param enabled
+     *            true if this gadget should be enabled; false otherwise
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

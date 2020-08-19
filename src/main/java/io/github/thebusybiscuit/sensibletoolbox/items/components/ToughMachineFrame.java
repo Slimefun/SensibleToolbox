@@ -9,11 +9,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class ToughMachineFrame extends BaseSTBItem {
 
-    public ToughMachineFrame() {
-    }
+    public ToughMachineFrame() {}
 
-    public ToughMachineFrame(ConfigurationSection conf) {
-    }
+    public ToughMachineFrame(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -27,7 +25,7 @@ public class ToughMachineFrame extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Used in fabrication of", "some more advanced machines."};
+        return new String[] { "Used in fabrication of", "some more advanced machines." };
     }
 
     @Override

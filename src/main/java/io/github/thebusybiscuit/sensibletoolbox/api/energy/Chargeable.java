@@ -5,6 +5,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.energy;
  * of SCU: Sensible Charge Units.
  */
 public interface Chargeable {
+
     /**
      * Get the current SCU level for this item
      *
@@ -15,7 +16,8 @@ public interface Chargeable {
     /**
      * Change the current SCU level for this item
      *
-     * @param charge the new SCU level
+     * @param charge
+     *            the new SCU level
      */
     public void setCharge(double charge);
 
@@ -28,7 +30,7 @@ public interface Chargeable {
 
     /**
      * Get the max rate at which this device can charge or discharge, in
-     * SCU/tick.  Note that this does not necessarily limit the amount of
+     * SCU/tick. Note that this does not necessarily limit the amount of
      * charge used when the device is working, only when it is
      * charging/discharging via connected battery block or installed energy
      * cell.

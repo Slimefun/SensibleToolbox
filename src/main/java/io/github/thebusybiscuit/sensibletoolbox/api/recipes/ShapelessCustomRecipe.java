@@ -19,8 +19,9 @@ import me.desht.dhutils.MiscUtil;
  * multiple results, with a definable chance for each result to be produced.
  */
 public class ShapelessCustomRecipe implements CustomRecipe {
+
     private final List<SupplementaryResult> extra = Lists.newArrayList();
-    private final Map<String,Integer> ingredients = Maps.newHashMap();
+    private final Map<String, Integer> ingredients = Maps.newHashMap();
     private final String processorID;
     private final int processingTime;
     private final ItemStack result;
@@ -49,7 +50,8 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     /**
      * Add an ingredient to this recipe.
      *
-     * @param ingredient the ingredient to add
+     * @param ingredient
+     *            the ingredient to add
      */
     public void addIngredient(ItemStack ingredient) {
         String key = RecipeUtil.makeRecipeKey(ingredient);
@@ -57,33 +59,33 @@ public class ShapelessCustomRecipe implements CustomRecipe {
         ingredients.put(key, val + ingredient.getAmount());
     }
 
-//    public void removeIngredient(ItemStack ingredient) {
-//        String key = RecipeUtil.makeRecipeKey(ingredient);
-//        if (ingredients.containsKey(key)) {
-//            int val = ingredients.get(key) - ingredient.getAmount();
-//            if (val <= 0) {
-//                ingredients.remove(key);
-//            } else {
-//                ingredients.put(key, val);
-//            }
-//        }
-//    }
-//
-//    public boolean matches(boolean exact, ItemStack... stacks) {
-//        Map<String,Integer> copy = Maps.newHashMap(ingredients);
-//        for (ItemStack stack : stacks) {
-//            String key = RecipeUtil.makeRecipeKey(stack);
-//            if (copy.containsKey(key)) {
-//                copy.put(key, copy.get(key) - stack.getAmount());
-//            }
-//        }
-//        for (int i : copy.values()) {
-//            if (exact && i != 0 || !exact && i > 0) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+    // public void removeIngredient(ItemStack ingredient) {
+    // String key = RecipeUtil.makeRecipeKey(ingredient);
+    // if (ingredients.containsKey(key)) {
+    // int val = ingredients.get(key) - ingredient.getAmount();
+    // if (val <= 0) {
+    // ingredients.remove(key);
+    // } else {
+    // ingredients.put(key, val);
+    // }
+    // }
+    // }
+    //
+    // public boolean matches(boolean exact, ItemStack... stacks) {
+    // Map<String,Integer> copy = Maps.newHashMap(ingredients);
+    // for (ItemStack stack : stacks) {
+    // String key = RecipeUtil.makeRecipeKey(stack);
+    // if (copy.containsKey(key)) {
+    // copy.put(key, copy.get(key) - stack.getAmount());
+    // }
+    // }
+    // for (int i : copy.values()) {
+    // if (exact && i != 0 || !exact && i > 0) {
+    // return false;
+    // }
+    // }
+    // return true;
+    // }
 
     @Override
     public void addSupplementaryResult(SupplementaryResult result) {
@@ -110,7 +112,7 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     @Override
     public String makeKey(boolean ignoreData) {
         List<String> l = Lists.newArrayList();
-        for (Map.Entry<String,Integer> m : ingredients.entrySet()) {
+        for (Map.Entry<String, Integer> m : ingredients.entrySet()) {
             String s = ignoreData ? m.getKey().replaceAll(":\\d+", "") : m.getKey();
             l.add(m.getValue() + "x" + s);
         }

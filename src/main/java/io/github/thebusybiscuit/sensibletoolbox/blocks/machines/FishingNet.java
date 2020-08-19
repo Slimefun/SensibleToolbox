@@ -17,16 +17,11 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class FishingNet extends AbstractProcessingMachine {
-	
+
     private static final int FISHING_TIME = 600; // 600 ticks (30 Seconds) to catch a Fish
-    
-    private static final ItemStack[] fish = 
-	{
-    	new ItemStack(Material.COD),
-    	new ItemStack(Material.SALMON),
-    	new ItemStack(Material.PUFFERFISH),
-    	new ItemStack(Material.TROPICAL_FISH)
-    }; // Catchable Fish
+
+    private static final ItemStack[] fish = { new ItemStack(Material.COD), new ItemStack(Material.SALMON), new ItemStack(Material.PUFFERFISH), new ItemStack(Material.TROPICAL_FISH) }; // Catchable
+                                                                                                                                                                                        // Fish
 
     public FishingNet() {
         super();
@@ -63,17 +58,17 @@ public class FishingNet extends AbstractProcessingMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -128,9 +123,7 @@ public class FishingNet extends AbstractProcessingMachine {
 
     @Override
     public String[] getLore() {
-        return new String[] {
-            "Catches Fish"
-        };
+        return new String[] { "Catches Fish" };
     }
 
     @Override
@@ -155,14 +148,14 @@ public class FishingNet extends AbstractProcessingMachine {
 
     @Override
     public void onServerTick() {
-    	int inputSlot = getInputSlots()[0];
+        int inputSlot = getInputSlots()[0];
         ItemStack input = getInventoryItem(inputSlot);
 
         if (getProcessing() == null && input != null && isRedstoneActive() && getRelativeLocation(BlockFace.DOWN).getBlock().getType() == Material.WATER) {
             // pull a bucket from the input stack into processing
             ItemStack toProcess = fish[ThreadLocalRandom.current().nextInt(fish.length)];
             setProcessing(toProcess);
-            
+
             if (toProcess != null) {
                 getProgressMeter().setMaxProgress(FISHING_TIME);
                 setProgress(FISHING_TIME);
@@ -178,17 +171,16 @@ public class FishingNet extends AbstractProcessingMachine {
             playActiveParticleEffect();
         }
 
-
         if (getProcessing() != null && getProgress() <= 0 && !isJammed()) {
             // done processing - try to move filled container into output
             ItemStack result = getProcessing();
             int slot = findOutputSlot(result);
-            
+
             if (slot >= 0) {
                 setInventoryItem(slot, result);
                 setProcessing(null);
                 update(false);
-            } 
+            }
             else setJammed(true);
         }
 
@@ -199,7 +191,7 @@ public class FishingNet extends AbstractProcessingMachine {
 
     @Override
     public boolean acceptsItemType(ItemStack stack) {
-    	ItemMeta bait = new FishBait().toItemStack().getItemMeta();
+        ItemMeta bait = new FishBait().toItemStack().getItemMeta();
         if (!stack.hasItemMeta()) return false;
         if (!stack.getItemMeta().hasLore()) return false;
         if (!stack.getItemMeta().hasDisplayName()) return false;

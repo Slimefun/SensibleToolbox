@@ -8,7 +8,7 @@ import org.bukkit.inventory.Recipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class GoldDust extends BaseSTBItem {
-	
+
     public GoldDust() {
         super();
     }
@@ -29,12 +29,12 @@ public class GoldDust extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Smelt in a Smelter or Furnace", " to get gold ingots"};
+        return new String[] { "Smelt in a Smelter or Furnace", " to get gold ingots" };
     }
 
     @Override
     public Recipe getRecipe() {
-        return null;  // Only made by the Masher
+        return null; // Only made by the Masher
     }
 
     @Override

@@ -7,8 +7,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 public class SpeedModule extends ItemRouterModule {
 
-    public SpeedModule() {
-    }
+    public SpeedModule() {}
 
     public SpeedModule(ConfigurationSection conf) {
         super(conf);
@@ -21,13 +20,7 @@ public class SpeedModule extends ItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Insert into an Item Router",
-                "Passive module; increases router speed:",
-                "0 modules = 1 operation / 20 ticks",
-                "1 = 1/15, 2 = 1/10, 3 = 1/5",
-                "Any modules over 3 are ignored."
-        };
+        return new String[] { "Insert into an Item Router", "Passive module; increases router speed:", "0 modules = 1 operation / 20 ticks", "1 = 1/15, 2 = 1/10, 3 = 1/5", "Any modules over 3 are ignored." };
     }
 
     @Override

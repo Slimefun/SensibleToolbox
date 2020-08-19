@@ -8,12 +8,10 @@ import org.bukkit.inventory.ShapelessRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class CircuitBoard extends BaseSTBItem {
-	
-    public CircuitBoard() {
-    }
 
-    public CircuitBoard(ConfigurationSection conf) {
-    }
+    public CircuitBoard() {}
+
+    public CircuitBoard(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -27,7 +25,7 @@ public class CircuitBoard extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Used in the construction", "of electronic circuits"};
+        return new String[] { "Used in the construction", "of electronic circuits" };
     }
 
     @Override

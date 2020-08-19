@@ -9,13 +9,16 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
  * Monitors an integer quantity.
  */
 public class LevelMonitor extends MonitorGadget {
+
     private final LevelReporter reporter;
 
     /**
      * Constructs a new level monitor gadget.
      *
-     * @param gui the GUI to add the gadget to
-     * @param reporter the level reporter object
+     * @param gui
+     *            the GUI to add the gadget to
+     * @param reporter
+     *            the level reporter object
      */
     public LevelMonitor(InventoryGUI gui, LevelReporter reporter) {
         super(gui);
@@ -38,13 +41,14 @@ public class LevelMonitor extends MonitorGadget {
 
     @Override
     public int[] getSlots() {
-        return new int[]{reporter.getLevelMonitorSlot()};
+        return new int[] { reporter.getLevelMonitorSlot() };
     }
 
     /**
      * Represents a block that can report a level for some attribute.
      */
     public interface LevelReporter {
+
         /**
          * Get the level of the quantity being monitored.
          *
@@ -60,7 +64,7 @@ public class LevelMonitor extends MonitorGadget {
         public int getMaxLevel();
 
         /**
-         * Get the item used to represent the level.  This item should support
+         * Get the item used to represent the level. This item should support
          * a durability bar (e.g. a tool or armour item).
          *
          * @return the item used to show the level as a durability bar

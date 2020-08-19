@@ -8,8 +8,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedIronIngot extends BaseSTBItem {
 
-    public EnergizedIronIngot() {
-    }
+    public EnergizedIronIngot() {}
 
     public EnergizedIronIngot(ConfigurationSection conf) {
 

@@ -14,8 +14,7 @@ import me.desht.dhutils.Debugger;
 
 public class DropperModule extends DirectionalItemRouterModule {
 
-    public DropperModule() {
-    }
+    public DropperModule() {}
 
     public DropperModule(ConfigurationSection conf) {
         super(conf);
@@ -28,11 +27,7 @@ public class DropperModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return makeDirectionalLore(
-        		"Insert into an Item Router", 
-        		"Drops items onto the ground", 
-        		"in the configured direction"
-        );
+        return makeDirectionalLore("Insert into an Item Router", "Drops items onto the ground", "in the configured direction");
     }
 
     @Override
@@ -56,17 +51,17 @@ public class DropperModule extends DirectionalItemRouterModule {
             if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
                 return false;
             }
-            
+
             int toDrop = getItemRouter().getStackSize();
             ItemStack stack = getItemRouter().extractItems(BlockFace.SELF, null, toDrop, null);
-            
+
             if (stack != null) {
                 Location targetLoc = getTargetLocation(loc).add(0.5, 0.5, 0.5);
                 Item item = targetLoc.getWorld().dropItem(targetLoc, stack);
                 item.setVelocity(new Vector(0, 0, 0));
                 Debugger.getInstance().debug(2, "dropper dropped " + stack + " from " + getItemRouter());
             }
-            
+
             return true;
         }
         return false;

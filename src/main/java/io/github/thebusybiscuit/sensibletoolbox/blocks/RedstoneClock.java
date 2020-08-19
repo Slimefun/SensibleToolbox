@@ -24,7 +24,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class RedstoneClock extends BaseSTBBlock {
-	
+
     private int interval;
     private int onDuration;
     private boolean active = false;
@@ -45,23 +45,26 @@ public class RedstoneClock extends BaseSTBBlock {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_RED + getItemName());
         gui.addGadget(new NumericGadget(gui, 0, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, new NumericGadget.NumericListener() {
+
             @Override
             public boolean run(int newValue) {
                 if (newValue > getOnDuration()) {
                     setInterval(newValue);
                     return true;
-                } else {
+                }
+                else {
                     return false;
                 }
             }
         }));
         gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getOnDuration(), 10, 1, new NumericGadget.NumericListener() {
+
             @Override
             public boolean run(int newValue) {
                 if (newValue < getInterval()) {
                     setOnDuration(newValue);
                     return true;
-                } 
+                }
                 else return false;
             }
         }));
@@ -109,12 +112,7 @@ public class RedstoneClock extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Clock-in-a-block",
-                "Emits a redstone signal with",
-                "configurable interval & duration",
-                "R-click block: " + ChatColor.RESET + " configure clock"
-        };
+        return new String[] { "Clock-in-a-block", "Emits a redstone signal with", "configurable interval & duration", "R-click block: " + ChatColor.RESET + " configure clock" };
     }
 
     @Override
@@ -129,9 +127,8 @@ public class RedstoneClock extends BaseSTBBlock {
 
     @Override
     public String[] getExtraLore() {
-        String l = BaseSTBItem.LORE_COLOR + "Interval: " + ChatColor.GOLD + getInterval() +
-                LORE_COLOR + "t, Duration: " + ChatColor.GOLD + getOnDuration() + LORE_COLOR + "t";
-        return new String[]{l};
+        String l = BaseSTBItem.LORE_COLOR + "Interval: " + ChatColor.GOLD + getInterval() + LORE_COLOR + "t, Duration: " + ChatColor.GOLD + getOnDuration() + LORE_COLOR + "t";
+        return new String[] { l };
     }
 
     @Override
@@ -148,7 +145,7 @@ public class RedstoneClock extends BaseSTBBlock {
             // power up
             active = true;
             repaint(b);
-        } 
+        }
         else if (time % getInterval() == getOnDuration()) {
             // power down
             active = false;
@@ -160,27 +157,27 @@ public class RedstoneClock extends BaseSTBBlock {
     }
 
     public void playParticles(Color color) {
-//    	try {
-//        	Location l = getLocation().add(0.6, 1, 0.3);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//			l = getLocation().add(1.6, 1, 0.1);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//			l = getLocation().add(0.6, 0.5, -0.2);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//			l = getLocation().add(0.4, 0.8, 0.6);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//			l = getLocation().add(0.3, 0.6, 1.6);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//			l = getLocation().add(-0.2, 0.3, 0.6);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//			l = getLocation().add(1.6, 0.7, 0.3);
-//			ParticleEffect.REDSTONE.displayColoredParticle(l, color);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+        // try {
+        // Location l = getLocation().add(0.6, 1, 0.3);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // l = getLocation().add(1.6, 1, 0.1);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // l = getLocation().add(0.6, 0.5, -0.2);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // l = getLocation().add(0.4, 0.8, 0.6);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // l = getLocation().add(0.3, 0.6, 1.6);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // l = getLocation().add(-0.2, 0.3, 0.6);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // l = getLocation().add(1.6, 0.7, 0.3);
+        // ParticleEffect.REDSTONE.displayColoredParticle(l, color);
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
     }
 
-	@Override
+    @Override
     public void onInteractBlock(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             getGUI().show(event.getPlayer());

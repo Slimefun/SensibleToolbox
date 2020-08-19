@@ -15,8 +15,9 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.dhutils.Debugger;
 
 public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
+
     private static final String MAP_FILE = "playermap.yml";
-    private static final long SAVE_INTERVAL = 30;  // seconds
+    private static final long SAVE_INTERVAL = 30; // seconds
     private final YamlConfiguration map = new YamlConfiguration();
     private boolean saveNeeded = false;
 
@@ -32,9 +33,11 @@ public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
             try {
                 map.load(file);
                 saveNeeded = false;
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
-            } catch (InvalidConfigurationException e) {
+            }
+            catch (InvalidConfigurationException e) {
                 e.printStackTrace();
             }
         }
@@ -47,7 +50,8 @@ public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
                 map.save(file);
                 Debugger.getInstance().debug("Saved UUID->Name map to " + file);
                 saveNeeded = false;
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }

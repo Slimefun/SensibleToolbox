@@ -76,7 +76,7 @@ public class HyperStorageUnit extends BigStorageUnit {
     }
 
     public int getStackCapacity() {
-        return 33554431;  // 2^31 items for a 64-item stack
+        return 33554431; // 2^31 items for a 64-item stack
     }
 
     public int getEnergyCellSlot() {
@@ -104,13 +104,7 @@ public class HyperStorageUnit extends BigStorageUnit {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Hyper Storage Unit",
-                "Stores up to " + getStackCapacity() + " stacks",
-                "of a single item type",
-                "Keeps storage when broken",
-                "Needs power to function"
-        };
+        return new String[] { "Hyper Storage Unit", "Stores up to " + getStackCapacity() + " stacks", "of a single item type", "Keeps storage when broken", "Needs power to function" };
     }
 
     @Override
@@ -120,7 +114,7 @@ public class HyperStorageUnit extends BigStorageUnit {
             String[] l2 = Arrays.copyOf(l, l.length + 1);
             l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemUtils.getItemName(getStoredItemType());
             return l2;
-        } 
+        }
         else {
             return super.getExtraLore();
         }
@@ -135,13 +129,13 @@ public class HyperStorageUnit extends BigStorageUnit {
     public void onBlockUnregistered(Location loc) {
         // move all output items into storage so they don't get dropped
         ItemStack output = getOutputItem();
-        
+
         if (output != null) {
             setStorageAmount(getStorageAmount() + output.getAmount());
             setOutputAmount(0);
             setOutputItem(null);
         }
-        
+
         super.onBlockUnregistered(loc);
     }
 }

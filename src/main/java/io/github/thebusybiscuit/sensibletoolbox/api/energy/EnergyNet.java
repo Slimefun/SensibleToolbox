@@ -5,6 +5,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.energy;
  * cabling.
  */
 public interface EnergyNet {
+
     void findSourcesAndSinks();
 
     /**
@@ -36,7 +37,7 @@ public interface EnergyNet {
     int getSinkCount();
 
     /**
-     * Get the instantaneous energy demand per tick.  This is requested
+     * Get the instantaneous energy demand per tick. This is requested
      * energy, not necessarily supplied.
      *
      * @return the demand
@@ -44,7 +45,7 @@ public interface EnergyNet {
     double getDemand();
 
     /**
-     * Get the instantaneous energy supply per tick.  This is available
+     * Get the instantaneous energy supply per tick. This is available
      * energy, not necessarily used.
      *
      * @return the supply
