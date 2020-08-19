@@ -7,12 +7,10 @@ import org.bukkit.inventory.Recipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class SiliconWafer extends BaseSTBItem {
-	
-    public SiliconWafer() {
-    }
 
-    public SiliconWafer(ConfigurationSection conf) {
-    }
+    public SiliconWafer() {}
+
+    public SiliconWafer(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -26,7 +24,7 @@ public class SiliconWafer extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Used in the fabrication", "of more advanced", "electronic circuits"};
+        return new String[] { "Used in the fabrication", "of more advanced", "electronic circuits" };
     }
 
     @Override

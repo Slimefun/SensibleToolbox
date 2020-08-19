@@ -15,10 +15,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
 
 public class MessagePager {
-	
+
     public static final String BULLET = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.RESET;
 
-    private static final int DEF_PAGE_SIZE = 18;	// 20 lines total, minus 2 for header and footer
+    private static final int DEF_PAGE_SIZE = 18; // 20 lines total, minus 2 for header and footer
 
     private static String pageCmd = "";
     private static int defaultPageSize = DEF_PAGE_SIZE;
@@ -55,8 +55,9 @@ public class MessagePager {
     /**
      * Get the message pager for the given player.
      *
-     * @param playerName	the player name
-     * @return			the player's message pager
+     * @param playerName
+     *            the player name
+     * @return the player's message pager
      * @deprecated use {@link #getPager(org.bukkit.command.CommandSender)}
      */
     @Deprecated
@@ -68,14 +69,15 @@ public class MessagePager {
     /**
      * Get the message pager for the given player.
      *
-     * @param sender	the command sender (a player or console)
-     * @return			the player's message pager
+     * @param sender
+     *            the command sender (a player or console)
+     * @return the player's message pager
      */
     public static MessagePager getPager(CommandSender sender) {
         if (!pagers.containsKey(sender.getName())) {
             pagers.put(sender.getName(), new MessagePager(sender));
         }
-        
+
         return pagers.get(sender.getName());
     }
 
@@ -83,7 +85,8 @@ public class MessagePager {
      * Delete the message buffer for the player. Should be called when the
      * player logs out.
      *
-     * @param sender		the command sender (a player or console)
+     * @param sender
+     *            the command sender (a player or console)
      */
     public static void deletePager(CommandSender sender) {
         deletePager(sender.getName());
@@ -93,7 +96,8 @@ public class MessagePager {
      * Delete the message buffer for the player. Should be called when the
      * player logs out.
      *
-     * @param playerName		The player name
+     * @param playerName
+     *            The player name
      */
     public static void deletePager(String playerName) {
         pagers.remove(playerName);
@@ -127,7 +131,8 @@ public class MessagePager {
     /**
      * Enable or disable colour code parsing.
      *
-     * @param parseColours true to enable parsing, false to disable
+     * @param parseColours
+     *            true to enable parsing, false to disable
      * @return this pager object for method chaining
      */
     public MessagePager setParseColours(boolean parseColours) {
@@ -148,7 +153,8 @@ public class MessagePager {
     /**
      * Add a message to the buffer.
      *
-     * @param line	The message line to add
+     * @param line
+     *            The message line to add
      */
     public void add(String line) {
         Collections.addAll(messages, wrap(line));
@@ -163,15 +169,16 @@ public class MessagePager {
      * possible - add padding to ensure this where necessary. If block is larger
      * than the page size, then just add it.
      *
-     * @param lines   List of message lines to add
+     * @param lines
+     *            List of message lines to add
      */
     public void add(String[] lines) {
         add(Arrays.asList(lines));
     }
 
     public void add(List<String> lines) {
-        //TODO: apply MinecraftChatStr.alignTags(lines, true)
-        //		in pagesize segments before adding to buffer
+        // TODO: apply MinecraftChatStr.alignTags(lines, true)
+        // in pagesize segments before adding to buffer
 
         List<String> actual = new ArrayList<>();
         for (String l : lines) {
@@ -179,12 +186,10 @@ public class MessagePager {
         }
 
         // if block is bigger than a page, just add it
-        if (actual.size() <= getPageSize()
-                && (messages.size() % getPageSize()) + actual.size() > getPageSize()
-                && senderRef instanceof Player) {
+        if (actual.size() <= getPageSize() && (messages.size() % getPageSize()) + actual.size() > getPageSize() && senderRef instanceof Player) {
             // else, add padding above to keep the block on one page
             for (int i = messages.size() % getPageSize(); i < getPageSize(); ++i) {
-                //System.out.println("pad " + i);
+                // System.out.println("pad " + i);
                 messages.add("");
             }
         }
@@ -196,14 +201,14 @@ public class MessagePager {
     /**
      * Get the number of lines in the message buffer.
      *
-     * @return 		The number of lines in the buffer
+     * @return The number of lines in the buffer
      */
     public int getSize() {
         return messages.size();
     }
 
     /**
-     * Get the number of pages in the  buffer.
+     * Get the number of pages in the buffer.
      *
      * @return number of pages in the buffer, including the partial page at the end
      */
@@ -214,8 +219,9 @@ public class MessagePager {
     /**
      * Get a line of text from the buffer
      *
-     * @param i		The line number
-     * @return 		The line of text at that line
+     * @param i
+     *            The line number
+     * @return The line of text at that line
      */
     public String getLine(int i) {
         return messages.get(i);
@@ -228,17 +234,19 @@ public class MessagePager {
     /**
      * Set the current page for this message buffer.
      *
-     * @param page The page number.
-     * @param wrap	If true, automatically wrap to beginning or end if the page number is out of range.
+     * @param page
+     *            The page number.
+     * @param wrap
+     *            If true, automatically wrap to beginning or end if the page number is out of range.
      */
     public void setPage(int page, boolean wrap) {
         if ((page < 1 || page > getPageCount()) && !wrap) {
             return;
         }
-        
+
         if (page < 1) {
             page = getPageCount();
-        } 
+        }
         else if (page > getPageCount()) {
             page = 1;
         }
@@ -277,8 +285,9 @@ public class MessagePager {
 
     /**
      * Display the specified page for the player.
-
-     * @param pageStr	A string containing the page number to display
+     * 
+     * @param pageStr
+     *            A string containing the page number to display
      */
     public void showPage(String pageStr) throws NumberFormatException {
         int pageNum = Integer.parseInt(pageStr);
@@ -288,7 +297,8 @@ public class MessagePager {
     /**
      * Display the specified page for the player.
      *
-     * @param pageNum	The page number to display
+     * @param pageNum
+     *            The page number to display
      */
     public void showPage(int pageNum) {
         CommandSender sender = senderRef.get();
@@ -305,15 +315,14 @@ public class MessagePager {
 
             int i = (pageNum - 1) * getPageSize();
             int nMessages = getSize();
-            String header = String.format("\u2524 %d-%d of %d lines (page %d/%d) \u251c",
-                    i + 1, Math.min(getPageSize() * pageNum, nMessages), nMessages,
-                    pageNum, getPageCount());
+            String header = String.format("\u2524 %d-%d of %d lines (page %d/%d) \u251c", i + 1, Math.min(getPageSize() * pageNum, nMessages), nMessages, pageNum, getPageCount());
             MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250c" + MinecraftChatStr.strPadCenterChat(header, 325, '\u2504'));
 
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
                 if (parseColours) {
                     MiscUtil.generalMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.RESET + getLine(i));
-                } else {
+                }
+                else {
                     MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.RESET + getLine(i));
                 }
             }
@@ -322,13 +331,13 @@ public class MessagePager {
             MiscUtil.rawMessage(player, ChatColor.GREEN + "\u2514" + MinecraftChatStr.strPadCenterChat(footer, 325, '\u2504'));
 
             setPage(pageNum);
-        } 
+        }
         else {
             // just dump the whole message buffer to the console
             for (String s : messages) {
                 if (parseColours) {
                     MiscUtil.generalMessage(sender, s);
-                } 
+                }
                 else {
                     MiscUtil.rawMessage(sender, s);
                 }
@@ -338,11 +347,11 @@ public class MessagePager {
 
     private String[] wrap(String line) {
         CommandSender sender = senderRef.get();
-        
+
         if (sender != null && sender instanceof Player) {
             String s = parseColours ? MiscUtil.parseColourSpec(sender, line) : line;
             return ChatPaginator.wordWrap(s, getLineLength());
-        } 
+        }
         else {
             return new String[] { line };
         }

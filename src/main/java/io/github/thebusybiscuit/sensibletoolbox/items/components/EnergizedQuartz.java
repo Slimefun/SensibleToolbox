@@ -9,11 +9,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedQuartz extends BaseSTBItem {
 
-    public EnergizedQuartz() {
-    }
+    public EnergizedQuartz() {}
 
-    public EnergizedQuartz(ConfigurationSection conf) {
-    }
+    public EnergizedQuartz(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -27,12 +25,12 @@ public class EnergizedQuartz extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Strangely glowing..."};
+        return new String[] { "Strangely glowing..." };
     }
 
     @Override
     public Recipe getRecipe() {
-    	ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(1));
+        ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(1));
         InfernalDust dust = new InfernalDust();
         registerCustomIngredients(dust);
         recipe.addIngredient(dust.getMaterial());

@@ -19,13 +19,15 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 /**
  * A gadget which can cycle through the values of the given parameterised enum
- * and apply that value to the GUI's owning item.  To use this class, extend
+ * and apply that value to the GUI's owning item. To use this class, extend
  * it with a concrete enum type, implement the abstract methods, and possibly
  * override non-abstract methods.
  *
- * @param <T> an enum type
+ * @param <T>
+ *            an enum type
  */
 public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
+
     private T currentValue;
     private ItemStack[] stacks;
     private final BaseSTBItem stbItem;
@@ -35,13 +37,17 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
      * Constructs a cycler gadget.
      * <p/>
      * The <em>item</em> parameter would typically refer to a separate STB
-     * block from the GUI's owner.  This allows a GUI on one item to
+     * block from the GUI's owner. This allows a GUI on one item to
      * configure a setting in a separate block.
      *
-     * @param gui the GUI to add the gadget to
-     * @param slot the GUI slot to display the gadget in
-     * @param label the primary tooltip for the gadget
-     * @param item the item this gadget should apply to
+     * @param gui
+     *            the GUI to add the gadget to
+     * @param slot
+     *            the GUI slot to display the gadget in
+     * @param label
+     *            the primary tooltip for the gadget
+     * @param item
+     *            the item this gadget should apply to
      */
     protected CyclerGadget(InventoryGUI gui, int slot, String label, BaseSTBItem item) {
         super(gui, slot);
@@ -52,9 +58,12 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
     /**
      * Constructs a cycler gadget.
      *
-     * @param gui the GUI to add the gadget to
-     * @param slot the GUI slot to display the gadget in
-     * @param label the primary tooltip for the gadget
+     * @param gui
+     *            the GUI to add the gadget to
+     * @param slot
+     *            the GUI slot to display the gadget in
+     * @param label
+     *            the primary tooltip for the gadget
      */
     protected CyclerGadget(InventoryGUI gui, int slot, String label) {
         this(gui, slot, label, null);
@@ -62,30 +71,35 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
 
     /**
      * Add a definition (label, button texture) for a particular value of the
-     * enum.  This method should be called from the subclass's constructor for
+     * enum. This method should be called from the subclass's constructor for
      * each value of the enum; for any value for which it is not called, a
      * default texture will be created.
      *
-     * @param what the enum value for which the texture is being defined
-     * @param colour colour to use in the texture's tooltip
-     * @param texture material to use for the texture
-     * @param lore extra tooltip text
+     * @param what
+     *            the enum value for which the texture is being defined
+     * @param colour
+     *            colour to use in the texture's tooltip
+     * @param texture
+     *            material to use for the texture
+     * @param lore
+     *            extra tooltip text
      */
     public void add(T what, ChatColor colour, Material type, String... lore) {
         if (currentValue == null) {
             currentValue = what;
             stacks = new ItemStack[what.getClass().getEnumConstants().length];
         }
-        
-        stacks[what.ordinal()] =  makeTexture(what, type, colour, lore);
+
+        stacks[what.ordinal()] = makeTexture(what, type, colour, lore);
     }
 
     /**
-     * Define the initial value of this gadget.  This method should be called
-     * from the subclass's constructor.  Typically this method will copy the
+     * Define the initial value of this gadget. This method should be called
+     * from the subclass's constructor. Typically this method will copy the
      * STB item's current state.
      *
-     * @param what the initial enum value to display
+     * @param what
+     *            the initial enum value to display
      */
     public void setInitialValue(T what) {
         currentValue = what;
@@ -103,8 +117,10 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
      * Check if the item to which this gadget applies actually supports the
      * given value.
      *
-     * @param stbItem the STB item
-     * @param what the value to check
+     * @param stbItem
+     *            the STB item
+     * @param what
+     *            the value to check
      * @return true if the value is applicable to the item; false otherwise
      */
     protected boolean supported(BaseSTBItem stbItem, T what) {
@@ -114,13 +130,15 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
     /**
      * Go ahead and update the STB item with the given value.
      *
-     * @param stbItem the STB item
-     * @param newValue the new value
+     * @param stbItem
+     *            the STB item
+     * @param newValue
+     *            the new value
      */
     protected abstract void apply(BaseSTBItem stbItem, T newValue);
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void onClicked(InventoryClickEvent event) {
         if (ownerOnly() && !mayOverride(event.getWhoClicked()) && stbItem instanceof BaseSTBBlock) {
             BaseSTBBlock stb = (BaseSTBBlock) stbItem;
@@ -136,12 +154,13 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         do {
             n = (n + adjust) % stacks.length;
             if (n < 0) n += stacks.length;
-            //noinspection unchecked
+            // noinspection unchecked
             currentValue = (T) currentValue.getClass().getEnumConstants()[n];
             if (n == b) {
                 break; // avoid infinite loop due to no supported behaviour
             }
-        } while (!supported(stbItem, currentValue));
+        }
+        while (!supported(stbItem, currentValue));
         event.setCurrentItem(getTexture());
         apply(stbItem, currentValue);
     }
@@ -162,7 +181,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         ItemStack stack = new ItemStack(type);
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.UNDERLINE + label + ":" + color + " " + what.toString());
-        
+
         if (lore.length > 0) {
             String ownerName = getOwnerName();
             List<String> l = Lists.newArrayListWithCapacity(lore.length);
@@ -171,7 +190,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
             }
             meta.setLore(l);
         }
-        
+
         stack.setItemMeta(meta);
         return stack;
     }
@@ -181,7 +200,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
             UUID id = ((BaseSTBBlock) stbItem).getOwner();
             String name = SensibleToolboxPlugin.getInstance().getUuidTracker().getPlayerName(((BaseSTBBlock) stbItem).getOwner());
             return name == null ? id.toString() : name;
-        } 
+        }
         else {
             return "";
         }

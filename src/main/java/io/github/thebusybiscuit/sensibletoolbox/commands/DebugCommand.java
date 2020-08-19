@@ -10,6 +10,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class DebugCommand extends AbstractCommand {
+
     public DebugCommand() {
         super("stb debug", 0, 1);
         setPermissionNode("stb.commands.debug");
@@ -23,13 +24,16 @@ public class DebugCommand extends AbstractCommand {
                 int level = Integer.parseInt(args[0]);
                 Validate.isTrue(level >= 0, "Debug level must be >= 0");
                 setDebugLevel(sender, level);
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 throw new DHUtilsException(e.getMessage());
             }
-        } else {
+        }
+        else {
             if (Debugger.getInstance().getLevel() > 0) {
                 setDebugLevel(sender, 0);
-            } else {
+            }
+            else {
                 setDebugLevel(sender, 1);
             }
         }
@@ -41,7 +45,8 @@ public class DebugCommand extends AbstractCommand {
         Debugger.getInstance().setTarget(level == 0 ? null : sender);
         if (level > 0) {
             MiscUtil.statusMessage(sender, "Debugger enabled (level " + level + ")");
-        } else {
+        }
+        else {
             MiscUtil.statusMessage(sender, "Debugger disabled");
         }
     }

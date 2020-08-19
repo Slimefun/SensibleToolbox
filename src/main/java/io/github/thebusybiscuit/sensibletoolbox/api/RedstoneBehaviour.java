@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api;
 
 /**
  * Represents how a STB block reacts to the presence or absence of a redstone
- * signal.  The precise nature of the block's reaction is dependent on the
+ * signal. The precise nature of the block's reaction is dependent on the
  * block itself, and not all behaviours are supported by all blocks.
  */
 public enum RedstoneBehaviour {

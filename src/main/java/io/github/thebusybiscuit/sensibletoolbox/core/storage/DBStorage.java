@@ -13,7 +13,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.STBItemRegistry;
 import me.desht.dhutils.LogUtils;
 
 public class DBStorage {
-	
+
     private final Connection connection;
 
     public DBStorage() throws SQLException, ClassNotFoundException {
@@ -26,28 +26,21 @@ public class DBStorage {
     }
 
     private Connection connectSQLite() throws ClassNotFoundException, SQLException {
-    	try {
-			System.out.println("[CS-CoreLib - Database] Loading SQL Driver...");
-	        Class.forName("org.sqlite.JDBC");
-		}
-		catch (Exception x) {
-			System.err.println("ERROR: Failed to load SQL Driver: org.sqlite.JDBC");
-			x.printStackTrace();
-			return null;
-		}
+        try {
+            System.out.println("[CS-CoreLib - Database] Loading SQL Driver...");
+            Class.forName("org.sqlite.JDBC");
+        }
+        catch (Exception x) {
+            System.err.println("ERROR: Failed to load SQL Driver: org.sqlite.JDBC");
+            x.printStackTrace();
+            return null;
+        }
         File dbFile = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), "blocks.db");
         return DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
     }
 
     private void setupTable() throws SQLException {
-        createTableIfNotExists("blocks",
-                "world_id VARCHAR(36) NOT NULL," +
-                        "x INTEGER NOT NULL," +
-                        "y INTEGER NOT NULL," +
-                        "z INTEGER NOT NULL," +
-                        "type VARCHAR(" + STBItemRegistry.MAX_ITEM_ID_LENGTH + ") NOT NULL," +
-                        "data TEXT NOT NULL," +
-                        "PRIMARY KEY (world_id,x,y,z)");
+        createTableIfNotExists("blocks", "world_id VARCHAR(36) NOT NULL," + "x INTEGER NOT NULL," + "y INTEGER NOT NULL," + "z INTEGER NOT NULL," + "type VARCHAR(" + STBItemRegistry.MAX_ITEM_ID_LENGTH + ") NOT NULL," + "data TEXT NOT NULL," + "PRIMARY KEY (world_id,x,y,z)");
     }
 
     private void createTableIfNotExists(String tableName, String ddl) throws SQLException {
@@ -57,7 +50,8 @@ public class DBStorage {
             if (!tableExists(fullName)) {
                 stmt.executeUpdate("CREATE TABLE " + fullName + "(" + ddl + ")");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
             throw e;
         }

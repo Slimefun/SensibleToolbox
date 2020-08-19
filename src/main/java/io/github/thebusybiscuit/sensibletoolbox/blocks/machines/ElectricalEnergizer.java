@@ -22,9 +22,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class ElectricalEnergizer extends AbstractIOMachine {
-	
-    public ElectricalEnergizer() {
-    }
+
+    public ElectricalEnergizer() {}
 
     public ElectricalEnergizer(ConfigurationSection conf) {
         super(conf);
@@ -56,17 +55,17 @@ public class ElectricalEnergizer extends AbstractIOMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[]{10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[]{14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[]{41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -93,7 +92,7 @@ public class ElectricalEnergizer extends AbstractIOMachine {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Allows you to energize certain Items"};
+        return new String[] { "Allows you to energize certain Items" };
     }
 
     @Override

@@ -4,57 +4,57 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class Debugger {
-	
-	private static final String DEBUG_COLOR = ChatColor.DARK_GREEN.toString();
-	private static Debugger instance;
-	private int level;
-	private CommandSender target;
-	private String prefix = "";
 
-	private Debugger() {
-		level = 0;
-	}
+    private static final String DEBUG_COLOR = ChatColor.DARK_GREEN.toString();
+    private static Debugger instance;
+    private int level;
+    private CommandSender target;
+    private String prefix = "";
 
-	public static synchronized Debugger getInstance() {
-		if (instance == null) {
-			instance = new Debugger();
-		}
-		return instance;
-	}
+    private Debugger() {
+        level = 0;
+    }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    public static synchronized Debugger getInstance() {
+        if (instance == null) {
+            instance = new Debugger();
+        }
+        return instance;
+    }
 
-	public CommandSender getTarget() {
-		return target;
-	}
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	public void setTarget(CommandSender target) {
-		this.target = target;
-	}
+    public CommandSender getTarget() {
+        return target;
+    }
 
-	public int getLevel() {
-		return level;
-	}
+    public void setTarget(CommandSender target) {
+        this.target = target;
+    }
 
-	public void setLevel(int level) {
-		this.level = level;
-	}
+    public int getLevel() {
+        return level;
+    }
 
-	public void debug(String message) {
-			debug(1, message);
-	}
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
-	public void debug(int msgLevel, String message) {
-		if (msgLevel <= level && target != null) {
-			target.sendMessage(DEBUG_COLOR + prefix + message);
-		}
-	}
+    public void debug(String message) {
+        debug(1, message);
+    }
 
-	@Override
-	public Debugger clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
+    public void debug(int msgLevel, String message) {
+        if (msgLevel <= level && target != null) {
+            target.sendMessage(DEBUG_COLOR + prefix + message);
+        }
+    }
+
+    @Override
+    public Debugger clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
 }

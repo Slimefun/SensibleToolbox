@@ -7,12 +7,10 @@ import org.bukkit.inventory.Recipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class InfernalDust extends BaseSTBItem {
-	
-    public InfernalDust() {
-    }
 
-    public InfernalDust(ConfigurationSection conf) {
-    }
+    public InfernalDust() {}
+
+    public InfernalDust(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -26,7 +24,7 @@ public class InfernalDust extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Sometimes dropped from blazes.", "Looting enchantment may help.", "Combine this with iron or gold dust."};
+        return new String[] { "Sometimes dropped from blazes.", "Looting enchantment may help.", "Combine this with iron or gold dust." };
     }
 
     @Override

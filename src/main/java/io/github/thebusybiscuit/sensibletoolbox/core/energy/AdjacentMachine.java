@@ -5,6 +5,7 @@ import org.bukkit.block.BlockFace;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 
 public class AdjacentMachine {
+
     private final BaseSTBMachine machine;
     private final BlockFace direction;
 

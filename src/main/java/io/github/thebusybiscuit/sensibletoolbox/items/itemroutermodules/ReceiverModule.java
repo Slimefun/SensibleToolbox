@@ -13,8 +13,7 @@ import me.desht.dhutils.Debugger;
 
 public class ReceiverModule extends ItemRouterModule {
 
-    public ReceiverModule() {
-    }
+    public ReceiverModule() {}
 
     public ReceiverModule(ConfigurationSection conf) {
         super(conf);
@@ -27,12 +26,7 @@ public class ReceiverModule extends ItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[]{
-                "Insert into an Item Router",
-                "Passive module; receives items",
-                "from a facing Sender module OR",
-                "linked Adv. Sender module"
-        };
+        return new String[] { "Insert into an Item Router", "Passive module; receives items", "from a facing Sender module OR", "linked Adv. Sender module" };
     }
 
     @Override
@@ -53,8 +47,7 @@ public class ReceiverModule extends ItemRouterModule {
     public int receiveItem(ItemStack item, UUID senderUUID) {
         int received = getItemRouter().insertItems(item, BlockFace.SELF, false, senderUUID);
         if (received > 0) {
-            Debugger.getInstance().debug(2, "receiver in " + getItemRouter() + " received " + received + " of " + item +
-                    ", now has " + getItemRouter().getBufferItem());
+            Debugger.getInstance().debug(2, "receiver in " + getItemRouter() + " received " + received + " of " + item + ", now has " + getItemRouter().getBufferItem());
         }
         return received;
     }

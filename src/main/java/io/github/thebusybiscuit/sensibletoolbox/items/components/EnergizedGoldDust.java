@@ -9,12 +9,10 @@ import org.bukkit.inventory.ShapelessRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedGoldDust extends BaseSTBItem {
-	
-    public EnergizedGoldDust() {
-    }
 
-    public EnergizedGoldDust(ConfigurationSection conf) {
-    }
+    public EnergizedGoldDust() {}
+
+    public EnergizedGoldDust(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {

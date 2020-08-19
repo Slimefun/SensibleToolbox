@@ -8,12 +8,10 @@ import org.bukkit.inventory.ShapedRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class IntegratedCircuit extends BaseSTBItem {
-	
-    public IntegratedCircuit() {
-    }
 
-    public IntegratedCircuit(ConfigurationSection conf) {
-    }
+    public IntegratedCircuit() {}
+
+    public IntegratedCircuit(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -27,7 +25,7 @@ public class IntegratedCircuit extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Used as a component", "in some more", "advanced machinery"};
+        return new String[] { "Used as a component", "in some more", "advanced machinery" };
     }
 
     @Override

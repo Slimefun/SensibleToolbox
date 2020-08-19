@@ -33,7 +33,8 @@ public class GetcfgCommand extends AbstractCommand {
                 pager.add(line);
             }
             pager.showPage();
-        } else if (lines.size() == 1) {
+        }
+        else if (lines.size() == 1) {
             MiscUtil.statusMessage(sender, lines.get(0));
         }
         return true;
@@ -51,20 +52,20 @@ public class GetcfgCommand extends AbstractCommand {
         Set<String> items;
         if (section == null) {
             items = config.getDefaults().getKeys(true);
-        } else {
+        }
+        else {
             if (config.getDefaults().isConfigurationSection(section)) {
                 cs = config.getConfigurationSection(section);
                 items = config.getDefaults().getConfigurationSection(section).getKeys(true);
-            } else {
+            }
+            else {
                 items = new HashSet<String>();
-                if (config.getDefaults().contains(section))
-                    items.add(section);
+                if (config.getDefaults().contains(section)) items.add(section);
             }
         }
 
         for (String k : items) {
-            if (cs.isConfigurationSection(k))
-                continue;
+            if (cs.isConfigurationSection(k)) continue;
             res.add("&f" + k + "&- = '&e" + cs.get(k) + "&-'");
         }
         Collections.sort(res);
@@ -74,10 +75,10 @@ public class GetcfgCommand extends AbstractCommand {
     @Override
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         switch (args.length) {
-            case 1:
-                return getConfigCompletions(sender, plugin.getConfig(), args[0]);
-            default:
-                return noCompletions(sender);
+        case 1:
+            return getConfigCompletions(sender, plugin.getConfig(), args[0]);
+        default:
+            return noCompletions(sender);
         }
     }
 }

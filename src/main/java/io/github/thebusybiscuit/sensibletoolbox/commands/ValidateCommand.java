@@ -20,7 +20,7 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 
 public class ValidateCommand extends STBAbstractCommand {
-	
+
     public ValidateCommand() {
         super("stb validate");
         setPermissionNode("stb.commands.validate");
@@ -36,10 +36,10 @@ public class ValidateCommand extends STBAbstractCommand {
         }
         return true;
     }
-    
-	private int validate(Plugin plugin, World world) {
+
+    private int validate(Plugin plugin, World world) {
         Set<Block> fixed = new HashSet<>();
-        
+
         for (BaseSTBBlock stb : LocationManager.getManager().listBlocks(world, false)) {
             Location loc = stb.getLocation();
             Block b = loc.getBlock();

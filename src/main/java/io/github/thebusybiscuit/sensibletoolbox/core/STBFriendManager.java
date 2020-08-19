@@ -20,10 +20,11 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
 public class STBFriendManager implements FriendManager {
-	
+
     private static final String FRIEND_DIR = "friends";
 
     private static final FilenameFilter ymlFilter = new FilenameFilter() {
+
         @Override
         public boolean accept(File dir, String name) {
             return name.endsWith(".yml");
@@ -32,7 +33,7 @@ public class STBFriendManager implements FriendManager {
 
     private final File saveDir;
     private final Set<UUID> saveNeeded = Sets.newHashSet();
-    private final Map<UUID,Set<UUID>> friendMap = Maps.newHashMap();
+    private final Map<UUID, Set<UUID>> friendMap = Maps.newHashMap();
 
     public STBFriendManager(SensibleToolboxPlugin plugin) {
         saveDir = new File(plugin.getDataFolder(), FRIEND_DIR);
@@ -85,7 +86,8 @@ public class STBFriendManager implements FriendManager {
                     UUID id2 = UUID.fromString(k);
                     addFriend(id1, id2);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 LogUtils.warning("failed to load friend data for " + f + ": " + e.getMessage());
             }
         }
@@ -103,7 +105,8 @@ public class STBFriendManager implements FriendManager {
             File f = new File(saveDir, id.toString() + ".yml");
             try {
                 conf.save(f);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 LogUtils.warning("failed to save friend data for " + f + ": " + e.getMessage());
             }
         }
@@ -118,14 +121,14 @@ public class STBFriendManager implements FriendManager {
         int lastSeparatorIndex = s.lastIndexOf(separator);
         if (lastSeparatorIndex == -1) {
             filename = s;
-        } else {
+        }
+        else {
             filename = s.substring(lastSeparatorIndex + 1);
         }
 
         // Remove the extension.
         int extensionIndex = filename.lastIndexOf(".");
-        if (extensionIndex == -1)
-            return filename;
+        if (extensionIndex == -1) return filename;
 
         return filename.substring(0, extensionIndex);
     }

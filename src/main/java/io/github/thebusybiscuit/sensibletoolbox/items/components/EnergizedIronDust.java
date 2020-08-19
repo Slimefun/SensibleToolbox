@@ -10,8 +10,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class EnergizedIronDust extends BaseSTBItem {
 
-    public EnergizedIronDust() {
-    }
+    public EnergizedIronDust() {}
 
     public EnergizedIronDust(ConfigurationSection conf) {
 

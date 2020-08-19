@@ -9,9 +9,8 @@ import org.bukkit.inventory.ShapedRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 
 public class DenseSolar extends BasicSolarCell {
-	
-    public DenseSolar() {
-    }
+
+    public DenseSolar() {}
 
     public DenseSolar(ConfigurationSection conf) {
         super(conf);

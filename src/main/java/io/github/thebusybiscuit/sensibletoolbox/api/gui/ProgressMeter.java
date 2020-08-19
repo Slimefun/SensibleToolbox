@@ -9,10 +9,11 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 
 /**
- * A progress meter gadget.  The GUI that this is added to must be owned by an
+ * A progress meter gadget. The GUI that this is added to must be owned by an
  * {@link io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine}.
  */
 public class ProgressMeter extends MonitorGadget {
+
     private final ItemStack progressIcon;
     private final AbstractProcessingMachine machine;
     private int maxProcessingTime = 0;
@@ -20,12 +21,12 @@ public class ProgressMeter extends MonitorGadget {
     /**
      * Constructs a new progress meter.
      *
-     * @param gui the GUI which holds this progress meter
+     * @param gui
+     *            the GUI which holds this progress meter
      */
     public ProgressMeter(InventoryGUI gui) {
         super(gui);
-        Validate.isTrue(getGUI().getOwningBlock() instanceof AbstractProcessingMachine,
-                "Attempt to install progress meter in non-processing machine " + getGUI().getOwningBlock());
+        Validate.isTrue(getGUI().getOwningBlock() instanceof AbstractProcessingMachine, "Attempt to install progress meter in non-processing machine " + getGUI().getOwningBlock());
         machine = (AbstractProcessingMachine) getGUI().getOwningBlock();
         Validate.isTrue(machine.getProgressCounterSlot() > 0 || machine.getProgressItemSlot() > 0, "At least one of counter slot and item slot must be >= 0!");
         this.progressIcon = machine.getProgressIcon().clone();
@@ -47,7 +48,8 @@ public class ProgressMeter extends MonitorGadget {
                     meta.setLore(GUIUtil.makeLore(lore));
                 }
                 stack.setItemMeta(meta);
-            } else {
+            }
+            else {
                 stack = STBInventoryGUI.BG_TEXTURE;
             }
             getGUI().getInventory().setItem(machine.getProgressCounterSlot(), stack);
@@ -55,7 +57,8 @@ public class ProgressMeter extends MonitorGadget {
         if (machine.getProgressItemSlot() > 0 && machine.getProgressItemSlot() < getGUI().getInventory().getSize()) {
             if (machine.getProcessing() != null) {
                 getGUI().getInventory().setItem(machine.getProgressItemSlot(), machine.getProcessing());
-            } else {
+            }
+            else {
                 getGUI().getInventory().setItem(machine.getProgressItemSlot(), STBInventoryGUI.BG_TEXTURE);
             }
         }
@@ -64,11 +67,13 @@ public class ProgressMeter extends MonitorGadget {
     @Override
     public int[] getSlots() {
         if (machine.getProgressCounterSlot() > 0 && machine.getProgressItemSlot() > 0) {
-            return new int[]{machine.getProgressCounterSlot(), machine.getProgressItemSlot()};
-        } else if (machine.getProgressCounterSlot() > 0) {
-            return new int[]{machine.getProgressCounterSlot()};
-        } else {
-            return new int[]{machine.getProgressItemSlot()};
+            return new int[] { machine.getProgressCounterSlot(), machine.getProgressItemSlot() };
+        }
+        else if (machine.getProgressCounterSlot() > 0) {
+            return new int[] { machine.getProgressCounterSlot() };
+        }
+        else {
+            return new int[] { machine.getProgressItemSlot() };
         }
     }
 
@@ -83,10 +88,11 @@ public class ProgressMeter extends MonitorGadget {
     }
 
     /**
-     * Set the maximum processing time for the gadget.  Until this is set, the
+     * Set the maximum processing time for the gadget. Until this is set, the
      * gadget will not display a value.
      *
-     * @param processingTime the maximum processing time
+     * @param processingTime
+     *            the maximum processing time
      */
     public void setMaxProgress(int processingTime) {
         maxProcessingTime = processingTime;

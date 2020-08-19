@@ -14,6 +14,7 @@ import io.github.thebusybiscuit.sensibletoolbox.blocks.Elevator;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 
 public class ElevatorListener extends STBBaseListener {
+
     public ElevatorListener(SensibleToolboxPlugin plugin) {
         super(plugin);
     }

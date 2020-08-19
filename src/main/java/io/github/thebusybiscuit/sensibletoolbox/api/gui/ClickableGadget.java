@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
  * Abstract base class for all clickable gadgets.
  */
 public abstract class ClickableGadget extends Gadget {
+
     private final int slot;
 
     protected ClickableGadget(InventoryGUI gui, int slot) {
@@ -26,7 +27,8 @@ public abstract class ClickableGadget extends Gadget {
     /**
      * Called when the gadget is clicked.
      *
-     * @param event the inventory click event
+     * @param event
+     *            the inventory click event
      */
     public abstract void onClicked(InventoryClickEvent event);
 
@@ -38,7 +40,7 @@ public abstract class ClickableGadget extends Gadget {
     public abstract ItemStack getTexture();
 
     /**
-     * Update the gadget's appearance in the GUI.  This should be called if a
+     * Update the gadget's appearance in the GUI. This should be called if a
      * gadget's value is changed programmatically, i.e. not via a player
      * action.
      */

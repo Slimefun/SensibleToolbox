@@ -22,17 +22,16 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class Smelter extends AbstractIOMachine {
-	
+
     private static int getProcessingTime(ItemStack stack) {
         if (stack.getType().isEdible()) {
-            return 40;  // food cooks a lot quicker than ores etc.
+            return 40; // food cooks a lot quicker than ores etc.
         }
-        
+
         return 120;
     }
 
-    public Smelter() {
-    }
+    public Smelter() {}
 
     public Smelter(ConfigurationSection conf) {
         super(conf);
@@ -44,7 +43,7 @@ public class Smelter extends AbstractIOMachine {
         Iterator<Recipe> iter = Bukkit.recipeIterator();
         while (iter.hasNext()) {
             Recipe r = iter.next();
-            
+
             if (r instanceof FurnaceRecipe) {
                 FurnaceRecipe fr = (FurnaceRecipe) r;
                 if (RecipeUtil.isVanillaSmelt(fr.getInput().getType())) {
@@ -56,7 +55,7 @@ public class Smelter extends AbstractIOMachine {
         // add a processing recipe for any STB item which reports itself as smeltable
         for (String key : SensibleToolbox.getItemRegistry().getItemIds()) {
             BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(key);
-            
+
             if (item.getSmeltingResult() != null) {
                 ItemStack stack = item.toItemStack();
                 crm.addCustomRecipe(new SimpleCustomRecipe(this, stack, item.getSmeltingResult(), getProcessingTime(stack)));
@@ -91,7 +90,7 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     public String[] getLore() {
-        return new String[]{"Smelts items", "Like a Furnace, but", "faster and more efficient"};
+        return new String[] { "Smelts items", "Like a Furnace, but", "faster and more efficient" };
     }
 
     @Override
@@ -112,17 +111,17 @@ public class Smelter extends AbstractIOMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14};
+        return new int[] { 14 };
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[] {41, 42, 43, 44};
+        return new int[] { 41, 42, 43, 44 };
     }
 
     @Override
@@ -165,7 +164,7 @@ public class Smelter extends AbstractIOMachine {
     @Override
     protected void playActiveParticleEffect() {
         if (getTicksLived() % 20 == 0) {
-        	getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
+            getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
         }
     }
 }

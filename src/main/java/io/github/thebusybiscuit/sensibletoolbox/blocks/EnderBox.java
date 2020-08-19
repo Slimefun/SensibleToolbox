@@ -26,7 +26,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventoryHolder {
-    
+
     private int frequency;
     private boolean global;
     private final String signLabel[] = new String[4];
@@ -93,7 +93,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
     @Override
     public String[] getLore() {
-        return new String[] {"Extra-dimensional storage", "Right-click with an", "Ender Tuner to set", "its frequency"};
+        return new String[] { "Extra-dimensional storage", "Right-click with an", "Ender Tuner to set", "its frequency" };
     }
 
     @Override
@@ -119,14 +119,12 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             Player player = event.getPlayer();
-            
+
             if (!hasAccessRights(player)) {
                 STBUtil.complain(player, "That " + getItemName() + " is private!");
             }
             else {
-                Inventory inv = isGlobal() ?
-                        EnderStorage.getEnderInventory(getEnderFrequency()) :
-                        EnderStorage.getEnderInventory(player, getEnderFrequency());
+                Inventory inv = isGlobal() ? EnderStorage.getEnderInventory(getEnderFrequency()) : EnderStorage.getEnderInventory(player, getEnderFrequency());
                 player.openInventory(inv);
                 player.playSound(getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1.0f);
             }
@@ -138,7 +136,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
         if (hasAccessRights(uuid)) {
             return getInventoryHolderFor(uuid).insertItems(item, face, sorting, uuid);
-        } 
+        }
         else {
             return 0;
         }
@@ -148,7 +146,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
         if (hasAccessRights(uuid)) {
             return getInventoryHolderFor(uuid).extractItems(face, receiver, amount, uuid);
-        } 
+        }
         else {
             return null;
         }
@@ -172,8 +170,6 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     }
 
     private EnderStorageHolder getInventoryHolderFor(UUID uuid) {
-        return isGlobal() ?
-                EnderStorage.getEnderStorageHolder(getEnderFrequency()) :
-                EnderStorage.getEnderStorageHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
+        return isGlobal() ? EnderStorage.getEnderStorageHolder(getEnderFrequency()) : EnderStorage.getEnderStorageHolder(Bukkit.getOfflinePlayer(uuid), getEnderFrequency());
     }
 }

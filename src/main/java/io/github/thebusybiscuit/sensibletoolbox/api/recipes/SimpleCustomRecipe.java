@@ -8,13 +8,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Simple one-to-one mapping of an ingredient to a result.  See
+ * Simple one-to-one mapping of an ingredient to a result. See
  * {@link ShapelessCustomRecipe} for a class
  * which supports multiple ingredients and results.
  */
 public class SimpleCustomRecipe implements CustomRecipe {
-	
-    private final String processorID;  // id of STB item which makes this
+
+    private final String processorID; // id of STB item which makes this
     private final ItemStack ingredient;
     private final ItemStack result;
     private final int processingTime; // in ticks

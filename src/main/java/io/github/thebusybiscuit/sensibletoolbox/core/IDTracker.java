@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class IDTracker {
+
     private final Map<Integer, Object> map = Maps.newHashMap();
     private final Plugin plugin;
     private final String name;
@@ -24,10 +25,12 @@ public class IDTracker {
             try {
                 conf.load(file);
                 nextID = conf.getInt("nextID");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+        else {
             nextID = 1;
             save();
         }
@@ -39,7 +42,8 @@ public class IDTracker {
         conf.set("nextID", nextID);
         try {
             conf.save(file);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }

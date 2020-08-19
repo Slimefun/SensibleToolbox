@@ -15,34 +15,30 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
 
 public class PowerMonitor extends BaseSTBBlock {
-	
-    public PowerMonitor() {
-    }
+
+    public PowerMonitor() {}
 
     public PowerMonitor(ConfigurationSection conf) {
         super(conf);
     }
-    
-	@Override
-	public Material getMaterial() {
-		return Material.ORANGE_STAINED_GLASS;
-	}
 
-	@Override
-	public String getItemName() {
-		return "Power Monitor";
-	}
+    @Override
+    public Material getMaterial() {
+        return Material.ORANGE_STAINED_GLASS;
+    }
 
-	@Override
-	public String[] getLore() {
-		return new String[] {
-				"Displays the Net Gain/Loss",
-				"on attached Signs"
-		};
-	}
+    @Override
+    public String getItemName() {
+        return "Power Monitor";
+    }
 
-	@Override
-	public Recipe getRecipe() {
+    @Override
+    public String[] getLore() {
+        return new String[] { "Displays the Net Gain/Loss", "on attached Signs" };
+    }
+
+    @Override
+    public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GGG", "RCR", "GGG");
         TenKEnergyCell cell = new TenKEnergyCell();
@@ -52,33 +48,33 @@ public class PowerMonitor extends BaseSTBBlock {
         recipe.setIngredient('C', cell.getMaterial());
         recipe.setIngredient('R', Material.REDSTONE);
         return recipe;
-	}
-	
-	@Override
-	public int getTickRate() {
+    }
+
+    @Override
+    public int getTickRate() {
         return 100;
     }
-	
-	@Override
-	public void onServerTick() {
+
+    @Override
+    public void onServerTick() {
         updateAttachedLabelSigns();
-		super.onServerTick();
+        super.onServerTick();
     }
-	
-	@Override
+
+    @Override
     protected String[] getSignLabel(BlockFace face) {
         String[] label = super.getSignLabel(face);
-        for (BlockFace f: STBUtil.mainHorizontalFaces) {
+        for (BlockFace f : STBUtil.mainHorizontalFaces) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
             if (net != null) {
-            	double stat = net.getSupply() - net.getDemand();
-            	String prefix;
-            	
-            	if (stat > 0) prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
-            	else prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
-            	
-            	label[2] = prefix + " " + ChatColor.DARK_GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t";
-            	break;
+                double stat = net.getSupply() - net.getDemand();
+                String prefix;
+
+                if (stat > 0) prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
+                else prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
+
+                label[2] = prefix + " " + ChatColor.DARK_GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t";
+                break;
             }
         }
         return label;

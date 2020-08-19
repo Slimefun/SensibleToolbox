@@ -11,17 +11,19 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 
 /**
- * Shows the SCU level for an STB block.  The GUI that this gadget is added to
+ * Shows the SCU level for an STB block. The GUI that this gadget is added to
  * must implement {@link io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock}.
  */
 public class ChargeMeter extends MonitorGadget {
+
     private final ItemStack indicator;
     private final ChargeableBlock chargeable;
 
     /**
      * Constructs a charge meter gadget.
      *
-     * @param gui the GUI which holds this gadget
+     * @param gui
+     *            the GUI which holds this gadget
      */
     public ChargeMeter(InventoryGUI gui) {
         super(gui);
@@ -45,6 +47,6 @@ public class ChargeMeter extends MonitorGadget {
 
     @Override
     public int[] getSlots() {
-        return new int[]{chargeable.getChargeMeterSlot()};
+        return new int[] { chargeable.getChargeMeterSlot() };
     }
 }

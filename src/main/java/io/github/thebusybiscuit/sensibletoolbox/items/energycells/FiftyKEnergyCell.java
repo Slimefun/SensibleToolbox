@@ -9,7 +9,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.EnergizedIronIngot;
 
 public class FiftyKEnergyCell extends EnergyCell {
-	
+
     public FiftyKEnergyCell() {
         super();
     }

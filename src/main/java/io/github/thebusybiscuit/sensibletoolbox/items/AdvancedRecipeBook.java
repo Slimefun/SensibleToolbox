@@ -6,7 +6,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 public class AdvancedRecipeBook extends RecipeBook {
-	
+
     public AdvancedRecipeBook() {
         super();
     }
@@ -27,10 +27,7 @@ public class AdvancedRecipeBook extends RecipeBook {
 
     @Override
     public String[] getExtraLore() {
-        return new String[] { 
-        		"Can pull items from adjacent",
-        		"inventories during fabrication"
-        };
+        return new String[] { "Can pull items from adjacent", "inventories during fabrication" };
     }
 
     @Override

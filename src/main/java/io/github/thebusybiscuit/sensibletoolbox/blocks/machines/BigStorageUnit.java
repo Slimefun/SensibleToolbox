@@ -32,7 +32,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import me.desht.dhutils.Debugger;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
-	
+
     private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(Material.ENDER_EYE, ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
     private static final ItemStack UNLOCKED_BUTTON = GUIUtil.makeTexture(Material.ENDER_PEARL, ChatColor.UNDERLINE + "Unlocked", "Unit will forget its stored", "item when emptied");
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
@@ -54,14 +54,15 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     public BigStorageUnit(ConfigurationSection conf) {
         super(conf);
-        
+
         try {
             Inventory inv = BukkitSerialization.fromBase64(conf.getString("stored"));
             setStoredItemType(inv.getItem(0));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         setStorageAmount(conf.getInt("amount"));
         locked = conf.getBoolean("locked", false);
         oldTotalAmount = getStorageAmount();
@@ -109,25 +110,25 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public void setLocked(boolean locked) {
         this.locked = locked;
         updateSignQuantityLine();
-        
+
         if (getTotalAmount() == 0 && !isLocked()) {
             setStoredItemType(null);
         }
-        
+
         updateAttachedLabelSigns();
     }
 
     public void setStoredItemType(ItemStack stored) {
         Debugger.getInstance().debug(this + " set stored item = " + stored);
-        
+
         if (stored != null) {
             this.stored = stored.clone();
             this.stored.setAmount(1);
-        } 
+        }
         else if (!isLocked()) {
             this.stored = null;
         }
-        
+
         maxCapacity = getStackCapacity() * (this.stored == null ? 64 : this.stored.getMaxStackSize());
         updateSignItemLines();
     }
@@ -143,7 +144,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             signLabel[2] = lines[0];
             String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
             if (lines.length > 1) signLabel[3] = pfx + lines[1];
-        } 
+        }
         else {
             signLabel[2] = ChatColor.ITALIC + "Empty";
             signLabel[3] = "";
@@ -152,12 +153,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[] {10};
+        return new int[] { 10 };
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[] {14};
+        return new int[] { 14 };
     }
 
     @Override
@@ -193,14 +194,14 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Big Storage Unit", "Stores up to " + getStackCapacity() + " stacks", "of a single item type"};
+        return new String[] { "Big Storage Unit", "Stores up to " + getStackCapacity() + " stacks", "of a single item type" };
     }
 
     @Override
     public String[] getExtraLore() {
         if (isLocked() && getStoredItemType() != null) {
-            return new String[] {ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + ItemUtils.getItemName(getStoredItemType())};
-        } 
+            return new String[] { ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + ItemUtils.getItemName(getStoredItemType()) };
+        }
         else {
             return new String[0];
         }
@@ -254,6 +255,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         InventoryGUI gui = super.createGUI();
 
         gui.addGadget(new ToggleButton(gui, 26, isLocked(), LOCKED_BUTTON, UNLOCKED_BUTTON, new ToggleButton.ToggleListener() {
+
             @Override
             public boolean run(boolean newValue) {
                 setLocked(newValue);
@@ -268,15 +270,15 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         // 1. move items from input to storage
         int inputSlot = getInputSlots()[0];
         ItemStack stackIn = getInventoryItem(inputSlot);
-        
+
         if (stackIn != null && (stored == null || stackIn.isSimilar(stored) && !isFull())) {
             double chargeNeeded = getChargePerOperation(stackIn.getAmount());
-            
+
             if (getCharge() >= chargeNeeded) {
                 if (stored == null) {
                     setStoredItemType(stackIn);
                 }
-                
+
                 int toPull = Math.min(stackIn.getAmount(), maxCapacity - getStorageAmount());
                 setStorageAmount(getStorageAmount() + toPull);
                 stackIn.setAmount(stackIn.getAmount() - toPull);
@@ -294,12 +296,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         // 2. top up the output stack from storage
         if (stored != null) {
             int toPush = Math.min(getStorageAmount(), stored.getMaxStackSize() - getOutputAmount());
-            
+
             if (toPush > 0) {
                 if (stackOut == null) {
                     stackOut = stored.clone();
                     stackOut.setAmount(toPush);
-                } 
+                }
                 else {
                     stackOut.setAmount(stackOut.getAmount() + toPush);
                 }
@@ -312,11 +314,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         // 3. perform any necessary updates if storage has changed
         if (getTotalAmount() != oldTotalAmount) {
             updateSignQuantityLine();
-            
+
             if (getTotalAmount() == 0) {
                 setStoredItemType(null);
             }
-            
+
             Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
             getProgressMeter().setMaxProgress(maxCapacity);
             setProcessing(stored);
@@ -338,15 +340,15 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (getProcessing() != null && dropsItemsOnBreak()) {
             // dump contents on floor (could make a big mess)
             Location current = getLocation();
-            storageAmount = Math.min(4096, storageAmount);  // max 64 stacks will be dropped
-            
+            storageAmount = Math.min(4096, storageAmount); // max 64 stacks will be dropped
+
             while (storageAmount > 0) {
                 ItemStack stack = stored.clone();
                 stack.setAmount(Math.min(storageAmount, stored.getMaxStackSize()));
                 current.getWorld().dropItemNaturally(current, stack);
                 storageAmount -= stored.getMaxStackSize();
             }
-            
+
             setStoredItemType(null);
             setStorageAmount(0);
         }
@@ -368,12 +370,12 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public void onInteractBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack inHand = event.getItem();
-        
+
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && getStoredItemType() != null && hasAccessRights(player) && isItemOkay(event.getItem())) {
             // try to extract items from the output stack
             int wanted = player.isSneaking() ? 1 : getStoredItemType().getMaxStackSize();
             int nExtracted = Math.min(wanted, getOutputAmount());
-            
+
             if (nExtracted > 0) {
                 Location loc = event.getClickedBlock().getRelative(event.getBlockFace()).getLocation().add(0.5, 0.5, 0.5);
                 ItemStack stack = getStoredItemType().clone();
@@ -383,51 +385,51 @@ public class BigStorageUnit extends AbstractProcessingMachine {
                 stack.setAmount(getOutputAmount());
                 setOutputItem(stack);
             }
-            
+
             event.setCancelled(true);
-        } 
+        }
         else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking() && hasAccessRights(player)) {
             Long lastInsert = (Long) STBUtil.getMetadataValue(player, STB_LAST_BSU_INSERT);
             long now = System.currentTimeMillis();
-            
+
             if (inHand.getType() == Material.AIR && lastInsert != null && now - lastInsert < DOUBLE_CLICK_TIME) {
                 rightClickFullInsert(player);
                 event.setCancelled(true);
-            } 
+            }
             else if (inHand.isSimilar(getStoredItemType())) {
                 rightClickInsert(player, player.getInventory().getHeldItemSlot());
                 event.setCancelled(true);
-            } 
+            }
             else {
                 super.onInteractBlock(event);
             }
-        } 
+        }
         else {
             super.onInteractBlock(event);
         }
     }
 
     private boolean isItemOkay(ItemStack item) {
-    	if (Tag.SIGNS.isTagged(item.getType())) {
-    		return false;
-    	}
-    	
+        if (Tag.SIGNS.isTagged(item.getType())) {
+            return false;
+        }
+
         switch (item.getType()) {
-            case WOODEN_AXE:
-            case STONE_AXE:
-            case IRON_AXE:
-            case GOLDEN_AXE:
-            case DIAMOND_AXE:
-                return false;
-            default:
-                return true;
+        case WOODEN_AXE:
+        case STONE_AXE:
+        case IRON_AXE:
+        case GOLDEN_AXE:
+        case DIAMOND_AXE:
+            return false;
+        default:
+            return true;
         }
     }
-    
-	private void rightClickFullInsert(Player player) {
+
+    private void rightClickFullInsert(Player player) {
         for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
             ItemStack stack = player.getInventory().getItem(slot);
-            
+
             if (stack != null && stack.isSimilar(getStoredItemType()) && rightClickInsert(player, slot) == 0) {
                 break;
             }
@@ -437,27 +439,27 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     private int rightClickInsert(Player player, int slot) {
         ItemStack stack = player.getInventory().getItem(slot);
         int toInsert = Math.min(stack.getAmount(), maxCapacity - getStorageAmount());
-        
+
         if (toInsert == 0) {
             STBUtil.complain(player, getItemName() + " is full.");
             return 0;
         }
-        
+
         double chargeNeeded = getChargePerOperation(toInsert);
-        
+
         if (getCharge() >= chargeNeeded) {
             setStorageAmount(getStorageAmount() + toInsert);
-            
+
             if (getStoredItemType() == null) {
                 setStoredItemType(stack);
             }
-            
+
             stack.setAmount(stack.getAmount() - toInsert);
             player.getInventory().setItem(slot, stack.getAmount() == 0 ? null : stack);
             setCharge(getCharge() - chargeNeeded);
             player.setMetadata(STB_LAST_BSU_INSERT, new FixedMetadataValue(getProviderPlugin(), System.currentTimeMillis()));
             return toInsert;
-        } 
+        }
         else {
             STBUtil.complain(player, getItemName() + " has insufficient charge to accept items.");
             return 0;
@@ -518,24 +520,24 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (!hasAccessRights(uuid)) {
             return 0;
         }
-        
+
         double chargeNeeded = getChargePerOperation(item.getAmount());
-        
+
         if (!isRedstoneActive() || getCharge() < chargeNeeded) {
             return 0;
-        } 
+        }
         else if (stored == null) {
             setStoredItemType(item);
             setStorageAmount(item.getAmount());
             setCharge(getCharge() - chargeNeeded);
             return item.getAmount();
-        } 
+        }
         else if (item.isSimilar(stored)) {
             int toInsert = Math.min(item.getAmount(), maxCapacity - getStorageAmount());
             setStorageAmount(getStorageAmount() + toInsert);
             setCharge(getCharge() - chargeNeeded);
             return toInsert;
-        } 
+        }
         else {
             return 0;
         }
@@ -546,37 +548,37 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (!hasAccessRights(uuid)) {
             return null;
         }
-        
+
         double chargeNeeded = getChargePerOperation(amount);
-        
+
         if (!isRedstoneActive() || getStorageAmount() == 0 && getOutputAmount() == 0 || getCharge() < chargeNeeded) {
             return null;
         }
 
         if (receiver != null) {
             amount = Math.min(amount, receiver.getMaxStackSize() - receiver.getAmount());
-            
+
             if (getStorageAmount() > 0 && !receiver.isSimilar(getStoredItemType())) {
                 return null;
             }
-            
+
             if (amount > getStorageAmount() && getOutputAmount() > 0 && !receiver.isSimilar(getOutputItem())) {
                 return null;
             }
         }
 
         int fromStorage = Math.min(getStorageAmount(), amount);
-        
+
         if (fromStorage > 0) {
             amount -= fromStorage;
             setStorageAmount(getStorageAmount() - fromStorage);
         }
-        
+
         int fromOutput = 0;
-        
+
         if (amount > 0) {
             fromOutput = Math.min(getOutputAmount(), amount);
-            
+
             if (fromOutput > 0) {
                 setOutputAmount(getOutputAmount() - fromOutput);
                 ItemStack output = getOutputItem();
@@ -586,7 +588,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
 
         ItemStack tmpStored = getStoredItemType();
-        
+
         if (getTotalAmount() == 0) {
             setStoredItemType(null);
         }
@@ -597,7 +599,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             ItemStack returned = tmpStored.clone();
             returned.setAmount(fromStorage + fromOutput);
             return returned;
-        } 
+        }
         else {
             receiver.setAmount(receiver.getAmount() + fromStorage + fromOutput);
             return receiver;
@@ -610,7 +612,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             Inventory inv = Bukkit.createInventory(this, 9);
             inv.setItem(0, getOutputItem());
             return inv;
-        } 
+        }
         else {
             return null;
         }
@@ -628,7 +630,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
      * Return the SCU cost for processing some items; either inserting or
      * extracting them.
      *
-     * @param nItems the number of items to check for
+     * @param nItems
+     *            the number of items to check for
      * @return the SCU cost
      */
     public double getChargePerOperation(int nItems) {

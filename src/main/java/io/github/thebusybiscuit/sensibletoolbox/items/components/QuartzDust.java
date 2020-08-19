@@ -9,11 +9,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public class QuartzDust extends BaseSTBItem {
 
-    public QuartzDust() {
-    }
+    public QuartzDust() {}
 
-    public QuartzDust(ConfigurationSection conf) {
-    }
+    public QuartzDust(ConfigurationSection conf) {}
 
     @Override
     public Material getMaterial() {
@@ -27,7 +25,7 @@ public class QuartzDust extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Cook in a Smelter to", "make silicon"};
+        return new String[] { "Cook in a Smelter to", "make silicon" };
     }
 
     @Override

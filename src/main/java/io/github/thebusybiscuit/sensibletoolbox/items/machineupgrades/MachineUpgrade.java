@@ -5,10 +5,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 public abstract class MachineUpgrade extends BaseSTBItem {
+
     private int amount;
 
-    protected MachineUpgrade() {
-    }
+    protected MachineUpgrade() {}
 
     public MachineUpgrade(ConfigurationSection conf) {
         super(conf);

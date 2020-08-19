@@ -5,6 +5,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PotionCost extends Cost {
+
     private final PotionEffectType effectType;
     private final short magnitude;
 
@@ -26,7 +27,8 @@ public class PotionCost extends Cost {
     public String getDescription() {
         if (getMagnitude() > 1) {
             return getEffectType() + " " + getMagnitude() + " [" + getQuantity() + " ticks]";
-        } else {
+        }
+        else {
             return getEffectType() + " [" + getQuantity() + " ticks]";
         }
     }
@@ -43,7 +45,7 @@ public class PotionCost extends Cost {
         }
         if (getQuantity() > 0) {
             int amp = Math.max(getMagnitude() - 1, 0);
-            player.addPotionEffect(new PotionEffect(getEffectType(), (int)getQuantity() * 20, amp));
+            player.addPotionEffect(new PotionEffect(getEffectType(), (int) getQuantity() * 20, amp));
         }
     }
 }

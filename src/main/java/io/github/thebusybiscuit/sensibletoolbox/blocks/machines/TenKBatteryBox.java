@@ -8,9 +8,8 @@ import org.bukkit.inventory.ShapedRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
 
 public class TenKBatteryBox extends BatteryBox {
-	
-    public TenKBatteryBox() {
-    }
+
+    public TenKBatteryBox() {}
 
     public TenKBatteryBox(ConfigurationSection conf) {
         super(conf);

@@ -13,7 +13,8 @@ public class ItemNames {
      * Given an item stack, return a friendly printable name for the item, as
      * the (English-language) vanilla Minecraft client would display it.
      *
-     * @param stack the item stack
+     * @param stack
+     *            the item stack
      * @return a friendly printable name for the item
      */
     public static String lookup(ItemStack stack) {
@@ -26,7 +27,8 @@ public class ItemNames {
      * stack and {item-name} is the return value of
      * {@link #lookup(org.bukkit.inventory.ItemStack)}}.
      *
-     * @param stack the item stack
+     * @param stack
+     *            the item stack
      * @return a friendly printable name for the item, with amount information
      */
     public static String lookupWithAmount(ItemStack stack) {

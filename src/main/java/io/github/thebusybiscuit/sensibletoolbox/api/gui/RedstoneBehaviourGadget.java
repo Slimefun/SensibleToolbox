@@ -12,22 +12,21 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
  * displayed and changed.
  */
 public class RedstoneBehaviourGadget extends CyclerGadget<RedstoneBehaviour> {
+
     /**
      * Constructs a redstone behaviour gadget.
      *
-     * @param gui the GUI to add the gadget to
-     * @param slot the GUI slot to display the gadget in
+     * @param gui
+     *            the GUI to add the gadget to
+     * @param slot
+     *            the GUI slot to display the gadget in
      */
     public RedstoneBehaviourGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Redstone Mode");
-        add(RedstoneBehaviour.IGNORE, ChatColor.GRAY, Material.GUNPOWDER,
-                "Operate regardless of", "redstone signal level");
-        add(RedstoneBehaviour.HIGH, ChatColor.RED, Material.REDSTONE,
-                "Require a redstone", "signal to operate");
-        add(RedstoneBehaviour.LOW, ChatColor.YELLOW, Material.GLOWSTONE_DUST,
-                "Require no redstone", "signal to operate");
-        add(RedstoneBehaviour.PULSED, ChatColor.DARK_AQUA, Material.LAPIS_LAZULI,
-                "Operate once per", "redstone pulse");
+        add(RedstoneBehaviour.IGNORE, ChatColor.GRAY, Material.GUNPOWDER, "Operate regardless of", "redstone signal level");
+        add(RedstoneBehaviour.HIGH, ChatColor.RED, Material.REDSTONE, "Require a redstone", "signal to operate");
+        add(RedstoneBehaviour.LOW, ChatColor.YELLOW, Material.GLOWSTONE_DUST, "Require no redstone", "signal to operate");
+        add(RedstoneBehaviour.PULSED, ChatColor.DARK_AQUA, Material.LAPIS_LAZULI, "Operate once per", "redstone pulse");
         setInitialValue(gui.getOwningBlock().getRedstoneBehaviour());
     }
 

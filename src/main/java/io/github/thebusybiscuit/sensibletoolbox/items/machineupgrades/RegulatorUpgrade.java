@@ -27,11 +27,7 @@ public class RegulatorUpgrade extends MachineUpgrade {
 
     @Override
     public String[] getLore() {
-        return new String[] {
-            "Adds intelligence to machines",
-            "for more efficient resource",
-            "usage.  Effect varies by machine."
-        };
+        return new String[] { "Adds intelligence to machines", "for more efficient resource", "usage.  Effect varies by machine." };
     }
 
     @Override

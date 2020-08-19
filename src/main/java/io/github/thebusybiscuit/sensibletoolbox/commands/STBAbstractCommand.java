@@ -11,7 +11,7 @@ import me.desht.dhutils.PermissionUtils;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public abstract class STBAbstractCommand extends AbstractCommand {
-	
+
     public STBAbstractCommand(String label) {
         super(label);
     }
@@ -27,21 +27,21 @@ public abstract class STBAbstractCommand extends AbstractCommand {
     protected UUID getID(String s) {
         if (MiscUtil.looksLikeUUID(s)) {
             return UUID.fromString(s);
-        } 
+        }
         else {
             Player p = Bukkit.getPlayer(s);
             return p == null ? null : p.getUniqueId();
         }
     }
-    
-	protected Player getTargetPlayer(CommandSender sender, String playerNameOrID) {
+
+    protected Player getTargetPlayer(CommandSender sender, String playerNameOrID) {
         if (playerNameOrID == null) {
             notFromConsole(sender);
             return (Player) sender;
-        } 
+        }
         else {
             PermissionUtils.requirePerms(sender, "stb.friends.other");
-            //noinspection deprecation
+            // noinspection deprecation
             return MiscUtil.looksLikeUUID(playerNameOrID) ? Bukkit.getPlayer(UUID.fromString(playerNameOrID)) : Bukkit.getPlayer(playerNameOrID);
         }
     }

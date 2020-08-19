@@ -29,12 +29,12 @@ public class IronDust extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"Smelt in a Smelter or Furnace", " to get iron ingots"};
+        return new String[] { "Smelt in a Smelter or Furnace", " to get iron ingots" };
     }
 
     @Override
     public Recipe getRecipe() {
-        return null;  // Only made by the Masher
+        return null; // Only made by the Masher
     }
 
     @Override
