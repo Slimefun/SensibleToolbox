@@ -37,12 +37,19 @@ public class Sawmill extends AbstractIOMachine {
             }
         }
 
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new ItemStack(Material.WOOD, 6), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new ItemStack(Material.WOOD, 3), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_PLATE), new ItemStack(Material.WOOD, 2), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_BUTTON), new ItemStack(Material.WOOD, 1), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CRAFTING_TABLE), new ItemStack(Material.WOOD, 4), 40));
-        crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.SIGN), new ItemStack(Material.WOOD, 2), 40));
+        // TODO: Update Sawmill recipes
+        // crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_DOOR), new
+        // ItemStack(Material.WOOD, 6), 40));
+        // crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.TRAP_DOOR), new
+        // ItemStack(Material.WOOD, 3), 40));
+        // crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_PLATE), new
+        // ItemStack(Material.WOOD, 2), 40));
+        // crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.WOOD_BUTTON), new
+        // ItemStack(Material.WOOD, 1), 40));
+        // crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CRAFTING_TABLE), new
+        // ItemStack(Material.WOOD, 4), 40));
+        // crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.SIGN), new ItemStack(Material.WOOD,
+        // 2), 40));
         crm.addCustomRecipe(new SimpleCustomRecipe(this, new ItemStack(Material.CHEST), new ItemStack(Material.OAK_PLANKS, 8), 40));
     }
 

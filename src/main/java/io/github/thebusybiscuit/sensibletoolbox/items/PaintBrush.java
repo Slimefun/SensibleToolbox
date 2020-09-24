@@ -266,33 +266,34 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     private int paintBlocks(Player player, Block... blocks) {
         int painted = 0;
 
-        for (Block b : blocks) {
-            if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
-                continue;
-            }
-
-            Debugger.getInstance().debug(2, "painting! " + b + "  " + getPaintLevel() + " " + getColour());
-            BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
-
-            if (stb instanceof Colorable) {
-                ((Colorable) stb).setColor(getColour());
-            }
-            else {
-                if (b.getType() == Material.GLASS) {
-                    b.setType(Material.STAINED_GLASS);
-                }
-                else if (b.getType() == Material.GLASS_PANE) {
-                    b.setType(Material.STAINED_GLASS_PANE);
-                }
-            }
-
-            painted++;
-            setPaintLevel(getPaintLevel() - 1);
-
-            if (getPaintLevel() <= 0) {
-                break;
-            }
-        }
+        // TODO: Get Paint Brush working again
+        // for (Block b : blocks) {
+        // if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
+        // continue;
+        // }
+        //
+        // Debugger.getInstance().debug(2, "painting! " + b + " " + getPaintLevel() + " " + getColour());
+        // BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
+        //
+        // if (stb instanceof Colorable) {
+        // ((Colorable) stb).setColor(getColour());
+        // }
+        // else {
+        // if (b.getType() == Material.GLASS) {
+        // b.setType(Material.STAINED_GLASS);
+        // }
+        // else if (b.getType() == Material.GLASS_PANE) {
+        // b.setType(Material.STAINED_GLASS_PANE);
+        // }
+        // }
+        //
+        // painted++;
+        // setPaintLevel(getPaintLevel() - 1);
+        //
+        // if (getPaintLevel() <= 0) {
+        // break;
+        // }
+        // }
         return painted;
     }
 

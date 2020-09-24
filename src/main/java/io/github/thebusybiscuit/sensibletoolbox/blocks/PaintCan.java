@@ -225,7 +225,11 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     private boolean validItem(ItemStack item) {
-        return !item.hasItemMeta() && (STBUtil.isColorable(item.getType()) || item.getType() == Material.MILK_BUCKET || MaterialCollections.getAllDyeColors().contains(item.getType()) || item.getType() == Material.GLASS || item.getType() == Material.THIN_GLASS);
+        return false;
+        // TODO: Fix Paint Can
+        // return !item.hasItemMeta() && (STBUtil.isColorable(item.getType()) || item.getType() == Material.MILK_BUCKET
+        // || MaterialCollections.getAllDyeColors().contains(item.getType()) || item.getType() == Material.GLASS ||
+        // item.getType() == Material.THIN_GLASS);
     }
 
     @Override
@@ -382,17 +386,20 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         }
         else if (dyeableSlot >= 0 && getPaintLevel() > 0) {
             // soak up some paint with the dyeable item(s)
-            int toDye = inventory.getItem(dyeableSlot).getAmount();
-            Debugger.getInstance().debug(this + ": dyeing " + inventory.getItem(dyeableSlot));
-            int canDye = Math.min(toDye, getPaintLevel());
-            ItemStack undyed = inventory.getItem(dyeableSlot).getData().toItemStack(inventory.getItem(dyeableSlot).getAmount());
-            ItemStack dyed = STBUtil.makeColouredMaterial(undyed.getType(), getColour()).toItemStack(Math.min(canDye, undyed.getAmount()));
-            undyed.setAmount(undyed.getAmount() - dyed.getAmount());
-            inventory.setItem(ITEM_SLOTS[0], dyed.getAmount() > 0 ? dyed : null);
-            inventory.setItem(ITEM_SLOTS[1], undyed.getAmount() > 0 ? undyed : null);
-            setPaintLevel(getPaintLevel() - canDye);
-            Location loc = getLocation();
-            loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
+            // TODO: Fix Paint Can
+            // int toDye = inventory.getItem(dyeableSlot).getAmount();
+            // Debugger.getInstance().debug(this + ": dyeing " + inventory.getItem(dyeableSlot));
+            // int canDye = Math.min(toDye, getPaintLevel());
+            // ItemStack undyed =
+            // inventory.getItem(dyeableSlot).getData().toItemStack(inventory.getItem(dyeableSlot).getAmount());
+            // ItemStack dyed = STBUtil.makeColouredMaterial(undyed.getType(), getColour()).toItemStack(Math.min(canDye,
+            // undyed.getAmount()));
+            // undyed.setAmount(undyed.getAmount() - dyed.getAmount());
+            // inventory.setItem(ITEM_SLOTS[0], dyed.getAmount() > 0 ? dyed : null);
+            // inventory.setItem(ITEM_SLOTS[1], undyed.getAmount() > 0 ? undyed : null);
+            // setPaintLevel(getPaintLevel() - canDye);
+            // Location loc = getLocation();
+            // loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
             return true;
         }
         else {
