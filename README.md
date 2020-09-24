@@ -10,6 +10,8 @@ I took over the project back in late 2014 and continued to update it for some ti
 Pull Requests are very much welcome!
 
 ## Credits
+This is a fork of [desht/sensibletoolbox](https://github.com/desht/sensibletoolbox).
+
 Sensible Toolbox is primarily original code, but many of its ideas stem from popular Forge mods.
 So credit where credit is due:
 * The BSU/HSU blocks are based on Barrels from Factorization and Jabba, also the Deep Storage Unit from Minefactory Reloaded.
