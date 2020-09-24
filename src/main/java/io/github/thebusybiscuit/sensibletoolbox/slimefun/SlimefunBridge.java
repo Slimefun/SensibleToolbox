@@ -120,17 +120,17 @@ public final class SlimefunBridge implements SlimefunAddon {
             sfItem.register(this);
         }
 
-        RecipeType masher = new RecipeType(new NamespacedKey(plugin, "masher"), SlimefunItem.getByID("MASHER").getItem());
-        RecipeType fermenter = new RecipeType(new NamespacedKey(plugin, "fermenter"), SlimefunItem.getByID("FERMENTER").getItem());
+        RecipeType masher = new RecipeType(new NamespacedKey(plugin, "masher"), SlimefunItem.getByID("STB_MASHER").getItem());
+        RecipeType fermenter = new RecipeType(new NamespacedKey(plugin, "fermenter"), SlimefunItem.getByID("STB_FERMENTER").getItem());
 
-        patch("INFERNALDUST", RecipeType.MOB_DROP, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
-        patch("ENERGIZEDGOLDINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("ENERGIZEDGOLDDUST").getItem());
-        patch("QUARTZDUST", masher, new ItemStack(Material.QUARTZ));
-        patch("ENERGIZEDIRONINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("ENERGIZEDIRONDUST").getItem());
-        patch("SILICONWAFER", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("QUARTZDUST").getItem());
-        patch("IRONDUST", masher, new ItemStack(Material.IRON_INGOT));
-        patch("GOLDDUST", masher, new ItemStack(Material.GOLD_INGOT));
-        patch("FISHBAIT", fermenter, new ItemStack(Material.ROTTEN_FLESH));
+        patch("STB_INFERNALDUST", RecipeType.MOB_DROP, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
+        patch("STB_ENERGIZEDGOLDINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_ENERGIZEDGOLDDUST").getItem());
+        patch("STB_QUARTZDUST", masher, new ItemStack(Material.QUARTZ));
+        patch("STB_ENERGIZEDIRONINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_ENERGIZEDIRONDUST").getItem());
+        patch("STB_SILICONWAFER", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_QUARTZDUST").getItem());
+        patch("STB_IRONDUST", masher, new ItemStack(Material.IRON_INGOT));
+        patch("STB_GOLDDUST", masher, new ItemStack(Material.GOLD_INGOT));
+        patch("STB_FISHBAIT", fermenter, new ItemStack(Material.ROTTEN_FLESH));
     }
 
     private void patch(String id, RecipeType recipeType, ItemStack recipe) {
