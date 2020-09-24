@@ -149,7 +149,7 @@ public final class SlimefunBridge implements SlimefunAddon {
 
     @Override
     public String getBugTrackerURL() {
-        return "https://github.com/TheBusyBiscuit/SensibleToolbox/issues";
+        return "https://github.com/Slimefun/SensibleToolbox/issues";
     }
 
 }

@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.github.thebusybiscuit</groupId>
+    <groupId>com.github.slimefun</groupId>
     <artifactId>SensibleToolbox</artifactId>
 
     <version>UNOFFICIAL</version>
@@ -30,13 +30,13 @@
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/TheBusyBiscuit/SensibleToolbox/issues</url>
+        <url>https://github.com/Slimefun/SensibleToolbox/issues</url>
     </issueManagement>
 
     <licenses>
         <license>
             <name>GNU General Public License v3.0</name>
-            <url>https://github.com/TheBusyBiscuit/SensibleToolbox/blob/master/LICENSE</url>
+            <url>https://github.com/Slimefun/SensibleToolbox/blob/master/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
