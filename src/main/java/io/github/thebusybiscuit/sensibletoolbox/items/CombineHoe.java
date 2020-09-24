@@ -21,12 +21,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BlockProtection;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.cuboid.Cuboid;
@@ -155,11 +155,11 @@ public abstract class CombineHoe extends BaseSTBItem {
                 harvestLayer(player, b.getRelative(BlockFace.DOWN));
             }
 
-            damageHeldItem(player, (short) 1);
+            ItemUtils.damageItem(player.getInventory().getItemInMainHand(), false);
         }
         else if (STBUtil.isPlant(b.getType())) {
             harvestLayer(player, b);
-            damageHeldItem(player, (short) 1);
+            ItemUtils.damageItem(player.getInventory().getItemInMainHand(), false);
         }
     }
 
@@ -242,9 +242,6 @@ public abstract class CombineHoe extends BaseSTBItem {
 
         setSeedAmount(count);
         setSeedType(seedType);
-        ItemStack stack = toItemStack();
-        stack.setDurability(durability);
-        player.setItemInHand(stack);
     }
 
     private void populateSeedBag(InventoryGUI gui) {
@@ -270,14 +267,14 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
 
         int amountLeft = getSeedAmount();
-        for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-            Block above = b1.getRelative(BlockFace.UP);
+        for (Block neighbour : STBUtil.getSurroundingBlocks(b)) {
+            Block above = neighbour.getRelative(BlockFace.UP);
 
             if (!SensibleToolbox.getProtectionManager().hasPermission(player, above, ProtectableAction.PLACE_BLOCK)) {
                 continue;
             }
 
-            if (b1.getType() == Material.FARMLAND && above.isEmpty()) {
+            if (neighbour.getType() == Material.FARMLAND && above.isEmpty()) {
                 // candidate for sowing
                 above.setType(STBUtil.getCropType(getSeedType()));
                 amountLeft--;
@@ -292,23 +289,17 @@ public abstract class CombineHoe extends BaseSTBItem {
             setSeedAmount(amountLeft);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
         }
-
-        ItemStack stack = toItemStack();
-        stack.setDurability(durability);
-        player.setItemInHand(stack);
     }
 
     private void harvestLayer(Player player, Block b) {
-        Cuboid c = new Cuboid(b.getLocation());
-        c = c.outset(Cuboid.CuboidDirection.HORIZONTAL, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
+        Cuboid cuboid = new Cuboid(b.getLocation());
+        cuboid = cuboid.outset(Cuboid.CuboidDirection.HORIZONTAL, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
 
-        for (Block b1 : c) {
-            if (!b1.equals(b)) {
-                if (STBUtil.isPlant(b1.getType()) || Tag.LEAVES.isTagged(b1.getType())) {
-                    if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK)) {
-                        b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getType());
-                        b1.breakNaturally();
-                    }
+        for (Block block : cuboid) {
+            if (!block.equals(b) && (STBUtil.isPlant(block.getType()) || Tag.LEAVES.isTagged(block.getType()))) {
+                if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK)) {
+                    block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+                    block.breakNaturally();
                 }
             }
         }
@@ -345,20 +336,8 @@ public abstract class CombineHoe extends BaseSTBItem {
         if (count > 0) {
             player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0f, 1.0f);
         }
-        damageHeldItem(player, count);
-    }
 
-    public void damageHeldItem(Player player, short amount) {
-        ItemStack stack = player.getItemInHand();
-        stack.setDurability((short) (stack.getDurability() + amount));
-
-        if (stack.getDurability() >= stack.getType().getMaxDurability()) {
-            player.setItemInHand(null);
-            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
-        }
-        else {
-            player.setItemInHand(stack);
-        }
+        ItemUtils.damageItem(stack, false);
     }
 
     public int getWorkRadius() {

@@ -1,39 +1,61 @@
 package io.github.thebusybiscuit.sensibletoolbox.core;
 
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
+
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
-import com.google.common.collect.Maps;
-
+import io.github.thebusybiscuit.cscorelib2.data.PersistentDataAPI;
 import io.github.thebusybiscuit.sensibletoolbox.api.ItemRegistry;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import me.desht.dhutils.LogUtils;
 
-public class STBItemRegistry implements ItemRegistry {
+public class STBItemRegistry implements ItemRegistry, Keyed {
 
-    public static final UUID STB_ATTRIBUTE_ID = UUID.fromString("60884913-70bb-48b3-a81a-54952dec2e31");
     public static final String LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
     public static final int MAX_ITEM_ID_LENGTH = 32;
 
-    private final Map<String, ReflectionDetails> reflectionDetailsMap = Maps.newHashMap();
-    private final Map<String, Class<? extends BaseSTBItem>> craftingRestrictions = Maps.newHashMap();
-    private final Map<String, String> permissionPrefix = Maps.newHashMap();
-    private final Map<String, Plugin> id2plugin = Maps.newHashMap();
+    private final Map<String, ReflectionDetails> reflectionDetailsMap = new HashMap<>();
+    private final Map<String, Class<? extends BaseSTBItem>> craftingRestrictions = new HashMap<>();
+    private final Map<String, String> permissionPrefix = new HashMap<>();
+    private final Map<String, Plugin> id2plugin = new HashMap<>();
+    private final NamespacedKey namespacedKey;
+
+    @ParametersAreNonnullByDefault
+    public STBItemRegistry(Plugin plugin, String registryKey) {
+        Validate.notNull(plugin, "The Plugin cannot be null");
+        Validate.notNull(registryKey, "The registry cannot be null");
+
+        this.namespacedKey = new NamespacedKey(plugin, registryKey);
+    }
+
+    @Override
+    public NamespacedKey getKey() {
+        return namespacedKey;
+    }
 
     @Override
     public void registerItem(BaseSTBItem item, Plugin plugin) {
@@ -114,16 +136,28 @@ public class STBItemRegistry implements ItemRegistry {
 
     @Override
     public BaseSTBItem fromItemStack(ItemStack stack) {
-        if (!isSTBItem(stack)) {
-            return null;
-        }
-
-        // TODO: persistent data id storage
+        Configuration conf = getItemAttributes(stack);
+        BaseSTBItem item = getItemById(conf.getString("*TYPE"), conf);
 
         if (item != null) {
             item.storeEnchants(stack);
         }
+
         return item;
+    }
+
+    @Nonnull
+    private Configuration getItemAttributes(@Nonnull ItemStack stack) {
+        Validate.notNull(stack, "ItemStack cannot be null!");
+
+        Optional<String> optional = PersistentDataAPI.getOptionalString(stack.getItemMeta(), namespacedKey);
+
+        if (optional.isPresent()) {
+            return YamlConfiguration.loadConfiguration(new StringReader(optional.get()));
+        }
+        else {
+            return new MemoryConfiguration();
+        }
     }
 
     @Override
@@ -146,9 +180,11 @@ public class STBItemRegistry implements ItemRegistry {
     @Override
     public BaseSTBItem getItemById(String id, ConfigurationSection conf) {
         ReflectionDetails details = reflectionDetailsMap.get(id);
+
         if (details == null) {
             return null;
         }
+
         try {
             return conf == null ? details.ctor0arg.newInstance() : details.ctor1arg.newInstance(conf);
         }
@@ -166,7 +202,13 @@ public class STBItemRegistry implements ItemRegistry {
 
     @Override
     public boolean isSTBItem(ItemStack stack, Class<? extends BaseSTBItem> c) {
-        return c.isInstance(fromItemStack(stack));
+        BaseSTBItem item = fromItemStack(stack);
+        if (c == null) {
+            return item != null;
+        }
+        else {
+            return c.isInstance(item);
+        }
     }
 
     public Plugin getPlugin(BaseSTBItem item) {

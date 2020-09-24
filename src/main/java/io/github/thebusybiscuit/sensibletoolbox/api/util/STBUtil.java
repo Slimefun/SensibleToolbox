@@ -253,10 +253,11 @@ public class STBUtil {
         }
 
         switch (mat) {
-        case STAINED_GLASS:
-        case STAINED_GLASS_PANE:
-        case STAINED_CLAY:
-            return true;
+        // TODO: Fix glass coloring
+        // case STAINED_GLASS:
+        // case STAINED_GLASS_PANE:
+        // case STAINED_CLAY:
+        // return true;
         default:
             return false;
         }

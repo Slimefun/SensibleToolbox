@@ -64,7 +64,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         mode = Mode.valueOf(conf.getString("mode"));
         charge = conf.getDouble("charge");
         String s = conf.getString("material");
-        material = s.isEmpty() ? null : thawMaterialData(s);
+        material = s.isEmpty() ? null : Material.matchMaterial(s);
     }
 
     public Mode getMode() {
@@ -97,7 +97,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         YamlConfiguration map = super.freeze();
         map.set("mode", mode.toString());
         map.set("charge", charge);
-        map.set("material", material == null ? "" : freezeMaterialData(material));
+        map.set("material", material == null ? "" : material.name());
         return map;
     }
 

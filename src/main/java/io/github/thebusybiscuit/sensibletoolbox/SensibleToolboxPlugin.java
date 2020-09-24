@@ -331,7 +331,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         STBInventoryGUI.buildStockTextures();
 
-        itemRegistry = new STBItemRegistry();
+        itemRegistry = new STBItemRegistry(this, "item_data");
         registerItems();
 
         friendManager = new STBFriendManager(this);
