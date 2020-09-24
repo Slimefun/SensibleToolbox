@@ -27,6 +27,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import io.github.thebusybiscuit.cscorelib2.data.PersistentDataAPI;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -295,15 +296,25 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     public ItemStack toItemStack(int amount) {
         ItemStack res = new ItemStack(getMaterial(), amount);
 
+        if (enchants != null) {
+            res.addUnsafeEnchantments(enchants);
+        }
+
         ItemMeta im = res.getItemMeta();
         String suffix = getDisplaySuffix() == null ? "" : SUFFIX_SEPARATOR + getDisplaySuffix();
         im.setDisplayName(DISPLAY_COLOR + getItemName() + suffix);
         im.setLore(buildLore());
-        res.setItemMeta(im);
 
-        if (enchants != null) {
-            res.addUnsafeEnchantments(enchants);
+        // any serialized data from the object goes in the ItemStack attributes
+        YamlConfiguration conf = freeze();
+        if (!isStackable()) {
+            // add a (hopefully) unique hidden field to ensure the item can't stack
+            conf.set("*nostack", System.nanoTime() ^ ThreadLocalRandom.current().nextLong());
         }
+        conf.set("*TYPE", getItemTypeID());
+        PersistentDataAPI.setString(im, SensibleToolboxPlugin.getInstance().getItemRegistry().getKey(), conf.saveToString());
+
+        res.setItemMeta(im);
 
         if (SensibleToolboxPlugin.getInstance().isGlowingEnabled()) {
             ItemGlow.setGlowing(res, hasGlow());
@@ -314,14 +325,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
             Chargeable ch = (Chargeable) this;
             STBUtil.levelToDurability(res, (int) ch.getCharge(), ch.getMaxCharge());
         }
-
-        // any serialized data from the object goes in the ItemStack attributes
-        YamlConfiguration conf = freeze();
-        if (!isStackable()) {
-            // add a (hopefully) unique hidden field to ensure the item can't stack
-            conf.set("*nostack", System.nanoTime() ^ ThreadLocalRandom.current().nextLong());
-        }
-        conf.set("*TYPE", getItemTypeID());
 
         return res;
     }

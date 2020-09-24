@@ -1,9 +1,11 @@
 name: SensibleToolbox
 description: A collection of generally useful tools and utilites
-authors: [TheBusyBiscuit, desht]
+authors: [desht, TheBusyBiscuit]
 main: io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin
-version: ${project.version}
 softdepend: [ ProtocolLib, HolographicDisplays, Slimefun, ExoticGarden ]
+
+version: ${project.version}
+api-version: 1.14
 
 commands:
   stb:
