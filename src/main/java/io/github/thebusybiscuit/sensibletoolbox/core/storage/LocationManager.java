@@ -109,7 +109,7 @@ public class LocationManager {
         Set<BaseSTBBlock> tickerSet = allTickers.get(w.getUID());
 
         if (tickerSet == null) {
-            tickerSet = Sets.newHashSet();
+            tickerSet = new HashSet<>();
             allTickers.put(w.getUID(), tickerSet);
         }
 
@@ -121,7 +121,7 @@ public class LocationManager {
         Map<String, BaseSTBBlock> index = blockIndex.get(w.getUID());
 
         if (index == null) {
-            index = Maps.newHashMap();
+            index = new HashMap<>();
             blockIndex.put(w.getUID(), index);
         }
 

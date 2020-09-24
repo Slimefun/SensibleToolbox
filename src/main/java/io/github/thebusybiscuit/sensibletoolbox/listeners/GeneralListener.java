@@ -198,14 +198,20 @@ public class GeneralListener extends STBBaseListener {
             plugin.getEnergyNetManager().onCableRemoved(event.getBlock());
         }
         else {
-            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getPlayer().getItemInHand());
+            ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
+
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
+
             if (item != null) {
                 item.onBreakBlockWithItem(event);
             }
+
             BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+
             if (stb != null) {
                 stb.breakBlock(true);
             }
+
             if (event.isCancelled()) {
                 throw new IllegalStateException("You must not change the cancellation status of a STB block break event!");
             }
@@ -480,9 +486,11 @@ public class GeneralListener extends STBBaseListener {
         // work around CB bug where event is called multiple times for a block
         Long when = (Long) STBUtil.getMetadataValue(event.getBlock(), LAST_PISTON_EXTEND);
         long now = System.currentTimeMillis();
+
         if (when != null && now - when < 50) { // 50 ms = 1 tick
             return;
         }
+
         event.getBlock().setMetadata(LAST_PISTON_EXTEND, new FixedMetadataValue(plugin, now));
 
         for (int i = event.getBlocks().size(); i > 0; i--) {
