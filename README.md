@@ -1,23 +1,23 @@
 # Sensible Toolbox
+Sensible Toolbox adds a bunch of new items, tools and machines to your Minecraft Server.
+It's heavily inspired by certain Forge-based mods, but of course requires no client modifications at all.
 
-Sensible Toolbox - new blocks, items, machines, energy system and more!
+## About the project
+SensibleToolbox was created in early 2014 and originally developed by [desht](https://github.com/desht), here is a link to the original GitHub Repository: https://github.com/desht/sensibletoolbox.<br>
+I took over the project back in late 2014 and continued to update it for some time until I have quit plugin development altogether in late 2016.<br>
+The plugin has been updated to work with newer versions of Minecraft up until 2014. Feel free to update it further!
 
-## Installation and Usage
+**The Project is licensed under [GNU GPLv3](https://github.com/TheBusyBiscuit/sensibletoolbox/blob/master/LICENSE) and Open-Source!**<br>
+Pull Requests are very much welcome!
 
-... TODO ...
+## Credits
+This is a fork of [desht/sensibletoolbox](https://github.com/desht/sensibletoolbox).
 
-## Building
-
-If you want to build Sensible Toolbox yourself, you will need Maven.
-
-1) ```git clone https://github.com/desht/sensibletoolbox.git```
-
-2) ```cd sensibletoolbox```
-
-3) ```mvn clean install```
-
-This should give you a copy of SensibleToolbox.jar under the target/ directory.
-
-## License
-
-Sensible Toolbox by Des Herriott is licensed under the [Gnu GPL v3](http://www.gnu.org/licenses/gpl-3.0.html).
+Sensible Toolbox is primarily original code, but many of its ideas stem from popular Forge mods.
+So credit where credit is due:
+* The BSU/HSU blocks are based on Barrels from Factorization and Jabba, also the Deep Storage Unit from Minefactory Reloaded.
+* The processing machines get their inspiration from multiple Forge-based mods, in particular IC2 and Thermal Expansion.
+* The energy system is primarily inspired by Thermal Expansion.
+* Numerous miscellaneous items are adapted (sometimes blatantly!) from Misc Utilities and OpenBlocks.
+* The item routing system is entirely original (as far as I'm aware), mainly due to the fact that it's difficult to do pipes with vanilla Minecraft blocks :)
+* The ender storage system is inspired by and works similarly (but not identically) to Ender Storage.

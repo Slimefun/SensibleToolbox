@@ -1,9 +1,11 @@
-name: ${project.name}
+name: SensibleToolbox
 description: A collection of generally useful tools and utilites
-author: desht
-main: me.desht.sensibletoolbox.SensibleToolboxPlugin
+authors: [desht, TheBusyBiscuit]
+main: io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin
+softdepend: [ ProtocolLib, HolographicDisplays, Slimefun, ExoticGarden ]
+
 version: ${project.version}
-softdepend: [ ProtocolLib, Landslide, HoloAPI, WorldGuard, PreciousStones, LWC, Multiverse-Core ]
+api-version: 1.14
 
 commands:
   stb:

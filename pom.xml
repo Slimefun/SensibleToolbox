@@ -1,231 +1,261 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>me.desht</groupId>
-    <artifactId>sensibletoolbox</artifactId>
+    <groupId>com.github.slimefun</groupId>
+    <artifactId>SensibleToolbox</artifactId>
+
+    <version>UNOFFICIAL</version>
+    <inceptionYear>2014</inceptionYear>
     <packaging>jar</packaging>
-    <version>0.99.2-SNAPSHOT</version>
-    <name>SensibleToolbox</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <!-- Spigot properties -->
+        <spigot.version>1.16.3</spigot.version>
+        <spigot.javadocs>https://hub.spigotmc.org/javadocs/spigot/</spigot.javadocs>
+
+        <!-- Default settings for sonarcloud.io -->
+        <sonar.projectKey>TheBusyBiscuit_SensibleToolbox</sonar.projectKey>
+        <sonar.organization>thebusybiscuit-github</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.log.level>DEBUG</sonar.log.level>
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
-    <scm>
-        <connection>scm:git:git://github.com/desht/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:git@github.com:desht/${project.artifactId}.git</developerConnection>
-        <url>https://github.com/desht/${project.artifactId}</url>
-    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/Slimefun/SensibleToolbox/issues</url>
+    </issueManagement>
 
     <licenses>
         <license>
-            <name>GNU GENERAL PUBLIC LICENSE - Version 3, June 2007</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <name>GNU General Public License v3.0</name>
+            <url>https://github.com/Slimefun/SensibleToolbox/blob/master/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
 
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
+            <id>paper-repo</id>
+            <url>https://repo.destroystokyo.com/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>Plugin Metrics</id>
-            <url>http://repo.mcstats.org/content/repositories/public</url>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>comphenix-rep</id>
-            <name>Comphenix Repository</name>
-            <url>http://repo.comphenix.net/content/groups/public</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         <repository>
-            <id>hawkfalcon-repo</id>
-            <name>Hawkfalcon Repository</name>
-            <url>http://ci.hawkfalcon.com/plugin/repository/everything</url>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
         <repository>
-            <id>sk89q-maven</id>
-            <url>http://maven.sk89q.com/repo</url>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
         <repository>
-            <id>OnARandomBox</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse</url>
-        </repository>
-        <repository>
-            <id>njol-maven</id>
-            <url>http://maven.njol.ch/repo</url>
+            <id>worldedit-repo</id>
+            <url>https://maven.sk89q.com/repo/</url>
         </repository>
     </repositories>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>RELEASE</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.desht</groupId>
-            <artifactId>dhutils-lib</artifactId>
-            <version>2.17.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.desht</groupId>
-            <artifactId>landslide</artifactId>
-            <version>1.5.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.comphenix.attribute</groupId>
-            <artifactId>AttributeStorage</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.dsh105</groupId>
-            <artifactId>HoloAPI</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mcstats.bukkit</groupId>
-            <artifactId>metrics-lite</artifactId>
-            <version>R7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.griefcraft.lwc</groupId>
-            <artifactId>LWC</artifactId>
-            <version>4.5.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/plugins/LWC.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>net.sacredlabyrinth.phaed</groupId>
-            <artifactId>preciousstones</artifactId>
-            <version>9.5.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldguard</artifactId>
-            <version>6.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
     <build>
-        <finalName>${project.name}</finalName>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+        <finalName>${project.name} v${project.version}</finalName>
+
         <plugins>
+            <!-- Compiler plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <excludes>
+                        <!-- package info files are only important for Javadocs -->
+                        <!-- We can safely exclude them from the final jar -->
+                        <exclude>**/package-info.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
+
+            <!-- Attach sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
+                <version>3.2.1</version>
+
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.github.thebusybiscuit.cscorelib2</pattern>
+                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.cscorelib2</shadedPattern>
+                        </relocation>
+                    </relocations>
+
+                    <!-- Exclude unneeded metadata files from shaded dependencies -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <relocations>
-                                <relocation>
-                                    <pattern>me.desht.dhutils</pattern>
-                                    <shadedPattern>me.desht.sensibletoolbox.dhutils</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>me.desht.sensibletoolbox.mcstats</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.comphenix.attribute</pattern>
-                                    <shadedPattern>me.desht.sensibletoolbox.attribute</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Javadocs Settings -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>3.2.0</version>
+
                 <configuration>
-                    <aggregate>true</aggregate>
-                    <show>protected</show>
-                    <nohelp>true</nohelp>
-                    <header>Sensible Toolbox, ${project.version}</header>
-                    <footer>Sensible Toolbox, ${project.version}</footer>
-                    <doctitle>Sensible Toolbox, ${project.version}</doctitle>
+                    <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
+                    <destDir>docs</destDir>
+
+                    <doctitle>SensibleToolbox - Javadocs</doctitle>
+                    <windowtitle>SensibleToolbox - Javadocs</windowtitle>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <additionalJOption>-html5</additionalJOption>
+
+                    <!-- We can reference Bukkit's API in our Javadocs -->
                     <links>
-                        <link>http://static.springsource.org/spring/docs/3.0.x/javadoc-api/</link>
-                        <link>http://jd.bukkit.org/dev/apidocs/</link>
+                        <link>${spigot.javadocs}</link>
                     </links>
-                    <subpackages>
-                        me.desht.sensibletoolbox.api:me.desht.sensibletoolbox.items:me.desht.sensibletoolbox.blocks
-                    </subpackages>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-publish-plugin</artifactId>
-                <version>1.0-beta-2</version>
-                <configuration>
-                    <checkoutDirectory>${project.build.directory}/scmpublish</checkoutDirectory>
-                    <checkinComment>Publishing javadoc for ${project.artifactId}:${project.version}</checkinComment>
-                    <content>${project.reporting.outputDirectory}/apidocs</content>
-                    <skipDeletedFiles>true</skipDeletedFiles>
-                    <pubScmUrl>scm:git:git@github.com:desht/sensibletoolbox.git</pubScmUrl>
-                    <scmBranch>gh-pages</scmBranch> <!-- branch with static site -->
                 </configuration>
             </plugin>
         </plugins>
+
         <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
+
                 <includes>
-                    <include>plugin.yml</include>
-                    <include>config.yml</include>
+                    <include>*</include>
+                </includes>
+            </resource>
+
+            <!-- We also want to include our LICENSE file -->
+            <resource>
+                <directory>${basedir}</directory>
+
+                <includes>
+                    <include>LICENSE</include>
                 </includes>
             </resource>
         </resources>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${spigot.version}-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.TheBusyBiscuit</groupId>
+            <artifactId>CS-CoreLib</artifactId>
+            <version>6e17183656</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.TheBusyBiscuit</groupId>
+            <artifactId>Slimefun4</artifactId>
+            <version>RC-16</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.github.thebusybiscuit</groupId>
+                    <artifactId>cscorelib2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bstats</groupId>
+                    <artifactId>bstats-bukkit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gmail.filoghost.holographicdisplays</groupId>
+            <artifactId>holographicdisplays-api</artifactId>
+            <version>2.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.thebusybiscuit</groupId>
+            <artifactId>CS-CoreLib2</artifactId>
+            <version>0.25</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.7</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.2.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
