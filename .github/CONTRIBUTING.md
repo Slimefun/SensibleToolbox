@@ -30,9 +30,9 @@ Please visit our [Discord Server](https://github.com/Slimefun/Slimefun4#discord)
 So communicating your intended changes before-hand will ensure that you don't put too much work into something that might get rejected.
 
 ## :star: 4. Pull Requests: Code Quality
-SensibleToolbox uses [sonarcloud.io](https://sonarcloud.io/dashboard?id=TheBusyBiscuit_SensibleToolbox) to monitor Code Quality.
+SensibleToolbox uses [sonarcloud.io](https://sonarcloud.io/dashboard?id=Slimefun_SensibleToolbox) to monitor Code Quality.
 
-We always welcome quality improvements to the code and the "Code Smells" section on [sonarcloud.io](https://sonarcloud.io/dashboard?id=TheBusyBiscuit_SensibleToolbox) is a great place to start.
+We always welcome quality improvements to the code and the "Code Smells" section on [sonarcloud.io](https://sonarcloud.io/dashboard?id=Slimefun_SensibleToolbox) is a great place to start.
 But please keep in mind that some design patterns may not be changed too abruptly if an addon depends on them. 
 To prevent any accidents from happening, please contact us on our [Discord Server](https://github.com/Slimefun/Slimefun4#discord) before-hand and state your intended changes.
 
