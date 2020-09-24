@@ -36,6 +36,8 @@ import org.bukkit.scheduler.BukkitTask;
 import com.comphenix.protocol.ProtocolLibrary;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
+import io.github.thebusybiscuit.cscorelib2.updater.GitHubBuildsUpdater;
+import io.github.thebusybiscuit.cscorelib2.updater.Updater;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
@@ -183,7 +185,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private boolean protocolLibEnabled = false;
     private SoundMufflerListener soundMufflerListener;
     private PlayerUUIDTracker uuidTracker;
-    private boolean inited = false;
+    private boolean enabled = false;
     private boolean holographicDisplays = false;
     private BukkitTask energyTask = null;
     private EnderStorageManager enderStorageManager;
@@ -194,8 +196,115 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private IDTracker scuRelayIDTracker;
     private ProtectionManager protectionManager;
 
-    public static SensibleToolboxPlugin getInstance() {
-        return instance;
+    @Override
+    public void onEnable() {
+        instance = this;
+
+        LogUtils.init(this);
+        new Metrics(this, 6354);
+
+        configManager = new ConfigurationManager(this, this);
+        configCache = new ConfigCache(this);
+        configCache.processConfig();
+
+        MiscUtil.setColouredConsole(getConfig().getBoolean("colored_console"));
+
+        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
+
+        Debugger.getInstance().setPrefix("[STB] ");
+        Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
+
+        if (getConfig().getInt("debug_level") > 0) {
+            Debugger.getInstance().setTarget(getServer().getConsoleSender());
+        }
+
+        // try to hook other plugins
+        holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
+        setupProtocolLib();
+
+        scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
+
+        STBInventoryGUI.buildStockTextures();
+
+        itemRegistry = new STBItemRegistry(this, "item_data");
+        registerItems();
+
+        friendManager = new STBFriendManager(this);
+        enetManager = new EnergyNetManager(this);
+
+        registerEventListeners();
+        registerCommands();
+
+        try {
+            LocationManager.getManager().load();
+        }
+        catch (Exception e) {
+            getLogger().log(Level.SEVERE, "An Error occured while loading Locations...", e);
+            setEnabled(false);
+            return;
+        }
+
+        MessagePager.setPageCmd("/stb page [#|n|p]");
+        MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
+
+        // do all the recipe setup on a delayed task to ensure we pick up
+        // custom recipes from any plugins that may have loaded after us
+        Bukkit.getScheduler().runTask(this, () -> {
+            RecipeUtil.findVanillaFurnaceMaterials();
+            RecipeUtil.setupRecipes();
+            RecipeBook.buildRecipes();
+
+            protectionManager = new ProtectionManager(getServer());
+        });
+
+        Bukkit.getScheduler().runTaskTimer(this, LocationManager.getManager()::tick, 1L, 1L);
+        Bukkit.getScheduler().runTaskTimer(this, getEnderStorageManager()::tick, 1L, 300L);
+        Bukkit.getScheduler().runTaskTimer(this, friendManager::save, 60L, 300L);
+
+        scheduleEnergyNetTicker();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
+            new SlimefunBridge(this);
+        }
+
+        if (getConfig().getBoolean("options.auto-update") && getDescription().getVersion().startsWith("DEV - ")) {
+            Updater updater = new GitHubBuildsUpdater(this, getFile(), "Slimefun/SensibleToolbox/master");
+            updater.start();
+        }
+
+        enabled = true;
+    }
+
+    @Override
+    public void onDisable() {
+        if (!enabled) {
+            return;
+        }
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            // Any open inventory GUI's must be closed -
+            // if they stay open after server reload, event dispatch will probably not work,
+            // allowing fake items to be removed from them - not a good thing
+            InventoryGUI gui = STBInventoryGUI.getOpenGUI(p);
+
+            if (gui != null) {
+                gui.hide(p);
+                p.closeInventory();
+            }
+        }
+
+        if (soundMufflerListener != null) {
+            soundMufflerListener.clear();
+        }
+
+        LocationManager.getManager().save();
+        LocationManager.getManager().shutdown();
+
+        friendManager.save();
+
+        Bukkit.getScheduler().cancelTasks(this);
+
+        instance = null;
     }
 
     public void registerItems() {
@@ -300,112 +409,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
     }
 
-    @Override
-    public void onEnable() {
-        instance = this;
-
-        LogUtils.init(this);
-        new Metrics(this, 6354);
-
-        configManager = new ConfigurationManager(this, this);
-
-        configCache = new ConfigCache(this);
-        configCache.processConfig();
-
-        MiscUtil.setColouredConsole(getConfig().getBoolean("coloured_console"));
-
-        LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
-
-        Debugger.getInstance().setPrefix("[STB] ");
-        Debugger.getInstance().setLevel(getConfig().getInt("debug_level"));
-
-        if (getConfig().getInt("debug_level") > 0) {
-            Debugger.getInstance().setTarget(getServer().getConsoleSender());
-        }
-
-        // try to hook other plugins
-        holographicDisplays = getServer().getPluginManager().isPluginEnabled("HolographicDisplays");
-        setupProtocolLib();
-
-        scuRelayIDTracker = new IDTracker(this, "scu_relay_id");
-
-        STBInventoryGUI.buildStockTextures();
-
-        itemRegistry = new STBItemRegistry(this, "item_data");
-        registerItems();
-
-        friendManager = new STBFriendManager(this);
-        enetManager = new EnergyNetManager(this);
-
-        registerEventListeners();
-        registerCommands();
-
-        try {
-            LocationManager.getManager().load();
-        }
-        catch (Exception e) {
-            getLogger().log(Level.SEVERE, "An Error occured while loading Locations...", e);
-            setEnabled(false);
-            return;
-        }
-
-        MessagePager.setPageCmd("/stb page [#|n|p]");
-        MessagePager.setDefaultPageSize(getConfig().getInt("pager.lines", 0));
-
-        // do all the recipe setup on a delayed task to ensure we pick up
-        // custom recipes from any plugins that may have loaded after us
-        Bukkit.getScheduler().runTask(this, () -> {
-            RecipeUtil.findVanillaFurnaceMaterials();
-            RecipeUtil.setupRecipes();
-            RecipeBook.buildRecipes();
-
-            protectionManager = new ProtectionManager(getServer());
-        });
-
-        Bukkit.getScheduler().runTaskTimer(this, LocationManager.getManager()::tick, 1L, 1L);
-        Bukkit.getScheduler().runTaskTimer(this, getEnderStorageManager()::tick, 1L, 300L);
-        Bukkit.getScheduler().runTaskTimer(this, friendManager::save, 60L, 300L);
-
-        scheduleEnergyNetTicker();
-
-        if (Bukkit.getPluginManager().isPluginEnabled("Slimefun")) {
-            new SlimefunBridge(this);
-        }
-
-        inited = true;
-    }
-
-    public void onDisable() {
-        if (!inited) {
-            return;
-        }
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            // Any open inventory GUI's must be closed -
-            // if they stay open after server reload, event dispatch will probably not work,
-            // allowing fake items to be removed from them - not a good thing
-            InventoryGUI gui = STBInventoryGUI.getOpenGUI(p);
-
-            if (gui != null) {
-                gui.hide(p);
-                p.closeInventory();
-            }
-        }
-
-        if (soundMufflerListener != null) {
-            soundMufflerListener.clear();
-        }
-
-        LocationManager.getManager().save();
-        LocationManager.getManager().shutdown();
-
-        friendManager.save();
-
-        Bukkit.getScheduler().cancelTasks(this);
-
-        instance = null;
-    }
-
     private void registerEventListeners() {
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new GeneralListener(this), this);
@@ -467,6 +470,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         cmds.registerCommand(new FriendCommand());
         cmds.registerCommand(new UnfriendCommand());
         cmds.registerCommand(new ValidateCommand());
+    }
+
+    /**
+     * This returns the main instance of the {@link SensibleToolboxPlugin}.
+     * 
+     * @return Our instance of {@link SensibleToolboxPlugin}
+     */
+    public static SensibleToolboxPlugin getInstance() {
+        return instance;
     }
 
     @Override

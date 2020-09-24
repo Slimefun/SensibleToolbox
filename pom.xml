@@ -11,6 +11,9 @@
     <inceptionYear>2014</inceptionYear>
     <packaging>jar</packaging>
 
+    <description>SensibleToolbox is a Spigot/Paper plugin which adds tons of items and machines inspired by popular mods.</description>
+    <url>https://github.com/Slimefun/SensibleToolbox</url>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
