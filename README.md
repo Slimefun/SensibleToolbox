@@ -11,7 +11,7 @@ SensibleToolbox was created in early 2014 and originally developed by [desht](ht
 I took over the project back in late 2014 and continued to update it for some time until I have quit plugin development altogether in late 2016.<br>
 In late 2020 STB was finally updated once more but it is currently very unstable, so please report any bugs you can find!
 
-## Download Sensible Toolbox
+## :floppy_disk: Download Sensible Toolbox
 **WARNING: STB has only just been updated to newer versions of Minecraft, builds are extremely unstable and we don't recommend you to use them on any live server.**
 **For private testing and bug reporting only!**
 
