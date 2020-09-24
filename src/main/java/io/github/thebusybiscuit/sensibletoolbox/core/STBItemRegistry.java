@@ -136,6 +136,10 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
     @Override
     public BaseSTBItem fromItemStack(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+
         Configuration conf = getItemAttributes(stack);
         BaseSTBItem item = getItemById(conf.getString("*TYPE"), conf);
 
@@ -149,6 +153,10 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
     @Nonnull
     private Configuration getItemAttributes(@Nonnull ItemStack stack) {
         Validate.notNull(stack, "ItemStack cannot be null!");
+
+        if (!stack.hasItemMeta()) {
+            return new MemoryConfiguration();
+        }
 
         Optional<String> optional = PersistentDataAPI.getOptionalString(stack.getItemMeta(), namespacedKey);
 

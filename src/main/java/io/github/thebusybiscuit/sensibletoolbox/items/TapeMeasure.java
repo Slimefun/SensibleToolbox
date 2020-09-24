@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -105,6 +107,7 @@ public class TapeMeasure extends BaseSTBItem {
 
     private void makeMeasurement(Player p, Block b) {
         Debugger.getInstance().debug(this + ": make measurement at " + b);
+
         if (world != null && world.equals(b.getWorld().getName())) {
             int xOff = b.getX() - x;
             int yOff = b.getY() - y;
@@ -115,7 +118,7 @@ public class TapeMeasure extends BaseSTBItem {
         }
     }
 
-    private void setAnchor(Block clickedBlock) {
+    private void setAnchor(@Nullable Block clickedBlock) {
         if (clickedBlock != null) {
             world = clickedBlock.getWorld().getName();
             x = clickedBlock.getX();
