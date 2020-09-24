@@ -1,5 +1,5 @@
 # :toolbox: Sensible Toolbox
-Looking for the download link? [**Click here**](#download-sensible-toolbox)
+Looking for the download link? [**Click here**](#floppy_disk-download-sensible-toolbox)
 
 Sensible Toolbox is a Spigot/Paper plugin which adds a bunch of new items, tools and machines to your Minecraft Server.
 It's heavily inspired by certain Forge-based mods, but of course requires no client modifications at all.
