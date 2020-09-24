@@ -103,13 +103,14 @@ public final class SlimefunBridge implements SlimefunAddon {
             }
 
             SlimefunItem sfItem = null;
+            SlimefunItemStack itemStack = new SlimefunItemStack("STB_" + id.toUpperCase(Locale.ROOT), item.toItemStack());
 
             if (item instanceof Generator) {
                 List<ItemStack> fuels = ((Generator) item).getFuelInformation();
-                sfItem = new STBSlimefunGenerator(category, new SlimefunItemStack(id.toUpperCase(Locale.ROOT), item.toItemStack()), recipeType, recipe.toArray(new ItemStack[0]), fuels);
+                sfItem = new STBSlimefunGenerator(category, itemStack, recipeType, recipe.toArray(new ItemStack[0]), fuels);
             }
             else {
-                sfItem = new STBSlimefunItem(category, new SlimefunItemStack(id.toUpperCase(Locale.ROOT), item.toItemStack()), recipeType, recipe.toArray(new ItemStack[0]));
+                sfItem = new STBSlimefunItem(category, itemStack, recipeType, recipe.toArray(new ItemStack[0]));
             }
 
             if (r != null) {
