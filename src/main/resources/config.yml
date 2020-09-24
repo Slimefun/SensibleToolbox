@@ -22,11 +22,11 @@ creative_ender_access: false
 
 gui:
   texture:
-    input: stained_glass_pane:cyan
-    output: stained_glass_pane:orange
-    bg: stained_glass_pane:blue
-    label: book
-    button: wood_button
+    input: CYAN_STAINED_GLASS_PANE
+    output: ORANGE_STAINED_GLASS_PANE
+    bg: BLUE_STAINED_GLASS_PANE
+    label: BOOK
+    button: OAK_BUTTON
 
 item_settings:
   paintbrush:
