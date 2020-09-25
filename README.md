@@ -12,8 +12,16 @@ I took over the project back in late 2014 and continued to update it for some ti
 In late 2020 STB was finally updated once more but it is currently very unstable, so please report any bugs you can find!
 
 ## :floppy_disk: Download Sensible Toolbox
+You can download SensibleToolbox for free right here: [Development Builds](https://thebusybiscuit.github.io/builds/Slimefun/SensibleToolbox/master/)
+
 **WARNING: STB has only just been updated to newer versions of Minecraft, builds are extremely unstable and we don't recommend you to use them on any live server.**
-**For private testing and bug reporting only!**
+**For private testing and bug reporting only! Please report any bug you come across!**
+
+<p align="center">
+  <a href="https://thebusybiscuit.github.io/builds/Slimefun/SensibleToolbox/master/">
+    <img src="https://thebusybiscuit.github.io/builds/Slimefun/SensibleToolbox/master/badge.svg" alt="Build Server"/>
+  </a>
+</p>
 
 ## :headphones: Discord Support Server
 You can join the official Slimefun Discord Server to chat about Slimefun and some of our other projects, including SensibleToolbox.<br>
