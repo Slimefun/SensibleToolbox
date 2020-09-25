@@ -23,7 +23,7 @@ public class ElevatorListener extends STBBaseListener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Location to = event.getTo();
         Location from = event.getFrom();
-        if (to.getY() != from.getY() && ((Entity) event.getPlayer()).isOnGround()) {
+        if (to.getY() > from.getY() && ((Entity) event.getPlayer()).isOnGround()) {
             // player appears to be jumping from the ground...
             Block b = event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN);
             Elevator e1 = LocationManager.getManager().get(b.getLocation(), Elevator.class);
