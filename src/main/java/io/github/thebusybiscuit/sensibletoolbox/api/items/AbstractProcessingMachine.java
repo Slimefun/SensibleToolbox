@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Location;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
@@ -14,6 +16,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ProgressMeter;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Represents a machine with a progress bar to indicate how much of this work cycle is done.
@@ -112,8 +115,9 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
      *
      * @return a progress message tooltip
      */
+    @Nonnull
     public String getProgressMessage() {
-        return "�7Progress: " + getProgressMeter().getProgressPercent() + "%";
+        return ChatColor.GRAY + "Progress: " + getProgressMeter().getProgressPercent() + '%';
     }
 
     /**
