@@ -59,7 +59,7 @@ public interface ItemRegistry {
      * <p>
      * If the supplied permissionPrefix parameter is non-null, it is used as
      * the prefix to register the item's permission nodes, instead of the
-     * default "stb". See <a href="http://dev.bukkit.org/bukkit-plugins/sensible-toolbox/pages/permissions/">
+     * default "stb". See <a href="https://dev.bukkit.org/projects/sensible-toolbox/pages/permissions">
      * this page</a> for more information on per-item permissions.
      *
      * @param item
