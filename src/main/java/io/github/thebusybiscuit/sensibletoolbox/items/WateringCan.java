@@ -179,7 +179,7 @@ public class WateringCan extends BaseSTBItem {
         event.setCancelled(true);
 
         if (newStack != null) {
-            player.setItemInHand(newStack);
+            player.getInventory().setItemInMainHand(newStack);
         }
 
         if (floodWarning) {
@@ -209,7 +209,7 @@ public class WateringCan extends BaseSTBItem {
             MiscUtil.alertMessage(player, "The fire is out!");
         }
 
-        player.setItemInHand(toItemStack());
+        player.getInventory().setItemInMainHand(toItemStack());
         player.updateInventory();
         event.setCancelled(true);
     }

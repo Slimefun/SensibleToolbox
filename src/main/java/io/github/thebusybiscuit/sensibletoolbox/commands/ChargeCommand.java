@@ -35,7 +35,7 @@ public class ChargeCommand extends AbstractCommand {
         notFromConsole(sender);
 
         Player player = (Player) sender;
-        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
+        BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(player.getInventory().getItemInMainHand());
         BaseSTBBlock stb = null;
         Chargeable c = null;
 
@@ -77,7 +77,7 @@ public class ChargeCommand extends AbstractCommand {
         c.setCharge(amount);
 
         if (item != null) {
-            player.setItemInHand(item.toItemStack());
+            player.getInventory().setItemInMainHand(item.toItemStack());
         }
         else if (stb != null) {
             stb.update(true);

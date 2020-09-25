@@ -51,6 +51,8 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents an STB block which acts a machine; it is chargeable and
  * holds an inventory with possible input and output slots.
@@ -371,6 +373,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      */
     protected void onOutOfCharge() {}
 
+    @Nonnull
     @Override
     public Inventory getInventory() {
         return getGUI().getInventory();
@@ -1111,8 +1114,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     @Override
     public EnergyNet[] getAttachedEnergyNets() {
-        Set<EnergyNet> nets = new HashSet<>();
-        nets.addAll(energyNets.values());
+        Set<EnergyNet> nets = new HashSet<>(energyNets.values());
         return nets.toArray(new EnergyNet[0]);
     }
 

@@ -196,7 +196,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         setMode(Mode.values()[o]);
-        event.getPlayer().setItemInHand(toItemStack());
+        event.getPlayer().getInventory().setItemInMainHand(toItemStack());
     }
 
     private void handleExchangeMode(PlayerInteractEvent event) {
@@ -207,11 +207,11 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             if (player.isSneaking()) {
                 // set the target material
                 material = clicked.getType();
-                player.setItemInHand(toItemStack());
+                player.getInventory().setItemInMainHand(toItemStack());
             }
             else if (material != null) {
                 // replace multiple blocks
-                int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+                int sharpness = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
                 int layers = 3 + sharpness;
                 startSwap(event.getPlayer(), this, clicked, material, layers);
                 Debugger.getInstance().debug(this + ": replacing " + layers + " layers of blocks");
@@ -239,7 +239,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
-        double chargeNeeded = chargePerOp * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargeNeeded = chargePerOp * Math.pow(0.8, player.getInventory().getItemInMainHand()
+            .getEnchantmentLevel(Enchantment.DIG_SPEED));
         queue.offer(new SwapRecord(player, origin, origin.getType(), target, maxBlocks, builder, -1, chargeNeeded));
     }
 
@@ -305,7 +306,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private void doBuild(Player player, Block source, Set<Block> actualBlocks) {
-        ItemStack inHand = player.getItemInHand();
+        ItemStack inHand = player.getInventory().getItemInMainHand();
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         // we know at this point that the tool has sufficient charge and that the player has sufficient material
@@ -317,15 +318,16 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             b.setType(source.getType(), true);
         }
 
-        player.setItemInHand(toItemStack());
+        player.getInventory().setItemInMainHand(toItemStack());
         player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f);
     }
 
     private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
-        int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+        int sharpness = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
         int max = MAX_BUILD_BLOCKS + sharpness * 3;
         Material clickedType = clickedBlock.getType();
-        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION)
+            * Math.pow(0.8, player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
 
         if (ch == 0) {
@@ -349,7 +351,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             if (result.size() >= max) {
                 break;
             }
-            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.TALL_GRASS) && b1.getType() == b.getType() && !result.contains(b0) && canReplace(player, b0)) {
+            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.TALL_GRASS)
+                && b1.getType() == b.getType() && !result.contains(b0) && canReplace(player, b0)) {
                 result.add(b0);
 
                 for (BlockFace f : faces) {
@@ -512,7 +515,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // take SCU from the multibuilder...
                 rec.builder.setCharge(rec.builder.getCharge() - rec.chargeNeeded);
                 ItemStack builderItem = rec.builder.toItemStack();
-                rec.player.setItemInHand(builderItem);
+                rec.player.getInventory().setItemInMainHand(builderItem);
 
                 // give materials to the player...
                 if (builderItem.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1) {

@@ -257,7 +257,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 
     private DyeColor getBlockColour(@Nonnull Block b) {
         if (STBUtil.isColorable(b.getType())) {
-            return DyeColor.getByWoolData(b.getData());
+            return DyeColor.getByColor(getColour().getColor());
         }
         else {
             return null;
@@ -307,7 +307,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             Art art = Art.valueOf(artName);
             editingPainting.setArt(art);
             setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
-            event.getPlayer().setItemInHand(toItemStack());
+            event.getPlayer().getInventory().setItemInMainHand(toItemStack());
             event.getPlayer().playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
         }
         catch (IllegalArgumentException e) {

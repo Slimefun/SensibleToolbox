@@ -37,6 +37,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
@@ -178,12 +179,10 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         CustomRecipeManager crm = CustomRecipeManager.getManager();
-        for (ItemStack stack : crm.getAllResults()) {
-            itemSet.add(stack);
-        }
+        itemSet.addAll(crm.getAllResults());
 
         fullItemList.addAll(itemSet);
-        Collections.sort(fullItemList, new StackComparator());
+        fullItemList.sort(new StackComparator());
 
         for (int i = 0; i < fullItemList.size(); i++) {
             itemListPos.put(fullItemList.get(i), i);
@@ -468,14 +467,15 @@ public class RecipeBook extends BaseSTBItem {
         gui.getInventory().setItem(TYPE_SLOT, SHAPELESS_ICON);
     }
 
+
     private ItemStack makeGuiIngredient(ItemStack ingredient) {
         // work around MC 1.8 which doesn't render item stacks with wildcard data
         if (ingredient == null) {
             return null;
         }
-        else if (ingredient.getDurability() == 32767) {
+        else if (ingredient.getType().getMaxDurability() == 32767) {
             ItemStack ingredient2 = ingredient.clone();
-            ingredient2.setDurability((short) 0);
+            ((Damageable)ingredient2.getItemMeta()).setDamage((short) 0);
             return ingredient2;
         }
         else {

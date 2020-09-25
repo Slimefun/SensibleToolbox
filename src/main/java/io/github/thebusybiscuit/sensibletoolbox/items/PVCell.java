@@ -107,7 +107,7 @@ public class PVCell extends BaseSTBItem {
                     int nInserted = ((BasicSolarCell) stb).insertItems(event.getItem(), event.getBlockFace(), false, player.getUniqueId());
 
                     if (nInserted > 0) {
-                        player.setItemInHand(null);
+                        player.getInventory().setItemInMainHand(null);
                         player.playSound(event.getClickedBlock().getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.6f);
                     }
                 }
