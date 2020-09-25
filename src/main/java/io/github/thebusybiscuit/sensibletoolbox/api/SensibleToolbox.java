@@ -5,14 +5,11 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 
 /**
@@ -47,34 +44,6 @@ public class SensibleToolbox {
      */
     public static ItemRegistry getItemRegistry() {
         return getPluginInstance().getItemRegistry();
-    }
-
-    /**
-     * Given an item stack, get the SensibleToolbox object for that item, if
-     * any.
-     *
-     * @param stack
-     *            the item stack
-     * @return the SensibleToolbox object, or null if the item is not a STB item
-     * @deprecated use {@link ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack)}
-     */
-    @Deprecated
-    public static BaseSTBItem getItemFromItemStack(ItemStack stack) {
-        return getItemRegistry().fromItemStack(stack);
-    }
-
-    /**
-     * Given an item stack and item type, get the SensibleToolbox object for
-     * that item and type, if any.
-     *
-     * @param stack
-     *            the item stack
-     * @return the SensibleToolbox object, or null if the item is not a STB item of the given type
-     * @deprecated use {@link ItemRegistry#fromItemStack(org.bukkit.inventory.ItemStack, Class)}
-     */
-    @Deprecated
-    public static <T extends BaseSTBItem> T getItemfromItemStack(ItemStack stack, Class<T> type) {
-        return getItemRegistry().fromItemStack(stack, type);
     }
 
     /**

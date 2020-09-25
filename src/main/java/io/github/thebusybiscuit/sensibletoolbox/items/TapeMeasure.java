@@ -1,6 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -89,7 +90,7 @@ public class TapeMeasure extends BaseSTBItem {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getPlayer().isSneaking()) {
                 setAnchor(event.getClickedBlock());
-                event.getPlayer().setItemInHand(toItemStack());
+                updateHeldItemStack(event.getPlayer(), event.getHand());
                 MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point set.");
             }
             else {
@@ -98,13 +99,14 @@ public class TapeMeasure extends BaseSTBItem {
         }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             setAnchor(null);
-            event.getPlayer().setItemInHand(toItemStack());
+            updateHeldItemStack(event.getPlayer(), event.getHand());
             MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point cleared.");
         }
 
         event.setCancelled(true);
     }
 
+    @ParametersAreNonnullByDefault
     private void makeMeasurement(Player p, Block b) {
         Debugger.getInstance().debug(this + ": make measurement at " + b);
 

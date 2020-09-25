@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +33,7 @@ public final class SlimefunBridge implements SlimefunAddon {
 
     private final SensibleToolboxPlugin plugin;
 
-    public SlimefunBridge(SensibleToolboxPlugin plugin) {
+    public SlimefunBridge(@Nonnull SensibleToolboxPlugin plugin) {
         this.plugin = plugin;
 
         Category items = new Category(new NamespacedKey(plugin, "items"), new CustomItem(Material.SHEARS, "&7STB - Items"));
@@ -133,6 +136,7 @@ public final class SlimefunBridge implements SlimefunAddon {
         patch("STB_FISHBAIT", fermenter, new ItemStack(Material.ROTTEN_FLESH));
     }
 
+    @ParametersAreNonnullByDefault
     private void patch(String id, RecipeType recipeType, ItemStack recipe) {
         SlimefunItem item = SlimefunItem.getByID(id);
 

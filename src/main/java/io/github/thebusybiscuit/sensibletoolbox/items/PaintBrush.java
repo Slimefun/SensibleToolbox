@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Art;
 import org.bukkit.ChatColor;
@@ -28,7 +30,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -164,7 +165,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             setPaintLevel(0);
         }
 
-        player.setItemInHand(toItemStack());
+        updateHeldItemStack(event.getPlayer(), event.getHand());
         event.setCancelled(true);
     }
 
@@ -229,7 +230,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 
         if (paintUsed > 0) {
             setPaintLevel(getPaintLevel() - paintUsed);
-            event.getPlayer().setItemInHand(toItemStack());
+            updateHeldItemStack(event.getPlayer(), event.getHand());
             event.getPlayer().playSound(e.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
         }
     }
@@ -254,7 +255,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         find(b.getRelative(BlockFace.DOWN), mat, blocks, max);
     }
 
-    private DyeColor getBlockColour(Block b) {
+    private DyeColor getBlockColour(@Nonnull Block b) {
         if (STBUtil.isColorable(b.getType())) {
             return DyeColor.getByWoolData(b.getData());
         }
@@ -263,7 +264,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         }
     }
 
-    private int paintBlocks(Player player, Block... blocks) {
+    private int paintBlocks(@Nonnull Player player, Block... blocks) {
         int painted = 0;
 
         // TODO: Get Paint Brush working again

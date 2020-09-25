@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Recipe.RecipeCalculator;
 
 /**

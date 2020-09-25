@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.energycells;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -87,7 +89,7 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
         }
     }
 
-    private void chargeHotbarItems(Player player) {
+    private void chargeHotbarItems(@Nonnull Player player) {
         if (getCharge() > 0) {
             int held = player.getInventory().getHeldItemSlot();
 

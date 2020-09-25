@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -22,7 +25,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -72,8 +77,24 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      * @param stack
      *            an item stack
      */
-    public final void storeEnchants(ItemStack stack) {
+    public final void storeEnchants(@Nonnull ItemStack stack) {
         enchants = stack.getEnchantments();
+    }
+
+    @ParametersAreNonnullByDefault
+    protected void updateHeldItemStack(Player player, EquipmentSlot hand) {
+        PlayerInventory inv = player.getInventory();
+        if (hand == EquipmentSlot.HAND) {
+            ItemStack item = inv.getItemInMainHand();
+            inv.setItemInMainHand(toItemStack(item.getAmount()));
+        }
+        else if (hand == EquipmentSlot.OFF_HAND) {
+            ItemStack item = inv.getItemInOffHand();
+            inv.setItemInOffHand(toItemStack(item.getAmount()));
+        }
+        else {
+            throw new IllegalArgumentException(hand.name() + " is not a hand! (HAND, OFF_HAND)");
+        }
     }
 
     /**
@@ -377,17 +398,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     }
 
     /**
-     * Get the name of the plugin which registered this STB item.
-     *
-     * @return a plugin name
-     * @deprecated use getPlugin().getName()
-     */
-    @Deprecated
-    public final String getProviderName() {
-        return providerPlugin.getName();
-    }
-
-    /**
      * Get the instance of the plugin which registered this STB item.
      *
      * @return the plugin which registered this item
@@ -500,40 +510,4 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         return true;
     }
 
-    /**
-     * An action that can be taken on or with an STB item.
-     */
-    public enum ItemAction {
-
-        /**
-         * Craft the item.
-         */
-        CRAFT,
-        /**
-         * Place the item down as a block.
-         */
-        PLACE,
-        /**
-         * Break a block item.
-         */
-        BREAK,
-        /**
-         * Interact with the item in hand.
-         */
-        INTERACT,
-        /**
-         * Interact with the item as a block.
-         */
-        INTERACT_BLOCK;
-
-        private final String node;
-
-        private ItemAction() {
-            node = this.toString().toLowerCase();
-        }
-
-        public String getNode() {
-            return node;
-        }
-    }
 }

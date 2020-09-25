@@ -24,7 +24,6 @@ import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.Dye;
-import org.bukkit.material.Wool;
 
 import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollection;
 import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;

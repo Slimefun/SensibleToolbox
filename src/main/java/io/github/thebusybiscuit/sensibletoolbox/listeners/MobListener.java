@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.InfernalDust;
 
 public class MobListener extends STBBaseListener {
@@ -26,7 +26,7 @@ public class MobListener extends STBBaseListener {
             InfernalDust dust = new InfernalDust();
             Player killer = event.getEntity().getKiller();
 
-            if (dust.checkPlayerPermission(killer, BaseSTBItem.ItemAction.CRAFT)) {
+            if (dust.checkPlayerPermission(killer, ItemAction.CRAFT)) {
                 int chance = 20;
                 int amount = 1;
 

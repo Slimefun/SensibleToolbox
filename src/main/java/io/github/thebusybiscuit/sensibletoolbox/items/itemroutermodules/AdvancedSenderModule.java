@@ -88,7 +88,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             ItemRouter rtr = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), ItemRouter.class, true);
             if (rtr != null && rtr.getReceiver() != null) {
                 linkToRouter(rtr);
-                event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+                updateHeldItemStack(event.getPlayer(), event.getHand());
             }
             else {
                 STBUtil.complain(event.getPlayer());
@@ -97,10 +97,10 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
         }
         else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
-            event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+            updateHeldItemStack(event.getPlayer(), event.getHand());
             event.setCancelled(true);
         }
-        else if (event.getPlayer().getItemInHand().getAmount() == 1 && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        else if (event.getItem().getAmount() == 1 && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             super.onInteractItem(event);
         }
     }

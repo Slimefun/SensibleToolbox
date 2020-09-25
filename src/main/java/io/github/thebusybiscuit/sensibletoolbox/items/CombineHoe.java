@@ -2,6 +2,9 @@ package io.github.thebusybiscuit.sensibletoolbox.items;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -38,6 +41,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     private InventoryGUI gui;
     private int durability;
 
+    @Nonnull
     public static String getInventoryTitle() {
         return ChatColor.DARK_GREEN + "Seed Bag";
     }
@@ -291,6 +295,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
     }
 
+    @ParametersAreNonnullByDefault
     private void harvestLayer(Player player, Block b) {
         Cuboid cuboid = new Cuboid(b.getLocation());
         cuboid = cuboid.outset(Cuboid.CuboidDirection.HORIZONTAL, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
@@ -305,6 +310,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
     }
 
+    @ParametersAreNonnullByDefault
     private void tillSoil(Player player, Block b) {
         ItemStack stack = player.getItemInHand();
         short count = 0;

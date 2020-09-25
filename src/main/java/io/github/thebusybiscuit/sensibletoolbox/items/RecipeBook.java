@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -48,6 +50,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.RecipeUtil;
@@ -226,7 +229,7 @@ public class RecipeBook extends BaseSTBItem {
         providerNames.addAll(Arrays.asList(pluginNames));
     }
 
-    private boolean includeItem(BaseSTBItem stbItem) {
+    private boolean includeItem(@Nullable BaseSTBItem stbItem) {
         switch (recipeTypeFilter) {
         case ALL:
             return stbItem == null || (stbItem.checkPlayerPermission(player, ItemAction.CRAFT) && (providerNames.isEmpty() || providerNames.contains(stbItem.getProviderPlugin().getName())));

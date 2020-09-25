@@ -49,7 +49,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.STBGUIHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem.ItemAction;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
@@ -67,10 +67,9 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getItem());
-        if (item != null) {
-            if (item.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT)) {
-                item.onInteractItem(event);
-            }
+
+        if (item != null && item.checkPlayerPermission(event.getPlayer(), ItemAction.INTERACT)) {
+            item.onInteractItem(event);
         }
 
         Block clicked = event.getClickedBlock();

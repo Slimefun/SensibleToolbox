@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.Validate;
@@ -30,6 +31,7 @@ import io.github.thebusybiscuit.cscorelib2.data.PersistentDataAPI;
 import io.github.thebusybiscuit.sensibletoolbox.api.ItemRegistry;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import me.desht.dhutils.LogUtils;
 
@@ -106,13 +108,14 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         // parent permission node
         Bukkit.getPluginManager().addPermission(new Permission(permissionPrefix + ".allow." + id, PermissionDefault.TRUE));
 
-        registerPermission(permissionPrefix, BaseSTBItem.ItemAction.CRAFT, id);
-        registerPermission(permissionPrefix, BaseSTBItem.ItemAction.INTERACT, id);
+        registerPermission(permissionPrefix, ItemAction.CRAFT, id);
+        registerPermission(permissionPrefix, ItemAction.INTERACT, id);
 
         if (item instanceof BaseSTBBlock) {
-            registerPermission(permissionPrefix, BaseSTBItem.ItemAction.PLACE, id);
-            registerPermission(permissionPrefix, BaseSTBItem.ItemAction.BREAK, id);
-            registerPermission(permissionPrefix, BaseSTBItem.ItemAction.INTERACT_BLOCK, id);
+            registerPermission(permissionPrefix, ItemAction.PLACE, id);
+            registerPermission(permissionPrefix, ItemAction.BREAK, id);
+            registerPermission(permissionPrefix, ItemAction.INTERACT_BLOCK, id);
+
             try {
                 LocationManager.getManager().loadDeferredBlocks(id);
             }
@@ -123,7 +126,8 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         }
     }
 
-    private void registerPermission(String permissionPrefix, BaseSTBItem.ItemAction action, String id) {
+    @ParametersAreNonnullByDefault
+    private void registerPermission(String permissionPrefix, ItemAction action, String id) {
         Permission perm = new Permission(permissionPrefix + "." + action.getNode() + "." + id, PermissionDefault.TRUE);
         perm.addParent(permissionPrefix + ".allow." + id, true);
         Bukkit.getPluginManager().addPermission(perm);
@@ -135,7 +139,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
     }
 
     @Override
-    public BaseSTBItem fromItemStack(ItemStack stack) {
+    public BaseSTBItem fromItemStack(@Nullable ItemStack stack) {
         if (stack == null) {
             return null;
         }

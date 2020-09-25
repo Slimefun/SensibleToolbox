@@ -116,7 +116,7 @@ public class EnderLeash extends BaseSTBItem {
                     capturedConf = freezeEntity(animal);
                     target.getWorld().playEffect(target.getLocation(), Effect.ENDER_SIGNAL, 0);
                     target.remove();
-                    player.setItemInHand(this.toItemStack());
+                    updateHeldItemStack(event.getPlayer(), event.getHand());
                 }
             }
             else {
@@ -160,7 +160,7 @@ public class EnderLeash extends BaseSTBItem {
                 Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
                 thawEntity((Animals) e, capturedConf);
                 capturedConf = null;
-                event.getPlayer().setItemInHand(this.toItemStack());
+                updateHeldItemStack(event.getPlayer(), event.getHand());
                 event.setCancelled(true);
             }
         }

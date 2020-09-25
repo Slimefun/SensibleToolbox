@@ -85,7 +85,7 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             setFacingDirection(event.getBlockFace().getOppositeFace());
-            event.getPlayer().setItemInHand(toItemStack(event.getPlayer().getItemInHand().getAmount()));
+            updateHeldItemStack(event.getPlayer(), event.getHand());
             event.setCancelled(true);
         }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
