@@ -25,6 +25,7 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     private final String processorID;
     private final int processingTime;
     private final ItemStack result;
+    private final Random rnd = new Random();
 
     public ShapelessCustomRecipe(ItemStack result, BaseSTBMachine processor, int processingTime) {
         this.result = result;
@@ -100,7 +101,6 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     @Override
     public Collection<ItemStack> calculateSupplementaryResults() {
         List<ItemStack> res = Lists.newArrayList();
-        Random rnd = new Random();
         for (SupplementaryResult sr : listSupplementaryResults()) {
             if (rnd.nextInt(1000) < sr.getChance()) {
                 res.add(sr.getResult());
