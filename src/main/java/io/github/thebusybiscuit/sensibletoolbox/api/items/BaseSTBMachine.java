@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import me.desht.dhutils.MiscUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -1074,7 +1075,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     private double transferCharge(Chargeable from, Chargeable to) {
-        if (to.getCharge() >= to.getMaxCharge() || from.getCharge() == 0) {
+        if (MiscUtil.truncateDecimal(from.getCharge(), 2)
+                >= MiscUtil.truncateDecimal(to.getMaxCharge(), 2)
+                || MiscUtil.truncateDecimal(from.getCharge(), 2) == 0) {
             return 0;
         }
 

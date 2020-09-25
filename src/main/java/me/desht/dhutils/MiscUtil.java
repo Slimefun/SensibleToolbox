@@ -1,5 +1,7 @@
 package me.desht.dhutils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import javax.annotation.Nonnull;
 
 public class MiscUtil {
 
@@ -196,5 +200,21 @@ public class MiscUtil {
 
     public static boolean looksLikeUUID(String s) {
         return s.length() == 36 && s.charAt(8) == '-' && s.charAt(13) == '-' && s.charAt(18) == '-' && s.charAt(23) == '-';
+    }
+
+    /**
+     * Truncates a decimal to a given number of places.
+     *
+     * @param x the decimal to truncate
+     * @param places the number of places to truncate
+     * @return x truncated to places places
+     */
+    @Nonnull
+    public static double truncateDecimal(double x, int places) {
+        if (x > 0) {
+            return new BigDecimal(String.valueOf(x)).setScale(places, RoundingMode.FLOOR).doubleValue();
+        } else {
+            return new BigDecimal(String.valueOf(x)).setScale(places, RoundingMode.CEILING).doubleValue();
+        }
     }
 }
