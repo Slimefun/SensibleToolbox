@@ -24,7 +24,7 @@ public class MiscUtil {
     public static final String STATUS_COLOUR = ChatColor.AQUA.toString();
     public static final String ERROR_COLOUR = ChatColor.RED.toString();
     public static final String ALERT_COLOUR = ChatColor.YELLOW.toString();
-    public static final String GENERAL_COLOUR = ChatColor.RESET.toString();
+    public static final String GENERAL_COLOUR = ChatColor.WHITE.toString();
 
     private static boolean colouredConsole = true;
 

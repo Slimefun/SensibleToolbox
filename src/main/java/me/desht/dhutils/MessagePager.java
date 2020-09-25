@@ -16,7 +16,7 @@ import org.bukkit.util.ChatPaginator;
 
 public class MessagePager {
 
-    public static final String BULLET = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.RESET;
+    public static final String BULLET = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.WHITE;
 
     private static final int DEF_PAGE_SIZE = 18; // 20 lines total, minus 2 for header and footer
 
@@ -320,10 +320,10 @@ public class MessagePager {
 
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
                 if (parseColours) {
-                    MiscUtil.generalMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.RESET + getLine(i));
+                    MiscUtil.generalMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.WHITE + getLine(i));
                 }
                 else {
-                    MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.RESET + getLine(i));
+                    MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.WHITE + getLine(i));
                 }
             }
 

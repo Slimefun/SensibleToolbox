@@ -81,7 +81,7 @@ public class EnderLeash extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Capture and store one peaceful animal", "Right-click: " + ChatColor.RESET + "capture/release animal" };
+        return new String[] { "Capture and store one peaceful animal", "Right-click: " + ChatColor.WHITE + "capture/release animal" };
     }
 
     @Override

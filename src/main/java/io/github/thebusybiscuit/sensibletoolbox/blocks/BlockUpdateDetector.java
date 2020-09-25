@@ -79,7 +79,7 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Emits a redstone pulse when", " an adjacent block updates", "R-click block: " + ChatColor.RESET + "configure BUD" };
+        return new String[] { "Emits a redstone pulse when", " an adjacent block updates", "R-click block: " + ChatColor.WHITE + "configure BUD" };
     }
 
     @Override

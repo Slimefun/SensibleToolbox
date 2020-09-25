@@ -75,7 +75,7 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Reduces the volume of all sounds", "within a " + DISTANCE + "-block radius", "R-click: " + ChatColor.RESET + " open configuration" };
+        return new String[] { "Reduces the volume of all sounds", "within a " + DISTANCE + "-block radius", "R-click: " + ChatColor.WHITE + " open configuration" };
     }
 
     @Override
@@ -117,7 +117,7 @@ public class SoundMuffler extends BaseSTBBlock {
     @Override
     public String[] getSignLabel(BlockFace face) {
         String[] label = super.getSignLabel(face);
-        label[1] = ChatColor.DARK_RED + "Volume " + ChatColor.RESET + getVolume();
+        label[1] = ChatColor.DARK_RED + "Volume " + ChatColor.WHITE + getVolume();
         return label;
     }
 }

@@ -32,7 +32,7 @@ public class HyperSenderModule extends AdvancedSenderModule {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Insert into an Item Router", "Sends items to a linked Receiver Module", "anywhere on any world", "L-Click item router with installed", " Receiver Module: " + ChatColor.RESET + " Link Hyper Sender", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click anywhere: " + ChatColor.RESET + " Unlink Hyper Sender" };
+        return new String[] { "Insert into an Item Router", "Sends items to a linked Receiver Module", "anywhere on any world", "L-Click item router with installed", " Receiver Module: " + ChatColor.WHITE + " Link Hyper Sender", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click anywhere: " + ChatColor.WHITE + " Unlink Hyper Sender" };
     }
 
     @Override

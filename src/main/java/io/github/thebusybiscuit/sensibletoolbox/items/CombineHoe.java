@@ -87,7 +87,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     public String[] getLore() {
         int n = getWorkRadius() * 2 + 1;
         String s = n + "x" + n;
-        return new String[] { "Right-click dirt/grass:" + ChatColor.RESET + " till 3x3 area", "Right-click soil:" + ChatColor.RESET + " sow 3x3 area", "Right-click other:" + ChatColor.RESET + " open seed bag", "Left-click plants:" + ChatColor.RESET + " harvest " + s + " area", "Left-click leaves:" + ChatColor.RESET + " break 3x3x3 area", };
+        return new String[] { "Right-click dirt/grass:" + ChatColor.WHITE + " till 3x3 area", "Right-click soil:" + ChatColor.WHITE + " sow 3x3 area", "Right-click other:" + ChatColor.WHITE + " open seed bag", "Left-click plants:" + ChatColor.WHITE + " harvest " + s + " area", "Left-click leaves:" + ChatColor.WHITE + " break 3x3x3 area", };
     }
 
     @Override

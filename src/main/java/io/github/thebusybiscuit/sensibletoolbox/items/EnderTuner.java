@@ -56,7 +56,7 @@ public class EnderTuner extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Vibrates in six dimensions", "R-Click Ender Box: " + ChatColor.RESET + "tune box", "R-Click other: " + ChatColor.RESET + "open tuning GUI", };
+        return new String[] { "Vibrates in six dimensions", "R-Click Ender Box: " + ChatColor.WHITE + "tune box", "R-Click other: " + ChatColor.WHITE + "open tuning GUI", };
     }
 
     @Override

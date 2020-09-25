@@ -142,10 +142,10 @@ public class PVCell extends BaseSTBItem {
         int sec = lifespan / 20;
 
         if (sec >= 60) {
-            return ChatColor.RESET + "Lifetime: " + ChatColor.YELLOW.toString() + (sec / 60) + " min";
+            return ChatColor.WHITE + "Lifetime: " + ChatColor.YELLOW.toString() + (sec / 60) + " min";
         }
         else {
-            return ChatColor.RESET + "Lifetime: " + ChatColor.YELLOW.toString() + sec + " sec";
+            return ChatColor.WHITE + "Lifetime: " + ChatColor.YELLOW.toString() + sec + " sec";
         }
     }
 }

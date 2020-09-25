@@ -196,7 +196,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ", ChatColor.RESET + "  - extract PV cell" };
+        return new String[] { "Generates up to " + getPowerOutput() + " SCU/t", "while outside in bright sunlight", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click block (empty hand): ", ChatColor.WHITE + "  - extract PV cell" };
     }
 
     @Override

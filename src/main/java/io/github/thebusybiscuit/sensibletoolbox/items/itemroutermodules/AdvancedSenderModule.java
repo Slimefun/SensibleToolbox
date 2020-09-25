@@ -62,7 +62,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Insert into an Item Router", "Sends items to a linked Receiver Module", " anywhere within a " + RANGE + "-block radius", " (line of sight is not needed)", "L-Click item router with installed", " Receiver Module: " + ChatColor.RESET + " Link Adv. Sender", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click: " + ChatColor.RESET + " Unlink Adv. Sender" };
+        return new String[] { "Insert into an Item Router", "Sends items to a linked Receiver Module", " anywhere within a " + RANGE + "-block radius", " (line of sight is not needed)", "L-Click item router with installed", " Receiver Module: " + ChatColor.WHITE + " Link Adv. Sender", UnicodeSymbol.ARROW_UP.toUnicode() + " + L-Click: " + ChatColor.WHITE + " Unlink Adv. Sender" };
     }
 
     @Override

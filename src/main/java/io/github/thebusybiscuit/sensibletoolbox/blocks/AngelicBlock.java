@@ -42,7 +42,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
     @Override
     public String[] getLore() {
-        return new String[] { "R-click: " + ChatColor.RESET + " place block in the air", "L-click block: " + ChatColor.RESET + " insta-break" };
+        return new String[] { "R-click: " + ChatColor.WHITE + " place block in the air", "L-click block: " + ChatColor.WHITE + " insta-break" };
     }
 
     @Override

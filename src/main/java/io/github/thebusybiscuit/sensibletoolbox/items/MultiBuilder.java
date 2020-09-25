@@ -110,9 +110,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     public String[] getLore() {
         switch (getMode()) {
         case BUILD:
-            return new String[] { "L-click block: " + ChatColor.RESET + "preview", "R-click block: " + ChatColor.RESET + "build", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "build one", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "EXCHANGE mode" };
+            return new String[] { "L-click block: " + ChatColor.WHITE + "preview", "R-click block: " + ChatColor.WHITE + "build", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.WHITE + "build one", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.WHITE + "EXCHANGE mode" };
         case EXCHANGE:
-            return new String[] { "L-click block: " + ChatColor.RESET + "exchange one block", "R-click block: " + ChatColor.RESET + "exchange many blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.RESET + "set target block", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.RESET + "BUILD mode" };
+            return new String[] { "L-click block: " + ChatColor.WHITE + "exchange one block", "R-click block: " + ChatColor.WHITE + "exchange many blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.WHITE + "set target block", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.WHITE + "BUILD mode" };
         default:
             return new String[0];
         }
