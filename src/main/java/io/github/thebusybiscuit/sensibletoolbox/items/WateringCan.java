@@ -2,8 +2,11 @@ package io.github.thebusybiscuit.sensibletoolbox.items;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.Effect;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -19,6 +22,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.PotionMeta;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -67,6 +71,19 @@ public class WateringCan extends BaseSTBItem {
     }
 
     @Override
+    public ItemStack toItemStack(int amount) {
+        ItemStack item = super.toItemStack(amount);
+
+        if (item.getType() == Material.POTION) {
+            PotionMeta meta = (PotionMeta) item.getItemMeta();
+            meta.setColor(Color.BLUE);
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
+    @Override
     public String getItemName() {
         return "Watering Can";
     }
@@ -103,7 +120,7 @@ public class WateringCan extends BaseSTBItem {
 
             if (neighbour.getType() == Material.WATER) {
                 // attempt to refill the watering can
-                player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
+                player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1, 0.8F);
                 neighbour.setType(Material.AIR);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
@@ -142,11 +159,9 @@ public class WateringCan extends BaseSTBItem {
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
             }
-            else if (block.getType() == Material.DIRT) {
-                if (maybeGrowGrass(block)) {
-                    useSomeWater(player, block, 1);
-                    newStack = toItemStack();
-                }
+            else if (block.getType() == Material.DIRT && maybeGrowGrass(block)) {
+                useSomeWater(player, block, 1);
+                newStack = toItemStack();
             }
         }
         else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
@@ -155,7 +170,7 @@ public class WateringCan extends BaseSTBItem {
             if (b.getType() == Material.WATER) {
                 // attempt to refill the watering can
                 b.setType(Material.AIR);
-                player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 0.8f);
+                player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1, 0.8F);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
             }
@@ -282,9 +297,10 @@ public class WateringCan extends BaseSTBItem {
         }
     }
 
+    @ParametersAreNonnullByDefault
     private void useSomeWater(Player p, Block b, int amount) {
         setWaterLevel(Math.max(0, getWaterLevel() - amount));
-        p.playSound(p.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 2.0f);
-        p.playEffect(b.getLocation(), Effect.STEP_SOUND, Material.WATER);
+        p.playSound(p.getLocation(), Sound.AMBIENT_UNDERWATER_EXIT, 0.1F, 1.3F);
+        p.getWorld().spawnParticle(Particle.WATER_SPLASH, b.getX() + 0.5, b.getY() + 1.0, b.getZ() + 0.5, 14, 0.75, 0.15, 0.75);
     }
 }
