@@ -64,19 +64,28 @@ public class PowerMonitor extends BaseSTBBlock {
     @Override
     protected String[] getSignLabel(BlockFace face) {
         String[] label = super.getSignLabel(face);
+
+        label[2] = ChatColor.DARK_RED + "No cable attached";
+
         for (BlockFace f : STBUtil.mainHorizontalFaces) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
+
             if (net != null) {
                 double stat = net.getSupply() - net.getDemand();
                 String prefix;
 
-                if (stat > 0) prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
-                else prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
+                if (stat > 0) {
+                    prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+ " + ChatColor.GREEN;
+                }
+                else {
+                    prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "- " + ChatColor.RED;
+                }
 
-                label[2] = prefix + " " + ChatColor.DARK_GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t";
+                label[2] = prefix + DoubleHandler.getFancyDouble(Math.abs(stat)) + " SCU/t";
                 break;
             }
         }
+
         return label;
     }
 }
