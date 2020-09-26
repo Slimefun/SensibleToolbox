@@ -311,7 +311,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     @ParametersAreNonnullByDefault
     private void tillSoil(Player player, Block b) {
-        ItemStack stack = player.getInventory().getItemInMainHand();
+        ItemStack stack = player.getItemInHand();
         short count = 0;
 
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {

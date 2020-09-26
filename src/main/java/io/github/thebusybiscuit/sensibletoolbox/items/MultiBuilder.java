@@ -197,7 +197,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         setMode(Mode.values()[o]);
-        event.getPlayer().getInventory().setItemInMainHand(toItemStack());
+        event.getPlayer().setItemInHand(toItemStack());
     }
 
     private void handleExchangeMode(PlayerInteractEvent event) {

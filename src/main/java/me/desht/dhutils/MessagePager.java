@@ -31,12 +31,12 @@ public class MessagePager {
 
     private int currentPage;
     private int pageSize;
-    private boolean parseColours;
+    private boolean parseColors;
 
     public MessagePager(CommandSender sender) {
         this.senderRef = new WeakReference<>(sender);
         this.currentPage = 1;
-        this.parseColours = false;
+        this.parseColors = false;
         this.pageSize = getDefaultPageSize();
         this.messages = new ArrayList<>();
     }
@@ -110,7 +110,7 @@ public class MessagePager {
      */
     public MessagePager clear() {
         currentPage = 1;
-        parseColours = false;
+        parseColors = false;
         messages.clear();
         return this;
     }
@@ -118,12 +118,12 @@ public class MessagePager {
     /**
      * Enable or disable color code parsing.
      *
-     * @param parseColours
+     * @param parseColors
      *            true to enable parsing, false to disable
      * @return this pager object for method chaining
      */
-    public MessagePager setParseColours(boolean parseColours) {
-        this.parseColours = parseColours;
+    public MessagePager setParseColors(boolean parseColors) {
+        this.parseColors = parseColors;
         return this;
     }
 
@@ -306,7 +306,7 @@ public class MessagePager {
             MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250c" + MinecraftChatStr.strPadCenterChat(header, 325, '\u2504'));
 
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
-                if (parseColours) {
+                if (parseColors) {
                     MiscUtil.generalMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.WHITE + getLine(i));
                 }
                 else {
@@ -322,7 +322,7 @@ public class MessagePager {
         else {
             // just dump the whole message buffer to the console
             for (String s : messages) {
-                if (parseColours) {
+                if (parseColors) {
                     MiscUtil.generalMessage(sender, s);
                 }
                 else {
@@ -336,7 +336,7 @@ public class MessagePager {
         CommandSender sender = senderRef.get();
 
         if (sender instanceof Player) {
-            String s = parseColours ? MiscUtil.parseColourSpec(sender, line) : line;
+            String s = parseColors ? MiscUtil.parseColorSpec(sender, line) : line;
             return ChatPaginator.wordWrap(s, getLineLength());
         }
         else {

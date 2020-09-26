@@ -473,7 +473,7 @@ public class RecipeBook extends BaseSTBItem {
         if (ingredient == null) {
             return null;
         }
-        else if (ingredient.getType().getMaxDurability() == 32767) {
+        else if (ingredient.getDurability() == 32767) {
             ItemStack ingredient2 = ingredient.clone();
             ((Damageable)ingredient2.getItemMeta()).setDamage((short) 0);
             return ingredient2;
