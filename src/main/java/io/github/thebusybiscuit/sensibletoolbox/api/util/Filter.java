@@ -1,16 +1,19 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.util;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * A class which can filter items based on several criteria: whitelist/blacklist,
  * filter by material, by block data or by item metadata.
  */
-public class Filter {
+public class Filter implements Cloneable {
 
     private final List<ItemStack> filteredItems = new ArrayList<>();
     private FilterType filterType;
@@ -35,13 +38,16 @@ public class Filter {
      *            whether to filter by material, material & data, or by material/data/item-meta
      * @return a new Filter object
      */
-    public static Filter fromItemList(boolean whiteList, List<ItemStack> itemStacks, FilterType filterType) {
+    @Nonnull
+    public static Filter fromItemList(boolean whiteList, @Nonnull List<ItemStack> itemStacks, FilterType filterType) {
         Filter f = new Filter();
         f.setWhiteList(whiteList);
         f.setFilterType(filterType);
+
         for (ItemStack s : itemStacks) {
             f.addItem(s);
         }
+
         return f;
     }
 
@@ -62,8 +68,8 @@ public class Filter {
     // }
 
     @Override
-    public Filter clone() throws CloneNotSupportedException {
-        return Filter.fromItemList(whiteList, new ArrayList<ItemStack>(filteredItems), filterType);
+    public Filter clone() {
+        return Filter.fromItemList(whiteList, new ArrayList<>(filteredItems), filterType);
     }
 
     /**
@@ -72,7 +78,7 @@ public class Filter {
      * @param stack
      *            the item to add
      */
-    public void addItem(ItemStack stack) {
+    public void addItem(@Nonnull ItemStack stack) {
         filteredItems.add(stack);
     }
 
@@ -82,12 +88,16 @@ public class Filter {
      *
      * @param stack
      *            the item to check
+     * 
      * @return true if the filter should pass the item; false otherwise
      */
-    public boolean shouldPass(ItemStack stack) {
+    public boolean shouldPass(@Nonnull ItemStack stack) {
+        Validate.notNull(stack, "Cannot filter null ItemStacks");
+
         if (filteredItems.isEmpty()) {
             return !whiteList;
         }
+
         switch (filterType) {
         case MATERIAL:
             for (ItemStack f : filteredItems) {
@@ -95,13 +105,7 @@ public class Filter {
                     return whiteList;
                 }
             }
-            return !whiteList;
-        case BLOCK_DATA:
-            for (ItemStack f : filteredItems) {
-                if (f.getType() == stack.getType() && f.getDurability() == stack.getDurability()) {
-                    return whiteList;
-                }
-            }
+
             return !whiteList;
         case ITEM_META:
             for (ItemStack f : filteredItems) {
@@ -109,9 +113,11 @@ public class Filter {
                     return whiteList;
                 }
             }
+
+            return !whiteList;
+        default:
             return !whiteList;
         }
-        return !whiteList;
     }
 
     /**
@@ -119,7 +125,8 @@ public class Filter {
      *
      * @return a list of item stacks
      */
-    public List<ItemStack> listFiltered() {
+    @Nonnull
+    public List<ItemStack> getFilterList() {
         return filteredItems;
     }
 
@@ -174,6 +181,8 @@ public class Filter {
      *
      * @return the filtering type
      */
+
+    @Nonnull
     public FilterType getFilterType() {
         return filterType;
     }
@@ -184,43 +193,8 @@ public class Filter {
      * @param filterType
      *            the filtering type
      */
-    public void setFilterType(FilterType filterType) {
+    public void setFilterType(@Nonnull FilterType filterType) {
+        Validate.notNull(filterType, "FilterType cannot be null!");
         this.filterType = filterType;
-    }
-
-    /**
-     * Represents different levels of filtering precision.
-     */
-    public enum FilterType {
-
-        /**
-         * Match only the item's material. E.g. don't care about wool colour,
-         * stone texture, coal vs. charcoal etc.
-         */
-        MATERIAL("Filter by Material"),
-        /**
-         * Match the item's material and its data byte (sometimes referred to
-         * as metadata or damage values). E.g. green wool is distinguished
-         * from white wool, and a fully repaired diamond sword is
-         * distinguished from a damaged diamond sword.
-         */
-        BLOCK_DATA("Filter by Material/Block Meta"),
-        /**
-         * Match the item's material, data byte and item meta (sometimes
-         * referred to as NBT data). E.g. a diamond sword with Looting I is
-         * distinguished from a diamond sword with Looting II, even if their
-         * damage values are identical.
-         */
-        ITEM_META("Filter by Material/Block Meta/Item Meta");
-
-        private final String label;
-
-        FilterType(String label) {
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
-        }
     }
 }
