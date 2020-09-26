@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -24,13 +27,12 @@ import me.desht.dhutils.Debugger;
 public class EnergyNetManager {
 
     public static final long DEFAULT_TICK_RATE = 10;
-
     private long tickRate = DEFAULT_TICK_RATE;
 
-    private final Map<Integer, STBEnergyNet> allNets = new HashMap<Integer, STBEnergyNet>();
+    private final Map<Integer, STBEnergyNet> allNets = new HashMap<>();
     private final SensibleToolboxPlugin plugin;
 
-    public EnergyNetManager(SensibleToolboxPlugin plugin) {
+    public EnergyNetManager(@Nonnull SensibleToolboxPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -49,7 +51,8 @@ public class EnergyNetManager {
      *            the block to check
      * @return the block's energy net, or null if none
      */
-    public STBEnergyNet getEnergyNet(Block block) {
+    @Nullable
+    public STBEnergyNet getEnergyNet(@Nonnull Block block) {
         Integer netId = (Integer) STBUtil.getMetadataValue(block, STBEnergyNet.STB_ENET_ID);
         return netId == null ? null : allNets.get(netId);
     }
@@ -61,12 +64,15 @@ public class EnergyNetManager {
      * @param cable
      *            the newly placed cable
      */
-    public void onCablePlaced(Block cable) {
+    public void onCablePlaced(@Nonnull Block cable) {
         Set<Integer> netIds = getAdjacentNets(cable);
+
         if (Debugger.getInstance().getLevel() > 1) {
             Debugger.getInstance().debug(2, "new cable " + cable + " has " + netIds.size() + " adjacent nets [" + Joiner.on(",").join(netIds) + "]");
         }
+
         List<AdjacentMachine> adjacentMachines;
+
         switch (netIds.size()) {
         case 0:
             // not connected to any net, start a new one IFF there is one or more adjacent machines
@@ -96,13 +102,15 @@ public class EnergyNetManager {
             for (int netId : netIds) {
                 deleteEnergyNet(netId);
             }
+
             STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
             allNets.put(newNet.getNetID(), newNet);
         }
     }
 
-    public void onCableRemoved(Block cable) {
+    public void onCableRemoved(@Nonnull Block cable) {
         STBEnergyNet thisNet = getEnergyNet(cable);
+
         if (thisNet == null) {
             // cable with no net at all?
             return;
@@ -111,15 +119,18 @@ public class EnergyNetManager {
         Debugger.getInstance().debug(2, "removing cable " + cable + " from enet #" + thisNet.getNetID());
 
         // scan this cable's neighbours to see what it was attached to
-        final List<Block> attachedCables = new ArrayList<Block>();
-        final List<BaseSTBMachine> attachedMachines = new ArrayList<BaseSTBMachine>();
+        final List<Block> attachedCables = new ArrayList<>();
+        final List<BaseSTBMachine> attachedMachines = new ArrayList<>();
+
         for (BlockFace face : STBUtil.directFaces) {
             Block b = cable.getRelative(face);
+
             if (STBUtil.isCable(b)) {
                 attachedCables.add(b);
             }
             else {
                 BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
+
                 if (machine != null) {
                     attachedMachines.add(machine);
                 }
@@ -133,22 +144,19 @@ public class EnergyNetManager {
         else {
             // delete the energy net for the removed cable; this will also detach any machines
             deleteEnergyNet(thisNet.getNetID());
-            if (attachedCables.size() > 0) {
+
+            if (!attachedCables.isEmpty()) {
                 // need a delayed task here, since the block for the cable being removed isn't
                 // actually updated to air yet...
-                final EnergyNetManager mgr = this;
-                Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    // rebuild energy nets for the deleted cable's neighbours
+                    for (Block b : attachedCables) {
+                        // those neighbours could have another path to each other
+                        EnergyNet net1 = getEnergyNet(b);
 
-                    @Override
-                    public void run() {
-                        // rebuild energy nets for the deleted cable's neighbours
-                        for (Block b : attachedCables) {
-                            // those neighbours could have another path to each other
-                            EnergyNet net1 = getEnergyNet(b);
-                            if (net1 == null) {
-                                STBEnergyNet newNet1 = STBEnergyNet.buildNet(b, mgr);
-                                allNets.put(newNet1.getNetID(), newNet1);
-                            }
+                        if (net1 == null) {
+                            STBEnergyNet newNet1 = STBEnergyNet.buildNet(b, this);
+                            allNets.put(newNet1.getNetID(), newNet1);
                         }
                     }
                 });
@@ -161,8 +169,10 @@ public class EnergyNetManager {
         // scan adjacent blocks for cables
         for (BlockFace face : STBUtil.directFaces) {
             Block cable = b.getRelative(face);
+
             if (STBUtil.isCable(cable)) {
                 STBEnergyNet net = getEnergyNet(cable);
+
                 if (net == null) {
                     // cable with no net - create one!
                     STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
@@ -177,7 +187,7 @@ public class EnergyNetManager {
         }
     }
 
-    public void onMachineRemoved(ChargeableBlock machine) {
+    public void onMachineRemoved(@Nonnull ChargeableBlock machine) {
         for (EnergyNet net : machine.getAttachedEnergyNets()) {
             ((STBEnergyNet) net).removeMachine(machine);
         }
@@ -195,8 +205,10 @@ public class EnergyNetManager {
     private void addConnectedCables(Block start, STBEnergyNet net) {
         for (BlockFace face : STBUtil.directFaces) {
             Block b = start.getRelative(face);
+
             if (STBUtil.isCable(b)) {
                 EnergyNet net2 = getEnergyNet(b);
+
                 if (net2 == null) {
                     net.addCable(b);
                     addConnectedCables(b, net);
@@ -205,15 +217,19 @@ public class EnergyNetManager {
         }
     }
 
-    private static List<AdjacentMachine> getAdjacentMachines(Block cable) {
-        final List<AdjacentMachine> attachedMachines = new ArrayList<AdjacentMachine>();
+    @Nonnull
+    private static List<AdjacentMachine> getAdjacentMachines(@Nonnull Block cable) {
+        final List<AdjacentMachine> attachedMachines = new ArrayList<>();
+
         for (BlockFace face : STBUtil.directFaces) {
             Block b = cable.getRelative(face);
             BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
+
             if (machine != null) {
                 attachedMachines.add(new AdjacentMachine(machine, face));
             }
         }
+
         return attachedMachines;
     }
 
@@ -224,19 +240,24 @@ public class EnergyNetManager {
      *            the block to check
      * @return set of up to 6 integers, representing energy net IDs
      */
-    private Set<Integer> getAdjacentNets(Block startBlock) {
-        Set<Integer> res = new HashSet<Integer>();
+    @Nonnull
+    private Set<Integer> getAdjacentNets(@Nonnull Block startBlock) {
+        Set<Integer> res = new HashSet<>();
+
         for (BlockFace face : STBUtil.directFaces) {
             EnergyNet net = getEnergyNet(startBlock.getRelative(face));
+
             if (net != null) {
                 res.add(net.getNetID());
             }
         }
+
         return res;
     }
 
     private void deleteEnergyNet(int netID) {
         STBEnergyNet enet = allNets.get(netID);
+
         if (enet != null) {
             enet.shutdown();
             allNets.remove(netID);

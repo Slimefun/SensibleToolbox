@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.util;
 
+import javax.annotation.Nonnull;
+
 public enum UnicodeSymbol {
 
     ARROW_LEFT("\u21E6"),
@@ -13,12 +15,13 @@ public enum UnicodeSymbol {
     CENTERED_POINT("\u2022"),
     SQUARE("\u2588");
 
-    String code;
+    private final String code;
 
-    UnicodeSymbol(String code) {
+    UnicodeSymbol(@Nonnull String code) {
         this.code = code;
     }
 
+    @Nonnull
     public String toUnicode() {
         return this.code;
     }

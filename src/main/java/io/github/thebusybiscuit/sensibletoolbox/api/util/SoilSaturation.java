@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.util;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.block.Block;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -9,8 +11,12 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 /**
  * Manage the "saturation" level of a block for the purposes of STB
  * farming tools.
+ * 
+ * @author desht
  */
-public class SoilSaturation {
+public final class SoilSaturation {
+
+    private SoilSaturation() {}
 
     private static final String LAST_WATERED = "STB_LastWatered";
     private static final String SATURATION = "STB_Saturation";
@@ -28,7 +34,7 @@ public class SoilSaturation {
      *            the block to test
      * @return the time that the block was last watered
      */
-    public static long getLastWatered(Block b) {
+    public static long getLastWatered(@Nonnull Block b) {
         for (MetadataValue v : b.getMetadata(LAST_WATERED)) {
             if (v.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
                 return v.asLong();
@@ -46,7 +52,7 @@ public class SoilSaturation {
      * @param lastWatered
      *            the time that the block was last watered
      */
-    public static void setLastWatered(Block b, long lastWatered) {
+    public static void setLastWatered(@Nonnull Block b, long lastWatered) {
         b.setMetadata(LAST_WATERED, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), lastWatered));
     }
 
@@ -57,7 +63,7 @@ public class SoilSaturation {
      *            the block to test
      * @return the block's current saturation level
      */
-    public static int getSaturationLevel(Block b) {
+    public static int getSaturationLevel(@Nonnull Block b) {
         for (MetadataValue v : b.getMetadata(SATURATION)) {
             if (v.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
                 return v.asInt();
@@ -74,7 +80,7 @@ public class SoilSaturation {
      * @param saturationLevel
      *            the new saturation level
      */
-    public static void setSaturationLevel(Block b, int saturationLevel) {
+    public static void setSaturationLevel(@Nonnull Block b, int saturationLevel) {
         b.setMetadata(SATURATION, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), saturationLevel));
     }
 
@@ -84,7 +90,7 @@ public class SoilSaturation {
      * @param b
      *            the block to update
      */
-    public static void clear(Block b) {
+    public static void clear(@Nonnull Block b) {
         b.removeMetadata(LAST_WATERED, SensibleToolboxPlugin.getInstance());
         b.removeMetadata(SATURATION, SensibleToolboxPlugin.getInstance());
     }

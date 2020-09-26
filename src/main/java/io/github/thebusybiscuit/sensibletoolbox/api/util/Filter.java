@@ -12,6 +12,9 @@ import javax.annotation.Nonnull;
 /**
  * A class which can filter items based on several criteria: whitelist/blacklist,
  * filter by material, by block data or by item metadata.
+ * 
+ * @author desht
+ * @author TheBusyBiscuit
  */
 public class Filter implements Cloneable {
 

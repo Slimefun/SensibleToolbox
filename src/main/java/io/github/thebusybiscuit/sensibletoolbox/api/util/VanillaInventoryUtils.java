@@ -39,8 +39,12 @@ public class VanillaInventoryUtils {
     public static Optional<Inventory> getVanillaInventory(Block target) {
         BlockState state = target.getState();
 
-        if (state instanceof InventoryHolder) return Optional.of(((InventoryHolder) state).getInventory());
-        else return Optional.empty();
+        if (state instanceof InventoryHolder) {
+            return Optional.of(((InventoryHolder) state).getInventory());
+        }
+        else {
+            return Optional.empty();
+        }
     }
 
     /**

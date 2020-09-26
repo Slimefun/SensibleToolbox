@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
@@ -36,7 +39,9 @@ import me.desht.dhutils.block.BlockUtil;
 /**
  * A collection of miscellaneous utility methods.
  */
-public class STBUtil {
+public final class STBUtil {
+
+    private STBUtil() {}
 
     /**
      * The block faces directly adjacent to a block.
@@ -58,7 +63,7 @@ public class STBUtil {
      *            the material to check
      * @return true if the material is a crop
      */
-    public static boolean isCrop(Material m) {
+    public static boolean isCrop(@Nonnull Material m) {
         return m == Material.WHEAT || m == Material.CARROTS || m == Material.POTATOES || m == Material.PUMPKIN_STEM || m == Material.MELON_STEM || m == Material.BEETROOTS || m == Material.SWEET_BERRY_BUSH;
     }
 
@@ -69,7 +74,7 @@ public class STBUtil {
      *            the material to check
      * @return true if the material is a plant
      */
-    public static boolean isPlant(Material type) {
+    public static boolean isPlant(@Nonnull Material type) {
         if (isCrop(type)) {
             return true;
         }
@@ -108,7 +113,7 @@ public class STBUtil {
      *            the material to check
      * @return true if the material is wearable
      */
-    public static boolean isWearable(Material type) {
+    public static boolean isWearable(@Nonnull Material type) {
         switch (type) {
         case LEATHER_HELMET:
         case LEATHER_BOOTS:
@@ -151,7 +156,8 @@ public class STBUtil {
         return result;
     }
 
-    public static Material getCropType(Material seedType) {
+    @Nullable
+    public static Material getCropType(@Nonnull Material seedType) {
         switch (seedType) {
         case WHEAT_SEEDS:
             return Material.WHEAT;
@@ -179,12 +185,14 @@ public class STBUtil {
      *            the metadata key
      * @return the metadata value, or null if there is none
      */
-    public static Object getMetadataValue(Metadatable m, String key) {
+    @Nullable
+    public static Object getMetadataValue(@Nonnull Metadatable m, @Nonnull String key) {
         for (MetadataValue mv : m.getMetadata(key)) {
             if (mv.getOwningPlugin() == SensibleToolboxPlugin.getInstance()) {
                 return mv.value();
             }
         }
+
         return null;
     }
 
@@ -195,7 +203,8 @@ public class STBUtil {
      *            the dye colour
      * @return the nearest matching chat colour
      */
-    public static ChatColor dyeColorToChatColor(DyeColor dyeColor) {
+    @Nonnull
+    public static ChatColor dyeColorToChatColor(@Nonnull DyeColor dyeColor) {
         switch (dyeColor) {
         case BLACK:
             return ChatColor.DARK_GRAY;
@@ -270,6 +279,7 @@ public class STBUtil {
      *            the yaw to convert
      * @return the nearest block face
      */
+    @Nonnull
     public static BlockFace getFaceFromYaw(float yaw) {
         double rot = yaw % 360;
 
@@ -304,7 +314,7 @@ public class STBUtil {
      *            the face to check
      * @return true if the given block face is exposed
      */
-    public static boolean isExposed(Block block, BlockFace face) {
+    public static boolean isExposed(@Nonnull Block block, @Nonnull BlockFace face) {
         return !block.getRelative(face).getType().isOccluding();
     }
 
@@ -316,7 +326,7 @@ public class STBUtil {
      *            the block to check
      * @return true if any face of the block is exposed
      */
-    public static boolean isExposed(Block block) {
+    public static boolean isExposed(@Nonnull Block block) {
         for (BlockFace face : directFaces) {
             if (isExposed(block, face)) {
                 return true;
@@ -333,7 +343,8 @@ public class STBUtil {
      *            the chargeable item or block
      * @return a formatted string showing the chargeable's charge
      */
-    public static String getChargeString(Chargeable ch) {
+    @Nonnull
+    public static String getChargeString(@Nonnull Chargeable ch) {
         double d = ch.getCharge() / ch.getMaxCharge();
         ChatColor cc;
 
@@ -371,13 +382,13 @@ public class STBUtil {
      *            the item stack
      * @return a formatted description of the item stack
      */
-    public static String describeItemStack(ItemStack stack) {
+    @Nonnull
+    public static String describeItemStack(@Nullable ItemStack stack) {
         if (stack == null) {
             return "nothing";
         }
 
-        String res = stack.getAmount() + " x " + ItemUtils.getItemName(stack);
-        return res;
+        return stack.getAmount() + " x " + ItemUtils.getItemName(stack);
     }
 
     /**
@@ -416,8 +427,7 @@ public class STBUtil {
      *            the block to check
      * @return true if the block is a water source block
      */
-    @SuppressWarnings("deprecation")
-    public static boolean isLiquidSourceBlock(Block block) {
+    public static boolean isLiquidSourceBlock(@Nonnull Block block) {
         return block.isLiquid() && block.getData() == 0;
     }
 
@@ -427,9 +437,10 @@ public class STBUtil {
      *
      * @param block
      *            the block to check
+     * 
      * @return true if the block is an infinite water source
      */
-    public static boolean isInfiniteWaterSource(Block block) {
+    public static boolean isInfiniteWaterSource(@Nonnull Block block) {
         if (isLiquidSourceBlock(block) && block.getType() != Material.LAVA) {
             int n = 0;
 
@@ -456,7 +467,7 @@ public class STBUtil {
      *            the block to check
      * @return true if the block can be used to fabricate with, false otherwise
      */
-    public static boolean canFabricateWith(Block block) {
+    public static boolean canFabricateWith(@Nullable Block block) {
         return block != null && block.getType() == Material.CRAFTING_TABLE;
     }
 
@@ -468,7 +479,7 @@ public class STBUtil {
      *            the item stack to check
      * @return true if the item can be used to fabricate with, false otherwise
      */
-    public static boolean canFabricateWith(ItemStack stack) {
+    public static boolean canFabricateWith(@Nullable ItemStack stack) {
         return stack != null && stack.getType() == Material.CRAFTING_TABLE;
     }
 
@@ -479,7 +490,8 @@ public class STBUtil {
      * @param player
      *            the player
      */
-    public static void complain(Player player) {
+    public static void complain(@Nonnull Player player) {
+        Validate.notNull(player, "Cannot complain to nobody");
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
     }
 
@@ -503,17 +515,6 @@ public class STBUtil {
     }
 
     /**
-     * Check if the given material is leaves.
-     *
-     * @param type
-     *            the material to check
-     * @return true if the material is any kind of tree leaf; false otherwise
-     */
-    public static boolean isLeaves(Material type) {
-        return Tag.LEAVES.isTagged(type);
-    }
-
-    /**
      * Give the items to a player, dropping any excess items on the ground.
      *
      * @param player
@@ -529,7 +530,8 @@ public class STBUtil {
         }
     }
 
-    public static List<String> dumpItemStack(ItemStack stack) {
+    @Nonnull
+    public static List<String> dumpItemStack(@Nullable ItemStack stack) {
         if (stack == null) {
             return Collections.emptyList();
         }
@@ -720,21 +722,5 @@ public class STBUtil {
     public static boolean isPotionIngredient(Material type) {
         // TODO Fix Potion Ingredient lookup
         return false;
-    }
-
-    /**
-     * @deprecated Redundant.
-     */
-    @Deprecated
-    public static boolean isInteractive(Material type) {
-        return type.isInteractable();
-    }
-
-    /**
-     * @deprecated Redundant.
-     */
-    @Deprecated
-    public static boolean isFuel(Material type) {
-        return type.isFuel();
     }
 }

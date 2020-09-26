@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
@@ -342,27 +340,6 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
             }
         }
         return result.toString();
-    }
-
-    @Deprecated
-    protected Map<String, String> parseCommandOptions(String[] args, int start) {
-        Map<String, String> res = new HashMap<>();
-
-        Pattern pattern = Pattern.compile("^-(.+)"); //$NON-NLS-1$
-
-        for (int i = start; i < args.length; ++i) {
-            Matcher matcher = pattern.matcher(args[i]);
-            if (matcher.find()) {
-                String opt = matcher.group(1);
-                try {
-                    res.put(opt, args[++i]);
-                }
-                catch (ArrayIndexOutOfBoundsException e) {
-                    res.put(opt, null);
-                }
-            }
-        }
-        return res;
     }
 
     /**
