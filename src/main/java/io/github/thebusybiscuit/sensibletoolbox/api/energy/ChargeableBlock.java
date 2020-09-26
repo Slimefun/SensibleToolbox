@@ -5,8 +5,12 @@ import org.bukkit.block.BlockFace;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a block that my be connected to an energy network.
+ * 
+ * @author desht
  */
 public interface ChargeableBlock extends Chargeable {
 
@@ -15,7 +19,8 @@ public interface ChargeableBlock extends Chargeable {
      *
      * @return the block's location
      */
-    public Location getLocation();
+    @Nonnull
+    Location getLocation();
 
     /**
      * Check if this block accepts energy from an energy net on the given face.
@@ -24,7 +29,7 @@ public interface ChargeableBlock extends Chargeable {
      *            the block face to check
      * @return true if energy is accepted, false otherwise.
      */
-    public boolean acceptsEnergy(BlockFace face);
+    boolean acceptsEnergy(BlockFace face);
 
     /**
      * Check if this block can supply energy to an energy net on the given face.
@@ -33,7 +38,7 @@ public interface ChargeableBlock extends Chargeable {
      *            the block face to check
      * @return true if energy can be supplied, false otherwise.
      */
-    public boolean suppliesEnergy(BlockFace face);
+    boolean suppliesEnergy(BlockFace face);
 
     /**
      * Attach this machine to the given energy net, on the given face.
@@ -43,7 +48,7 @@ public interface ChargeableBlock extends Chargeable {
      * @param face
      *            the face of the machine block to attach to
      */
-    public void attachToEnergyNet(EnergyNet energyNet, BlockFace face);
+    void attachToEnergyNet(EnergyNet energyNet, BlockFace face);
 
     /**
      * Detach this machine from the given energy net.
@@ -51,7 +56,7 @@ public interface ChargeableBlock extends Chargeable {
      * @param energyNet
      *            the net to detach from
      */
-    public void detachFromEnergyNet(EnergyNet energyNet);
+    void detachFromEnergyNet(EnergyNet energyNet);
 
     /**
      * Get the faces on which the given energy net is connected.
@@ -60,6 +65,7 @@ public interface ChargeableBlock extends Chargeable {
      *            the net to look for
      * @return a list of block faces where this net is connected
      */
+    @Nonnull
     List<BlockFace> getFacesForNet(EnergyNet energyNet);
 
     /**
@@ -68,7 +74,8 @@ public interface ChargeableBlock extends Chargeable {
      *
      * @return an array of the attached energy nets.
      */
-    public EnergyNet[] getAttachedEnergyNets();
+    @Nonnull
+    EnergyNet[] getAttachedEnergyNets();
 
     /**
      * Get the slot in this block's GUI where the charge meter should be displayed.

@@ -3,6 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.api.energy;
 /**
  * Represents an STB item or block which can hold energy, meansured in units
  * of SCU: Sensible Charge Units.
+ * 
+ * @author desht
  */
 public interface Chargeable {
 
@@ -11,7 +13,7 @@ public interface Chargeable {
      *
      * @return the current SCU level
      */
-    public double getCharge();
+    double getCharge();
 
     /**
      * Change the current SCU level for this item
@@ -19,14 +21,14 @@ public interface Chargeable {
      * @param charge
      *            the new SCU level
      */
-    public void setCharge(double charge);
+    void setCharge(double charge);
 
     /**
      * Get the maximum SCU level for this item
      *
      * @return the maximum SCU level
      */
-    public int getMaxCharge();
+    int getMaxCharge();
 
     /**
      * Get the max rate at which this device can charge or discharge, in
@@ -37,5 +39,5 @@ public interface Chargeable {
      *
      * @return the max charge rate
      */
-    public int getChargeRate();
+    int getChargeRate();
 }
