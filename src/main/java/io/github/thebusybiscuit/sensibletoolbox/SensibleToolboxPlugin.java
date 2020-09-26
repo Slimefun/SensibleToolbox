@@ -207,7 +207,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         configCache = new ConfigCache(this);
         configCache.processConfig();
 
-        MiscUtil.setColouredConsole(getConfig().getBoolean("colored_console"));
+        MiscUtil.setColoredConsole(getConfig().getBoolean("colored_console"));
 
         LogUtils.setLogLevel(getConfig().getString("log_level", "INFO"));
 

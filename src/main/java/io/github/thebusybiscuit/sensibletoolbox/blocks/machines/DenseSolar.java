@@ -49,7 +49,7 @@ public class DenseSolar extends BasicSolarCell {
     }
 
     @Override
-    protected DyeColor getCapColour() {
+    protected DyeColor getCapColor() {
         return DyeColor.CYAN;
     }
 

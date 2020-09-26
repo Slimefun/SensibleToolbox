@@ -194,7 +194,7 @@ public class Filter {
     public enum FilterType {
 
         /**
-         * Match only the item's material. E.g. don't care about wool colour,
+         * Match only the item's material. E.g. don't care about wool color,
          * stone texture, coal vs. charcoal etc.
          */
         MATERIAL("Filter by Material"),

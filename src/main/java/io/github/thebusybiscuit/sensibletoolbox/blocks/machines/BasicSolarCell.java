@@ -260,7 +260,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     private void drawPVLayer(Block b) {
         // put a carpet on top of the main block to represent the PV cell
-        DyeColor color = pvCellLife > 0 ? getCapColour() : DyeColor.GRAY;
+        DyeColor color = pvCellLife > 0 ? getCapColor() : DyeColor.GRAY;
         Material carpet = MaterialCollections.getAllCarpetColors().get(color.ordinal());
         b.setType(carpet);
     }
@@ -281,7 +281,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         super.onBlockUnregistered(location);
     }
 
-    protected DyeColor getCapColour() {
+    protected DyeColor getCapColor() {
         return DyeColor.BLUE;
     }
 

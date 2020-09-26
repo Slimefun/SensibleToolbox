@@ -189,11 +189,11 @@ public class STBUtil {
     }
 
     /**
-     * Convert a dye colour to the nearest matching chat colour.
+     * Convert a dye color to the nearest matching chat color.
      *
      * @param dyeColor
-     *            the dye colour
-     * @return the nearest matching chat colour
+     *            the dye color
+     * @return the nearest matching chat color
      */
     public static ChatColor dyeColorToChatColor(DyeColor dyeColor) {
         switch (dyeColor) {
@@ -235,12 +235,12 @@ public class STBUtil {
     }
 
     /**
-     * Check if the given material is colourable. Ideally the relevant MaterialData
+     * Check if the given material is colorable. Ideally the relevant MaterialData
      * should implement the Colorable interface, but Bukkit doesn't have that yet...
      *
      * @param mat
      *            the material to check
-     * @return true if the material is colourable; false otherwise
+     * @return true if the material is colorable; false otherwise
      */
     public static boolean isColorable(Material mat) {
         if (Tag.WOOL.isTagged(mat)) {
