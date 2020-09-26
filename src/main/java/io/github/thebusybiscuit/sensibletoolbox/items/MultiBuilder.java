@@ -208,11 +208,11 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             if (player.isSneaking()) {
                 // set the target material
                 material = clicked.getType();
-                player.getInventory().setItemInMainHand(toItemStack());
+                player.setItemInHand(toItemStack());
             }
             else if (material != null) {
                 // replace multiple blocks
-                int sharpness = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+                int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
                 int layers = 3 + sharpness;
                 startSwap(event.getPlayer(), this, clicked, material, layers);
                 Debugger.getInstance().debug(this + ": replacing " + layers + " layers of blocks");
@@ -240,8 +240,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
-        double chargeNeeded = chargePerOp * Math.pow(0.8, player.getInventory().getItemInMainHand()
-            .getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargeNeeded = chargePerOp * Math.pow(0.8,
+            player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         queue.offer(new SwapRecord(player, origin, origin.getType(), target, maxBlocks, builder, -1, chargeNeeded));
     }
 
@@ -307,7 +307,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private void doBuild(Player player, Block source, Set<Block> actualBlocks) {
-        ItemStack inHand = player.getInventory().getItemInMainHand();
+        ItemStack inHand = player.getItemInHand();
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
         // we know at this point that the tool has sufficient charge and that the player has sufficient material
@@ -324,11 +324,11 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
-        int sharpness = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+        int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
         int max = MAX_BUILD_BLOCKS + sharpness * 3;
         Material clickedType = clickedBlock.getType();
         double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION)
-            * Math.pow(0.8, player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+            * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
 
         if (ch == 0) {
@@ -516,7 +516,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // take SCU from the multibuilder...
                 rec.builder.setCharge(rec.builder.getCharge() - rec.chargeNeeded);
                 ItemStack builderItem = rec.builder.toItemStack();
-                rec.player.getInventory().setItemInMainHand(builderItem);
+                rec.player.setItemInHand(builderItem);
 
                 // give materials to the player...
                 if (builderItem.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1) {
