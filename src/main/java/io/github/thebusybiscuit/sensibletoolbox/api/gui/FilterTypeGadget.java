@@ -4,9 +4,9 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.Filtering;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.FilterType;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.Filtering;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.FilterType;
 
 /**
  * A GUI gadget which can display and change a filter's filter type.

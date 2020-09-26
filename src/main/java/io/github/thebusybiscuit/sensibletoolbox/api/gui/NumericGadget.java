@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 
 /**
  * A GUI gadget which allows an integer value to be displayed

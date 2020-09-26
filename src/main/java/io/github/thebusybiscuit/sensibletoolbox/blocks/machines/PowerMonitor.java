@@ -11,8 +11,8 @@ import io.github.thebusybiscuit.cscorelib2.math.DoubleHandler;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 
 public class PowerMonitor extends BaseSTBBlock {
 

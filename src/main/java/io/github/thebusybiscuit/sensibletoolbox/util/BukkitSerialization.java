@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.util;
+package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

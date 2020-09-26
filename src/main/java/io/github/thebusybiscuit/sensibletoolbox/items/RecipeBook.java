@@ -39,6 +39,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -56,11 +57,10 @@ import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.RecipeUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.STBFurnaceRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.core.STBItemRegistry;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
@@ -200,7 +200,7 @@ public class RecipeBook extends BaseSTBItem {
             filteredItems = new ArrayList<>();
 
             for (ItemStack stack : fullItemList) {
-                if (filterString.isEmpty() || ItemNames.lookup(stack).toLowerCase().contains(filterString)) {
+                if (filterString.isEmpty() || ItemUtils.getItemName(stack).toLowerCase().contains(filterString)) {
                     BaseSTBItem stbItem = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
                     if (includeItem(stbItem)) {
@@ -581,7 +581,7 @@ public class RecipeBook extends BaseSTBItem {
             ItemCost cost = new ItemCost(ingredient);
 
             if (!cost.isAffordable(player, false, inventories)) {
-                MiscUtil.errorMessage(player, "Missing: &f" + ItemNames.lookup(ingredient));
+                MiscUtil.errorMessage(player, "Missing: &f" + ItemUtils.getItemName(ingredient));
                 ok = false;
             }
 
@@ -621,7 +621,7 @@ public class RecipeBook extends BaseSTBItem {
 
         player.getInventory().addItem(result);
         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
-        MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemNames.lookup(result));
+        MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemUtils.getItemName(result));
     }
 
     private void fabricateNormal(List<ItemStack> taken, ItemStack result) {
@@ -647,7 +647,7 @@ public class RecipeBook extends BaseSTBItem {
 
         player.getInventory().addItem(result);
         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
-        MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(result));
+        MiscUtil.statusMessage(player, "Fabricated: &f" + ItemUtils.getItemName(result));
     }
 
     private List<ItemStack> mergeIngredients() {
@@ -658,6 +658,7 @@ public class RecipeBook extends BaseSTBItem {
             // ItemStack stack = gui.getInventory().getItem(slot);
             if (stack != null) {
                 Integer existing = amounts.get(stack);
+
                 if (existing == null) {
                     amounts.put(stack, 1);
                 }
@@ -666,6 +667,7 @@ public class RecipeBook extends BaseSTBItem {
                 }
             }
         }
+
         List<ItemStack> res = new ArrayList<>();
 
         for (Map.Entry<ItemStack, Integer> e : amounts.entrySet()) {
@@ -723,7 +725,7 @@ public class RecipeBook extends BaseSTBItem {
         if (!trail.isEmpty()) {
             ItemStack prevStack = fullItemList.get(trail.peek().item);
             String label = "< Back to Last Recipe";
-            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, label, new String[] { ItemNames.lookup(prevStack) }, GO_BACK_TEXTURE_2, () -> {
+            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, label, new String[] { ItemUtils.getItemName(prevStack) }, GO_BACK_TEXTURE_2, () -> {
                 ItemAndRecipeNumber ir = trail.pop();
                 viewingItem = ir.item;
                 recipeNumber = ir.recipe;
@@ -731,7 +733,7 @@ public class RecipeBook extends BaseSTBItem {
             }));
         }
 
-        String lore = "for " + ItemNames.lookup(result);
+        String lore = "for " + ItemUtils.getItemName(result);
         int nRecipes = recipes.size();
 
         if (nRecipes > 1) {
@@ -837,7 +839,7 @@ public class RecipeBook extends BaseSTBItem {
 
         @Override
         public int compare(ItemStack o1, ItemStack o2) {
-            return ChatColor.stripColor(ItemNames.lookup(o1) == null ? "" : ItemNames.lookup(o1)).compareTo(ChatColor.stripColor(ItemNames.lookup(o2) == null ? "" : ItemNames.lookup(o2)));
+            return ChatColor.stripColor(ItemUtils.getItemName(o1) == null ? "" : ItemUtils.getItemName(o1)).compareTo(ChatColor.stripColor(ItemUtils.getItemName(o2) == null ? "" : ItemUtils.getItemName(o2)));
         }
 
     }

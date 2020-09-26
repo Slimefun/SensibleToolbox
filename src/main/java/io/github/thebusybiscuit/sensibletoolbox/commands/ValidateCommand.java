@@ -13,8 +13,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;

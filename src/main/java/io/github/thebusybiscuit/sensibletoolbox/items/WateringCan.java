@@ -27,8 +27,8 @@ import org.bukkit.inventory.meta.PotionMeta;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.SoilSaturation;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
 import me.desht.dhutils.MiscUtil;
 
 public class WateringCan extends BaseSTBItem {

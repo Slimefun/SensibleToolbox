@@ -31,8 +31,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUIListener;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.MonitorGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 

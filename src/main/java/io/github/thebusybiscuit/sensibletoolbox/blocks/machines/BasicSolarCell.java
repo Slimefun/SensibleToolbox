@@ -32,9 +32,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.LightMeter;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.PVCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.SunlightLevels;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 

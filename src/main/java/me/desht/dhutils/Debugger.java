@@ -1,8 +1,16 @@
 package me.desht.dhutils;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * The {@link Debugger} provides some useful debugging tools
+ * 
+ * @author desht
+ *
+ */
 public class Debugger {
 
     private static final String DEBUG_COLOR = ChatColor.DARK_GREEN.toString();
@@ -15,14 +23,16 @@ public class Debugger {
         level = 0;
     }
 
+    @Nonnull
     public static synchronized Debugger getInstance() {
         if (instance == null) {
             instance = new Debugger();
         }
+
         return instance;
     }
 
-    public void setPrefix(String prefix) {
+    public void setPrefix(@Nonnull String prefix) {
         this.prefix = prefix;
     }
 
@@ -50,11 +60,6 @@ public class Debugger {
         if (msgLevel <= level && target != null) {
             target.sendMessage(DEBUG_COLOR + prefix + message);
         }
-    }
-
-    @Override
-    public Debugger clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
     }
 
 }

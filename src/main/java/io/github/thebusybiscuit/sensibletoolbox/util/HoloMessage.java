@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.util;
+package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

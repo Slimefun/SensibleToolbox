@@ -27,10 +27,10 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.LandMarker;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.ToughMachineFrame;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 

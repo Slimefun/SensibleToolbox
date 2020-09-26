@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.util;
+package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

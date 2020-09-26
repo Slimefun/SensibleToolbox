@@ -30,17 +30,18 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemNames;
+import me.desht.dhutils.block.BlockAndPosition;
 import me.desht.dhutils.block.BlockUtil;
 import me.desht.dhutils.cost.ItemCost;
 
@@ -150,7 +151,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         case BUILD:
             return "Build";
         case EXCHANGE:
-            String s = material == null ? "" : " [" + ItemNames.lookup(new ItemStack(material)) + "]";
+            String s = material == null ? "" : " [" + ItemUtils.getItemName(new ItemStack(material)) + "]";
             return "Swap " + s;
         default:
             return null;
@@ -369,7 +370,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         case SOUTH:
         case EAST:
         case WEST:
-            BlockUtil.BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
+            BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
             double frac = pos.point.getY() % 1;
 
             if (frac > 0.85 || frac < 0.15) {

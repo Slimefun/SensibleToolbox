@@ -43,7 +43,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.RecipeUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.AngelicBlock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.BlockUpdateDetector;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.Elevator;
@@ -167,8 +166,7 @@ import io.github.thebusybiscuit.sensibletoolbox.listeners.SoundMufflerListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.TrashCanListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.WorldListener;
 import io.github.thebusybiscuit.sensibletoolbox.slimefun.SlimefunBridge;
-import me.desht.dhutils.ConfigurationListener;
-import me.desht.dhutils.ConfigurationManager;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.ItemGlow;
@@ -176,6 +174,8 @@ import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.CommandManager;
+import me.desht.dhutils.configuration.ConfigurationListener;
+import me.desht.dhutils.configuration.ConfigurationManager;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
@@ -498,7 +498,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     @Override
-    public Object onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+    public <T> T onConfigurationValidate(ConfigurationManager configurationManager, String key, T oldVal, T newVal) {
         if (key.equals("save_interval")) {
             Validate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
         }
@@ -536,7 +536,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     @Override
-    public void onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+    public <T> void onConfigurationChanged(ConfigurationManager configurationManager, String key, T oldVal, T newVal) {
         if (key.equals("debug_level")) {
             Debugger dbg = Debugger.getInstance();
             dbg.setLevel((Integer) newVal);

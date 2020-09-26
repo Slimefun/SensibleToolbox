@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.util;
+package io.github.thebusybiscuit.sensibletoolbox.api.filters;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;

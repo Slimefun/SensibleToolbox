@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.gui;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 
 /**
  * Monitors an integer quantity.

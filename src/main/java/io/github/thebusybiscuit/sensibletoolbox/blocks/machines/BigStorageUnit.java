@@ -27,8 +27,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 
 public class BigStorageUnit extends AbstractProcessingMachine {

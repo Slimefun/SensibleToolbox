@@ -30,8 +30,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import me.desht.dhutils.ItemNames;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 
 public abstract class CombineHoe extends BaseSTBItem {
@@ -97,7 +96,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     @Override
     public String[] getExtraLore() {
         if (getSeedType() != null && getSeedAmount() > 0) {
-            String s = ItemNames.lookup(new ItemStack(getSeedType()));
+            String s = ItemUtils.getItemName(new ItemStack(getSeedType()));
             return new String[] { ChatColor.WHITE + "Seed bag: " + ChatColor.GOLD + getSeedAmount() + " x " + s };
         }
         else {

@@ -1,11 +1,14 @@
 package me.desht.dhutils.commands;
 
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import me.desht.dhutils.*;
-import me.desht.dhutils.commands.AbstractCommand.CommandRecord;
+import javax.annotation.Nonnull;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,43 +17,25 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Joiner;
 
-public class CommandManager {
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.PermissionUtils;
 
-    private static final List<String> EMPTY_STRING_LIST = Collections.emptyList();
+public class CommandManager {
 
     private final List<AbstractCommand> cmdList = new ArrayList<>();
     private Plugin plugin;
 
-    public CommandManager(Plugin plugin) {
+    public CommandManager(@Nonnull Plugin plugin) {
         this.plugin = plugin;
     }
 
-    public void registerCommand(AbstractCommand cmd) {
+    public void registerCommand(@Nonnull AbstractCommand cmd) {
+        Validate.notNull(cmd, "Command cannot be null!");
+
         Debugger.getInstance().debug(2, "register command: " + cmd.getClass().getName());
         cmdList.add(cmd);
-    }
-
-    public void registerAllCommands(String packageName) {
-        Package p = Package.getPackage(packageName);
-        if (p == null) {
-            throw new IllegalArgumentException("Unknown package: " + packageName);
-        }
-
-        List<Class<?>> classes = ClassEnumerator.getClassesForPackage(plugin, p);
-
-        for (Class<?> c : classes) {
-            if (AbstractCommand.class.isAssignableFrom(c) && !Modifier.isAbstract(c.getModifiers())) {
-                AbstractCommand cmd;
-
-                try {
-                    cmd = (AbstractCommand) c.newInstance();
-                    registerCommand(cmd);
-                }
-                catch (Exception e) {
-                    LogUtils.warning("can't register command for " + c.getName() + ": " + e.getMessage());
-                }
-            }
-        }
     }
 
     private boolean dispatch(CommandSender sender, String cmdName, String label, String[] args) {
@@ -109,7 +94,7 @@ public class CommandManager {
 
         List<AbstractCommand> possibleMatches = getPossibleMatches(command.getName(), args, true);
 
-        if (possibleMatches.size() == 0) {
+        if (possibleMatches.isEmpty()) {
             return noCompletions(sender);
         }
         else if (possibleMatches.size() == 1 && args.length > possibleMatches.get(0).getMatchedCommand().size()) {
@@ -147,12 +132,14 @@ public class CommandManager {
         }
     }
 
-    private String[] subRange(String[] a, int from) {
+    @Nonnull
+    private String[] subRange(@Nonnull String[] a, int from) {
         String[] res = new String[a.length - from];
         System.arraycopy(a, from, res, 0, res.length);
         return res;
     }
 
+    @Nonnull
     private List<AbstractCommand> getPossibleMatches(String cmdName, String[] args, boolean partialOk) {
         List<AbstractCommand> possibleMatches = new ArrayList<>();
 
@@ -167,16 +154,12 @@ public class CommandManager {
         return possibleMatches;
     }
 
-    static List<String> noCompletions() {
-        return EMPTY_STRING_LIST;
-    }
-
     static List<String> noCompletions(CommandSender sender) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
         }
 
-        return EMPTY_STRING_LIST;
+        return Collections.emptyList();
     }
 }

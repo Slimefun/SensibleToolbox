@@ -1,5 +1,15 @@
-package me.desht.dhutils;
+package me.desht.dhutils.configuration;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
+import me.desht.dhutils.DHUtilsException;
+
+/**
+ * This interface can listen to changes in a {@link FileConfiguration}.
+ * 
+ * @author desht
+ *
+ */
 public interface ConfigurationListener {
 
     /**
@@ -19,7 +29,7 @@ public interface ConfigurationListener {
      * @throws DHUtilsException
      *             to prevent the change from occurring
      */
-    public Object onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal);
+    <T> T onConfigurationValidate(ConfigurationManager configurationManager, String key, T oldVal, T newVal);
 
     /**
      * Called when a change has been made to this configuration.
@@ -33,5 +43,5 @@ public interface ConfigurationListener {
      * @param newVal
      *            the new configuration value
      */
-    public void onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal);
+    <T> void onConfigurationChanged(ConfigurationManager configurationManager, String key, T oldVal, T newVal);
 }

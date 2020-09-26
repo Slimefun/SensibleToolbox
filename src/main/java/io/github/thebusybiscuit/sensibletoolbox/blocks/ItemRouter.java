@@ -34,14 +34,14 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ReceiverModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.SpeedModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.StackModule;
+import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 

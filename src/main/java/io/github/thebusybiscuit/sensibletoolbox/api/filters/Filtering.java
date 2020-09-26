@@ -1,10 +1,13 @@
-package io.github.thebusybiscuit.sensibletoolbox.api;
+package io.github.thebusybiscuit.sensibletoolbox.api.filters;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.util.Filter;
+import javax.annotation.Nonnull;
 
 /**
  * Represents an object that can filter items.
+ * 
+ * @author desht
  */
+@FunctionalInterface
 public interface Filtering {
 
     /**
@@ -12,5 +15,6 @@ public interface Filtering {
      *
      * @return a filter object
      */
-    public Filter getFilter();
+    @Nonnull
+    Filter getFilter();
 }
