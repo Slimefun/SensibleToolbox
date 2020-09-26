@@ -24,11 +24,14 @@ public class DBUpdaterTask implements Runnable {
     public void run() {
         Debugger.getInstance().debug("database writer thread starting");
         boolean finished = false;
+
         while (!finished) {
             try {
-                UpdateRecord rec = manager.getUpdateRecord(); // block till available
+                // block till available
+                UpdateRecord rec = manager.getUpdateRecord();
                 int n = 0;
                 Debugger.getInstance().debug("DB write [" + rec + "]");
+
                 switch (rec.getOp()) {
                 case FINISH:
                     finished = true;
@@ -62,15 +65,18 @@ public class DBUpdaterTask implements Runnable {
                     n = deleteStmt.executeUpdate();
                     break;
                 }
+
                 Debugger.getInstance().debug("DB write complete: rows modified = " + n);
             }
             catch (InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
             catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+
         Debugger.getInstance().debug("database writer thread exiting");
     }
 }

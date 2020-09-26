@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.FurnaceRecipe;
@@ -21,8 +24,13 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 
 /**
  * Collection of miscellaneous recipe-related utility methods.
+ * 
+ * @author desht
+ * @author TheBusyBiscuit
  */
-public class RecipeUtil {
+public final class RecipeUtil {
+
+    private RecipeUtil() {}
 
     private static final Set<Material> vanillaSmelts = new HashSet<>();
     private static final Map<ItemStack, List<ItemStack>> reverseCustomSmelts = new HashMap<>();
@@ -68,7 +76,7 @@ public class RecipeUtil {
         }
     }
 
-    private static void recordReverseSmelt(ItemStack result, ItemStack ingredient) {
+    private static void recordReverseSmelt(@Nonnull ItemStack result, @Nonnull ItemStack ingredient) {
         if (!reverseCustomSmelts.containsKey(result)) {
             reverseCustomSmelts.put(result, new ArrayList<>());
         }
@@ -85,7 +93,8 @@ public class RecipeUtil {
      *            the item stack to check
      * @return a list of the ingredients which could be smelted into the item
      */
-    public static List<ItemStack> getSmeltingIngredientsFor(ItemStack stack) {
+    @Nonnull
+    public static List<ItemStack> getSmeltingIngredientsFor(@Nonnull ItemStack stack) {
         List<ItemStack> res = reverseCustomSmelts.get(stack);
         return res == null ? Collections.emptyList() : res;
     }
@@ -99,11 +108,12 @@ public class RecipeUtil {
      *            the material to check
      * @return true if vanilla items of the material may be smelted
      */
-    public static boolean isVanillaSmelt(Material mat) {
+    public static boolean isVanillaSmelt(@Nonnull Material mat) {
         return vanillaSmelts.contains(mat);
     }
 
-    public static String makeRecipeKey(ItemStack item) {
+    @Nonnull
+    public static String makeRecipeKey(@Nonnull ItemStack item) {
         String res = item.getType().toString();
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
@@ -113,12 +123,14 @@ public class RecipeUtil {
         return res;
     }
 
-    public static String makeRecipeKey(boolean ignoreData, ItemStack item) {
+    @Nonnull
+    public static String makeRecipeKey(boolean ignoreData, @Nullable ItemStack item) {
         if (item == null) {
             return "";
         }
 
         String res = item.getType().toString();
+
         if (!ignoreData && item.getDurability() != 32767) {
             res += ":" + item.getDurability();
         }
@@ -126,6 +138,7 @@ public class RecipeUtil {
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             res += ":" + item.getItemMeta().getDisplayName();
         }
+
         return res;
     }
 }

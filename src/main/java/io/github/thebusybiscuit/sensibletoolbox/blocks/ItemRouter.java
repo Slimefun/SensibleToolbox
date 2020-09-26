@@ -34,14 +34,14 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ReceiverModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.SpeedModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.StackModule;
+import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
@@ -122,6 +122,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
 
@@ -276,17 +277,21 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     public void onServerTick() {
         boolean didSomeWork = false;
+
         if (needToProcessModules) {
             processModules(getGUI().getInventory(), MOD_SLOT_START);
             needToProcessModules = false;
         }
+
         if (needToScanBufferSlot) {
             bufferItem = getGUI().getItem(BUFFER_ITEM_SLOT);
             update(false);
             needToScanBufferSlot = false;
         }
+
         if (isRedstoneActive()) {
             Location loc = getLocation();
+
             for (ModuleAndAmount e : modules) {
                 if (e.module instanceof DirectionalItemRouterModule) {
                     DirectionalItemRouterModule dmod = (DirectionalItemRouterModule) e.module;
@@ -299,11 +304,13 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
                 }
 
             }
+
             if (didSomeWork) {
                 update(false);
                 playParticles(new Color(0, 0, 255));
             }
         }
+
         super.onServerTick();
     }
 
@@ -423,19 +430,11 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
-    @Deprecated
-    public <T extends ItemRouterModule> T findModule(Class<T> c) {
-        for (ModuleAndAmount e : modules) {
-            if (c.isAssignableFrom(e.module.getClass())) {
-                return c.cast(e.module);
-            }
-        }
-        return null;
-    }
-
     @Override
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
-        if (!hasAccessRights(uuid)) return 0;
+        if (!hasAccessRights(uuid)) {
+            return 0;
+        }
         // item routers don't care about sorters - they will take items from them happily
         if (bufferItem == null) {
             setBufferItem(item.clone());

@@ -14,8 +14,12 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 
 /**
  * Top-level collection of utility methods for Sensible Toolbox.
+ * 
+ * @author desht
  */
-public class SensibleToolbox {
+public final class SensibleToolbox {
+
+    private SensibleToolbox() {}
 
     private static SensibleToolboxPlugin instance;
 

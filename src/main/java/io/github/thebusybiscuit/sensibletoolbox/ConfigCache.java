@@ -1,11 +1,15 @@
 package io.github.thebusybiscuit.sensibletoolbox;
 
+import javax.annotation.Nonnull;
+
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import me.desht.dhutils.LogUtils;
 
 /**
  * Cache some frequently-access config values to reduce config lookup overhead
+ * 
+ * @author desht
  */
 public class ConfigCache {
 
@@ -16,7 +20,7 @@ public class ConfigCache {
     private int particleLevel;
     private boolean creativeEnderAccess;
 
-    public ConfigCache(SensibleToolboxPlugin plugin) {
+    public ConfigCache(@Nonnull SensibleToolboxPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -28,6 +32,7 @@ public class ConfigCache {
             LogUtils.warning("bad value for default_redstone in config.yml: must be one of ignore,high,low,pulsed (defaulting to ignore)");
             defaultRedstone = RedstoneBehaviour.IGNORE;
         }
+
         try {
             defaultAccess = AccessControl.valueOf(plugin.getConfig().getString("default_access").toUpperCase());
         }
@@ -35,24 +40,27 @@ public class ConfigCache {
             LogUtils.warning("bad value for default_access in config.yml: must be one of public,private,restricted (defaulting to public)");
             defaultAccess = AccessControl.PUBLIC;
         }
+
         noisyMachines = plugin.getConfig().getBoolean("noisy_machines");
         particleLevel = plugin.getConfig().getInt("particle_effects");
         creativeEnderAccess = plugin.getConfig().getBoolean("creative_ender_access");
     }
 
+    @Nonnull
     public RedstoneBehaviour getDefaultRedstone() {
         return defaultRedstone;
     }
 
-    void setDefaultRedstone(RedstoneBehaviour defaultRedstone) {
+    void setDefaultRedstone(@Nonnull RedstoneBehaviour defaultRedstone) {
         this.defaultRedstone = defaultRedstone;
     }
 
+    @Nonnull
     public AccessControl getDefaultAccess() {
         return defaultAccess;
     }
 
-    void setDefaultAccess(AccessControl defaultAccess) {
+    void setDefaultAccess(@Nonnull AccessControl defaultAccess) {
         this.defaultAccess = defaultAccess;
     }
 

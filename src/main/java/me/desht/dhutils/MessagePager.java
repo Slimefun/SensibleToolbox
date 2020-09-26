@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
+import javax.annotation.Nonnull;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,12 +31,12 @@ public class MessagePager {
 
     private int currentPage;
     private int pageSize;
-    private boolean parseColors;
+    private boolean parseColours;
 
     public MessagePager(CommandSender sender) {
         this.senderRef = new WeakReference<>(sender);
         this.currentPage = 1;
-        this.parseColors = false;
+        this.parseColours = false;
         this.pageSize = getDefaultPageSize();
         this.messages = new ArrayList<>();
     }
@@ -55,25 +56,11 @@ public class MessagePager {
     /**
      * Get the message pager for the given player.
      *
-     * @param playerName
-     *            the player name
-     * @return the player's message pager
-     * @deprecated use {@link #getPager(org.bukkit.command.CommandSender)}
-     */
-    @Deprecated
-    public static MessagePager getPager(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
-        return player == null ? null : getPager(player);
-    }
-
-    /**
-     * Get the message pager for the given player.
-     *
      * @param sender
      *            the command sender (a player or console)
      * @return the player's message pager
      */
-    public static MessagePager getPager(CommandSender sender) {
+    public static MessagePager getPager(@Nonnull CommandSender sender) {
         if (!pagers.containsKey(sender.getName())) {
             pagers.put(sender.getName(), new MessagePager(sender));
         }
@@ -88,7 +75,7 @@ public class MessagePager {
      * @param sender
      *            the command sender (a player or console)
      */
-    public static void deletePager(CommandSender sender) {
+    public static void deletePager(@Nonnull CommandSender sender) {
         deletePager(sender.getName());
     }
 
@@ -99,7 +86,7 @@ public class MessagePager {
      * @param playerName
      *            The player name
      */
-    public static void deletePager(String playerName) {
+    public static void deletePager(@Nonnull String playerName) {
         pagers.remove(playerName);
     }
 
@@ -117,26 +104,26 @@ public class MessagePager {
     }
 
     /**
-     * Clear this message buffer and switch off automatic color code parsing.
+     * Clear this message buffer and switch off automatic colour code parsing.
      *
      * @return this pager object for method chaining
      */
     public MessagePager clear() {
         currentPage = 1;
-        parseColors = false;
+        parseColours = false;
         messages.clear();
         return this;
     }
 
     /**
-     * Enable or disable color code parsing.
+     * Enable or disable colour code parsing.
      *
-     * @param parseColors
+     * @param parseColours
      *            true to enable parsing, false to disable
      * @return this pager object for method chaining
      */
-    public MessagePager setParseColors(boolean parseColors) {
-        this.parseColors = parseColors;
+    public MessagePager setParseColours(boolean parseColours) {
+        this.parseColours = parseColours;
         return this;
     }
 
@@ -156,11 +143,11 @@ public class MessagePager {
      * @param line
      *            The message line to add
      */
-    public void add(String line) {
+    public void add(@Nonnull String line) {
         Collections.addAll(messages, wrap(line));
     }
 
-    public void addListItem(String line) {
+    public void addListItem(@Nonnull String line) {
         add(BULLET + line);
     }
 
@@ -172,11 +159,11 @@ public class MessagePager {
      * @param lines
      *            List of message lines to add
      */
-    public void add(String[] lines) {
+    public void add(@Nonnull String[] lines) {
         add(Arrays.asList(lines));
     }
 
-    public void add(List<String> lines) {
+    public void add(@Nonnull List<String> lines) {
         // TODO: apply MinecraftChatStr.alignTags(lines, true)
         // in pagesize segments before adding to buffer
 
@@ -319,7 +306,7 @@ public class MessagePager {
             MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250c" + MinecraftChatStr.strPadCenterChat(header, 325, '\u2504'));
 
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
-                if (parseColors) {
+                if (parseColours) {
                     MiscUtil.generalMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.WHITE + getLine(i));
                 }
                 else {
@@ -335,7 +322,7 @@ public class MessagePager {
         else {
             // just dump the whole message buffer to the console
             for (String s : messages) {
-                if (parseColors) {
+                if (parseColours) {
                     MiscUtil.generalMessage(sender, s);
                 }
                 else {
@@ -348,8 +335,8 @@ public class MessagePager {
     private String[] wrap(String line) {
         CommandSender sender = senderRef.get();
 
-        if (sender != null && sender instanceof Player) {
-            String s = parseColors ? MiscUtil.parseColorSpec(sender, line) : line;
+        if (sender instanceof Player) {
+            String s = parseColours ? MiscUtil.parseColourSpec(sender, line) : line;
             return ChatPaginator.wordWrap(s, getLineLength());
         }
         else {

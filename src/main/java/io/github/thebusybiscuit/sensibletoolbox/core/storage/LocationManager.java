@@ -15,6 +15,9 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -30,7 +33,7 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
@@ -90,11 +93,6 @@ public class LocationManager {
             }
         }
         return instance;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
     }
 
     DBStorage getDbStorage() {
@@ -314,7 +312,8 @@ public class LocationManager {
      *            the chunk to check
      * @return an array of STB block objects
      */
-    public List<BaseSTBBlock> get(Chunk chunk) {
+    @Nonnull
+    public List<BaseSTBBlock> get(@Nonnull Chunk chunk) {
         List<BaseSTBBlock> res = new ArrayList<>();
 
         for (BaseSTBBlock stb : listBlocks(chunk.getWorld(), false)) {
@@ -389,7 +388,7 @@ public class LocationManager {
         lastSave = System.currentTimeMillis();
     }
 
-    public void loadFromDatabase(World world, String wantedType) throws SQLException {
+    public void loadFromDatabase(@Nonnull World world, @Nullable String wantedType) throws SQLException {
         ResultSet rs;
 
         if (wantedType == null) {
@@ -421,6 +420,7 @@ public class LocationManager {
 
                 if (stbItem != null) {
                     Location loc = new Location(world, x, y, z);
+
                     if (stbItem instanceof BaseSTBBlock) {
                         registerLocation(loc, (BaseSTBBlock) stbItem, false);
                     }
@@ -439,6 +439,8 @@ public class LocationManager {
                 LogUtils.severe(String.format("Can't load STB block at %s,%d,%d,%d: %s", world.getName(), x, y, z, e.getMessage()));
             }
         }
+
+        rs.close();
     }
 
     public void load() throws SQLException {
@@ -553,6 +555,7 @@ public class LocationManager {
         }
         catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
         try {

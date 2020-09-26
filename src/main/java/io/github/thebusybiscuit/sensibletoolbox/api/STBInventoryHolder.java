@@ -9,6 +9,8 @@ import java.util.UUID;
 
 /**
  * Represents an STB block which can hold an inventory of items.
+ * 
+ * @author desht
  */
 public interface STBInventoryHolder extends InventoryHolder {
 
@@ -27,7 +29,7 @@ public interface STBInventoryHolder extends InventoryHolder {
      *            ID of the player who is doing the extracting (may be null)
      * @return the number of items actually inserted
      */
-    public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid);
+    int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid);
 
     /**
      * Attempt to extract items from the block on the given side. The size of the returned
@@ -48,7 +50,7 @@ public interface STBInventoryHolder extends InventoryHolder {
      *            ID of the player who is doing the extracting (may be null)
      * @return the item stack extracted, or null if no item was extracted
      */
-    public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid);
+    ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid);
 
     /**
      * Get a view of the items which can be extracted from this inventory holder. Note that
@@ -62,7 +64,7 @@ public interface STBInventoryHolder extends InventoryHolder {
      *            UUID of the player trying to get the view
      * @return an inventory containing a copy of the items which can be extracted, may be null
      */
-    public Inventory showOutputItems(UUID uuid);
+    Inventory showOutputItems(UUID uuid);
 
     /**
      * Update (overwrite) the STB output inventory slots with the contents of the supplied inventory.

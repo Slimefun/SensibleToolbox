@@ -23,14 +23,14 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Joiner;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
+import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
@@ -89,7 +89,7 @@ public class ShowCommand extends AbstractCommand {
             for (String itemId : SensibleToolbox.getItemRegistry().getItemIds()) {
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(itemId);
                 String lore = Joiner.on("\\\\").join(item.getLore()).replace("\u00a7r", "");
-                String appearance = ItemNames.lookup(new ItemStack(item.getMaterial()));
+                String appearance = ItemUtils.getItemName(new ItemStack(item.getMaterial()));
                 if (item.hasGlow()) {
                     appearance += " (glowing)";
                 }

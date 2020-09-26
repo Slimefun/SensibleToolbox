@@ -19,20 +19,21 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Directional;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.Filtering;
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.Filter;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.FilterType;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.Filtering;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.DirectionGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.FilterTypeGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.Filter;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
-import me.desht.dhutils.ItemNames;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
 
@@ -72,7 +73,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
         if (conf.contains("filtered")) {
             boolean isWhite = conf.getBoolean("filterWhitelist", true);
-            Filter.FilterType filterType = Filter.FilterType.valueOf(conf.getString("filterType", "MATERIAL"));
+            FilterType filterType = FilterType.valueOf(conf.getString("filterType", "MATERIAL"));
             @SuppressWarnings("unchecked")
             List<ItemStack> l = (List<ItemStack>) conf.getList("filtered");
             filter = Filter.fromItemList(isWhite, l, filterType);
@@ -89,7 +90,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         conf.set("terminator", isTerminator());
 
         if (filter != null) {
-            conf.set("filtered", filter.listFiltered());
+            conf.set("filtered", filter.getFilterList());
             conf.set("filterWhitelist", filter.isWhiteList());
             conf.set("filterType", filter.getFilterType().toString());
         }
@@ -114,9 +115,9 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             lore[1] = ChatColor.GOLD + filter.getFilterType().getLabel();
             int i = 2;
 
-            for (ItemStack stack : filter.listFiltered()) {
+            for (ItemStack stack : filter.getFilterList()) {
                 int n = i / 2 + 1;
-                String name = ItemNames.lookup(stack);
+                String name = ItemUtils.getItemName(stack);
                 lore[n] = lore[n] == null ? LIST_ITEM + name : lore[n] + " " + LIST_ITEM + name;
                 i++;
             }
@@ -212,7 +213,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
     private void populateFilterInventory(Inventory inv) {
         int n = 0;
-        for (ItemStack stack : filter.listFiltered()) {
+        for (ItemStack stack : filter.getFilterList()) {
             inv.setItem(filterSlots[n], stack);
             if (++n >= filterSlots.length) {
                 break;

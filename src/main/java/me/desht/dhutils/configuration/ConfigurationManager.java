@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.configuration;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,6 +11,9 @@ import java.util.Map;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.Plugin;
+
+import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.Debugger;
 
 public class ConfigurationManager {
 

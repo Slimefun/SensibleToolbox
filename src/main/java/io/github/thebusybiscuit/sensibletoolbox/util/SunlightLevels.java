@@ -2,7 +2,9 @@ package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import org.bukkit.World;
 
-public class SunlightLevels {
+public final class SunlightLevels {
+
+    private SunlightLevels() {}
 
     // lookup table: map 15-minute interval to effective sun brightness
     private static final byte[] sunLevels = new byte[96];

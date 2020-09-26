@@ -9,7 +9,7 @@ public interface LightMeterHolder {
      *
      * @return a slot number
      */
-    public int getLightMeterSlot();
+    int getLightMeterSlot();
 
     /**
      * Return the item stack that should be used to represent this light
@@ -17,5 +17,5 @@ public interface LightMeterHolder {
      *
      * @return an item stack
      */
-    public ItemStack getLightMeterIndicator();
+    ItemStack getLightMeterIndicator();
 }

@@ -1,9 +1,12 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.util;
+package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -12,25 +15,30 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
- * Serialize a Bukkit inventory to/from a string.
+ * Serialize a Bukkit {@link Inventory} to or from a {@link String}.
  * <p/>
  * Credit for this goes to Comphenix: https://gist.github.com/aadnk/8138186
- * Modified by desht to explicitly serialize any attribute data discovered on items.
+ * 
+ * @author Comphenix
+ * @author desht
+ * @author TheBusyBiscuit
  */
-public class BukkitSerialization {
+public final class BukkitSerialization {
 
-    public static String toBase64(Inventory inventory) {
+    private BukkitSerialization() {}
+    
+    public static String toBase64(@Nonnull Inventory inventory) {
         return toBase64(inventory, 0);
     }
 
-    public static String toBase64(Inventory inventory, int maxItems) {
+    public static String toBase64(@Nonnull Inventory inventory, int maxItems) {
+        Validate.notNull(inventory, "Cannot serialize a 'null' Inventory!");
         if (maxItems <= 0 || maxItems > inventory.getSize()) {
             maxItems = inventory.getSize();
         }
 
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
+                BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
 
             // Write the size of the inventory
             dataOutput.writeInt(maxItems);
@@ -42,7 +50,6 @@ public class BukkitSerialization {
             }
 
             // Serialize that array
-            dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         }
         catch (IOException e) {
@@ -50,12 +57,14 @@ public class BukkitSerialization {
         }
     }
 
-    public static Inventory fromBase64(String data) throws IOException {
-        try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
-            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+    public static Inventory fromBase64(@Nonnull String data) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data)); 
+                BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
+
             int maxItems = dataInput.readInt();
-            int invSize = STBUtil.roundUp(maxItems, 9); // Bukkit inventory size must be multiple of 9
+
+            // Bukkit inventory size must be multiple of 9
+            int invSize = STBUtil.roundUp(maxItems, 9); 
             Inventory inventory = Bukkit.getServer().createInventory(null, invSize);
 
             // Read the serialized inventory
@@ -66,7 +75,7 @@ public class BukkitSerialization {
                     inventory.setItem(i, stack);
                 }
             }
-            dataInput.close();
+
             return inventory;
         }
         catch (ClassNotFoundException e) {

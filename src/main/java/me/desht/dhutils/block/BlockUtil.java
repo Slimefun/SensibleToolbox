@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -99,19 +101,6 @@ public final class BlockUtil {
         }
     }
 
-    public static class BlockAndPosition {
-
-        public final Block block;
-        public final BlockFace face;
-        public final Vector point;
-
-        public BlockAndPosition(Block block, BlockFace face, Vector point) {
-            this.block = block;
-            this.face = face;
-            this.point = point;
-        }
-    }
-
     public static BlockAndPosition getTargetPoint(Player player, Set<Material> transparent, int maxDistance) {
         List<Block> lastBlocks = player.getLastTwoTargetBlocks(transparent, maxDistance);
         Block block = lastBlocks.get(1);
@@ -124,6 +113,7 @@ public final class BlockUtil {
             // of course signs are thin, and we don't have hitbox data available via Bukkit
             // so we'll have to cheat...
             Sign s = (Sign) block.getState().getData();
+
             switch (s.getRotation()) {
             case EAST:
                 plane.add(new Vector(0.125, 0.0, 0.0));
@@ -171,6 +161,7 @@ public final class BlockUtil {
         return new BlockAndPosition(block, face, isect);
     }
 
+    @Nullable
     private static Vector isectLinePlane(Vector p0, Vector p1, Vector plane, Vector normal, double epsilon) {
         Vector u = p1.clone().subtract(p0);
         Vector w = p0.clone().subtract(plane);

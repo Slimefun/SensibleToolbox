@@ -2,6 +2,8 @@ package me.desht.dhutils;
 
 import java.util.Arrays;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,11 +16,22 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ChestMenu;
+import io.github.thebusybiscuit.sensibletoolbox.items.PaintBrush;
+
 /**
  * IconMenu - display a popup inventory window with selectable icons.
  *
  * Courtesy of nisovin: http://forums.bukkit.org/threads/icon-menu.108342/
+ * 
+ * @deprecated This is currently only used by the {@link PaintBrush}, we should replace this with {@link ChestMenu}
+ *             eventually
+ * 
+ * @author nisovin
+ * @author desht
+ * @author TheBusyBiscuit
  */
+@Deprecated
 public class IconMenu implements Listener {
 
     private String name;
@@ -45,7 +58,7 @@ public class IconMenu implements Listener {
         return this;
     }
 
-    public void open(Player player) {
+    public void open(@Nonnull Player player) {
         Inventory inventory = Bukkit.createInventory(player, size, name);
 
         for (int i = 0; i < optionIcons.length; i++) {

@@ -4,14 +4,14 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.Filtering;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.FilterType;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.Filtering;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.Filter;
 
 /**
  * A GUI gadget which can display and change a filter's filter type.
  */
-public class FilterTypeGadget extends CyclerGadget<Filter.FilterType> {
+public class FilterTypeGadget extends CyclerGadget<FilterType> {
 
     /**
      * Construct a filter type gadget.
@@ -24,9 +24,8 @@ public class FilterTypeGadget extends CyclerGadget<Filter.FilterType> {
     public FilterTypeGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Filter Type");
         Validate.isTrue(gui.getOwningItem() instanceof Filtering, "Filter Type gadget can only be added to filtering items!");
-        add(Filter.FilterType.MATERIAL, ChatColor.GRAY, Material.STONE, "Match material only");
-        add(Filter.FilterType.BLOCK_DATA, ChatColor.DARK_AQUA, Material.DIAMOND_SWORD, "Match material & block metadata");
-        add(Filter.FilterType.ITEM_META, ChatColor.LIGHT_PURPLE, Material.ENCHANTED_BOOK, "Match material, block metadata", "and item metadata (NBT)");
+        add(FilterType.MATERIAL, ChatColor.GRAY, Material.STONE, "Match material only");
+        add(FilterType.ITEM_META, ChatColor.LIGHT_PURPLE, Material.ENCHANTED_BOOK, "Match material, block metadata", "and item metadata (NBT)");
         setInitialValue(((Filtering) getGUI().getOwningItem()).getFilter().getFilterType());
     }
 
@@ -36,7 +35,7 @@ public class FilterTypeGadget extends CyclerGadget<Filter.FilterType> {
     }
 
     @Override
-    protected void apply(BaseSTBItem stbItem, Filter.FilterType newValue) {
+    protected void apply(BaseSTBItem stbItem, FilterType newValue) {
         ((Filtering) getGUI().getOwningItem()).getFilter().setFilterType(newValue);
     }
 }
