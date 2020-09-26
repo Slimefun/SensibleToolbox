@@ -104,7 +104,7 @@ public class MessagePager {
     }
 
     /**
-     * Clear this message buffer and switch off automatic colour code parsing.
+     * Clear this message buffer and switch off automatic color code parsing.
      *
      * @return this pager object for method chaining
      */
@@ -116,7 +116,7 @@ public class MessagePager {
     }
 
     /**
-     * Enable or disable colour code parsing.
+     * Enable or disable color code parsing.
      *
      * @param parseColours
      *            true to enable parsing, false to disable
