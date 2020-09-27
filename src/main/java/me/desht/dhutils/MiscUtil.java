@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 
 public class MiscUtil {
 
-    private static Map<String, String> prevColors = new HashMap<>();
+    private static final Map<String, String> prevColors = new HashMap<>();
 
     public static final String STATUS_COLOUR = ChatColor.AQUA.toString();
     public static final String ERROR_COLOUR = ChatColor.RED.toString();

@@ -180,7 +180,8 @@ public class WateringCan extends BaseSTBItem {
         if (newStack != null) {
             if (event.getHand() == EquipmentSlot.HAND) {
                 player.getInventory().setItemInMainHand(newStack);
-            } else {
+            }
+            else {
                 player.getInventory().setItemInOffHand(newStack);
             }
         }
@@ -290,7 +291,8 @@ public class WateringCan extends BaseSTBItem {
             soil.breakNaturally();
             soil.setType(Material.WATER);
             SoilSaturation.clear(soil);
-        } else {
+        }
+        else {
             SoilSaturation.setLastWatered(soil, System.currentTimeMillis());
             SoilSaturation.setSaturationLevel(soil, saturation);
         }
