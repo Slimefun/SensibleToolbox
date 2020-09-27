@@ -38,6 +38,8 @@ import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.SunlightLevels;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
+import javax.annotation.Nonnull;
+
 public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     private static final int PV_CELL_SLOT = 1;
@@ -258,7 +260,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         return 20;
     }
 
-    private void drawPVLayer(Block b) {
+    private void drawPVLayer(@Nonnull Block b) {
         // put a carpet on top of the main block to represent the PV cell
         DyeColor color = pvCellLife > 0 ? getCapColor() : DyeColor.GRAY;
         Material carpet = MaterialCollections.getAllCarpetColors().get(color.ordinal());
@@ -281,6 +283,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         super.onBlockUnregistered(location);
     }
 
+    @Nonnull
     protected DyeColor getCapColor() {
         return DyeColor.BLUE;
     }

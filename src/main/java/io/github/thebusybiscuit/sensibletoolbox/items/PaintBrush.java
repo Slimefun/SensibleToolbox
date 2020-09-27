@@ -75,7 +75,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         return color;
     }
 
-    public void setColor(DyeColor color) {
+    public void setColor(@Nonnull DyeColor color) {
         this.color = color;
     }
 
@@ -182,7 +182,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         return STBUtil.isColorable(b.getType()) || b.getType() == Material.GLASS || b.getType() == Material.GLASS_PANE;
     }
 
-    private void refillFromCan(PaintCan can) {
+    private void refillFromCan(@Nonnull PaintCan can) {
         int needed;
         if (this.getColor() == can.getColor()) {
             needed = this.getMaxPaintLevel() - this.getPaintLevel();
@@ -192,12 +192,14 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             needed = this.getMaxPaintLevel();
         }
         int actual = Math.min(needed, can.getPaintLevel());
-        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColor() + "; try to fill brush with " + needed + ", actual = " + actual);
+        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColor() + "; " +
+            "try to fill brush with " + needed + ", actual = " + actual);
         if (actual > 0) {
             this.setColor(can.getColor());
             this.setPaintLevel(this.getPaintLevel() + actual);
             can.setPaintLevel(can.getPaintLevel() - actual);
-            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColor() + ", can now = " + can.getPaintLevel() + " " + can.getColor());
+            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColor() +
+                ", can now = " + can.getPaintLevel() + " " + can.getColor());
         }
     }
 

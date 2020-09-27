@@ -38,6 +38,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.PaintBrush;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 
+import javax.annotation.Nonnull;
+
 public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {
 
     private static final int MAX_PAINT_LEVEL = 200;
@@ -88,11 +90,12 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         }
     }
 
+    @Nonnull
     public DyeColor getColor() {
         return color;
     }
 
-    public void setColor(DyeColor color) {
+    public void setColor(@Nonnull DyeColor color) {
         DyeColor oldColor = this.color;
         this.color = color;
 
