@@ -8,6 +8,8 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 
+import javax.annotation.Nonnull;
+
 public class DenseSolar extends BasicSolarCell {
 
     public DenseSolar() {}
@@ -48,6 +50,7 @@ public class DenseSolar extends BasicSolarCell {
         return 12;
     }
 
+    @Nonnull
     @Override
     protected DyeColor getCapColor() {
         return DyeColor.CYAN;

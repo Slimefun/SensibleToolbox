@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Art;
@@ -71,6 +72,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         this.paintLevel = paintLevel;
     }
 
+    @Nonnull
     public DyeColor getColor() {
         return color;
     }
@@ -257,6 +259,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         find(b.getRelative(BlockFace.DOWN), mat, blocks, max);
     }
 
+    @Nullable
     private DyeColor getBlockColor(@Nonnull Block b) {
         if (STBUtil.isColorable(b.getType())) {
             return DyeColor.getByColor(getColor().getColor());
