@@ -2,6 +2,8 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -33,12 +35,11 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.LevelMonitor;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.items.PaintBrush;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
-
-import javax.annotation.Nonnull;
 
 public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {
 
@@ -167,7 +168,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         gui.addLabel("Ingredients", 0, null, "To mix paint:", "▶ Place a milk bucket & dye", "To dye items:", "▶ Place any dyeable item");
 
         for (int slot : ITEM_SLOTS) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            gui.setSlotType(slot, SlotType.ITEM);
         }
 
         String[] lore = new String[] { "Combine milk & dye to make paint", "or dye any colorable item", "with existing paint" };

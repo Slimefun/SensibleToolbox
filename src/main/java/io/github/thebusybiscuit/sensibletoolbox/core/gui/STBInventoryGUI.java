@@ -29,6 +29,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUIListener;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.MonitorGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
@@ -67,7 +68,7 @@ public class STBInventoryGUI implements InventoryGUI {
     private final ClickableGadget[] gadgets;
     private final SlotType[] slotTypes;
     private final IntRange slotRange;
-    private final List<MonitorGadget> monitors = new ArrayList<MonitorGadget>();
+    private final List<MonitorGadget> monitors = new ArrayList<>();
 
     public STBInventoryGUI(InventoryGUIListener listener, int size, String title) {
         this(null, listener, size, title);
@@ -357,10 +358,8 @@ public class STBInventoryGUI implements InventoryGUI {
 
     @Override
     public void paintSlot(int slot, ItemStack texture, boolean overwrite) {
-        if (slotRange.containsInteger(slot)) {
-            if (overwrite || inventory.getItem(slot) == null) {
-                inventory.setItem(slot, texture);
-            }
+        if (slotRange.containsInteger(slot) && (overwrite || inventory.getItem(slot) == null)) {
+            inventory.setItem(slot, texture);
         }
     }
 
@@ -368,9 +367,11 @@ public class STBInventoryGUI implements InventoryGUI {
     public String freezeSlots(int... slots) {
         int invSize = STBUtil.roundUp(slots.length, 9);
         Inventory tmpInv = Bukkit.createInventory(null, invSize);
+
         for (int i = 0; i < slots.length; i++) {
             tmpInv.setItem(i, inventory.getItem(slots[i]));
         }
+
         return BukkitSerialization.toBase64(tmpInv, slots.length);
     }
 
@@ -382,7 +383,6 @@ public class STBInventoryGUI implements InventoryGUI {
                 for (int i = 0; i < slots.length; i++) {
                     inventory.setItem(slots[i], tmpInv.getItem(i));
                 }
-
             }
             catch (IOException e) {
                 LogUtils.severe("can't restore inventory for " + getOwningItem().getItemName());
@@ -393,8 +393,10 @@ public class STBInventoryGUI implements InventoryGUI {
     @Override
     public void ejectItems(int... slots) {
         Location loc = getOwningBlock().getLocation();
+
         for (int slot : slots) {
             ItemStack stack = inventory.getItem(slot);
+
             if (stack != null) {
                 loc.getWorld().dropItemNaturally(loc, stack);
                 inventory.setItem(slot, null);

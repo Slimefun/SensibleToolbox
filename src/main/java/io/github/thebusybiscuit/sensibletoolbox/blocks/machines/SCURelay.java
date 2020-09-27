@@ -21,6 +21,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.core.IDTracker;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SubspaceTransponder;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.UnlinkedSCURelay;
@@ -44,6 +45,7 @@ public class SCURelay extends BatteryBox {
         relayId = conf.getInt("relayId");
         hasTransponder = conf.getBoolean("transponder", false);
         IDTracker tracker = getTracker();
+
         if (!tracker.contains(relayId)) {
             RelayData relayData = new RelayData();
             relayData.chargeLevel = super.getCharge();
@@ -81,9 +83,11 @@ public class SCURelay extends BatteryBox {
     @Override
     public String[] getExtraLore() {
         String[] lore = super.getExtraLore();
+
         if (relayId == 0) {
             return lore;
         }
+
         String[] res = Arrays.copyOf(lore, lore.length + 4);
         res[lore.length] = "Comes in pairs: both partners";
         res[lore.length + 1] = "always have the same SCU level.";
@@ -113,15 +117,18 @@ public class SCURelay extends BatteryBox {
         if (!isRedstoneActive() || relayId == 0) {
             return 0;
         }
+
         RelayData relayData = (RelayData) getTracker().get(relayId);
+
         if (relayData == null || relayData.block1 == null || relayData.block2 == null) {
             return 0;
         }
-
-        if (relayData.block1.worldID != relayData.block2.worldID && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
+        else if (relayData.block1.worldID != relayData.block2.worldID && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
             return 0;
         }
-        return 500;
+        else {
+            return 500;
+        }
     }
 
     @Override
@@ -140,6 +147,7 @@ public class SCURelay extends BatteryBox {
             if (relayData.block1 != null) {
                 relayData.block1.notifyCharge();
             }
+
             if (relayData.block2 != null) {
                 relayData.block2.notifyCharge();
             }
@@ -280,7 +288,7 @@ public class SCURelay extends BatteryBox {
         InventoryGUI gui = super.createGUI();
 
         gui.addLabel("Subspace Transponder", TRANSPONDER_LABEL_SLOT, null, "Insert a Subspace Transponder", "here if the relay partner will", "be on a different world");
-        gui.setSlotType(TRANSPONDER_SLOT, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(TRANSPONDER_SLOT, SlotType.ITEM);
 
         drawTransponder(gui);
 

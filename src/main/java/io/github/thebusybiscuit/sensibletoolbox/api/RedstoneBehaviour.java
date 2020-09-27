@@ -8,7 +8,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api;
  * @author desht
  */
 public enum RedstoneBehaviour {
-    
+
     /**
      * Ignore the presence or absence of a redstone signal.
      */

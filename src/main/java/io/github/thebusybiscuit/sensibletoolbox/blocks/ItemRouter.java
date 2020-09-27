@@ -33,6 +33,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.AccessControlGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.DirectionalItemRouterModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ItemRouterModule;
@@ -229,14 +230,14 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         InventoryGUI gui = GUIUtil.createGUI(this, 36, ChatColor.DARK_RED + getItemName());
 
         gui.addLabel("Item Buffer", BUFFER_LABEL_SLOT, null, "Items can be extracted", "here, but not inserted.");
-        gui.setSlotType(BUFFER_ITEM_SLOT, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(BUFFER_ITEM_SLOT, SlotType.ITEM);
         gui.setItem(BUFFER_ITEM_SLOT, getBufferItem());
 
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
         gui.addGadget(new AccessControlGadget(gui, 17));
 
         for (int slot = MOD_SLOT_START; slot < MOD_SLOT_END; slot++) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            gui.setSlotType(slot, SlotType.ITEM);
         }
         gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null, "Insert one or more modules below", "When the router ticks, modules", "are executed in order, from left", "to right.");
         int slot = MOD_SLOT_START;

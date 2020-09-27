@@ -194,14 +194,12 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             needed = this.getMaxPaintLevel();
         }
         int actual = Math.min(needed, can.getPaintLevel());
-        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColor() + "; " +
-            "try to fill brush with " + needed + ", actual = " + actual);
+        Debugger.getInstance().debug(can + " has " + can.getPaintLevel() + " of " + can.getColor() + "; " + "try to fill brush with " + needed + ", actual = " + actual);
         if (actual > 0) {
             this.setColor(can.getColor());
             this.setPaintLevel(this.getPaintLevel() + actual);
             can.setPaintLevel(can.getPaintLevel() - actual);
-            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColor() +
-                ", can now = " + can.getPaintLevel() + " " + can.getColor());
+            Debugger.getInstance().debug("brush now = " + this.getPaintLevel() + " " + this.getColor() + ", can now = " + can.getPaintLevel() + " " + can.getColor());
         }
     }
 

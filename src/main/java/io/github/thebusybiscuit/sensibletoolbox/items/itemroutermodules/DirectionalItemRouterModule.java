@@ -29,6 +29,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.DirectionGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.FilterTypeGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
@@ -199,7 +200,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
 
         inventory.addLabel("Filtered Items", FILTER_LABEL_SLOT, null, "Place up to 9 items", "in the filter " + UnicodeSymbol.ARROW_RIGHT.toUnicode());
         for (int slot : filterSlots) {
-            inventory.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            inventory.setSlotType(slot, SlotType.ITEM);
         }
         populateFilterInventory(inventory.getInventory());
 

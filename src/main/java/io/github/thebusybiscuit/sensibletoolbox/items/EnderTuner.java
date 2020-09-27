@@ -20,6 +20,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.AccessControlGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.NumericGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -89,10 +90,10 @@ public class EnderTuner extends BaseSTBItem {
         InventoryGUI gui = GUIUtil.createGUI(player, this, TUNING_GUI_SIZE, ChatColor.DARK_PURPLE + "Ender Tuner");
 
         for (int slot = 0; slot < gui.getInventory().getSize(); slot++) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
+            gui.setSlotType(slot, SlotType.BACKGROUND);
         }
 
-        gui.setSlotType(TUNED_ITEM_SLOT, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(TUNED_ITEM_SLOT, SlotType.ITEM);
         int freq = 1;
         boolean global = false;
 

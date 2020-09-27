@@ -26,7 +26,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 public final class BukkitSerialization {
 
     private BukkitSerialization() {}
-    
+
     public static String toBase64(@Nonnull Inventory inventory) {
         return toBase64(inventory, 0);
     }
@@ -37,8 +37,7 @@ public final class BukkitSerialization {
             maxItems = inventory.getSize();
         }
 
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
-                BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
 
             // Write the size of the inventory
             dataOutput.writeInt(maxItems);
@@ -58,13 +57,12 @@ public final class BukkitSerialization {
     }
 
     public static Inventory fromBase64(@Nonnull String data) throws IOException {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data)); 
-                BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data)); BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
 
             int maxItems = dataInput.readInt();
 
             // Bukkit inventory size must be multiple of 9
-            int invSize = STBUtil.roundUp(maxItems, 9); 
+            int invSize = STBUtil.roundUp(maxItems, 9);
             Inventory inventory = Bukkit.getServer().createInventory(null, invSize);
 
             // Read the serialized inventory

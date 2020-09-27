@@ -29,6 +29,7 @@ import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.cuboid.Cuboid;
@@ -131,7 +132,7 @@ public abstract class CombineHoe extends BaseSTBItem {
                 gui = GUIUtil.createGUI(event.getPlayer(), this, 9, getInventoryTitle());
 
                 for (int i = 0; i < gui.getInventory().getSize(); i++) {
-                    gui.setSlotType(i, InventoryGUI.SlotType.ITEM);
+                    gui.setSlotType(i, SlotType.ITEM);
                 }
 
                 populateSeedBag(gui);

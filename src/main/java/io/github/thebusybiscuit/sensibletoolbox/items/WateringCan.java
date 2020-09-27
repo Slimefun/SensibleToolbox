@@ -94,7 +94,7 @@ public class WateringCan extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] {"R-click to irrigate crops.", "R-click in water to refill", "Don't over-use!"};
+        return new String[] { "R-click to irrigate crops.", "R-click in water to refill", "Don't over-use!" };
     }
 
     @Override
@@ -167,7 +167,7 @@ public class WateringCan extends BaseSTBItem {
             Block b = player.getEyeLocation().getBlock();
 
             if (b.getType() == Material.WATER) {
-                // attempt to refill the watering can 
+                // attempt to refill the watering can
                 b.setType(Material.AIR);
                 player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1, 0.8F);
                 setWaterLevel(MAX_LEVEL);
@@ -259,8 +259,7 @@ public class WateringCan extends BaseSTBItem {
     }
 
     private void maybeGrowCrop(Player player, Block b) {
-        if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getProtectionManager().hasPermission(player, b,
-            ProtectableAction.PLACE_BLOCK)) {
+        if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
             return;
         }
 
@@ -306,7 +305,6 @@ public class WateringCan extends BaseSTBItem {
     private void useSomeWater(Player p, Block b, int amount) {
         setWaterLevel(Math.max(0, getWaterLevel() - amount));
         p.playSound(p.getLocation(), Sound.AMBIENT_UNDERWATER_EXIT, 0.1F, 1.3F);
-        p.getWorld().spawnParticle(Particle.WATER_SPLASH, b.getX() + 0.5, b.getY() + 1.0, b.getZ() + 0.5, 14, 0.75,
-            0.15, 0.75);
+        p.getWorld().spawnParticle(Particle.WATER_SPLASH, b.getX() + 0.5, b.getY() + 1.0, b.getZ() + 0.5, 14, 0.75, 0.15, 0.75);
     }
 }
