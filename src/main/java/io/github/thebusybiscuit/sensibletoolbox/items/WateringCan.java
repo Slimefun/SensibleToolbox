@@ -167,7 +167,7 @@ public class WateringCan extends BaseSTBItem {
             Block b = player.getEyeLocation().getBlock();
 
             if (b.getType() == Material.WATER) {
-                // attempt to refill the watering can
+                // attempt to refill the watering can 
                 b.setType(Material.AIR);
                 player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1, 0.8F);
                 setWaterLevel(MAX_LEVEL);
