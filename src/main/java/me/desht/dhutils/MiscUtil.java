@@ -19,54 +19,54 @@ import org.bukkit.entity.Player;
 
 public class MiscUtil {
 
-    private static Map<String, String> prevColours = new HashMap<>();
+    private static final Map<String, String> prevColors = new HashMap<>();
 
     public static final String STATUS_COLOUR = ChatColor.AQUA.toString();
     public static final String ERROR_COLOUR = ChatColor.RED.toString();
     public static final String ALERT_COLOUR = ChatColor.YELLOW.toString();
     public static final String GENERAL_COLOUR = ChatColor.WHITE.toString();
 
-    private static boolean colouredConsole = true;
+    private static boolean coloredConsole = true;
 
-    public static void setColouredConsole(boolean coloured) {
-        colouredConsole = coloured;
+    public static void setColoredConsole(boolean colored) {
+        coloredConsole = colored;
     }
 
     public static void errorMessage(CommandSender sender, String string) {
-        setPrevColour(sender.getName(), ERROR_COLOUR);
+        setPrevColor(sender.getName(), ERROR_COLOUR);
         message(sender, ERROR_COLOUR + string, Level.WARNING);
-        prevColours.remove(sender.getName());
+        prevColors.remove(sender.getName());
     }
 
     public static void statusMessage(CommandSender sender, String string) {
-        setPrevColour(sender.getName(), STATUS_COLOUR);
+        setPrevColor(sender.getName(), STATUS_COLOUR);
         message(sender, STATUS_COLOUR + string, Level.INFO);
-        prevColours.remove(sender.getName());
+        prevColors.remove(sender.getName());
     }
 
     public static void alertMessage(CommandSender sender, String string) {
-        setPrevColour(sender.getName(), ALERT_COLOUR);
+        setPrevColor(sender.getName(), ALERT_COLOUR);
         message(sender, ALERT_COLOUR + string, Level.INFO);
-        prevColours.remove(sender.getName());
+        prevColors.remove(sender.getName());
     }
 
     public static void generalMessage(CommandSender sender, String string) {
-        setPrevColour(sender.getName(), GENERAL_COLOUR);
+        setPrevColor(sender.getName(), GENERAL_COLOUR);
         message(sender, GENERAL_COLOUR + string, Level.INFO);
-        prevColours.remove(sender.getName());
+        prevColors.remove(sender.getName());
     }
 
-    private static void setPrevColour(String name, String colour) {
-        prevColours.put(name, colour);
+    private static void setPrevColor(String name, String color) {
+        prevColors.put(name, color);
     }
 
-    private static String getPrevColour(String name) {
-        String colour = prevColours.get(name);
-        return colour == null ? GENERAL_COLOUR : colour;
+    private static String getPrevColor(String name) {
+        String color = prevColors.get(name);
+        return color == null ? GENERAL_COLOUR : color;
     }
 
     public static void rawMessage(CommandSender sender, String string) {
-        boolean strip = sender instanceof ConsoleCommandSender && !colouredConsole;
+        boolean strip = sender instanceof ConsoleCommandSender && !coloredConsole;
         for (String line : string.split("\\n")) {
             if (strip) {
                 sender.sendMessage(ChatColor.stripColor(line));
@@ -78,13 +78,13 @@ public class MiscUtil {
     }
 
     private static void message(CommandSender sender, String string, Level level) {
-        boolean strip = sender instanceof ConsoleCommandSender && !colouredConsole;
+        boolean strip = sender instanceof ConsoleCommandSender && !coloredConsole;
         for (String line : string.split("\\n")) {
             if (strip) {
-                LogUtils.log(level, ChatColor.stripColor(parseColourSpec(sender, line)));
+                LogUtils.log(level, ChatColor.stripColor(parseColorSpec(sender, line)));
             }
             else {
-                sender.sendMessage(parseColourSpec(sender, line));
+                sender.sendMessage(parseColorSpec(sender, line));
             }
         }
     }
@@ -116,15 +116,15 @@ public class MiscUtil {
         }
     }
 
-    private static final Pattern colourPat = Pattern.compile("(?<!&)&(?=[0-9a-fA-Fk-oK-OrR])");
+    private static final Pattern colorPat = Pattern.compile("(?<!&)&(?=[0-9a-fA-Fk-oK-OrR])");
 
-    public static String parseColourSpec(CommandSender sender, String spec) {
+    public static String parseColorSpec(CommandSender sender, String spec) {
         String who = sender == null ? "*" : sender.getName();
-        String res = colourPat.matcher(spec).replaceAll("\u00A7");
-        return res.replace("&-", getPrevColour(who)).replace("&&", "&");
+        String res = colorPat.matcher(spec).replaceAll("\u00A7");
+        return res.replace("&-", getPrevColor(who)).replace("&&", "&");
     }
 
-    public static String unParseColourSpec(String spec) {
+    public static String unParseColorSpec(String spec) {
         return spec.replaceAll("\u00A7", "&");
     }
 

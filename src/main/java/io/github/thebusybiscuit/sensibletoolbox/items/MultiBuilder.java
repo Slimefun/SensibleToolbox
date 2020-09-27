@@ -240,7 +240,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
-        double chargeNeeded = chargePerOp * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargeNeeded = chargePerOp * Math.pow(0.8,
+            player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         queue.offer(new SwapRecord(player, origin, origin.getType(), target, maxBlocks, builder, -1, chargeNeeded));
     }
 
@@ -326,7 +327,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
         int max = MAX_BUILD_BLOCKS + sharpness * 3;
         Material clickedType = clickedBlock.getType();
-        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION)
+            * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
 
         if (ch == 0) {
@@ -350,7 +352,8 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             if (result.size() >= max) {
                 break;
             }
-            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.TALL_GRASS) && b1.getType() == b.getType() && !result.contains(b0) && canReplace(player, b0)) {
+            if ((b0.isEmpty() || b0.isLiquid() || b0.getType() == Material.TALL_GRASS)
+                && b1.getType() == b.getType() && !result.contains(b0) && canReplace(player, b0)) {
                 result.add(b0);
 
                 for (BlockFace f : faces) {

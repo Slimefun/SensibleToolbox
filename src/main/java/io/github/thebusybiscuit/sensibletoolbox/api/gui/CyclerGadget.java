@@ -77,20 +77,20 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
      *
      * @param what
      *            the enum value for which the texture is being defined
-     * @param colour
-     *            colour to use in the texture's tooltip
+     * @param color
+     *            color to use in the texture's tooltip
      * @param texture
      *            material to use for the texture
      * @param lore
      *            extra tooltip text
      */
-    public void add(T what, ChatColor colour, Material type, String... lore) {
+    public void add(T what, ChatColor color, Material type, String... lore) {
         if (currentValue == null) {
             currentValue = what;
             stacks = new ItemStack[what.getClass().getEnumConstants().length];
         }
 
-        stacks[what.ordinal()] = makeTexture(what, type, colour, lore);
+        stacks[what.ordinal()] = makeTexture(what, type, color, lore);
     }
 
     /**

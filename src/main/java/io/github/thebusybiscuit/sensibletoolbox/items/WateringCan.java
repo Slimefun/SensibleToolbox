@@ -1,9 +1,11 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
+import me.desht.dhutils.MiscUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -19,17 +21,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
-import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
-import me.desht.dhutils.MiscUtil;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class WateringCan extends BaseSTBItem {
 
@@ -95,7 +94,7 @@ public class WateringCan extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "R-click to irrigate crops.", "R-click in water to refill", "Don't over-use!" };
+        return new String[] {"R-click to irrigate crops.", "R-click in water to refill", "Don't over-use!"};
     }
 
     @Override
@@ -168,7 +167,7 @@ public class WateringCan extends BaseSTBItem {
             Block b = player.getEyeLocation().getBlock();
 
             if (b.getType() == Material.WATER) {
-                // attempt to refill the watering can
+                // attempt to refill the watering can 
                 b.setType(Material.AIR);
                 player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1, 0.8F);
                 setWaterLevel(MAX_LEVEL);
@@ -179,7 +178,12 @@ public class WateringCan extends BaseSTBItem {
         event.setCancelled(true);
 
         if (newStack != null) {
-            player.setItemInHand(newStack);
+            if (event.getHand() == EquipmentSlot.HAND) {
+                player.getInventory().setItemInMainHand(newStack);
+            }
+            else {
+                player.getInventory().setItemInOffHand(newStack);
+            }
         }
 
         if (floodWarning) {
@@ -209,7 +213,7 @@ public class WateringCan extends BaseSTBItem {
             MiscUtil.alertMessage(player, "The fire is out!");
         }
 
-        player.setItemInHand(toItemStack());
+        player.getInventory().setItemInMainHand(toItemStack());
         player.updateInventory();
         event.setCancelled(true);
     }
@@ -255,7 +259,8 @@ public class WateringCan extends BaseSTBItem {
     }
 
     private void maybeGrowCrop(Player player, Block b) {
-        if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
+        if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getProtectionManager().hasPermission(player, b,
+            ProtectableAction.PLACE_BLOCK)) {
             return;
         }
 
@@ -301,6 +306,7 @@ public class WateringCan extends BaseSTBItem {
     private void useSomeWater(Player p, Block b, int amount) {
         setWaterLevel(Math.max(0, getWaterLevel() - amount));
         p.playSound(p.getLocation(), Sound.AMBIENT_UNDERWATER_EXIT, 0.1F, 1.3F);
-        p.getWorld().spawnParticle(Particle.WATER_SPLASH, b.getX() + 0.5, b.getY() + 1.0, b.getZ() + 0.5, 14, 0.75, 0.15, 0.75);
+        p.getWorld().spawnParticle(Particle.WATER_SPLASH, b.getX() + 0.5, b.getY() + 1.0, b.getZ() + 0.5, 14, 0.75,
+            0.15, 0.75);
     }
 }

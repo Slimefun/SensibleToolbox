@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -107,7 +108,11 @@ public class PVCell extends BaseSTBItem {
                     int nInserted = ((BasicSolarCell) stb).insertItems(event.getItem(), event.getBlockFace(), false, player.getUniqueId());
 
                     if (nInserted > 0) {
-                        player.setItemInHand(null);
+                        if (event.getHand() == EquipmentSlot.HAND) {
+                            player.getInventory().setItemInMainHand(null);
+                        } else {
+                            player.getInventory().setItemInOffHand(null);
+                        }
                         player.playSound(event.getClickedBlock().getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.6f);
                     }
                 }
