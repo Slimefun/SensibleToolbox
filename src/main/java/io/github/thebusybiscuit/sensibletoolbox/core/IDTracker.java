@@ -1,26 +1,29 @@
 package io.github.thebusybiscuit.sensibletoolbox.core;
 
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
 public class IDTracker {
 
-    private final Map<Integer, Object> map = Maps.newHashMap();
+    private final Map<Integer, Object> map = new HashMap<>();
     private final Plugin plugin;
     private final String name;
     private int nextID;
 
-    public IDTracker(Plugin plugin, String name) {
+    public IDTracker(@Nonnull Plugin plugin, @Nonnull String name) {
         this.name = name;
         this.plugin = plugin;
 
         YamlConfiguration conf = new YamlConfiguration();
         File file = new File(plugin.getDataFolder(), name + ".yml");
+
         if (file.exists()) {
             try {
                 conf.load(file);
@@ -40,6 +43,7 @@ public class IDTracker {
         File file = new File(plugin.getDataFolder(), name + ".yml");
         YamlConfiguration conf = new YamlConfiguration();
         conf.set("nextID", nextID);
+
         try {
             conf.save(file);
         }

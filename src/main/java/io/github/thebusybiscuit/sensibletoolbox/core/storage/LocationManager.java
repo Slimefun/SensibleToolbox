@@ -92,6 +92,7 @@ public class LocationManager {
                 return null;
             }
         }
+
         return instance;
     }
 

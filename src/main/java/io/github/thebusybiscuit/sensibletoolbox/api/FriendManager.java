@@ -62,4 +62,8 @@ public interface FriendManager {
      */
     @Nonnull
     Set<UUID> getFriends(@Nonnull UUID id);
+
+    void load();
+
+    void save();
 }

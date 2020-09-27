@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.Inventory;
@@ -26,7 +28,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     private final EnderStorageManager manager;
     private Inventory inventory;
 
-    protected STBEnderStorageHolder(EnderStorageManager manager, int frequency) {
+    protected STBEnderStorageHolder(@Nonnull EnderStorageManager manager, int frequency) {
         this.frequency = frequency;
         this.manager = manager;
     }
@@ -132,11 +134,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STBEnderStorageHolder that = (STBEnderStorageHolder) o;
-
-        if (frequency != that.frequency) return false;
-
-        return true;
+        return frequency == ((STBEnderStorageHolder) o).frequency;
     }
 
     @Override

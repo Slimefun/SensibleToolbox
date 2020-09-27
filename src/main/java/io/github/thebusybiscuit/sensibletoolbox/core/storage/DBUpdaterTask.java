@@ -3,6 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.core.storage;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import javax.annotation.Nonnull;
+
 import me.desht.dhutils.Debugger;
 
 public class DBUpdaterTask implements Runnable {
@@ -12,8 +14,9 @@ public class DBUpdaterTask implements Runnable {
     private final PreparedStatement updateStmt;
     private final PreparedStatement deleteStmt;
 
-    public DBUpdaterTask(LocationManager manager) throws SQLException {
+    public DBUpdaterTask(@Nonnull LocationManager manager) throws SQLException {
         this.manager = manager;
+
         String tableName = DBStorage.makeTableName("blocks");
         insertStmt = manager.getDbStorage().getConnection().prepareStatement("INSERT INTO " + tableName + " VALUES(?,?,?,?,?,?)");
         updateStmt = manager.getDbStorage().getConnection().prepareStatement("UPDATE " + tableName + " SET data = ?, type = ? WHERE world_id = ? and x = ? and y = ? and z = ?");

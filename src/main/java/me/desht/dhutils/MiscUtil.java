@@ -124,10 +124,6 @@ public class MiscUtil {
         return res.replace("&-", getPrevColor(who)).replace("&&", "&");
     }
 
-    public static String unParseColorSpec(String spec) {
-        return spec.replaceAll("\u00A7", "&");
-    }
-
     /**
      * Find the given world by name.
      *
