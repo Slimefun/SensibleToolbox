@@ -26,7 +26,7 @@ You can also comment on the existing Issue, proposing your idea or communicating
 ## :wrench: 3. Pull Requests: Additions/Changes
 SensibleToolbox is an Open-Source project and anyone is allowed to make changes or add content to this plugin!
 
-Please visit our [Discord Server](https://github.com/Slimefun/Slimefun4#discord) and share your ideas first, we hate to reject changes because the community disagrees.<br>
+Please visit our [Discord Server](https://discord.gg/slimefun) and share your ideas first, we hate to reject changes because the community disagrees.<br>
 So communicating your intended changes before-hand will ensure that you don't put too much work into something that might get rejected.
 
 ## :star: 4. Pull Requests: Code Quality
@@ -34,7 +34,7 @@ SensibleToolbox uses [sonarcloud.io](https://sonarcloud.io/dashboard?id=Slimefun
 
 We always welcome quality improvements to the code and the "Code Smells" section on [sonarcloud.io](https://sonarcloud.io/dashboard?id=Slimefun_SensibleToolbox) is a great place to start.
 But please keep in mind that some design patterns may not be changed too abruptly if an addon depends on them. 
-To prevent any accidents from happening, please contact us on our [Discord Server](https://github.com/Slimefun/Slimefun4#discord) before-hand and state your intended changes.
+To prevent any accidents from happening, please contact us on our [Discord Server](https://discord.gg/slimefun) before-hand and state your intended changes.
 
 #### Documentation
 Code documentation is also a great way to improve the maintainability of the project.
@@ -63,5 +63,5 @@ To compile SensibleToolbox yourself, follow these steps:
 If you are already using an IDE, make sure to import the project via git and set it up as a *Maven project*. 
 Then you should be able build it via Maven using the goals `clean package`.
 
-If you have any further questions, then please join our [Discord Support Server](#discord) and ask your questions in the `#programming-help` channel.<br>
+If you have any further questions, then please join our [Discord Support Server](https://discord.gg/slimefun) and ask your questions in the `#programming-help` channel.<br>
 **Note that we will not accept any bug reports from custom-compiled versions of SensibleToolbox**.
