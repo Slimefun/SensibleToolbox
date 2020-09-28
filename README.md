@@ -31,7 +31,7 @@ Please head to the `#sensible-toolbox` channel for this.
 **Important**: We do **not** accept bug reports on discord, please use our [Issue Tracker](https://github.com/Slimefun/SensibleToolbox/issues) to submit bug reports!
 
 <p align="center">
-  <a href="https://discord.gg/fsD4Bkh">
+  <a href="https://discord.gg/slimefun">
     <img src="https://discordapp.com/api/guilds/565557184348422174/widget.png?style=banner3" alt="Discord Invite"/>
   </a>
 </p>
@@ -41,7 +41,7 @@ Sensible Toolbox is an Open-Source project and licensed under
 [GNU GPLv3](https://github.com/Slimefun/SensibleToolbox/blob/master/LICENSE).<br>
 Please consider helping us maintain this project too, your engagement keeps the project alive <3.
 
-You can find more info on how to contribute to this project in our [CONTRIBUTING.md](https://github.com/Slimefun/SensibleToolbox/blob/master/.github/CONTRIBUTING.md).
+You can find more info on how to contribute to this project in our [CONTRIBUTING.md](https://github.com/Slimefun/SensibleToolbox/blob/master/CONTRIBUTING.md).
 
 ## :bulb: Credits
 This is a fork of [desht/sensibletoolbox](https://github.com/desht/sensibletoolbox).
