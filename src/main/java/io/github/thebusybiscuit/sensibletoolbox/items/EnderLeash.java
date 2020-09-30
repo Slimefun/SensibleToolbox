@@ -88,11 +88,7 @@ public class EnderLeash extends BaseSTBItem {
     @Override
     public Recipe getRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), this.toItemStack());
-        recipe.shape(
-            "GSG",
-            "SPS",
-            "GSG"
-        );
+        recipe.shape("GSG", "SPS", "GSG");
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('P', Material.ENDER_PEARL);
         recipe.setIngredient('S', Material.STRING);
