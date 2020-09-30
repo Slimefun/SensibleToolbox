@@ -509,7 +509,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     public Block getAuxiliaryBlock(Location loc, RelativePosition pos) {
         Block b = loc.getBlock();
-        int dx = 0, dz = 0;
+        int dx = 0,
+            dz = 0;
         switch (getFacing()) {
         case NORTH:
             dz = -pos.getFront();
@@ -980,7 +981,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             player.setItemInHand(stack.getAmount() <= 0 ? null : stack);
         }
 
-        player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.0F);
 
         return true;
     }

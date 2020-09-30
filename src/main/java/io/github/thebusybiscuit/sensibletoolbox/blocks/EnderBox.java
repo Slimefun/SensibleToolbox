@@ -126,7 +126,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
             else {
                 Inventory inv = isGlobal() ? EnderStorage.getEnderInventory(getEnderFrequency()) : EnderStorage.getEnderInventory(player, getEnderFrequency());
                 player.openInventory(inv);
-                player.playSound(getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1.0f);
+                player.playSound(getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5F, 1.0F);
             }
             event.setCancelled(true);
         }

@@ -16,14 +16,14 @@ public interface CustomRecipe extends Recipe {
      *
      * @return the processing time, in ticks
      */
-    public int getProcessingTime();
+    int getProcessingTime();
 
     /**
      * Get the item ID of the STB machine which is used to make this recipe.
      *
      * @return the STB item ID
      */
-    public String getProcessorID();
+    String getProcessorID();
 
     /**
      * Add a supplementary result to this recipe.
@@ -31,14 +31,14 @@ public interface CustomRecipe extends Recipe {
      * @param result
      *            the supplementary result to add
      */
-    public void addSupplementaryResult(SupplementaryResult result) throws UnsupportedOperationException;
+    void addSupplementaryResult(SupplementaryResult result) throws UnsupportedOperationException;
 
     /**
      * List the possible supplementary results from this recipe.
      *
      * @return a collection of supplementary results
      */
-    public Collection<SupplementaryResult> listSupplementaryResults();
+    Collection<SupplementaryResult> listSupplementaryResults();
 
     /**
      * Perform a one-off calculation of the actual supplementary results for
@@ -48,7 +48,7 @@ public interface CustomRecipe extends Recipe {
      *
      * @return a collection of item stacks
      */
-    public Collection<ItemStack> calculateSupplementaryResults();
+    Collection<ItemStack> calculateSupplementaryResults();
 
     /**
      * Construct a key for this recipe based on its ingredients, which
@@ -58,5 +58,5 @@ public interface CustomRecipe extends Recipe {
      *            if true, create a key without the items' data values
      * @return a unique key string for this recipe
      */
-    public String makeKey(boolean ignoreData);
+    String makeKey(boolean ignoreData);
 }

@@ -72,7 +72,7 @@ public class GUIUtil {
      * @return a list of properly colored lore text
      */
     public static List<String> makeLore(String... lore) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String s : lore) {
             res.add(ChatColor.GRAY + s);
         }

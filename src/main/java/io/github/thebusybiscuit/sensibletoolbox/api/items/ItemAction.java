@@ -38,7 +38,7 @@ public enum ItemAction {
 
     private final String node;
 
-    private ItemAction() {
+    ItemAction() {
         node = toString().toLowerCase(Locale.ROOT);
     }
 

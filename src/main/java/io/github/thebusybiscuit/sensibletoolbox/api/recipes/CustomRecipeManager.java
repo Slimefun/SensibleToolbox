@@ -56,7 +56,7 @@ public class CustomRecipeManager {
 
         ItemStack result = makeSingle(recipe.getResult());
         if (!reverseMap.containsKey(result)) {
-            reverseMap.put(result, new ArrayList<CustomRecipe>());
+            reverseMap.put(result, new ArrayList<>());
         }
         reverseMap.get(result).add(recipe);
     }
