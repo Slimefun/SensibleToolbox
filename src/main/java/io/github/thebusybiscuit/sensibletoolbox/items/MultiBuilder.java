@@ -60,14 +60,6 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         charge = 0;
     }
 
-    public MultiBuilder(ConfigurationSection conf) {
-        super(conf);
-        mode = Mode.valueOf(conf.getString("mode"));
-        charge = conf.getDouble("charge");
-        String s = conf.getString("material");
-        material = s.isEmpty() ? null : Material.matchMaterial(s);
-    }
-
     public Mode getMode() {
         return mode;
     }
