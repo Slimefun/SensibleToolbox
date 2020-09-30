@@ -601,11 +601,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      *
      * @param item
      *            the candidate item to insert
-     * @param side
-     *            the side being inserted from (SELF is a valid option here too)
      * @return the slot number if a slot is available, or -1 otherwise
      */
-    private int findAvailableInputSlot(ItemStack item, BlockFace side) {
+    private int findAvailableInputSlot(ItemStack item) {
         for (int slot : getInputSlots()) {
             ItemStack inSlot = getInventoryItem(slot);
 

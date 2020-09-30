@@ -59,11 +59,6 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
     }
 
-    protected BaseSTBItem(ConfigurationSection conf) {
-        typeID = getClass().getSimpleName().toLowerCase();
-        providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
-    }
-
     @Override
     public NamespacedKey getKey() {
         return new NamespacedKey(SensibleToolboxPlugin.getInstance(), typeID);

@@ -103,7 +103,7 @@ public class CommandManager {
             int from = possibleMatches.get(0).getMatchedCommand().size();
 
             try {
-                return possibleMatches.get(0).onTabComplete(plugin, sender, subRange(args, from));
+                return possibleMatches.get(0).onTabComplete(sender, subRange(args, from));
             }
             catch (DHUtilsException e) {
                 MiscUtil.errorMessage(sender, e.getMessage());

@@ -54,9 +54,9 @@ public class GiveCommand extends AbstractCommand {
     }
 
     @Override
-    public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            return getItemCompletions(plugin, sender, args[0]);
+            return getItemCompletions(sender, args[0]);
         }
         else if (args.length == 2) {
             return null; // list players
@@ -66,7 +66,7 @@ public class GiveCommand extends AbstractCommand {
         }
     }
 
-    protected List<String> getItemCompletions(Plugin plugin, CommandSender sender, String prefix) {
+    protected List<String> getItemCompletions(CommandSender sender, String prefix) {
         List<String> res = new ArrayList<>();
 
         for (String item : SensibleToolbox.getItemRegistry().getItemIds()) {

@@ -361,7 +361,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
      *            the argument list
      * @return a list of possible completions
      */
-    public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
         return CommandManager.noCompletions(sender);
     }
 

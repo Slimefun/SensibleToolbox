@@ -733,6 +733,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
             return b;
         }
 
+        @Override
         public void remove() {
             // nope
         }

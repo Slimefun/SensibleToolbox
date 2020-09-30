@@ -58,6 +58,7 @@ public class SilkyBreakerModule extends BreakerModule {
         return true;
     }
 
+    @Override
     protected ItemStack getBreakerTool() {
         return pick;
     }

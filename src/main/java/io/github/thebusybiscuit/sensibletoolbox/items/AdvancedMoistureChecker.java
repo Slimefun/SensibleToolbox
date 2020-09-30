@@ -28,6 +28,7 @@ public class AdvancedMoistureChecker extends MoistureChecker {
         return recipe;
     }
 
+    @Override
     protected int getRadius() {
         return 2;
     }
