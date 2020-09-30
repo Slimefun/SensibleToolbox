@@ -414,8 +414,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         if (dye1 == dye2) {
             return dye1;
         }
-
-        if (dye1.compareTo(dye2) > 0) {
+        else if (dye1.compareTo(dye2) > 0) {
             DyeColor tmp = dye2;
             dye2 = dye1;
             dye1 = tmp;
@@ -450,8 +449,9 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
             return DyeColor.LIGHT_GRAY;
         }
-
-        // colors don't mix
-        return null;
+        else {
+            // colors don't mix
+            return null;
+        }
     }
 }
