@@ -532,21 +532,25 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 b.setType(rec.target, true);
 
                 // queue up the next set of blocks
-                if (rec.layersLeft > 0) {
-                    for (int x = -1; x <= 1; x++) {
-                        for (int y = -1; y <= 1; y++) {
-                            for (int z = -1; z <= 1; z++) {
-                                Block b1 = b.getRelative(x, y, z);
+                queueNextSet(rec, b, slot);
 
-                                if ((x != 0 || y != 0 || z != 0) && b1.getType() == rec.source && STBUtil.isExposed(b1)) {
-                                    queue.offer(new SwapRecord(rec.player, b1, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded));
-                                }
+                didWork = true;
+            }
+        }
+
+        private void queueNextSet(SwapRecord rec, Block b, int slot){
+            if (rec.layersLeft > 0) {
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int z = -1; z <= 1; z++) {
+                            Block b1 = b.getRelative(x, y, z);
+
+                            if ((x != 0 || y != 0 || z != 0) && b1.getType() == rec.source && STBUtil.isExposed(b1)) {
+                                queue.offer(new SwapRecord(rec.player, b1, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded));
                             }
                         }
                     }
                 }
-
-                didWork = true;
             }
         }
 

@@ -411,13 +411,14 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     }
 
     private DyeColor mixDyes(DyeColor dye1, DyeColor dye2) {
+        if (dye1 == dye2) {
+            return dye1;
+        }
+
         if (dye1.compareTo(dye2) > 0) {
             DyeColor tmp = dye2;
             dye2 = dye1;
             dye1 = tmp;
-        }
-        else if (dye1 == dye2) {
-            return dye1;
         }
 
         Debugger.getInstance().debug(this + ": try mixing: " + dye1 + " " + dye2);
@@ -449,9 +450,8 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
             return DyeColor.LIGHT_GRAY;
         }
-        else {
-            // colors don't mix
-            return null;
-        }
+
+        // colors don't mix
+        return null;
     }
 }
