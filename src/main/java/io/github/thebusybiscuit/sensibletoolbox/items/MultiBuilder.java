@@ -538,7 +538,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             }
         }
 
-        private void queueNextSet(@Nonnull SwapRecord rec, @Nonnull Block b, @Nonnull int slot) {
+        private void queueNextSet(@Nonnull SwapRecord rec, @Nonnull Block b, int slot) {
             if (rec.layersLeft > 0) {
                 for (int x = -1; x <= 1; x++) {
                     for (int y = -1; y <= 1; y++) {
