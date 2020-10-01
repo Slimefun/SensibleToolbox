@@ -1,10 +1,12 @@
 package io.github.thebusybiscuit.sensibletoolbox.listeners;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -23,7 +25,7 @@ public class ElevatorListener extends STBBaseListener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Location to = event.getTo();
         Location from = event.getFrom();
-        if (to.getY() > from.getY() && ((Entity) event.getPlayer()).isOnGround()) {
+        if (to.getY() > from.getY() && isOnGround(event.getPlayer())) {
             // player appears to be jumping from the ground...
             Block b = event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN);
             Elevator e1 = LocationManager.getManager().get(b.getLocation(), Elevator.class);
@@ -63,6 +65,12 @@ public class ElevatorListener extends STBBaseListener {
             }
 
         }
+    }
+
+    private boolean isOnGround(@Nonnull Player player) {
+        Location location = player.getLocation();
+        Block currentBlock = location.getBlock();
+        return currentBlock.getRelative(BlockFace.DOWN) != null && location.getY() == location.getBlockY();
     }
 
 }
