@@ -67,7 +67,7 @@ public class Str extends OutputStream {
     }
 
     public static boolean isIn(String input, String check) {
-        String comms[] = check.split(",");
+        String[] comms = check.split(",");
         input = input.trim();
         for (String c : comms) {
             if (input.equalsIgnoreCase(c.trim())) {
@@ -78,7 +78,7 @@ public class Str extends OutputStream {
     }
 
     public static boolean startIsIn(String input, String check) {
-        String comms[] = check.split(",");
+        String[] comms = check.split(",");
         for (String c : comms) {
             if (input.length() >= c.length()) {
                 if (input.substring(0, c.length()).equalsIgnoreCase(c)) {
@@ -130,7 +130,7 @@ public class Str extends OutputStream {
         return c;
     }
 
-    public static int indexOf(String array[], String search) {
+    public static int indexOf(String[] array, String search) {
         if (array != null && array.length > 0) {
             for (int i = array.length - 1; i >= 0; --i) {
                 if (array[i].equals(search)) {
@@ -141,7 +141,7 @@ public class Str extends OutputStream {
         return -1;
     }
 
-    public static int indexOfIgnoreCase(String array[], String search) {
+    public static int indexOfIgnoreCase(String[] array, String search) {
         for (int i = array.length - 1; i >= 0; --i) {
             if (array[i].equalsIgnoreCase(search)) {
                 return i;
