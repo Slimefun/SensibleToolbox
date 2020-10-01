@@ -221,7 +221,7 @@ public class GeneralListener extends STBBaseListener {
     public void onSignChange(SignChangeEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
             Block b = event.getBlock();
-            WallSign sign = (WallSign) b.getState().getData();
+            WallSign sign = (WallSign) b.getBlockData();
 
             Block attachedTo = b.getRelative(sign.getFacing());
             BaseSTBBlock item = LocationManager.getManager().get(attachedTo.getLocation());
@@ -243,7 +243,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onLabelSignBroken(BlockBreakEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
-            WallSign sign = (WallSign) event.getBlock().getState().getData();
+            WallSign sign = (WallSign) event.getBlock().getBlockData();
             Block b2 = event.getBlock().getRelative(sign.getFacing());
             BaseSTBBlock stb = LocationManager.getManager().get(b2.getLocation());
 
