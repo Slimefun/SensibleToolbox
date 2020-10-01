@@ -509,8 +509,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     public Block getAuxiliaryBlock(Location loc, RelativePosition pos) {
         Block b = loc.getBlock();
-        int dx = 0,
-            dz = 0;
+        int dx = 0;
+        int dz = 0;
         switch (getFacing()) {
         case NORTH:
             dz = -pos.getFront();

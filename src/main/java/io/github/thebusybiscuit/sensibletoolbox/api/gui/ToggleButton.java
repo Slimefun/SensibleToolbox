@@ -15,7 +15,7 @@ public class ToggleButton extends ClickableGadget {
     private final ItemStack trueTexture;
     private final ItemStack falseTexture;
     private final ToggleListener callback;
-    public boolean value;
+    private boolean value;
 
     /**
      * Constructs a toggle button gadget.
