@@ -483,7 +483,8 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void showFurnaceRecipe(STBFurnaceRecipe recipe) {
-        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
+        // 4 is the middle of the 9 item slots
+        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient());
         gui.getInventory().setItem(TYPE_SLOT, FURNACE_ICON);
     }
 
@@ -505,7 +506,8 @@ public class RecipeBook extends BaseSTBItem {
         meta.setLore(lore);
         processor.setItemMeta(meta);
         gui.getInventory().setItem(TYPE_SLOT, processor);
-        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
+        // 4 is the middle of the 9 item slots
+        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient());
     }
 
     public static ItemStack getIngredient(BaseSTBItem resultingItem, ItemStack stack) {
@@ -619,7 +621,7 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         player.getInventory().addItem(result);
-        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
         MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemUtils.getItemName(result));
     }
 
@@ -645,7 +647,7 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         player.getInventory().addItem(result);
-        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
         MiscUtil.statusMessage(player, "Fabricated: &f" + ItemUtils.getItemName(result));
     }
 
@@ -808,12 +810,14 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         gui.addGadget(new ButtonGadget(gui, PREV_PAGE_SLOT, "< Prev Page", null, null, () -> {
-            if (--page < 0) page = totalPages - 1;
+            page--;
+            if (page < 0) page = totalPages - 1;
             drawItemsPage();
         }));
 
         gui.addGadget(new ButtonGadget(gui, NEXT_PAGE_SLOT, "Next Page >", null, null, () -> {
-            if (++page >= totalPages) page = 0;
+            page++;
+            if (page >= totalPages) page = 0;
             drawItemsPage();
         }));
 
@@ -843,7 +847,7 @@ public class RecipeBook extends BaseSTBItem {
 
     }
 
-    private class ItemAndRecipeNumber {
+    private static final class ItemAndRecipeNumber {
 
         private final int item;
         private final int recipe;

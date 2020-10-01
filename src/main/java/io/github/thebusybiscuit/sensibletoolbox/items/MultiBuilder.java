@@ -324,16 +324,16 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
         int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-        int max = MAX_BUILD_BLOCKS + sharpness * 3;
-        Material clickedType = clickedBlock.getType();
         double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
 
         if (ch == 0) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.5f);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 0.5F);
             return Collections.emptySet();
         }
 
+        int max = MAX_BUILD_BLOCKS + sharpness * 3;
+        Material clickedType = clickedBlock.getType();
         max = Math.min(Math.min(max, howMuchDoesPlayerHave(player, clickedType)), ch);
         return floodFill(player, clickedBlock.getRelative(blockFace), blockFace.getOppositeFace(), getBuildFaces(blockFace), max);
     }
@@ -498,7 +498,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                         while (iter.hasNext()) {
                             SwapRecord r = iter.next();
 
-                            if (r.player.equals(rec.player) && r.target.equals(rec.target)) {
+                            if (r.player.equals(rec.player) && r.target == rec.target) {
                                 iter.remove();
                             }
                         }
@@ -563,7 +563,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
     }
 
-    private class SwapRecord {
+    private final class SwapRecord {
 
         private final Player player;
         private final Block block;
