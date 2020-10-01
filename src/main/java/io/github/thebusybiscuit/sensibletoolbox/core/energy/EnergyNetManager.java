@@ -145,22 +145,23 @@ public class EnergyNetManager {
             // delete the energy net for the removed cable; this will also detach any machines
             deleteEnergyNet(thisNet.getNetID());
 
-            if (!attachedCables.isEmpty()) {
-                // need a delayed task here, since the block for the cable being removed isn't
-                // actually updated to air yet...
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    // rebuild energy nets for the deleted cable's neighbours
-                    for (Block b : attachedCables) {
-                        // those neighbours could have another path to each other
-                        EnergyNet net1 = getEnergyNet(b);
-
-                        if (net1 == null) {
-                            STBEnergyNet newNet1 = STBEnergyNet.buildNet(b, this);
-                            allNets.put(newNet1.getNetID(), newNet1);
-                        }
-                    }
-                });
+            if (attachedCables.isEmpty()) {
+                return;
             }
+            // need a delayed task here, since the block for the cable being removed isn't
+            // actually updated to air yet...
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                // rebuild energy nets for the deleted cable's neighbours
+                for (Block b : attachedCables) {
+                    // those neighbours could have another path to each other
+                    EnergyNet net1 = getEnergyNet(b);
+
+                    if (net1 == null) {
+                        STBEnergyNet newNet1 = STBEnergyNet.buildNet(b, this);
+                        allNets.put(newNet1.getNetID(), newNet1);
+                    }
+                }
+            });
         }
     }
 

@@ -75,14 +75,17 @@ public class HyperStorageUnit extends BigStorageUnit {
         return 35;
     }
 
+    @Override
     public int getStackCapacity() {
         return 33554431; // 2^31 items for a 64-item stack
     }
 
+    @Override
     public int getEnergyCellSlot() {
         return 36;
     }
 
+    @Override
     public int getChargeDirectionSlot() {
         return 37;
     }
