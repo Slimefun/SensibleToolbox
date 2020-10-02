@@ -29,9 +29,9 @@ import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import me.desht.dhutils.ItemNames;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 
 public abstract class CombineHoe extends BaseSTBItem {
@@ -97,7 +97,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     @Override
     public String[] getExtraLore() {
         if (getSeedType() != null && getSeedAmount() > 0) {
-            String s = ItemNames.lookup(new ItemStack(getSeedType()));
+            String s = ItemUtils.getItemName(new ItemStack(getSeedType()));
             return new String[] { ChatColor.WHITE + "Seed bag: " + ChatColor.GOLD + getSeedAmount() + " x " + s };
         }
         else {
@@ -132,7 +132,7 @@ public abstract class CombineHoe extends BaseSTBItem {
                 gui = GUIUtil.createGUI(event.getPlayer(), this, 9, getInventoryTitle());
 
                 for (int i = 0; i < gui.getInventory().getSize(); i++) {
-                    gui.setSlotType(i, InventoryGUI.SlotType.ITEM);
+                    gui.setSlotType(i, SlotType.ITEM);
                 }
 
                 populateSeedBag(gui);
@@ -298,7 +298,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     @ParametersAreNonnullByDefault
     private void harvestLayer(Player player, Block b) {
         Cuboid cuboid = new Cuboid(b.getLocation());
-        cuboid = cuboid.outset(Cuboid.CuboidDirection.HORIZONTAL, STBUtil.isLeaves(b.getType()) ? 1 : getWorkRadius());
+        cuboid = cuboid.outset(Cuboid.CuboidDirection.HORIZONTAL, Tag.LEAVES.isTagged(b.getType()) ? 1 : getWorkRadius());
 
         for (Block block : cuboid) {
             if (!block.equals(b) && (STBUtil.isPlant(block.getType()) || Tag.LEAVES.isTagged(block.getType()))) {

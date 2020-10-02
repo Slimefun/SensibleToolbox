@@ -9,10 +9,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.dhutils.ConfigurationManager;
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.dhutils.configuration.ConfigurationManager;
 
 public class SetcfgCommand extends AbstractCommand {
 

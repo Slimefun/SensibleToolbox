@@ -12,8 +12,12 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
  * ender storage; the inventory retrieved by the Bukkit
  * {@link org.bukkit.entity.Player#getEnderChest()} method is not connected
  * to any custom STB ender inventory.
+ * 
+ * @author desht
  */
-public class EnderStorage {
+public final class EnderStorage {
+
+    private EnderStorage() {}
 
     public static final int MAX_ENDER_FREQUENCY = 1000;
 

@@ -24,13 +24,14 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.CyclerGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.LandMarker;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.ToughMachineFrame;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 
@@ -94,10 +95,12 @@ public class AutoBuilder extends BaseSTBMachine {
         return -1;
     }
 
+    @Override
     public int getEnergyCellSlot() {
         return 45;
     }
 
+    @Override
     public int getChargeDirectionSlot() {
         return 36;
     }
@@ -158,9 +161,9 @@ public class AutoBuilder extends BaseSTBMachine {
     public InventoryGUI createGUI() {
         InventoryGUI gui = super.createGUI();
 
-        gui.setSlotType(LANDMARKER_SLOT_1, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(LANDMARKER_SLOT_1, SlotType.ITEM);
         setupLandMarkerLabel(gui, null, null);
-        gui.setSlotType(LANDMARKER_SLOT_2, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(LANDMARKER_SLOT_2, SlotType.ITEM);
 
         gui.addGadget(new AutoBuilderGadget(gui, MODE_SLOT));
         gui.addGadget(new ButtonGadget(gui, START_BUTTON_SLOT, "Start", null, null, () -> {
@@ -204,14 +207,12 @@ public class AutoBuilder extends BaseSTBMachine {
             buildZ = workArea.getLowerZ();
         }
 
-        if (getBuildMode() != AutoBuilderMode.CLEAR) {
-            if (!initInventoryPointer()) {
-                setStatus(BuilderStatus.NO_INVENTORY);
-                return;
-            }
+        if (getBuildMode() != AutoBuilderMode.CLEAR && initInventoryPointer()) {
+            setStatus(BuilderStatus.NO_INVENTORY);
         }
-
-        setStatus(BuilderStatus.RUNNING);
+        else {
+            setStatus(BuilderStatus.RUNNING);
+        }
     }
 
     private void stop(boolean finished) {
@@ -220,12 +221,14 @@ public class AutoBuilder extends BaseSTBMachine {
 
     private boolean initInventoryPointer() {
         invSlot = -1;
+
         for (int slot = 0; slot < getInputSlots().length; slot++) {
             if (getInventoryItem(getInputSlots()[slot]) != null) {
                 invSlot = slot;
                 return true;
             }
         }
+
         return false;
     }
 

@@ -1,11 +1,11 @@
 package io.github.thebusybiscuit.sensibletoolbox.core.enderstorage;
 
+import java.io.File;
+
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
-
-import java.io.File;
 
 public class PlayerEnderHolder extends STBEnderStorageHolder {
 
@@ -32,11 +32,7 @@ public class PlayerEnderHolder extends STBEnderStorageHolder {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        PlayerEnderHolder that = (PlayerEnderHolder) o;
-
-        if (!player.equals(that.player)) return false;
-
-        return true;
+        return player.equals(((PlayerEnderHolder) o).player);
     }
 
     @Override

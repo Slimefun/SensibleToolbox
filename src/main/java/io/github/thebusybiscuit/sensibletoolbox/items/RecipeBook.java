@@ -3,7 +3,6 @@ package io.github.thebusybiscuit.sensibletoolbox.items;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -37,8 +36,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -47,6 +48,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.CyclerGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -56,11 +58,10 @@ import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.RecipeUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.STBFurnaceRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
 import io.github.thebusybiscuit.sensibletoolbox.core.STBItemRegistry;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemNames;
 import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cost.ItemCost;
@@ -178,12 +179,10 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         CustomRecipeManager crm = CustomRecipeManager.getManager();
-        for (ItemStack stack : crm.getAllResults()) {
-            itemSet.add(stack);
-        }
+        itemSet.addAll(crm.getAllResults());
 
         fullItemList.addAll(itemSet);
-        Collections.sort(fullItemList, new StackComparator());
+        fullItemList.sort(new StackComparator());
 
         for (int i = 0; i < fullItemList.size(); i++) {
             itemListPos.put(fullItemList.get(i), i);
@@ -200,7 +199,7 @@ public class RecipeBook extends BaseSTBItem {
             filteredItems = new ArrayList<>();
 
             for (ItemStack stack : fullItemList) {
-                if (filterString.isEmpty() || ItemNames.lookup(stack).toLowerCase().contains(filterString)) {
+                if (filterString.isEmpty() || ItemUtils.getItemName(stack).toLowerCase().contains(filterString)) {
                     BaseSTBItem stbItem = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
                     if (includeItem(stbItem)) {
@@ -406,7 +405,7 @@ public class RecipeBook extends BaseSTBItem {
         }
         else {
             // in the recipe view - clicking an ingredient?
-            if (gui.getSlotType(slot) == InventoryGUI.SlotType.ITEM) {
+            if (gui.getSlotType(slot) == SlotType.ITEM) {
                 if (slot == RESULT_SLOT) {
                     // possibly fabricate the resulting item
                     if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {
@@ -475,7 +474,7 @@ public class RecipeBook extends BaseSTBItem {
         }
         else if (ingredient.getDurability() == 32767) {
             ItemStack ingredient2 = ingredient.clone();
-            ingredient2.setDurability((short) 0);
+            ((Damageable) ingredient2.getItemMeta()).setDamage((short) 0);
             return ingredient2;
         }
         else {
@@ -484,7 +483,8 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     private void showFurnaceRecipe(STBFurnaceRecipe recipe) {
-        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
+        // 4 is the middle of the 9 item slots
+        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient());
         gui.getInventory().setItem(TYPE_SLOT, FURNACE_ICON);
     }
 
@@ -506,7 +506,8 @@ public class RecipeBook extends BaseSTBItem {
         meta.setLore(lore);
         processor.setItemMeta(meta);
         gui.getInventory().setItem(TYPE_SLOT, processor);
-        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient()); // 4 is the middle of the 9 item slots
+        // 4 is the middle of the 9 item slots
+        gui.getInventory().setItem(RECIPE_SLOTS[4], recipe.getIngredient());
     }
 
     public static ItemStack getIngredient(BaseSTBItem resultingItem, ItemStack stack) {
@@ -581,7 +582,7 @@ public class RecipeBook extends BaseSTBItem {
             ItemCost cost = new ItemCost(ingredient);
 
             if (!cost.isAffordable(player, false, inventories)) {
-                MiscUtil.errorMessage(player, "Missing: &f" + ItemNames.lookup(ingredient));
+                MiscUtil.errorMessage(player, "Missing: &f" + ItemUtils.getItemName(ingredient));
                 ok = false;
             }
 
@@ -620,8 +621,8 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         player.getInventory().addItem(result);
-        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
-        MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemNames.lookup(result));
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+        MiscUtil.statusMessage(player, "Fabricated (free): &f" + ItemUtils.getItemName(result));
     }
 
     private void fabricateNormal(List<ItemStack> taken, ItemStack result) {
@@ -646,8 +647,8 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         player.getInventory().addItem(result);
-        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
-        MiscUtil.statusMessage(player, "Fabricated: &f" + ItemNames.lookup(result));
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+        MiscUtil.statusMessage(player, "Fabricated: &f" + ItemUtils.getItemName(result));
     }
 
     private List<ItemStack> mergeIngredients() {
@@ -658,6 +659,7 @@ public class RecipeBook extends BaseSTBItem {
             // ItemStack stack = gui.getInventory().getItem(slot);
             if (stack != null) {
                 Integer existing = amounts.get(stack);
+
                 if (existing == null) {
                     amounts.put(stack, 1);
                 }
@@ -666,6 +668,7 @@ public class RecipeBook extends BaseSTBItem {
                 }
             }
         }
+
         List<ItemStack> res = new ArrayList<>();
 
         for (Map.Entry<ItemStack, Integer> e : amounts.entrySet()) {
@@ -704,14 +707,14 @@ public class RecipeBook extends BaseSTBItem {
         }
 
         for (int slot = 0; slot < 54; slot++) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
+            gui.setSlotType(slot, SlotType.BACKGROUND);
         }
 
         for (int slot : RECIPE_SLOTS) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            gui.setSlotType(slot, SlotType.ITEM);
         }
 
-        gui.setSlotType(RESULT_SLOT, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(RESULT_SLOT, SlotType.ITEM);
 
         gui.addGadget(new ButtonGadget(gui, ITEM_LIST_SLOT, "< Back to Item List", new String[0], GO_BACK_TEXTURE, () -> {
             trail.clear();
@@ -723,7 +726,7 @@ public class RecipeBook extends BaseSTBItem {
         if (!trail.isEmpty()) {
             ItemStack prevStack = fullItemList.get(trail.peek().item);
             String label = "< Back to Last Recipe";
-            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, label, new String[] { ItemNames.lookup(prevStack) }, GO_BACK_TEXTURE_2, () -> {
+            gui.addGadget(new ButtonGadget(gui, TRAIL_BACK_SLOT, label, new String[] { ItemUtils.getItemName(prevStack) }, GO_BACK_TEXTURE_2, () -> {
                 ItemAndRecipeNumber ir = trail.pop();
                 viewingItem = ir.item;
                 recipeNumber = ir.recipe;
@@ -731,7 +734,7 @@ public class RecipeBook extends BaseSTBItem {
             }));
         }
 
-        String lore = "for " + ItemNames.lookup(result);
+        String lore = "for " + ItemUtils.getItemName(result);
         int nRecipes = recipes.size();
 
         if (nRecipes > 1) {
@@ -798,21 +801,23 @@ public class RecipeBook extends BaseSTBItem {
 
         for (int i = start, slot = 0; i < start + ITEMS_PER_PAGE; i++, slot++) {
             if (i < filteredItems.size()) {
-                gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+                gui.setSlotType(slot, SlotType.ITEM);
                 gui.getInventory().setItem(slot, filteredItems.get(i));
             }
             else {
-                gui.setSlotType(slot, InventoryGUI.SlotType.BACKGROUND);
+                gui.setSlotType(slot, SlotType.BACKGROUND);
             }
         }
 
         gui.addGadget(new ButtonGadget(gui, PREV_PAGE_SLOT, "< Prev Page", null, null, () -> {
-            if (--page < 0) page = totalPages - 1;
+            page--;
+            if (page < 0) page = totalPages - 1;
             drawItemsPage();
         }));
 
         gui.addGadget(new ButtonGadget(gui, NEXT_PAGE_SLOT, "Next Page >", null, null, () -> {
-            if (++page >= totalPages) page = 0;
+            page++;
+            if (page >= totalPages) page = 0;
             drawItemsPage();
         }));
 
@@ -826,7 +831,7 @@ public class RecipeBook extends BaseSTBItem {
 
         }
         else {
-            gui.setSlotType(FILTER_STRING_BUTTON_SLOT, InventoryGUI.SlotType.BACKGROUND);
+            gui.setSlotType(FILTER_STRING_BUTTON_SLOT, SlotType.BACKGROUND);
         }
 
         ItemStack pageStack = new ItemStack(Material.PAPER, page + 1);
@@ -837,12 +842,12 @@ public class RecipeBook extends BaseSTBItem {
 
         @Override
         public int compare(ItemStack o1, ItemStack o2) {
-            return ChatColor.stripColor(ItemNames.lookup(o1) == null ? "" : ItemNames.lookup(o1)).compareTo(ChatColor.stripColor(ItemNames.lookup(o2) == null ? "" : ItemNames.lookup(o2)));
+            return ChatColor.stripColor(ItemUtils.getItemName(o1) == null ? "" : ItemUtils.getItemName(o1)).compareTo(ChatColor.stripColor(ItemUtils.getItemName(o2) == null ? "" : ItemUtils.getItemName(o2)));
         }
 
     }
 
-    private class ItemAndRecipeNumber {
+    private static final class ItemAndRecipeNumber {
 
         private final int item;
         private final int recipe;

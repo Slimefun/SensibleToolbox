@@ -50,9 +50,9 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.STBGUIHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
@@ -221,7 +221,7 @@ public class GeneralListener extends STBBaseListener {
     public void onSignChange(SignChangeEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
             Block b = event.getBlock();
-            WallSign sign = (WallSign) b.getState().getData();
+            WallSign sign = (WallSign) b.getBlockData();
 
             Block attachedTo = b.getRelative(sign.getFacing());
             BaseSTBBlock item = LocationManager.getManager().get(attachedTo.getLocation());
@@ -243,7 +243,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onLabelSignBroken(BlockBreakEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
-            WallSign sign = (WallSign) event.getBlock().getState().getData();
+            WallSign sign = (WallSign) event.getBlock().getBlockData();
             Block b2 = event.getBlock().getRelative(sign.getFacing());
             BaseSTBBlock stb = LocationManager.getManager().get(b2.getLocation());
 
@@ -301,6 +301,10 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
+        
+        if (event.getRecipe() == null) {
+            return;
+        }
 
         BaseSTBItem result = SensibleToolbox.getItemRegistry().fromItemStack(event.getRecipe().getResult());
         if (result != null) {

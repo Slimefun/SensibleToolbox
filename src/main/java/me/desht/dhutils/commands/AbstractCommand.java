@@ -2,11 +2,12 @@ package me.desht.dhutils.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
@@ -79,12 +80,12 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         CMDREC:
         for (CommandRecord rec : cmdRecs) {
             if (!label.equalsIgnoreCase(rec.getCommand())) continue;
-
-            if (!partialOk && args.length < rec.subCommands.length) continue;
+            if (!partialOk && args.length < rec.size()) continue;
 
             int match = 0;
-            for (int i = 0; i < rec.subCommands.length && i < args.length; i++) {
-                if (rec.subCommands[i].startsWith(args[i])) {
+
+            for (int i = 0; i < rec.size() && i < args.length; i++) {
+                if (rec.getSubCommand(i).startsWith(args[i])) {
                     match++;
                 }
                 else {
@@ -92,7 +93,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
                     continue CMDREC;
                 }
             }
-            if (partialOk || match == rec.subCommands.length) {
+
+            if (partialOk || match == rec.size()) {
                 matchedCommand = rec;
                 return true;
             }
@@ -109,10 +111,10 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
             if (isQuotedArgs()) {
                 List<String> a = MiscUtil.splitQuotedString(combine(args, 0));
-                nArgs = a.size() - rec.subCommands.length;
+                nArgs = a.size() - rec.size();
             }
             else {
-                nArgs = args.length - rec.subCommands.length;
+                nArgs = args.length - rec.size();
             }
 
             Debugger.getInstance().debug(3, String.format("matchesArgCount: %s, nArgs=%d min=%d max=%d", label, nArgs, minArgs, maxArgs));
@@ -130,11 +132,16 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         return cmdRecs;
     }
 
-    private void storeMatchedArgs(String[] args, CommandRecord rec) {
-        String[] tmpResult = new String[args.length - rec.subCommands.length];
+    @Nonnull
+    protected List<String> noCompletions(CommandSender sender) {
+        return CommandManager.noCompletions(sender);
+    }
 
-        for (int i = rec.subCommands.length; i < args.length; i++) {
-            tmpResult[i - rec.subCommands.length] = args[i];
+    private void storeMatchedArgs(String[] args, CommandRecord rec) {
+        String[] tmpResult = new String[args.length - rec.size()];
+
+        for (int i = rec.size(); i < args.length; i++) {
+            tmpResult[i - rec.size()] = args[i];
         }
 
         String[] tmpArgs;
@@ -344,27 +351,6 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         return result.toString();
     }
 
-    @Deprecated
-    protected Map<String, String> parseCommandOptions(String[] args, int start) {
-        Map<String, String> res = new HashMap<>();
-
-        Pattern pattern = Pattern.compile("^-(.+)"); //$NON-NLS-1$
-
-        for (int i = start; i < args.length; ++i) {
-            Matcher matcher = pattern.matcher(args[i]);
-            if (matcher.find()) {
-                String opt = matcher.group(1);
-                try {
-                    res.put(opt, args[++i]);
-                }
-                catch (ArrayIndexOutOfBoundsException e) {
-                    res.put(opt, null);
-                }
-            }
-        }
-        return res;
-    }
-
     /**
      * Return a list of possible completions for the command for the given arguments.
      * Override this in subclasses.
@@ -376,27 +362,6 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
      * @return a list of possible completions
      */
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
-        return noCompletions(sender);
-    }
-
-    /**
-     * Return an empty list of possible completions.
-     *
-     * @return an empty string list
-     */
-    protected List<String> noCompletions() {
-        return CommandManager.noCompletions();
-    }
-
-    /**
-     * Return an empty list of possible completions, also playing an alert to the sender
-     * if they are a player.
-     *
-     * @param sender
-     *            the command sender trying to get a completion
-     * @return an empty string list
-     */
-    protected List<String> noCompletions(CommandSender sender) {
         return CommandManager.noCompletions(sender);
     }
 
@@ -432,7 +397,10 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
      * @return
      */
     protected List<String> getResult(List<String> res, CommandSender sender, boolean sorted) {
-        if (res.isEmpty()) return sender == null ? noCompletions() : noCompletions(sender);
+        if (res.isEmpty()) {
+            return sender == null ? Collections.emptyList() : CommandManager.noCompletions(sender);
+        }
+
         return sorted ? MiscUtil.asSortedList(res) : res;
     }
 
@@ -478,46 +446,6 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         }
 
         return filterPrefix(sender, res, prefix);
-    }
-
-    /**
-     * Represents a single command record: command plus subcommands. A command object
-     * contains one or more of these records.
-     */
-    class CommandRecord {
-
-        private final String command;
-        private final String[] subCommands;
-
-        public CommandRecord(String[] fields) {
-            this.command = fields[0];
-            this.subCommands = new String[fields.length - 1];
-
-            for (int i = 1; i < fields.length; i++) {
-                subCommands[i - 1] = fields[i];
-            }
-        }
-
-        @Override
-        public String toString() {
-            return command + " " + Joiner.on(" ").join(subCommands);
-        }
-
-        public int size() {
-            return subCommands.length;
-        }
-
-        public String getCommand() {
-            return command;
-        }
-
-        public String getSubCommand(int idx) {
-            return subCommands[idx];
-        }
-
-        public String getLastSubCommand() {
-            return subCommands[subCommands.length - 1];
-        }
     }
 
     @Override

@@ -10,6 +10,8 @@ import java.util.UUID;
 
 /**
  * Represents an STB ender inventory holder.
+ * 
+ * @author desht
  */
 public interface EnderStorageHolder extends STBInventoryHolder {
 

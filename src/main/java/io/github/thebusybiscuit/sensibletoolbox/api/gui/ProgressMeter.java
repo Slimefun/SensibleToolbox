@@ -5,8 +5,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 
 /**
  * A progress meter gadget. The GUI that this is added to must be owned by an

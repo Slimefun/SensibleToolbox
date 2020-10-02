@@ -1,9 +1,11 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
+import me.desht.dhutils.MiscUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -19,17 +21,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
-import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.SoilSaturation;
-import me.desht.dhutils.MiscUtil;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class WateringCan extends BaseSTBItem {
 
@@ -179,7 +178,12 @@ public class WateringCan extends BaseSTBItem {
         event.setCancelled(true);
 
         if (newStack != null) {
-            player.setItemInHand(newStack);
+            if (event.getHand() == EquipmentSlot.HAND) {
+                player.getInventory().setItemInMainHand(newStack);
+            }
+            else {
+                player.getInventory().setItemInOffHand(newStack);
+            }
         }
 
         if (floodWarning) {
@@ -209,7 +213,7 @@ public class WateringCan extends BaseSTBItem {
             MiscUtil.alertMessage(player, "The fire is out!");
         }
 
-        player.setItemInHand(toItemStack());
+        player.getInventory().setItemInMainHand(toItemStack());
         player.updateInventory();
         event.setCancelled(true);
     }

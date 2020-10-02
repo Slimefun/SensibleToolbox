@@ -3,6 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.api.enderstorage;
 /**
  * Represents an STB item or block which has an ender frequency
  * including global/personal visibility.
+ * 
+ * @author desht
  */
 public interface EnderTunable {
 
@@ -11,7 +13,7 @@ public interface EnderTunable {
      *
      * @return the object's current ender frequency
      */
-    public int getEnderFrequency();
+    int getEnderFrequency();
 
     /**
      * Change the ender frequency of this tunable object.
@@ -19,7 +21,7 @@ public interface EnderTunable {
      * @param frequency
      *            the new ender frequency
      */
-    public void setEnderFrequency(int frequency);
+    void setEnderFrequency(int frequency);
 
     /**
      * Check if this object is on a global or personal frequency. Global
@@ -29,7 +31,7 @@ public interface EnderTunable {
      *
      * @return true if this a global frequency; false otherwise
      */
-    public boolean isGlobal();
+    boolean isGlobal();
 
     /**
      * Define whether this tunable object should be on a global or personal
@@ -38,5 +40,5 @@ public interface EnderTunable {
      * @param global
      *            true if this should be a global frequency; false otherwise
      */
-    public void setGlobal(boolean global);
+    void setGlobal(boolean global);
 }

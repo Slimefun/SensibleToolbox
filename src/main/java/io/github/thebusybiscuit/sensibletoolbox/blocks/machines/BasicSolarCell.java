@@ -2,6 +2,8 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -31,10 +33,11 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeDirection;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.LightMeter;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.PVCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.SunlightLevels;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
@@ -258,9 +261,9 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         return 20;
     }
 
-    private void drawPVLayer(Block b) {
+    private void drawPVLayer(@Nonnull Block b) {
         // put a carpet on top of the main block to represent the PV cell
-        DyeColor color = pvCellLife > 0 ? getCapColour() : DyeColor.GRAY;
+        DyeColor color = pvCellLife > 0 ? getCapColor() : DyeColor.GRAY;
         Material carpet = MaterialCollections.getAllCarpetColors().get(color.ordinal());
         b.setType(carpet);
     }
@@ -281,7 +284,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         super.onBlockUnregistered(location);
     }
 
-    protected DyeColor getCapColour() {
+    @Nonnull
+    protected DyeColor getCapColor() {
         return DyeColor.BLUE;
     }
 
@@ -372,7 +376,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         InventoryGUI gui = super.createGUI();
 
         gui.addLabel("PV Cell", 0, null, "Insert a PV Cell Here");
-        gui.setSlotType(PV_CELL_SLOT, InventoryGUI.SlotType.ITEM);
+        gui.setSlotType(PV_CELL_SLOT, SlotType.ITEM);
 
         drawPVCell(gui);
 

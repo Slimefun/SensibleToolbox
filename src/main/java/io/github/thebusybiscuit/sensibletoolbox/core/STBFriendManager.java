@@ -3,16 +3,18 @@ package io.github.thebusybiscuit.sensibletoolbox.core;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import javax.annotation.Nonnull;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
@@ -22,25 +24,17 @@ import me.desht.dhutils.LogUtils;
 public class STBFriendManager implements FriendManager {
 
     private static final String FRIEND_DIR = "friends";
-
-    private static final FilenameFilter ymlFilter = new FilenameFilter() {
-
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".yml");
-        }
-    };
+    private static final FilenameFilter ymlFilter = (dir, name) -> name.endsWith(".yml");
 
     private final File saveDir;
-    private final Set<UUID> saveNeeded = Sets.newHashSet();
-    private final Map<UUID, Set<UUID>> friendMap = Maps.newHashMap();
+    private final Map<UUID, Set<UUID>> friendMap = new HashMap<>();
+    private final Set<UUID> savingQueue = new HashSet<>();
 
-    public STBFriendManager(SensibleToolboxPlugin plugin) {
+    public STBFriendManager(@Nonnull SensibleToolboxPlugin plugin) {
         saveDir = new File(plugin.getDataFolder(), FRIEND_DIR);
-        if (!saveDir.exists()) {
-            if (!saveDir.mkdir()) {
-                LogUtils.warning("can't create directory: " + saveDir);
-            }
+
+        if (!saveDir.exists() && !saveDir.mkdir()) {
+            LogUtils.warning("can't create directory: " + saveDir);
         }
 
         load();
@@ -49,32 +43,31 @@ public class STBFriendManager implements FriendManager {
     @Override
     public void addFriend(UUID id1, UUID id2) {
         getFriends(id1).add(id2);
-        saveNeeded.add(id1);
+        savingQueue.add(id1);
         Debugger.getInstance().debug("add friend: " + id1 + " -> " + id2);
     }
 
     @Override
     public void removeFriend(UUID id1, UUID id2) {
         getFriends(id1).remove(id2);
-        saveNeeded.add(id1);
+        savingQueue.add(id1);
         Debugger.getInstance().debug("remove friend: " + id1 + " -> " + id2);
     }
 
     @Override
-    public boolean isFriend(UUID id1, UUID id2) {
+    public boolean isFriend(@Nonnull UUID id1, @Nonnull UUID id2) {
         return getFriends(id1).contains(id2);
     }
 
     @Override
-    public Set<UUID> getFriends(UUID id) {
-        Set<UUID> res = friendMap.get(id);
-        if (res == null) {
-            res = Sets.newHashSet();
-            friendMap.put(id, res);
-        }
-        return res;
+    @Nonnull
+    public Set<UUID> getFriends(@Nonnull UUID id) {
+        Validate.notNull(id, "Cannot get friends for null!");
+
+        return friendMap.computeIfAbsent(id, key -> new HashSet<>());
     }
 
+    @Override
     public void load() {
         for (File f : saveDir.listFiles(ymlFilter)) {
             try {
@@ -82,6 +75,7 @@ public class STBFriendManager implements FriendManager {
                 conf.load(f);
                 String name = removeExtension(f.getName());
                 UUID id1 = UUID.fromString(name);
+
                 for (String k : conf.getStringList("friends")) {
                     UUID id2 = UUID.fromString(k);
                     addFriend(id1, id2);
@@ -93,16 +87,20 @@ public class STBFriendManager implements FriendManager {
         }
     }
 
+    @Override
     public void save() {
-        for (UUID id : saveNeeded) {
+        for (UUID id : savingQueue) {
             YamlConfiguration conf = new YamlConfiguration();
             Set<UUID> idSet = getFriends(id);
-            List<String> ids = Lists.newArrayListWithCapacity(idSet.size());
+            List<String> ids = new ArrayList<>(idSet.size());
+
             for (UUID uuid : idSet) {
                 ids.add(uuid.toString());
             }
+
             conf.set("friends", ids);
             File f = new File(saveDir, id.toString() + ".yml");
+
             try {
                 conf.save(f);
             }
@@ -110,26 +108,33 @@ public class STBFriendManager implements FriendManager {
                 LogUtils.warning("failed to save friend data for " + f + ": " + e.getMessage());
             }
         }
-        saveNeeded.clear();
+
+        savingQueue.clear();
     }
 
-    public static String removeExtension(String s) {
+    @Nonnull
+    private String removeExtension(@Nonnull String name) {
         String separator = File.separator;
-        String filename;
+        String fileName;
 
         // Remove the path upto the filename.
-        int lastSeparatorIndex = s.lastIndexOf(separator);
+        int lastSeparatorIndex = name.lastIndexOf(separator);
+
         if (lastSeparatorIndex == -1) {
-            filename = s;
+            fileName = name;
         }
         else {
-            filename = s.substring(lastSeparatorIndex + 1);
+            fileName = name.substring(lastSeparatorIndex + 1);
         }
 
         // Remove the extension.
-        int extensionIndex = filename.lastIndexOf(".");
-        if (extensionIndex == -1) return filename;
+        int extensionIndex = fileName.lastIndexOf(".");
 
-        return filename.substring(0, extensionIndex);
+        if (extensionIndex == -1) {
+            return fileName;
+        }
+        else {
+            return fileName.substring(0, extensionIndex);
+        }
     }
 }

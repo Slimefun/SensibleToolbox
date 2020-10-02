@@ -64,12 +64,12 @@ public class GUIUtil {
     }
 
     /**
-     * Construct some item lore with grey colouring, given a
+     * Construct some item lore with grey coloring, given a
      * text array.
      *
      * @param lore
      *            array containing the lore text
-     * @return a list of properly coloured lore text
+     * @return a list of properly colored lore text
      */
     public static List<String> makeLore(String... lore) {
         List<String> res = new ArrayList<String>();

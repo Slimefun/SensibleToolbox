@@ -48,6 +48,7 @@ public class SoundMuffler extends BaseSTBBlock {
         return gui;
     }
 
+    @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
         conf.set("volume", volume);

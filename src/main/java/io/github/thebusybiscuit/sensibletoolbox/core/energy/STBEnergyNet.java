@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -15,9 +17,9 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.BlockPosition;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 
 public class STBEnergyNet implements EnergyNet {
@@ -27,12 +29,12 @@ public class STBEnergyNet implements EnergyNet {
     private static int freeID = 1;
     private final int netID;
     private final String worldName;
-    private final List<BlockPosition> cables = new ArrayList<BlockPosition>();
-    private final Set<ChargeableBlock> machines = new HashSet<ChargeableBlock>();
+    private final List<BlockPosition> cables = new ArrayList<>();
+    private final Set<ChargeableBlock> machines = new HashSet<>();
     private double totalDemand;
     private double totalSupply;
-    private final Set<ChargeableBlock> energySinks = new HashSet<ChargeableBlock>();
-    private final Set<ChargeableBlock> energySources = new HashSet<ChargeableBlock>();
+    private final Set<ChargeableBlock> energySinks = new HashSet<>();
+    private final Set<ChargeableBlock> energySources = new HashSet<>();
     private final EnergyNetManager enetManager;
 
     private STBEnergyNet(String worldName, EnergyNetManager manager) {
@@ -45,11 +47,13 @@ public class STBEnergyNet implements EnergyNet {
         return freeID++;
     }
 
-    static STBEnergyNet buildNet(Block b, EnergyNetManager manager) {
+    @Nonnull
+    static STBEnergyNet buildNet(@Nonnull Block b, @Nonnull EnergyNetManager manager) {
         STBEnergyNet enet = new STBEnergyNet(b.getWorld().getName(), manager);
 
-        Set<Object> blocks = new HashSet<Object>();
+        Set<Object> blocks = new HashSet<>();
         recursiveScan(b, blocks, BlockFace.SELF);
+
         for (Object o : blocks) {
             if (o instanceof Block) {
                 enet.addCable((Block) o);
@@ -59,6 +63,7 @@ public class STBEnergyNet implements EnergyNet {
                 enet.addMachine(rec.getMachine(), rec.getDirection());
             }
         }
+
         enet.findSourcesAndSinks();
         Debugger.getInstance().debug("built new net #" + enet.getNetID() + " with " + enet.cables.size() + " cables & " + enet.machines.size() + " machines");
         return enet;

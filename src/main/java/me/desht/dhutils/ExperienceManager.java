@@ -3,6 +3,8 @@ package me.desht.dhutils;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
@@ -112,11 +114,14 @@ public class ExperienceManager {
      * @throws IllegalStateException
      *             if the player is no longer online
      */
+    @Nonnull
     public Player getPlayer() {
         Player p = player.get();
+
         if (p == null) {
             throw new IllegalStateException("Player " + playerName + " is not online");
         }
+
         return p;
     }
 
@@ -167,21 +172,21 @@ public class ExperienceManager {
     private void setExp(double base, double amt) {
         int xp = (int) Math.max(base + amt, 0);
 
-        Player player = getPlayer();
-        int curLvl = player.getLevel();
+        Player p = getPlayer();
+        int curLvl = p.getLevel();
         int newLvl = getLevelForExp(xp);
 
         // Increment level
         if (curLvl != newLvl) {
-            player.setLevel(newLvl);
+            p.setLevel(newLvl);
         }
         // Increment total experience - this should force the server to send an update packet
         if (xp > base) {
-            player.setTotalExperience(player.getTotalExperience() + xp - (int) base);
+            p.setTotalExperience(p.getTotalExperience() + xp - (int) base);
         }
 
         double pct = (base - getXpForLevel(newLvl) + amt) / (double) (getXpNeededToLevelUp(newLvl));
-        player.setExp((float) pct);
+        p.setExp((float) pct);
     }
 
     /**
@@ -190,11 +195,10 @@ public class ExperienceManager {
      * @return the player's total XP
      */
     public int getCurrentExp() {
-        Player player = getPlayer();
+        Player p = getPlayer();
 
-        int lvl = player.getLevel();
-        int cur = getXpForLevel(lvl) + (int) Math.round(getXpNeededToLevelUp(lvl) * player.getExp());
-        return cur;
+        int lvl = p.getLevel();
+        return getXpForLevel(lvl) + Math.round(getXpNeededToLevelUp(lvl) * p.getExp());
     }
 
     /**
@@ -203,11 +207,10 @@ public class ExperienceManager {
      * @return The player's total XP with fractions.
      */
     private double getCurrentFractionalXP() {
-        Player player = getPlayer();
+        Player p = getPlayer();
 
-        int lvl = player.getLevel();
-        double cur = getXpForLevel(lvl) + (double) (getXpNeededToLevelUp(lvl) * player.getExp());
-        return cur;
+        int lvl = p.getLevel();
+        return getXpForLevel(lvl) + (double) (getXpNeededToLevelUp(lvl) * p.getExp());
     }
 
     /**
@@ -245,12 +248,14 @@ public class ExperienceManager {
         if (exp <= 0) {
             return 0;
         }
+
         if (exp > xpTotalToReachLevel[xpTotalToReachLevel.length - 1]) {
             // need to extend the lookup tables
             int newMax = calculateLevelForExp(exp) * 2;
             Validate.isTrue(newMax <= hardMaxLevel, "Level for exp " + exp + " > hard max level " + hardMaxLevel);
             initLookupTables(newMax);
         }
+
         int pos = Arrays.binarySearch(xpTotalToReachLevel, exp);
         return pos < 0 ? -pos - 2 : pos;
     }
@@ -280,9 +285,11 @@ public class ExperienceManager {
      */
     public int getXpForLevel(int level) {
         Validate.isTrue(level >= 0 && level <= hardMaxLevel, "Invalid level " + level + "(must be in range 0.." + hardMaxLevel + ")");
+
         if (level >= xpTotalToReachLevel.length) {
             initLookupTables(level * 2);
         }
+
         return xpTotalToReachLevel[level];
     }
 }

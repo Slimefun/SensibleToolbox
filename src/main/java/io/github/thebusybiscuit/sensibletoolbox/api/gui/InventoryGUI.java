@@ -10,8 +10,12 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Implements a GUI system using custom inventory windows.
+ * 
+ * @author desht
  */
 public interface InventoryGUI {
 
@@ -22,7 +26,7 @@ public interface InventoryGUI {
      *            the slot to check
      * @return the slot type
      */
-    public SlotType getSlotType(int slot);
+    SlotType getSlotType(int slot);
 
     /**
      * Change the type of the given slot.
@@ -32,7 +36,7 @@ public interface InventoryGUI {
      * @param type
      *            the new slot type
      */
-    public void setSlotType(int slot, SlotType type);
+    void setSlotType(int slot, SlotType type);
 
     /**
      * Add a clickable gadget to this GUI. The gadget will define its
@@ -41,7 +45,7 @@ public interface InventoryGUI {
      * @param gadget
      *            the gadget to add
      */
-    public void addGadget(ClickableGadget gadget);
+    void addGadget(ClickableGadget gadget);
 
     /**
      * Get the clickable gadget in the given slot.
@@ -50,7 +54,8 @@ public interface InventoryGUI {
      *            the slot to check
      * @return the clickable gadget, or null if there is no gadget there
      */
-    public ClickableGadget getGadget(int slot);
+    @Nullable
+    ClickableGadget getGadget(int slot);
 
     /**
      * Add an informational label to this GUI.
@@ -67,7 +72,7 @@ public interface InventoryGUI {
      * @param lore
      *            the label tooltip; extended information can be defined here
      */
-    public void addLabel(String label, int slot, ItemStack texture, String... lore);
+    void addLabel(String label, int slot, ItemStack texture, String... lore);
 
     /**
      * Add a monitor gadget to this GUI. The gadget defines its own
@@ -77,7 +82,7 @@ public interface InventoryGUI {
      *            the gadget to add
      * @return a unique integer identifying the monitor gadget
      */
-    public int addMonitor(MonitorGadget gadget);
+    int addMonitor(MonitorGadget gadget);
 
     /**
      * Get the monitor gadget for the given ID.
@@ -87,30 +92,32 @@ public interface InventoryGUI {
      *            by {@link #addMonitor(MonitorGadget)}
      * @return a monitor gadget, or null if no such gadget exists
      */
-    public MonitorGadget getMonitor(int monitorId);
+    @Nullable
+    MonitorGadget getMonitor(int monitorId);
 
     /**
      * Get the item in the given inventory slot. The slot must have
      * previously been marked as an item slot with
-     * {@link #setSlotType(int, me.desht.sensibletoolbox.api.gui.InventoryGUI.SlotType)}
+     * {@link #setSlotType(int, me.desht.sensibletoolbox.api.gui.SlotType)}
      *
      * @param slot
      *            the slot to check
      * @return the item in that slot, may be null
      */
-    public ItemStack getItem(int slot);
+    @Nullable
+    ItemStack getItem(int slot);
 
     /**
      * Change the item in the given inventory slot. The slot must have
      * previously been marked as an item slot with
-     * {@link #setSlotType(int, me.desht.sensibletoolbox.api.gui.InventoryGUI.SlotType)}
+     * {@link #setSlotType(int, me.desht.sensibletoolbox.api.gui.SlotType)}
      *
      * @param slot
      *            the slot to update
      * @param stack
      *            the new item to place in the slot
      */
-    public void setItem(int slot, ItemStack stack);
+    void setItem(int slot, @Nullable ItemStack stack);
 
     /**
      * Get the STB block which owns this GUI.
@@ -119,7 +126,7 @@ public interface InventoryGUI {
      * @throws java.lang.IllegalStateException
      *             if the owner is not an STB block
      */
-    public BaseSTBBlock getOwningBlock();
+    BaseSTBBlock getOwningBlock();
 
     /**
      * Get the STB item which owns this GUI.
@@ -128,7 +135,7 @@ public interface InventoryGUI {
      * @throws java.lang.IllegalStateException
      *             if the owner is not an STB item
      */
-    public BaseSTBItem getOwningItem();
+    BaseSTBItem getOwningItem();
 
     /**
      * Get the Bukkit inventory backing this GUI. Care should be taken when
@@ -136,7 +143,7 @@ public interface InventoryGUI {
      *
      * @return the Bukkit inventory
      */
-    public Inventory getInventory();
+    Inventory getInventory();
 
     /**
      * Show this GUI to the given player.
@@ -144,7 +151,7 @@ public interface InventoryGUI {
      * @param player
      *            the player to show the GUI to
      */
-    public void show(Player player);
+    void show(Player player);
 
     /**
      * Hide this GUI from the given player (pop it down)
@@ -152,14 +159,14 @@ public interface InventoryGUI {
      * @param player
      *            the player to hide the GUI from
      */
-    public void hide(Player player);
+    void hide(Player player);
 
     /**
      * Get a list of players who currently have this GUI open.
      *
      * @return a list of HumanEntity
      */
-    public List<HumanEntity> getViewers();
+    List<HumanEntity> getViewers();
 
     /**
      * Paint the slots surrounding the given list of slots.
@@ -169,7 +176,7 @@ public interface InventoryGUI {
      * @param texture
      *            an item stack to use as a slot texture
      */
-    public void paintSlotSurround(int[] slots, ItemStack texture);
+    void paintSlotSurround(int[] slots, ItemStack texture);
 
     /**
      * Paint a slot in the GUI with the given texture.
@@ -181,7 +188,7 @@ public interface InventoryGUI {
      * @param overwrite
      *            if false, don't paint the slot unless it's empty
      */
-    public void paintSlot(int slot, ItemStack texture, boolean overwrite);
+    void paintSlot(int slot, ItemStack texture, boolean overwrite);
 
     /**
      * Freeze any items in the given slots into a string representation. This
@@ -191,7 +198,7 @@ public interface InventoryGUI {
      *            an array of slots to freeze
      * @return a string representation of the items in the given slots
      */
-    public String freezeSlots(int... slots);
+    String freezeSlots(int... slots);
 
     /**
      * Thaw a frozen item representation into the given slots. This frozen
@@ -202,7 +209,7 @@ public interface InventoryGUI {
      * @param slots
      *            the slots to thaw those items into
      */
-    public void thawSlots(String frozen, int... slots);
+    void thawSlots(String frozen, int... slots);
 
     /**
      * Eject any items in the given slots, dropping them on the ground at or
@@ -211,22 +218,5 @@ public interface InventoryGUI {
      * @param slots
      *            the slots to eject items from
      */
-    public void ejectItems(int... slots);
-
-    public enum SlotType {
-        /**
-         * A background slot. This slot type is never interactable.
-         */
-        BACKGROUND,
-        /**
-         * A slot which holds an item which might be placed or removed
-         * from the GUI.
-         */
-        ITEM,
-        /**
-         * A slot which holds an interactable control of some kind
-         * (e.g. a button, a label, a monitor for some value...)
-         */
-        GADGET
-    }
+    void ejectItems(int... slots);
 }

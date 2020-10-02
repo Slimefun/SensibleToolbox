@@ -28,7 +28,7 @@ public class GetcfgCommand extends AbstractCommand {
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         List<String> lines = getPluginConfiguration(args.length >= 1 ? args[0] : null);
         if (lines.size() > 1) {
-            MessagePager pager = MessagePager.getPager(sender).clear().setParseColours(true);
+            MessagePager pager = MessagePager.getPager(sender).clear().setParseColors(true);
             for (String line : lines) {
                 pager.add(line);
             }

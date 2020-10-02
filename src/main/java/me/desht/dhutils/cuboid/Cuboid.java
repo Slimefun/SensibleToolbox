@@ -14,9 +14,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import me.desht.dhutils.Debugger;
-import me.desht.dhutils.block.MassBlockUpdate;
-
 public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializable {
 
     protected final String worldName;
@@ -629,25 +626,6 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
         return res;
     }
 
-    /**
-     * Set all the blocks within the Cuboid to the given MaterialData, using
-     * a MassBlockUpdate object for fast updates.
-     *
-     * @param mat
-     *            the MaterialData to set
-     * @param mbu
-     *            the MassBlockUpdate object
-     */
-    public void fill(Material type, MassBlockUpdate mbu) {
-        long start = System.nanoTime();
-
-        for (Block b : this) {
-            b.setType(type, false);
-        }
-
-        Debugger.getInstance().debug(2, "Cuboid: " + this + ": set " + type.name() + ": " + (System.nanoTime() - start) + "ns");
-    }
-
     // /**
     // * Set the light level of all blocks within this Cuboid.
     // *
@@ -755,6 +733,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
             return b;
         }
 
+        @Override
         public void remove() {
             // nope
         }

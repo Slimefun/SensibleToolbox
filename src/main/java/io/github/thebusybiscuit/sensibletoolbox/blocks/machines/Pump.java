@@ -14,9 +14,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
 
 public class Pump extends AbstractProcessingMachine {

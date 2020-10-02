@@ -46,6 +46,7 @@ public class HyperSenderModule extends AdvancedSenderModule {
         return recipe;
     }
 
+    @Override
     protected boolean inRange(Location ourLoc) {
         return ourLoc != null;
     }

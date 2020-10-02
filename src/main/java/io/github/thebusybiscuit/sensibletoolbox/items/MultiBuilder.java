@@ -1,14 +1,19 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.LinkedBlockingQueue;
-
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
+import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.block.BlockAndPosition;
+import me.desht.dhutils.block.BlockUtil;
+import me.desht.dhutils.cost.ItemCost;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -30,19 +35,15 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
-import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.VanillaInventoryUtils;
-import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
-import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
-import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemNames;
-import me.desht.dhutils.block.BlockUtil;
-import me.desht.dhutils.cost.ItemCost;
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
@@ -150,7 +151,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         case BUILD:
             return "Build";
         case EXCHANGE:
-            String s = material == null ? "" : " [" + ItemNames.lookup(new ItemStack(material)) + "]";
+            String s = material == null ? "" : " [" + ItemUtils.getItemName(new ItemStack(material)) + "]";
             return "Swap " + s;
         default:
             return null;
@@ -323,16 +324,16 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
         int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-        int max = MAX_BUILD_BLOCKS + sharpness * 3;
-        Material clickedType = clickedBlock.getType();
         double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
 
         if (ch == 0) {
-            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.5f);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 0.5F);
             return Collections.emptySet();
         }
 
+        int max = MAX_BUILD_BLOCKS + sharpness * 3;
+        Material clickedType = clickedBlock.getType();
         max = Math.min(Math.min(max, howMuchDoesPlayerHave(player, clickedType)), ch);
         return floodFill(player, clickedBlock.getRelative(blockFace), blockFace.getOppositeFace(), getBuildFaces(blockFace), max);
     }
@@ -369,7 +370,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         case SOUTH:
         case EAST:
         case WEST:
-            BlockUtil.BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
+            BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
             double frac = pos.point.getY() % 1;
 
             if (frac > 0.85 || frac < 0.15) {
@@ -497,7 +498,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                         while (iter.hasNext()) {
                             SwapRecord r = iter.next();
 
-                            if (r.player.equals(rec.player) && r.target.equals(rec.target)) {
+                            if (r.player.equals(rec.player) && r.target == rec.target) {
                                 iter.remove();
                             }
                         }
@@ -531,21 +532,28 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 b.setType(rec.target, true);
 
                 // queue up the next set of blocks
-                if (rec.layersLeft > 0) {
-                    for (int x = -1; x <= 1; x++) {
-                        for (int y = -1; y <= 1; y++) {
-                            for (int z = -1; z <= 1; z++) {
-                                Block b1 = b.getRelative(x, y, z);
+                queueNextSet(rec, b, slot);
 
-                                if ((x != 0 || y != 0 || z != 0) && b1.getType() == rec.source && STBUtil.isExposed(b1)) {
-                                    queue.offer(new SwapRecord(rec.player, b1, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded));
+                didWork = true;
+            }
+        }
+
+        private void queueNextSet(@Nonnull SwapRecord rec, @Nonnull Block b, int slot) {
+            if (rec.layersLeft > 0) {
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int z = -1; z <= 1; z++) {
+                            Block block = b.getRelative(x, y, z);
+
+                            if ((x != 0 || y != 0 || z != 0) && block.getType() == rec.source && STBUtil.isExposed(block)) {
+                                if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target,
+                                    rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
+                                    return;
                                 }
                             }
                         }
                     }
                 }
-
-                didWork = true;
             }
         }
 
@@ -562,7 +570,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
     }
 
-    private class SwapRecord {
+    private final class SwapRecord {
 
         private final Player player;
         private final Block block;

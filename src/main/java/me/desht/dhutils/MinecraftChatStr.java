@@ -497,7 +497,7 @@ public class MinecraftChatStr {
     }
 
     public static LinkedList<String> alignTags(LinkedList<String> input, boolean minecraftChatFormat) {
-        if (input == null || input.size() == 0) {
+        if (input == null || input.isEmpty()) {
             return input;
         }
         char[] repl = new char[input.size()];
@@ -561,7 +561,7 @@ public class MinecraftChatStr {
     }
 
     public static String getChatColor(String col) {
-        String def = ChatColor.WHITE.toString();// "\u00A70";
+        String def = ChatColor.WHITE.toString();
         if (col == null || col.length() == 0) {
             return def;
         }
@@ -588,52 +588,52 @@ public class MinecraftChatStr {
          * # &f is white
          */
         if (col.equalsIgnoreCase("black")) {
-            return ChatColor.BLACK.toString();// "\u00A70"; //String.format("\u00A7%x", 0x0);//
+            return ChatColor.BLACK.toString();
         }
         else if (col.equals("blue") || col.equals("dark blue")) {
-            return ChatColor.DARK_BLUE.toString();// "\u00A71"; // String.format("\u00A7%x", 0x1);//
+            return ChatColor.DARK_BLUE.toString();
         }
         else if (col.equals("green") || col.equals("dark green")) {
-            return ChatColor.DARK_GREEN.toString();// "\u00A72"; // String.format("\u00A7%x", 0x2);//
+            return ChatColor.DARK_GREEN.toString();
         }
         else if (col.equals("sky blue") || col.equals("dark sky blue") || col.equals("aqua")) {
-            return ChatColor.DARK_AQUA.toString();// "\u00A73"; // String.format("\u00A7%x", 0x3);//
+            return ChatColor.DARK_AQUA.toString();
         }
         else if (col.equals("red") || col.equals("dark red")) {
-            return ChatColor.DARK_RED.toString();// "\u00A74"; // String.format("\u00A7%x", 0x4);//
+            return ChatColor.DARK_RED.toString();
         }
         else if (col.equals("magenta") || col.equals("purple")) {
-            return ChatColor.DARK_PURPLE.toString();// "\u00A75"; // String.format("\u00A7%x", 0x5);//
+            return ChatColor.DARK_PURPLE.toString();
         }
         else if (col.equals("gold") || col.equals("amber") || col.equals("dark yellow")) {
-            return ChatColor.GOLD.toString();// "\u00A76"; // String.format("\u00A7%x", 0x6);//
+            return ChatColor.GOLD.toString();
         }
         else if (col.equals("light gray") || col.equals("light grey")) {
-            return ChatColor.GRAY.toString();// "\u00A77"; // String.format("\u00A7%x", 0x7);//
+            return ChatColor.GRAY.toString();
         }
         else if (col.equals("dark gray") || col.equals("dark grey") || col.equals("gray") || col.equals("grey")) {
-            return ChatColor.DARK_GRAY.toString();// "\u00A78"; // String.format("\u00A7%x", 0x8);//
+            return ChatColor.DARK_GRAY.toString();
         }
         else if (col.equals("medium blue")) {
-            return ChatColor.BLUE.toString();// "\u00A79"; // String.format("\u00A7%x", 0x9);//
+            return ChatColor.BLUE.toString();
         }
         else if (col.equals("light green") || col.equals("lime") || col.equals("lime green")) {
-            return ChatColor.GREEN.toString();// "\u00A7a"; // String.format("\u00A7%x", 0xA);//
+            return ChatColor.GREEN.toString();
         }
         else if (col.equals("cyan") || col.equals("light blue")) {
-            return ChatColor.AQUA.toString();// "\u00A7b"; // String.format("\u00A7%x", 0xB);//
+            return ChatColor.AQUA.toString();
         }
         else if (col.equals("orange") || col.equals("orange-red") || col.equals("red-orange")) {
-            return ChatColor.RED.toString();// "\u00A7c"; // String.format("\u00A7%x", 0xC);//
+            return ChatColor.RED.toString();
         }
         else if (col.equals("pink") || col.equals("light red") || col.equals("light purple")) {
-            return ChatColor.LIGHT_PURPLE.toString();// "\u00A7d"; // String.format("\u00A7%x", 0xD);//
+            return ChatColor.LIGHT_PURPLE.toString();
         }
         else if (col.equals("yellow")) {
-            return ChatColor.YELLOW.toString();// "\u00A7e"; // String.format("\u00A7%x", 0xE);//
+            return ChatColor.YELLOW.toString();
         }
         else if (col.equals("white")) {
-            return ChatColor.WHITE.toString();// "\u00A7f"; //String.format("\u00A7%x", 0xF);//
+            return ChatColor.WHITE.toString();
         }
         else {
             return def;

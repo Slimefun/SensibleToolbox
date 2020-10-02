@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.util;
+package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.filters.Filter;
 import me.desht.dhutils.Debugger;
 
 /**
@@ -39,8 +40,12 @@ public class VanillaInventoryUtils {
     public static Optional<Inventory> getVanillaInventory(Block target) {
         BlockState state = target.getState();
 
-        if (state instanceof InventoryHolder) return Optional.of(((InventoryHolder) state).getInventory());
-        else return Optional.empty();
+        if (state instanceof InventoryHolder) {
+            return Optional.of(((InventoryHolder) state).getInventory());
+        }
+        else {
+            return Optional.empty();
+        }
     }
 
     /**

@@ -39,8 +39,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.ChargeMeter;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.RedstoneBehaviourGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
-import io.github.thebusybiscuit.sensibletoolbox.api.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.EnergyCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
@@ -48,6 +48,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.MachineUpg
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
@@ -401,7 +402,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      *             if the given slot has not previously been configured to hold items
      */
     protected void setInventoryItem(int slot, ItemStack item) {
-        Validate.isTrue(getGUI().getSlotType(slot) == InventoryGUI.SlotType.ITEM, "Attempt to insert item into non-item slot");
+        Validate.isTrue(getGUI().getSlotType(slot) == SlotType.ITEM, "Attempt to insert item into non-item slot");
         getInventory().setItem(slot, item != null && item.getAmount() > 0 ? item : null);
         update(false);
     }
@@ -414,22 +415,29 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             gui.paintSlotSurround(getInputSlots(), STBInventoryGUI.INPUT_TEXTURE);
             gui.paintSlotSurround(getOutputSlots(), STBInventoryGUI.OUTPUT_TEXTURE);
         }
+
         for (int slot : getInputSlots()) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            gui.setSlotType(slot, SlotType.ITEM);
         }
+
         gui.thawSlots(frozenInput, getInputSlots());
+
         for (int slot : getOutputSlots()) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            gui.setSlotType(slot, SlotType.ITEM);
         }
+
         gui.thawSlots(frozenOutput, getOutputSlots());
 
         int[] upgradeSlots = getUpgradeSlots();
+
         for (int slot : upgradeSlots) {
-            gui.setSlotType(slot, InventoryGUI.SlotType.ITEM);
+            gui.setSlotType(slot, SlotType.ITEM);
         }
+
         if (getUpgradeLabelSlot() >= 0) {
             gui.addLabel("Upgrades", getUpgradeLabelSlot(), null, "Place machine upgrades here");
         }
+
         for (int i = 0; i < upgrades.size() && i < upgradeSlots.length; i++) {
             gui.getInventory().setItem(upgradeSlots[i], upgrades.get(i).toItemStack(upgrades.get(i).getAmount()));
         }
@@ -438,13 +446,16 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         gui.addGadget(new AccessControlGadget(gui, getAccessControlSlot()));
 
         if (getEnergyCellSlot() != -1) {
-            gui.setSlotType(getEnergyCellSlot(), STBInventoryGUI.SlotType.ITEM);
+            gui.setSlotType(getEnergyCellSlot(), SlotType.ITEM);
         }
+
         gui.addGadget(new ChargeDirectionGadget(gui, getChargeDirectionSlot()));
         chargeMeterId = getMaxCharge() > 0 ? gui.addMonitor(new ChargeMeter(gui)) : -1;
+
         if (installedCell != null) {
             gui.paintSlot(getEnergyCellSlot(), installedCell.toItemStack(), true);
         }
+
         return gui;
     }
 
@@ -466,7 +477,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      * @return an inventory slot number, or -1 for no gadget
      */
     public int getRedstoneBehaviourSlot() {
-        return 8; // top right
+        // top right
+        return 8;
     }
 
     /**
@@ -476,7 +488,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      * @return an inventory slot number, or -1 for no gadget
      */
     public int getAccessControlSlot() {
-        return 17; // just below top right
+        // just below top right
+        return 17;
     }
 
     /**
@@ -486,7 +499,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      * @return an inventory slot number, or -1 for no gadget
      */
     public int getChargeMeterSlot() {
-        return 26; // just below access control slot
+        // just below access control slot
+        return 26;
     }
 
     /**
@@ -1115,8 +1129,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     @Override
     public EnergyNet[] getAttachedEnergyNets() {
-        Set<EnergyNet> nets = new HashSet<>();
-        nets.addAll(energyNets.values());
+        Set<EnergyNet> nets = new HashSet<>(energyNets.values());
         return nets.toArray(new EnergyNet[0]);
     }
 

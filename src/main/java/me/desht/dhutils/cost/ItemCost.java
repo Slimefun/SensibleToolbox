@@ -2,60 +2,63 @@ package me.desht.dhutils.cost;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemCost extends Cost {
+/**
+ * This class can be used to apply an {@link ItemStack} cost onto a {@link Player} or {@link Inventory}.
+ * 
+ * @author desht
+ * @author TheBusyBiscuit
+ *
+ */
+public class ItemCost {
 
+    private final List<ItemStack> taken = new ArrayList<>();
     private final ItemStack toMatch;
+    private final int amount;
     private final boolean matchMeta;
-    private int dropped;
-    private List<ItemStack> taken = new ArrayList<>();
 
-    public ItemCost(Material mat, int quantity) {
-        super(quantity);
+    public ItemCost(@Nonnull Material mat, int amount) {
+        this.amount = amount;
         this.matchMeta = false;
-        this.toMatch = new ItemStack(mat, quantity);
+        this.toMatch = new ItemStack(mat, amount);
     }
 
-    public ItemCost(ItemStack stack) {
-        super(stack.getAmount());
+    public ItemCost(@Nonnull ItemStack stack) {
+        this.amount = stack.getAmount();
         this.matchMeta = true;
         this.toMatch = stack.clone();
     }
 
+    public int getAmount() {
+        return amount;
+    }
+
+    @Nonnull
     public Material getMaterial() {
         return toMatch.getType();
     }
 
-    public boolean isItemsDropped() {
-        return dropped > 0;
-    }
-
-    public int getItemDropCount() {
-        return dropped;
-    }
-
+    @Nonnull
     public List<ItemStack> getActualItemsTaken() {
         return taken;
     }
 
-    @Override
     public String getDescription() {
-        String desc = (int) getQuantity() + " " + getMaterial().toString().toLowerCase().replace("_", " ");
-        return desc;
+        return getAmount() + " " + getMaterial().toString().toLowerCase().replace("_", " ");
     }
 
-    @Override
-    public boolean isAffordable(Player player) {
-        int remainingCheck = (int) getQuantity();
+    public boolean isAffordable(@Nonnull Player player) {
+        int remainingCheck = getAmount();
         return getRemaining(remainingCheck, player.getInventory()) <= 0;
     }
 
@@ -71,7 +74,7 @@ public class ItemCost extends Cost {
      *            zero or more Inventory objects
      * @return true if the cost can be met; false otherwise
      */
-    public boolean isAffordable(Player player, boolean playerFirst, Inventory... extraInventories) {
+    public boolean isAffordable(@Nonnull Player player, boolean playerFirst, Inventory... extraInventories) {
         List<Inventory> invs = new ArrayList<>(extraInventories.length + 1);
 
         if (playerFirst) {
@@ -83,9 +86,11 @@ public class ItemCost extends Cost {
             invs.add(player.getInventory());
         }
 
-        int remainingCheck = (int) getQuantity();
+        int remainingCheck = getAmount();
+
         for (Inventory inv : invs) {
             remainingCheck = getRemaining(remainingCheck, inv);
+
             if (remainingCheck <= 0) {
                 return true;
             }
@@ -94,8 +99,8 @@ public class ItemCost extends Cost {
         return false;
     }
 
-    protected int getRemaining(int remainingCheck, Inventory inv) {
-        HashMap<Integer, ? extends ItemStack> matchingInvSlots = inv.all(getMaterial());
+    protected int getRemaining(int remainingCheck, @Nonnull Inventory inv) {
+        Map<Integer, ? extends ItemStack> matchingInvSlots = inv.all(getMaterial());
 
         for (Entry<Integer, ? extends ItemStack> entry : matchingInvSlots.entrySet()) {
             if (matches(entry.getValue())) {
@@ -107,13 +112,12 @@ public class ItemCost extends Cost {
         return remainingCheck;
     }
 
-    @Override
-    public void apply(Player player) {
-        if (getQuantity() > 0) {
+    public void apply(@Nonnull Player player) {
+        if (getAmount() > 0) {
             chargeItems(player.getInventory());
         }
         else {
-            dropped = addItems(player.getInventory());
+            int dropped = addItems(player.getInventory());
             dropExcess(player, dropped);
         }
     }
@@ -128,7 +132,7 @@ public class ItemCost extends Cost {
      * @param extraInventories
      *            zero or more supplementary inventories to give or take items from
      */
-    public void apply(Player player, boolean playerFirst, Inventory... extraInventories) {
+    public void apply(@Nonnull Player player, boolean playerFirst, Inventory... extraInventories) {
         Inventory[] invs = new Inventory[extraInventories.length + 1];
 
         if (playerFirst) {
@@ -140,17 +144,17 @@ public class ItemCost extends Cost {
             invs[extraInventories.length] = player.getInventory();
         }
 
-        if (getQuantity() > 0) {
+        if (getAmount() > 0) {
             chargeItems(invs);
         }
         else {
-            dropped = addItems(invs);
+            int dropped = addItems(invs);
             dropExcess(player, dropped);
         }
     }
 
     private int addItems(Inventory... inventories) {
-        int remaining = (int) -getQuantity();
+        int remaining = -getAmount();
 
         for (Inventory inv : inventories) {
             remaining = addToOneInventory(inv, remaining);
@@ -166,7 +170,7 @@ public class ItemCost extends Cost {
     private int chargeItems(Inventory... inventories) {
         taken.clear();
 
-        int remaining = (int) getQuantity();
+        int remaining = getAmount();
 
         for (Inventory inv : inventories) {
             remaining = takeFromOneInventory(inv, remaining);
@@ -179,7 +183,7 @@ public class ItemCost extends Cost {
         return remaining;
     }
 
-    private int addToOneInventory(Inventory inventory, int quantity) {
+    private int addToOneInventory(@Nonnull Inventory inventory, int quantity) {
         int maxStackSize = inventory.getMaxStackSize();
 
         while (quantity > maxStackSize) {
@@ -197,8 +201,8 @@ public class ItemCost extends Cost {
         return toDrop.isEmpty() ? 0 : toDrop.get(0).getAmount();
     }
 
-    private int takeFromOneInventory(Inventory inventory, int quantity) {
-        HashMap<Integer, ? extends ItemStack> matchingInvSlots = inventory.all(getMaterial());
+    private int takeFromOneInventory(@Nonnull Inventory inventory, int quantity) {
+        Map<Integer, ? extends ItemStack> matchingInvSlots = inventory.all(getMaterial());
 
         for (Entry<Integer, ? extends ItemStack> entry : matchingInvSlots.entrySet()) {
             if (matches(entry.getValue())) {
@@ -221,7 +225,7 @@ public class ItemCost extends Cost {
         return quantity;
     }
 
-    protected boolean matches(ItemStack stack) {
+    protected boolean matches(@Nonnull ItemStack stack) {
         if (toMatch.getType() != stack.getType()) {
             return false;
         }
@@ -229,10 +233,7 @@ public class ItemCost extends Cost {
             String d1 = stack.hasItemMeta() ? stack.getItemMeta().getDisplayName() : null;
             String d2 = toMatch.hasItemMeta() ? toMatch.getItemMeta().getDisplayName() : null;
 
-            if (d1 != null && !d1.equals(d2)) {
-                return false;
-            }
-            else if (d2 != null && !d2.equals(d1)) {
+            if ((d1 != null && !d1.equals(d2)) || (d2 != null && !d2.equals(d1))) {
                 return false;
             }
 
@@ -243,11 +244,11 @@ public class ItemCost extends Cost {
         }
     }
 
-    private void dropExcess(Player player, int nToDrop) {
-        while (nToDrop > 0) {
-            ItemStack stack = new ItemStack(getMaterial(), Math.min(nToDrop, getMaterial().getMaxStackSize()));
+    private void dropExcess(@Nonnull Player player, int amount) {
+        while (amount > 0) {
+            ItemStack stack = new ItemStack(getMaterial(), Math.min(amount, getMaterial().getMaxStackSize()));
             player.getWorld().dropItemNaturally(player.getLocation(), stack);
-            nToDrop -= getMaterial().getMaxStackSize();
+            amount -= getMaterial().getMaxStackSize();
         }
     }
 }

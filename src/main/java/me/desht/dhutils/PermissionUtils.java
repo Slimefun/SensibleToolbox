@@ -1,5 +1,8 @@
 package me.desht.dhutils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.command.CommandSender;
 
 public final class PermissionUtils {
@@ -17,11 +20,12 @@ public final class PermissionUtils {
      *            Node to check for
      * @return true if the player has the permission node, false otherwise
      */
-    public static boolean isAllowedTo(CommandSender sender, String node) {
+    public static boolean isAllowedTo(@Nullable CommandSender sender, @Nonnull String node) {
         if (sender == null) {
             // backwards compatibility - a null sender represents a console sender
             return true;
         }
+
         boolean allowed = sender.hasPermission(node);
         Debugger.getInstance().debug("Permission check: player=" + sender.getName() + ", node=" + node + ", allowed=" + allowed);
         return allowed;
@@ -39,13 +43,13 @@ public final class PermissionUtils {
      * @throws DHUtilsException
      *             if the player does not have the node
      */
-    public static void requirePerms(CommandSender sender, String node, String message) {
+    public static void requirePerms(@Nullable CommandSender sender, @Nonnull String node, @Nonnull String message) {
         if (!isAllowedTo(sender, node)) {
             throw new DHUtilsException(message);
         }
     }
 
-    public static void requirePerms(CommandSender sender, String node) {
+    public static void requirePerms(@Nullable CommandSender sender, @Nonnull String node) {
         requirePerms(sender, node, DEFAULT_MESSAGE);
     }
 
