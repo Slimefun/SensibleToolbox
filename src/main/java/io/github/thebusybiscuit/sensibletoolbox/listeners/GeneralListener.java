@@ -244,11 +244,11 @@ public class GeneralListener extends STBBaseListener {
     public void onLabelSignBroken(BlockBreakEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
             WallSign sign = (WallSign) event.getBlock().getBlockData();
-            Block b2 = event.getBlock().getRelative(sign.getFacing());
+            Block b2 = event.getBlock().getRelative(sign.getFacing().getOppositeFace());
             BaseSTBBlock stb = LocationManager.getManager().get(b2.getLocation());
 
             if (stb != null) {
-                stb.detachLabelSign(sign.getFacing().getOppositeFace());
+                stb.detachLabelSign(sign.getFacing());
             }
         }
     }
