@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -25,7 +26,6 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     private final String processorID;
     private final int processingTime;
     private final ItemStack result;
-    private final Random rnd = new Random();
 
     public ShapelessCustomRecipe(ItemStack result, BaseSTBMachine processor, int processingTime) {
         this.result = result;
@@ -102,6 +102,7 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     public Collection<ItemStack> calculateSupplementaryResults() {
         List<ItemStack> res = Lists.newArrayList();
         for (SupplementaryResult sr : listSupplementaryResults()) {
+            Random rnd = ThreadLocalRandom.current();
             if (rnd.nextInt(1000) < sr.getChance()) {
                 res.add(sr.getResult());
             }

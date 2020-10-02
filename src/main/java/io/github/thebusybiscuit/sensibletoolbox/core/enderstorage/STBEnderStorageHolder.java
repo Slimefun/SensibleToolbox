@@ -35,9 +35,10 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     void loadInventory() throws IOException {
         File saveFile = getSaveFile();
         if (saveFile.exists()) {
-            Scanner scanner = new Scanner(saveFile);
-            String encoded = scanner.useDelimiter("\\A").next();
-            scanner.close();
+            String encoded;
+            try (Scanner scanner = new Scanner(saveFile)) {
+                encoded = scanner.useDelimiter("\\A").next();
+            }
             Inventory savedInv = BukkitSerialization.fromBase64(encoded);
             inventory = Bukkit.createInventory(this, savedInv.getSize(), getInventoryTitle());
             for (int i = 0; i < savedInv.getSize(); i++) {

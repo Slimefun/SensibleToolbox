@@ -52,6 +52,8 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.LogUtils;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents an STB block which acts a machine; it is chargeable and
  * holds an inventory with possible input and output slots.
@@ -1074,10 +1076,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         super.onServerTick();
     }
 
-    private double transferCharge(Chargeable from, Chargeable to) {
-        if (MiscUtil.truncateDecimal(from.getCharge(), 2)
-                >= MiscUtil.truncateDecimal(to.getMaxCharge(), 2)
-                || MiscUtil.truncateDecimal(from.getCharge(), 2) == 0) {
+    private double transferCharge(@Nonnull Chargeable from, @Nonnull Chargeable to) {
+        double truncated = MiscUtil.truncateDecimal(from.getCharge(), 2);
+        if (truncated >= MiscUtil.truncateDecimal(to.getMaxCharge(), 2) || truncated == 0) {
             return 0;
         }
 
