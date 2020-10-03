@@ -54,14 +54,14 @@ public class LevelMonitor extends MonitorGadget {
          *
          * @return an integer level
          */
-        public int getLevel();
+        int getLevel();
 
         /**
          * Get the maximum possible level for the quantity being monitored.
          *
          * @return an integer level
          */
-        public int getMaxLevel();
+        int getMaxLevel();
 
         /**
          * Get the item used to represent the level. This item should support
@@ -69,20 +69,20 @@ public class LevelMonitor extends MonitorGadget {
          *
          * @return the item used to show the level as a durability bar
          */
-        public ItemStack getLevelIcon();
+        ItemStack getLevelIcon();
 
         /**
          * Get the GUI slot in which the monitor icon should be shown.
          *
          * @return a gui slot number
          */
-        public int getLevelMonitorSlot();
+        int getLevelMonitorSlot();
 
         /**
          * Get the string to display as the monitor icon's tooltip.
          *
          * @return a message string
          */
-        public String getLevelMessage();
+        String getLevelMessage();
     }
 }
