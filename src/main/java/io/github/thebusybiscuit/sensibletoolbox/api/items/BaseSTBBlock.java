@@ -1,8 +1,12 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -566,6 +570,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced((ChargeableBlock) this);
         }
 
+        // This gets the type of the sign to move and also guards against duplicate event firing (Piston bug)
+        Map<Integer, Material> signTypes = new HashMap<>();
+
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
             Block b = oldLoc.getBlock();
 
@@ -574,6 +581,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                     Block signBlock = b.getRelative(STBUtil.getRotatedFace(getFacing(), rotation));
 
                     if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
+                        signTypes.put(rotation,signBlock.getType());
                         signBlock.setType(Material.AIR);
                     }
                 }
@@ -582,13 +590,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), () -> {
             Block b = newLoc.getBlock();
-
-            for (int rotation = 0; rotation < 4; rotation++) {
+            for (Entry<Integer, Material> entry: signTypes.entrySet()) {
+                int rotation = entry.getKey();
                 if (labelSigns.get(rotation)) {
                     BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
                     Block signBlock = b.getRelative(face);
 
-                    if (!placeLabelSign(signBlock, face)) {
+                    if(!placeLabelSign(signBlock, face, entry.getValue())){
                         labelSigns.set(rotation, false);
                     }
                 }
@@ -934,7 +942,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             if (labelSigns.get(rotation)) {
                 BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
 
-                if (!placeLabelSign(b.getRelative(face), face)) {
+                Block signBlock = b.getRelative(face);
+                Material signType = signBlock.getType();
+                // Unsure if signBlock will have the correct type at this stage
+                if(!Tag.WALL_SIGNS.isTagged(signType)) signType = Material.OAK_WALL_SIGN;
+
+                if (!placeLabelSign(signBlock, face, signType)) {
                     rescanNeeded = true;
                 }
             }
@@ -972,8 +985,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             return false;
         }
 
+        Material signType = STBUtil.getWallSign(event.getPlayer().getInventory().getItemInMainHand().getType());
+        if(signType==null){
+            Debugger.getInstance().debug("Unsupported sign type: " + event.getPlayer().getInventory().getItemInMainHand().getType().toString());
+            return false;
+        }
         // ok, player is allowed to put a sign here
-        placeLabelSign(signBlock, event.getBlockFace());
+        placeLabelSign(signBlock, event.getBlockFace(), signType);
 
         if (player.getGameMode() != GameMode.CREATIVE) {
             ItemStack stack = player.getInventory().getItemInMainHand();
@@ -986,17 +1004,25 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         return true;
     }
 
-    private boolean placeLabelSign(Block signBlock, BlockFace face) {
+    private boolean placeLabelSign(@Nonnull Block signBlock, @Nonnull BlockFace face, @Nonnull Material signType) {
+        Validate.notNull(signBlock, "The Sign Block cannot be null");
+        Validate.notNull(face, "The Face cannot be null");
+        Validate.notNull(signType, "The Sign Type cannot be null");
+
         if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!
             Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.OAK_SIGN));
             return false;
         }
+        else if(!Tag.SIGNS.isTagged(signType)){
+            Debugger.getInstance().debug(this + ": can't place label sign as " + signType.toString() + " is not a valid sign");
+            return false;
+        }
         else {
             Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
 
-            BlockData data = Material.OAK_WALL_SIGN.createBlockData(bd -> {
+            BlockData data = signType.createBlockData(bd -> {
                 if (bd instanceof WallSign) {
                     ((WallSign) bd).setFacing(face);
                 }
