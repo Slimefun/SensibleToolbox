@@ -724,6 +724,13 @@ public final class STBUtil {
         return false;
     }
 
+    /**
+     * Get the wall sign version of the sign material e.g. OAK_SIGN -> OAK_WALL_SIGN
+     *
+     * @param signType
+     *                 The material of the sign
+     * @return The wall sign version of that sign
+     */
     @Nullable
     public static Material getWallSign(@Nonnull Material signType) {
         switch (signType) {

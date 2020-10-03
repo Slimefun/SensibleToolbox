@@ -568,6 +568,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             SensibleToolboxPlugin.getInstance().getEnergyNetManager().onMachinePlaced((ChargeableBlock) this);
         }
 
+        // This gets the type of the sign to move and also guards against duplicate event firing (Piston bug)
         HashMap<Integer, Material> signTypes = new HashMap<>();
 
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
