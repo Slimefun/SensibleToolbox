@@ -723,9 +723,11 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
         public Block next() {
             Block b = w.getBlockAt(baseX + x, baseY + y, baseZ + z);
-            if (++x >= sizeX) {
+            x++;
+            if (x >= sizeX) {
                 x = 0;
-                if (++y >= sizeY) {
+                y++;
+                if (y >= sizeY) {
                     y = 0;
                     ++z;
                 }
