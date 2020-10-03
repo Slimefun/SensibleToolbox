@@ -492,7 +492,7 @@ public final class STBUtil {
      */
     public static void complain(@Nonnull Player player) {
         Validate.notNull(player, "Cannot complain to nobody");
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
     }
 
     /**
@@ -504,7 +504,7 @@ public final class STBUtil {
      *            the message text
      */
     public static void complain(Player player, String message) {
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
         MiscUtil.errorMessage(player, message);
     }
 
