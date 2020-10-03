@@ -295,7 +295,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
     @Override
     protected String[] getSignLabel(BlockFace face) {
-        String res[] = super.getSignLabel(face);
+        String[] res = super.getSignLabel(face);
         ChatColor cc = STBUtil.dyeColorToChatColor(getColor());
         res[1] = cc.toString() + getColor();
         res[2] = getPaintLevel() + "/" + getMaxPaintLevel();
