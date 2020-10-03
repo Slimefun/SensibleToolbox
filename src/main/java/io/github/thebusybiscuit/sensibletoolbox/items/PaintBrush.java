@@ -329,7 +329,8 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         int pos = 0;
 
         for (Art a : other) {
-            menu.setOption(pos++, new ItemStack(Material.PAINTING), a.name(), "");
+            menu.setOption(pos, new ItemStack(Material.PAINTING), a.name(), "");
+            pos++;
         }
 
         return menu;
