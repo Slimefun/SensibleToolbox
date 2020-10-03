@@ -723,4 +723,28 @@ public final class STBUtil {
         // TODO Fix Potion Ingredient lookup
         return false;
     }
+
+    @Nullable
+    public static Material getWallSign(@Nonnull Material signType) {
+        switch (signType) {
+            case OAK_SIGN:
+                return Material.OAK_WALL_SIGN;
+            case SPRUCE_SIGN:
+                return Material.SPRUCE_WALL_SIGN;
+            case BIRCH_SIGN:
+                return Material.BIRCH_WALL_SIGN;
+            case JUNGLE_SIGN:
+                return Material.JUNGLE_WALL_SIGN;
+            case ACACIA_SIGN:
+                return Material.ACACIA_WALL_SIGN;
+            case DARK_OAK_SIGN:
+                return Material.DARK_OAK_WALL_SIGN;
+            case CRIMSON_SIGN:
+                return Material.CRIMSON_WALL_SIGN;
+            case WARPED_SIGN:
+                return Material.WARPED_WALL_SIGN;
+            default:
+                return null;
+        }
+    }
 }
