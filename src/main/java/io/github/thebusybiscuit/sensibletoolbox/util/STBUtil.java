@@ -44,6 +44,12 @@ public final class STBUtil {
     private STBUtil() {}
 
     /**
+     * The version of minecraft the server is running (The second number e.g. 1.16.2 gives 16)
+     */
+    public static final int minecraftVersion = Integer.parseInt(
+        SensibleToolboxPlugin.getInstance().getServer().getClass().getPackage().getName().replace(".",",").split(",")[3].substring(1).split("_")[1]);
+
+    /**
      * The block faces directly adjacent to a block.
      */
     public static final BlockFace[] directFaces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST };
@@ -733,6 +739,11 @@ public final class STBUtil {
      */
     @Nullable
     public static Material getWallSign(@Nonnull Material signType) {
+        Validate.notNull(signType);
+        if(minecraftVersion >= 16){
+            if(signType==Material.CRIMSON_SIGN) return Material.CRIMSON_WALL_SIGN;
+            else if(signType==Material.WARPED_SIGN) return Material.WARPED_WALL_SIGN;
+        }
         switch (signType) {
             case OAK_SIGN:
                 return Material.OAK_WALL_SIGN;
@@ -746,10 +757,6 @@ public final class STBUtil {
                 return Material.ACACIA_WALL_SIGN;
             case DARK_OAK_SIGN:
                 return Material.DARK_OAK_WALL_SIGN;
-            case CRIMSON_SIGN:
-                return Material.CRIMSON_WALL_SIGN;
-            case WARPED_SIGN:
-                return Material.WARPED_WALL_SIGN;
             default:
                 return null;
         }

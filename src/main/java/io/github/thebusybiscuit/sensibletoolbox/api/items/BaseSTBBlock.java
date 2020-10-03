@@ -1,10 +1,12 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
-import it.unimi.dsi.fastutil.Hash;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,7 +48,6 @@ import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.PersistableLocation;
-import sun.security.util.Debug;
 
 /**
  * Represents an STB block; an STB item which can be placed as a block in the
@@ -569,7 +570,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
 
         // This gets the type of the sign to move and also guards against duplicate event firing (Piston bug)
-        HashMap<Integer, Material> signTypes = new HashMap<>();
+        Map<Integer, Material> signTypes = new HashMap<>();
 
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
             Block b = oldLoc.getBlock();
@@ -588,16 +589,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), () -> {
             Block b = newLoc.getBlock();
-            signTypes.forEach((rotation,type) -> {
+            for (Entry<Integer, Material> entry: signTypes.entrySet()) {
+                int rotation = entry.getKey();
                 if (labelSigns.get(rotation)) {
                     BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
                     Block signBlock = b.getRelative(face);
 
-                    if(!placeLabelSign(signBlock, face, signTypes.get(rotation))){
+                    if(!placeLabelSign(signBlock, face, entry.getValue())){
                         labelSigns.set(rotation, false);
                     }
                 }
-            });
+            }
         }, 2L);
     }
 
@@ -1001,7 +1003,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         return true;
     }
 
-    private boolean placeLabelSign(Block signBlock, BlockFace face, Material signType) {
+    private boolean placeLabelSign(Block signBlock, BlockFace face, @Nonnull Material signType) {
+        Validate.notNull(signType);
         if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!
             Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
