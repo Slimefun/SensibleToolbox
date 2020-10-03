@@ -222,7 +222,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         b.getWorld().dropItemNaturally(b.getLocation(), getBufferItem());
         setBufferItem(null);
         update(false);
-        b.getWorld().playSound(b.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
+        b.getWorld().playSound(b.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.0F);
     }
 
     @Override
