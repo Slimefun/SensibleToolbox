@@ -242,7 +242,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null, "Insert one or more modules below", "When the router ticks, modules", "are executed in order, from left", "to right.");
         int slot = MOD_SLOT_START;
         for (ModuleAndAmount e : modules) {
-            gui.getInventory().setItem(slot++, e.module.toItemStack(e.amount));
+            slot++;
+            gui.getInventory().setItem(slot, e.module.toItemStack(e.amount));
         }
 
         return gui;
