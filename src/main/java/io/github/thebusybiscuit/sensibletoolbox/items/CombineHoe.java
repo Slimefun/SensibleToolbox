@@ -291,7 +291,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 
         if (amountLeft < getSeedAmount()) {
             setSeedAmount(amountLeft);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.0F);
         }
     }
 
@@ -340,7 +340,7 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
         }
         if (count > 0) {
-            player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0f, 1.0f);
+            player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0F, 1.0F);
         }
 
         ItemUtils.damageItem(stack, false);
