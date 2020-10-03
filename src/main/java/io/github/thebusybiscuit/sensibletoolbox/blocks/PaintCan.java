@@ -175,7 +175,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         gui.addGadget(new ButtonGadget(gui, 12, "Mix or Dye", lore, MIX_TEXTURE, () -> {
             if (tryMix()) {
                 Location loc = getLocation();
-                loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
+                loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
             }
         }));
 
@@ -220,7 +220,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     private void emptyPaintCan() {
         setPaintLevel(0);
         Location loc = getLocation();
-        loc.getWorld().playSound(loc, Sound.ENTITY_PLAYER_SPLASH, 1.0f, 1.0f);
+        loc.getWorld().playSound(loc, Sound.ENTITY_PLAYER_SPLASH, 1.0F, 1.0F);
     }
 
     private LevelMonitor getPaintLevelMonitor() {
@@ -379,7 +379,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             Debugger.getInstance().debug(this + ": paint mixed! now " + getPaintLevel() + " " + getColor());
 
             Location loc = getLocation();
-            loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
+            loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
 
             inventory.setItem(bucketSlot, new ItemStack(Material.BUCKET));
             dyeStack.setAmount(dyeStack.getAmount() - toUse);
