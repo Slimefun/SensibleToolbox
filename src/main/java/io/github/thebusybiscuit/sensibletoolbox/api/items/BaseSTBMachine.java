@@ -798,7 +798,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             int i = 0;
 
             for (int slot : getOutputSlots()) {
-                inv.setItem(i++, getInventoryItem(slot));
+                i++;
+                inv.setItem(i, getInventoryItem(slot));
             }
 
             return inv;
@@ -814,7 +815,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             int i = 0;
 
             for (int slot : getOutputSlots()) {
-                setInventoryItem(slot, inventory.getItem(i++));
+                i++;
+                setInventoryItem(slot, inventory.getItem(i));
             }
         }
     }
