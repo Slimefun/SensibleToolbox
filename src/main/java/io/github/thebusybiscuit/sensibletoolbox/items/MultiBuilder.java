@@ -319,7 +319,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         player.setItemInHand(toItemStack());
-        player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0F, 1.0F);
     }
 
     private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
