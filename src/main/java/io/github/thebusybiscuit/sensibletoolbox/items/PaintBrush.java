@@ -159,7 +159,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                 }
 
                 if (painted > 0) {
-                    player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
+                    player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
                 }
             }
         }
@@ -233,7 +233,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         if (paintUsed > 0) {
             setPaintLevel(getPaintLevel() - paintUsed);
             updateHeldItemStack(event.getPlayer(), event.getHand());
-            event.getPlayer().playSound(e.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
+            event.getPlayer().playSound(e.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
         }
     }
 
@@ -311,7 +311,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             editingPainting.setArt(art);
             setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
             event.getPlayer().setItemInHand(toItemStack());
-            event.getPlayer().playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0f, 1.5f);
+            event.getPlayer().playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
         }
         catch (IllegalArgumentException e) {
             MiscUtil.errorMessage(event.getPlayer(), "Invalid artwork: " + artName);
