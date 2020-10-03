@@ -739,7 +739,7 @@ public final class STBUtil {
      */
     @Nullable
     public static Material getWallSign(@Nonnull Material signType) {
-        Validate.notNull(signType);
+        Validate.notNull(signType, "The Sign Type cannot be null");
         if(minecraftVersion >= 16){
             if(signType==Material.CRIMSON_SIGN) return Material.CRIMSON_WALL_SIGN;
             else if(signType==Material.WARPED_SIGN) return Material.WARPED_WALL_SIGN;

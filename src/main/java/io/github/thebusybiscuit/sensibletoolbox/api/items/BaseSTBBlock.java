@@ -1003,8 +1003,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         return true;
     }
 
-    private boolean placeLabelSign(Block signBlock, BlockFace face, @Nonnull Material signType) {
-        Validate.notNull(signType);
+    private boolean placeLabelSign(@Nonnull Block signBlock, @Nonnull BlockFace face, @Nonnull Material signType) {
+        Validate.notNull(signBlock, "The Sign Block cannot be null");
+        Validate.notNull(face, "The Face cannot be null");
+        Validate.notNull(signType, "The Sign Type cannot be null");
+
         if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!
             Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
