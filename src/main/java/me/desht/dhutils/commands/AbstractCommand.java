@@ -103,7 +103,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         return false;
     }
 
-    public boolean matchesArgCount(String label, String args[]) {
+    public boolean matchesArgCount(String label, String[] args) {
         for (CommandRecord rec : cmdRecs) {
             if (!label.equalsIgnoreCase(rec.getCommand())) continue;
 

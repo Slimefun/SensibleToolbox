@@ -29,7 +29,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
     private int frequency;
     private boolean global;
-    private final String signLabel[] = new String[4];
+    private final String[] signLabel = new String[4];
 
     public EnderBox() {
         setEnderFrequency(1);

@@ -157,7 +157,7 @@ public class CommandManager {
     static List<String> noCompletions(CommandSender sender) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
         }
 
         return Collections.emptyList();
