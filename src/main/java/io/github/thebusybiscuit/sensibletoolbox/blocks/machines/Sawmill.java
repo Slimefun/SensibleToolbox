@@ -91,7 +91,7 @@ public class Sawmill extends AbstractIOMachine {
     @Override
     protected void onMachineStartup() {
         if (SensibleToolbox.getPluginInstance().getConfigCache().isNoisyMachines()) {
-            getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_HORSE_STEP_WOOD, 1.0f, 0.5f);
+            getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_HORSE_STEP_WOOD, 1.0F, 0.5F);
         }
     }
 
