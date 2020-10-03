@@ -70,7 +70,7 @@ public class ElevatorListener extends STBBaseListener {
     private boolean isOnGround(@Nonnull Player player) {
         Location location = player.getLocation();
         Block currentBlock = location.getBlock();
-        return !currentBlock.getRelative(BlockFace.DOWN).isEmpty() && Math.abs(location.getY() - location.getBlockY()) < 0.05;
+        return !currentBlock.getRelative(BlockFace.DOWN).isEmpty() && location.getY() - location.getBlockY() < 0.05;
     }
 
 }
