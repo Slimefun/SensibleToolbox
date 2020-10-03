@@ -31,8 +31,8 @@ public class PersistableLocation implements ConfigurationSerializable {
         x = toDouble(map.get("x"));
         y = toDouble(map.get("y"));
         z = toDouble(map.get("z"));
-        pitch = map.containsKey("pitch") ? ((Double) map.get("pitch")).floatValue() : 0.0f;
-        yaw = map.containsKey("yaw") ? ((Double) map.get("yaw")).floatValue() : 0.0f;
+        pitch = map.containsKey("pitch") ? ((Double) map.get("pitch")).floatValue() : 0.0F;
+        yaw = map.containsKey("yaw") ? ((Double) map.get("yaw")).floatValue() : 0.0F;
         savePitchAndYaw = map.containsKey("pitch");
     }
 
@@ -41,7 +41,7 @@ public class PersistableLocation implements ConfigurationSerializable {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.pitch = this.yaw = 0.0f;
+        this.pitch = this.yaw = 0.0F;
     }
 
     public PersistableLocation(World world, int x, int y, int z) {
@@ -49,7 +49,7 @@ public class PersistableLocation implements ConfigurationSerializable {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.pitch = this.yaw = 0.0f;
+        this.pitch = this.yaw = 0.0F;
     }
 
     public PersistableLocation(String worldName, int x, int y, int z) {
@@ -57,7 +57,7 @@ public class PersistableLocation implements ConfigurationSerializable {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.pitch = this.yaw = 0.0f;
+        this.pitch = this.yaw = 0.0F;
     }
 
     public String getWorldName() {
