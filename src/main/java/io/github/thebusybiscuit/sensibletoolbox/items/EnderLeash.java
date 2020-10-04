@@ -46,6 +46,7 @@ import me.desht.dhutils.PermissionUtils;
 public class EnderLeash extends BaseSTBItem {
 
     private YamlConfiguration capturedConf;
+    private static final long MIN_THAW_DELAY = 50;
 
     public EnderLeash() {
         super();
@@ -108,7 +109,7 @@ public class EnderLeash extends BaseSTBItem {
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         Entity target = event.getRightClicked();
         Player player = event.getPlayer();
-        if (target instanceof Animals && isPassive(target) && player.getInventory().getItemInMainHand().getAmount() == 1) {
+        if (event.getHand()==EquipmentSlot.HAND && target instanceof Animals && isPassive(target) && player.getInventory().getItemInMainHand().getAmount() == 1) {
             if (capturedConf == null || !capturedConf.contains("type")) {
                 Animals animal = (Animals) target;
                 if (!checkLeash(animal)) {
@@ -160,7 +161,8 @@ public class EnderLeash extends BaseSTBItem {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getClickedBlock().getType().isInteractable()) {
             if (capturedConf != null && capturedConf.contains("type")) {
-                if(System.currentTimeMillis() - capturedConf.getLong("capture_time") < 50) { // Less than 1 tick ago
+                // Check enough time has passed since freezing entity
+                if(System.currentTimeMillis() - capturedConf.getLong("captureTime") < MIN_THAW_DELAY) {
                     return;
                 }
                 Block where = event.getClickedBlock().getRelative(event.getBlockFace());
@@ -189,7 +191,7 @@ public class EnderLeash extends BaseSTBItem {
         conf.set("nameVisible", target.isCustomNameVisible());
         conf.set("maxHealth", target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         conf.set("health", target.getHealth());
-        conf.set("capture_time", System.currentTimeMillis());
+        conf.set("captureTime", System.currentTimeMillis());
 
         if (target instanceof Tameable) {
             conf.set("tamed", ((Tameable) target).isTamed());
@@ -197,6 +199,7 @@ public class EnderLeash extends BaseSTBItem {
                 conf.set("owner", ((Tameable) target).getOwner().getUniqueId().toString());
             }
         }
+
         switch (target.getType()) {
         case SHEEP:
             conf.set("sheared", ((Sheep) target).isSheared());
@@ -204,22 +207,20 @@ public class EnderLeash extends BaseSTBItem {
             break;
         case CAT:
             conf.set("catType", ((Cat) target).getCatType().toString());
-            conf.set("setCollarColor", ((Cat) target).getCollarColor().toString());
+            conf.set("collarColor", ((Cat) target).getCollarColor().toString());
             break;
         case PIG:
             conf.set("saddled", ((Pig) target).hasSaddle());
             break;
         case WOLF:
-            conf.set("collar", ((Wolf) target).getCollarColor().toString());
+            conf.set("collarColor", ((Wolf) target).getCollarColor().toString());
             conf.set("sitting", ((Wolf) target).isSitting());
             break;
         case HORSE:
         case MULE:
         case DONKEY:
-            AbstractHorse h = (AbstractHorse) target;
-            conf.set("jumpStrength", h.getJumpStrength());
-            conf.set("domestication", h.getDomestication());
-            conf.set("maxDomestication", h.getMaxDomestication());
+        case ZOMBIE_HORSE:
+        case SKELETON_HORSE:
             if(target instanceof Horse){
                 Horse horse = (Horse) target;
                 conf.set("horseStyle", horse.getStyle().toString());
@@ -229,6 +230,10 @@ public class EnderLeash extends BaseSTBItem {
                 ChestedHorse chestedHorse = (ChestedHorse) target;
                 conf.set("chest",chestedHorse.isCarryingChest());
             }
+            AbstractHorse h = (AbstractHorse) target;
+            conf.set("jumpStrength", h.getJumpStrength());
+            conf.set("domestication", h.getDomestication());
+            conf.set("maxDomestication", h.getMaxDomestication());
             conf.set("inventory", BukkitSerialization.toBase64(h.getInventory()));
             break;
         default:
@@ -265,18 +270,17 @@ public class EnderLeash extends BaseSTBItem {
             break;
         case CAT:
             ((Cat) entity).setCatType(Type.valueOf(conf.getString("catType")));
+            ((Cat) entity).setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
             break;
         case WOLF:
             ((Wolf) entity).setSitting(conf.getBoolean("sitting"));
-            ((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collar")));
+            ((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
             break;
         case HORSE:
         case MULE:
         case DONKEY:
-            AbstractHorse abstractHorse = (AbstractHorse) entity;
-            abstractHorse.setJumpStrength(conf.getDouble("jumpStrength"));
-            abstractHorse.setDomestication(conf.getInt("domestication"));
-            abstractHorse.setMaxDomestication(conf.getInt("maxDomestication"));
+        case ZOMBIE_HORSE:
+        case SKELETON_HORSE:
             if (entity instanceof  Horse) {
                 Horse h = (Horse) entity;
                 h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
@@ -286,6 +290,10 @@ public class EnderLeash extends BaseSTBItem {
                 ChestedHorse chestedHorse = (ChestedHorse) entity;
                 chestedHorse.setCarryingChest(conf.getBoolean("chest"));
             }
+            AbstractHorse abstractHorse = (AbstractHorse) entity;
+            abstractHorse.setJumpStrength(conf.getDouble("jumpStrength"));
+            abstractHorse.setDomestication(conf.getInt("domestication"));
+            abstractHorse.setMaxDomestication(conf.getInt("maxDomestication"));
             try {
                 Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
                 for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {
