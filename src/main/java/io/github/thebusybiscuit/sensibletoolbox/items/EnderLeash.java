@@ -8,16 +8,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.Cat;
+import org.bukkit.entity.Cat.Type;
+import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.LeashHitch;
-import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
@@ -26,6 +30,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -103,7 +108,7 @@ public class EnderLeash extends BaseSTBItem {
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         Entity target = event.getRightClicked();
         Player player = event.getPlayer();
-        if (target instanceof Animals && isPassive(target) && player.getItemInHand().getAmount() == 1) {
+        if (target instanceof Animals && isPassive(target) && player.getInventory().getItemInMainHand().getAmount() == 1) {
             if (capturedConf == null || !capturedConf.contains("type")) {
                 Animals animal = (Animals) target;
                 if (!checkLeash(animal)) {
@@ -155,6 +160,9 @@ public class EnderLeash extends BaseSTBItem {
     public void onInteractItem(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getClickedBlock().getType().isInteractable()) {
             if (capturedConf != null && capturedConf.contains("type")) {
+                if(System.currentTimeMillis() - capturedConf.getLong("capture_time") < 50) { // Less than 1 tick ago
+                    return;
+                }
                 Block where = event.getClickedBlock().getRelative(event.getBlockFace());
                 EntityType type = EntityType.valueOf(capturedConf.getString("type"));
                 Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
@@ -179,8 +187,9 @@ public class EnderLeash extends BaseSTBItem {
         conf.set("ageLock", target.getAgeLock());
         conf.set("name", target.getCustomName() == null ? "" : target.getCustomName());
         conf.set("nameVisible", target.isCustomNameVisible());
-        conf.set("maxHealth", target.getMaxHealth());
+        conf.set("maxHealth", target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         conf.set("health", target.getHealth());
+        conf.set("capture_time", System.currentTimeMillis());
 
         if (target instanceof Tameable) {
             conf.set("tamed", ((Tameable) target).isTamed());
@@ -193,8 +202,9 @@ public class EnderLeash extends BaseSTBItem {
             conf.set("sheared", ((Sheep) target).isSheared());
             conf.set("color", ((Sheep) target).getColor().toString());
             break;
-        case OCELOT:
-            conf.set("catType", ((Ocelot) target).getCatType().toString());
+        case CAT:
+            conf.set("catType", ((Cat) target).getCatType().toString());
+            conf.set("setCollarColor", ((Cat) target).getCollarColor().toString());
             break;
         case PIG:
             conf.set("saddled", ((Pig) target).hasSaddle());
@@ -204,14 +214,21 @@ public class EnderLeash extends BaseSTBItem {
             conf.set("sitting", ((Wolf) target).isSitting());
             break;
         case HORSE:
-            Horse h = (Horse) target;
-            conf.set("horseStyle", h.getStyle().toString());
-            conf.set("horseVariant", h.getVariant().toString());
-            conf.set("horseColor", h.getColor().toString());
-            conf.set("chest", h.isCarryingChest());
+        case MULE:
+        case DONKEY:
+            AbstractHorse h = (AbstractHorse) target;
             conf.set("jumpStrength", h.getJumpStrength());
             conf.set("domestication", h.getDomestication());
             conf.set("maxDomestication", h.getMaxDomestication());
+            if(target instanceof Horse){
+                Horse horse = (Horse) target;
+                conf.set("horseStyle", horse.getStyle().toString());
+                conf.set("horseColor", horse.getColor().toString());
+            }
+            if(target instanceof ChestedHorse) {
+                ChestedHorse chestedHorse = (ChestedHorse) target;
+                conf.set("chest",chestedHorse.isCarryingChest());
+            }
             conf.set("inventory", BukkitSerialization.toBase64(h.getInventory()));
             break;
         default:
@@ -227,7 +244,7 @@ public class EnderLeash extends BaseSTBItem {
         entity.setAgeLock(conf.getBoolean("ageLock"));
         entity.setCustomName(conf.getString("name"));
         entity.setCustomNameVisible(conf.getBoolean("nameVisible"));
-        entity.setMaxHealth(conf.getDouble("maxHealth"));
+        entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(conf.getDouble("maxHealth"));
         entity.setHealth(conf.getDouble("health"));
 
         if (entity instanceof Tameable) {
@@ -246,33 +263,33 @@ public class EnderLeash extends BaseSTBItem {
             ((Sheep) entity).setSheared(conf.getBoolean("sheared"));
             ((Sheep) entity).setColor(DyeColor.valueOf(conf.getString("color")));
             break;
-        case OCELOT:
-            ((Ocelot) entity).setCatType(Ocelot.Type.valueOf(conf.getString("catType")));
+        case CAT:
+            ((Cat) entity).setCatType(Type.valueOf(conf.getString("catType")));
             break;
         case WOLF:
             ((Wolf) entity).setSitting(conf.getBoolean("sitting"));
             ((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collar")));
             break;
         case HORSE:
-            Horse h = (Horse) entity;
-            h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
-            h.setVariant(Horse.Variant.valueOf(conf.getString("horseVariant")));
-            h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-            h.setCarryingChest(conf.getBoolean("chest"));
-            h.setJumpStrength(conf.getDouble("jumpStrength"));
-            h.setDomestication(conf.getInt("domestication"));
-            h.setMaxDomestication(conf.getInt("maxDomestication"));
-            // separate saddle & armor entries are obsolete now
-            if (conf.contains("saddle")) {
-                h.getInventory().setSaddle(new ItemStack(Material.getMaterial(conf.getString("saddle"))));
+        case MULE:
+        case DONKEY:
+            AbstractHorse abstractHorse = (AbstractHorse) entity;
+            abstractHorse.setJumpStrength(conf.getDouble("jumpStrength"));
+            abstractHorse.setDomestication(conf.getInt("domestication"));
+            abstractHorse.setMaxDomestication(conf.getInt("maxDomestication"));
+            if (entity instanceof  Horse) {
+                Horse h = (Horse) entity;
+                h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
+                h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
             }
-            if (conf.contains("armor")) {
-                h.getInventory().setArmor(new ItemStack(Material.getMaterial(conf.getString("armor"))));
+            if(entity instanceof ChestedHorse) {
+                ChestedHorse chestedHorse = (ChestedHorse) entity;
+                chestedHorse.setCarryingChest(conf.getBoolean("chest"));
             }
             try {
                 Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
-                for (int i = 0; i < h.getInventory().getSize(); i++) {
-                    h.getInventory().setItem(i, inv.getItem(i));
+                for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {
+                    abstractHorse.getInventory().setItem(i, inv.getItem(i));
                 }
             }
             catch (IOException e) {
