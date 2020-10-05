@@ -340,11 +340,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param event
      *            the the block physics event
      */
-    public final void handlePhysicsEvent(BlockPhysicsEvent event) {
+    public final void handlePhysicsEvent(@Nonnull BlockPhysicsEvent event) {
         int power = event.getBlock().getBlockPower();
         if (power != lastPower) {
             Debugger.getInstance().debug(this + " redstone power change: " + lastPower + "->" + power);
             onRedstonePowerChanged(lastPower, power);
+
             if (lastPower == 0 && power > 0 && getRedstoneBehaviour() == RedstoneBehaviour.PULSED) {
                 pulsing = true;
                 onServerTick();

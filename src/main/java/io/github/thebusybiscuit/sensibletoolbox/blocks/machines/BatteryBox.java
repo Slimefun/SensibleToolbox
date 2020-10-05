@@ -26,7 +26,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
     private final Map<BlockFace, EnergyFlow> energyFlow = new EnumMap<>(BlockFace.class);
 
     protected BatteryBox() {
-        for (BlockFace face : STBUtil.directFaces) {
+        for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
             energyFlow.put(face, EnergyFlow.NONE);
         }
 
@@ -36,7 +36,7 @@ public abstract class BatteryBox extends BaseSTBMachine {
     public BatteryBox(ConfigurationSection conf) {
         super(conf);
 
-        for (BlockFace face : STBUtil.directFaces) {
+        for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
             energyFlow.put(face, EnergyFlow.valueOf(conf.getString("flow." + face, "NONE")));
         }
     }

@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Location;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
@@ -110,7 +112,7 @@ public abstract class AutoFarmingMachine extends BaseSTBMachine {
         }
     }
 
-    private boolean autoEject(ItemStack result) {
+    private boolean autoEject(@Nonnull ItemStack result) {
         Location loc = getRelativeLocation(getAutoEjectDirection());
         Block target = loc.getBlock();
         ItemStack item = result.clone();

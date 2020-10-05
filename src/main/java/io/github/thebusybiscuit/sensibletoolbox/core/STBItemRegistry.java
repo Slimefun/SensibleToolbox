@@ -72,8 +72,6 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseSTBItem> void registerItem(T item, Plugin plugin, String configPrefix, String permissionPrefix) {
-        String id = item.getItemTypeID();
-
         if (configPrefix != null) {
             if (!plugin.getConfig().contains(configPrefix + "." + item.getItemTypeID())) {
                 plugin.getConfig().set(configPrefix + "." + item.getItemTypeID(), true);
@@ -85,6 +83,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
             }
         }
 
+        String id = item.getItemTypeID();
         Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 
         ReflectionDetails<T> details = new ReflectionDetails<>((Class<T>) item.getClass());

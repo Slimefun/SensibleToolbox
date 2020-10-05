@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,10 +40,6 @@ import me.desht.dhutils.blocks.BlockUtil;
  */
 public final class STBUtil {
 
-    private static final Pattern NUMBERS_PATTERN = Pattern.compile("[0-9]+");
-
-    private STBUtil() {}
-
     /**
      * The version of minecraft the server is running (The second number e.g. 1.16.2 gives 16)
      */
@@ -53,15 +48,17 @@ public final class STBUtil {
     /**
      * The block faces directly adjacent to a block.
      */
-    public static final BlockFace[] directFaces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST };
+    public static final BlockFace[] DIRECT_BLOCK_FACES = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST };
     /**
      * The block faces in the four cardinal horizontal directions.
      */
-    public static final BlockFace[] mainHorizontalFaces = new BlockFace[] { BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH };
+    public static final BlockFace[] MAIN_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH };
     /**
      * The block faces in all eight compass directions, plus the block itself.
      */
-    public static final BlockFace[] allHorizontalFaces = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH };
+    public static final BlockFace[] ALL_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH };
+
+    private STBUtil() {}
 
     /**
      * Check if the given material is a crop which can grow and/or be harvested.
@@ -156,9 +153,9 @@ public final class STBUtil {
      * @return array of all blocks around the given block, including the given block as the first element
      */
     public static Block[] getSurroundingBlocks(Block b) {
-        Block[] result = new Block[allHorizontalFaces.length];
-        for (int i = 0; i < allHorizontalFaces.length; i++) {
-            result[i] = b.getRelative(allHorizontalFaces[i]);
+        Block[] result = new Block[ALL_HORIZONTAL_BLOCK_FACES.length];
+        for (int i = 0; i < ALL_HORIZONTAL_BLOCK_FACES.length; i++) {
+            result[i] = b.getRelative(ALL_HORIZONTAL_BLOCK_FACES[i]);
         }
         return result;
     }
@@ -312,37 +309,6 @@ public final class STBUtil {
     }
 
     /**
-     * Check if the given block is exposed to the world on the given face.
-     * {@link org.bukkit.Material#isOccluding()} is used to check if a face is exposed.
-     *
-     * @param block
-     *            the block to check
-     * @param face
-     *            the face to check
-     * @return true if the given block face is exposed
-     */
-    public static boolean isExposed(@Nonnull Block block, @Nonnull BlockFace face) {
-        return !block.getRelative(face).getType().isOccluding();
-    }
-
-    /**
-     * Check if the given block is exposed on <i>any</i> face.
-     * {@link org.bukkit.Material#isOccluding()} is used to check if a face is exposed.
-     *
-     * @param block
-     *            the block to check
-     * @return true if any face of the block is exposed
-     */
-    public static boolean isExposed(@Nonnull Block block) {
-        for (BlockFace face : directFaces) {
-            if (isExposed(block, face)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get a display-formatted string for the given chargeable item or block's current
      * charge level.
      *
@@ -451,7 +417,7 @@ public final class STBUtil {
         if (isLiquidSourceBlock(block) && block.getType() != Material.LAVA) {
             int n = 0;
 
-            for (BlockFace face : mainHorizontalFaces) {
+            for (BlockFace face : MAIN_HORIZONTAL_BLOCK_FACES) {
                 Block neighbour = block.getRelative(face);
 
                 if (isLiquidSourceBlock(neighbour)) {
@@ -767,9 +733,5 @@ public final class STBUtil {
         default:
             return null;
         }
-    }
-
-    public static boolean isNumber(@Nonnull String text) {
-        return NUMBERS_PATTERN.matcher(text).matches();
     }
 }

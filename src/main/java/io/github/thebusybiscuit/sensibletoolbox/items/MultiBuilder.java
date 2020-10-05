@@ -1,19 +1,16 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
-import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
-import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
-import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
-import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
-import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
-import me.desht.dhutils.Debugger;
-import me.desht.dhutils.blocks.BlockAndPosition;
-import me.desht.dhutils.blocks.BlockUtil;
-import me.desht.dhutils.cost.ItemCost;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -35,15 +32,20 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.LinkedBlockingQueue;
+import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
+import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
+import me.desht.dhutils.Debugger;
+import me.desht.dhutils.blocks.BlockAndPosition;
+import me.desht.dhutils.blocks.BlockUtil;
+import me.desht.dhutils.cost.ItemCost;
 
 public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
@@ -545,7 +547,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                         for (int z = -1; z <= 1; z++) {
                             Block block = b.getRelative(x, y, z);
 
-                            if ((x != 0 || y != 0 || z != 0) && block.getType() == rec.source && STBUtil.isExposed(block)) {
+                            if ((x != 0 || y != 0 || z != 0) && block.getType() == rec.source && isExposed(block)) {
                                 if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
                                     return;
                                 }
@@ -566,6 +568,37 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             }
 
             return -1;
+        }
+
+        /**
+         * Check if the given block is exposed to the world on the given face.
+         * {@link org.bukkit.Material#isOccluding()} is used to check if a face is exposed.
+         *
+         * @param block
+         *            the block to check
+         * @param face
+         *            the face to check
+         * @return true if the given block face is exposed
+         */
+        private boolean isExposed(@Nonnull Block block, @Nonnull BlockFace face) {
+            return !block.getRelative(face).getType().isOccluding();
+        }
+
+        /**
+         * Check if the given block is exposed on <i>any</i> face.
+         * {@link org.bukkit.Material#isOccluding()} is used to check if a face is exposed.
+         *
+         * @param block
+         *            the block to check
+         * @return true if any face of the block is exposed
+         */
+        private boolean isExposed(@Nonnull Block block) {
+            for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
+                if (isExposed(block, face)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

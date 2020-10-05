@@ -320,7 +320,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (loc == null) return;
         Block b = loc.getBlock();
 
-        for (BlockFace face : STBUtil.directFaces) {
+        for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
             Block b1 = b.getRelative(face);
             BaseSTBBlock stb = SensibleToolbox.getBlockAt(b1.getLocation());
 

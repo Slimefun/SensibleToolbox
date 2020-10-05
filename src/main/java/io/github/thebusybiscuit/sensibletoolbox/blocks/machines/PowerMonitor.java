@@ -67,7 +67,7 @@ public class PowerMonitor extends BaseSTBBlock {
 
         label[2] = ChatColor.DARK_RED + "No cable attached";
 
-        for (BlockFace f : STBUtil.mainHorizontalFaces) {
+        for (BlockFace f : STBUtil.MAIN_HORIZONTAL_BLOCK_FACES) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
 
             if (net != null) {

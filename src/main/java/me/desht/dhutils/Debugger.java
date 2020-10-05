@@ -1,6 +1,7 @@
 package me.desht.dhutils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -36,11 +37,12 @@ public class Debugger {
         this.prefix = prefix;
     }
 
+    @Nullable
     public CommandSender getTarget() {
         return target;
     }
 
-    public void setTarget(CommandSender target) {
+    public void setTarget(@Nullable CommandSender target) {
         this.target = target;
     }
 
@@ -52,11 +54,11 @@ public class Debugger {
         this.level = level;
     }
 
-    public void debug(String message) {
+    public void debug(@Nonnull String message) {
         debug(1, message);
     }
 
-    public void debug(int msgLevel, String message) {
+    public void debug(int msgLevel, @Nonnull String message) {
         if (msgLevel <= level && target != null) {
             target.sendMessage(DEBUG_COLOR + prefix + message);
         }

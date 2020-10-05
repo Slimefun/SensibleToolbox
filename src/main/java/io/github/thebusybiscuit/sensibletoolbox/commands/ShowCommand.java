@@ -3,9 +3,12 @@ package io.github.thebusybiscuit.sensibletoolbox.commands;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -82,17 +85,20 @@ public class ShowCommand extends AbstractCommand {
         return true;
     }
 
+    @ParametersAreNonnullByDefault
     private void dumpItemData(Plugin plugin, CommandSender sender) {
         File out = new File(plugin.getDataFolder(), "item-dump.txt");
 
-        try (PrintWriter writer = new PrintWriter(out, "UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(out, StandardCharsets.UTF_8.name())) {
             for (String itemId : SensibleToolbox.getItemRegistry().getItemIds()) {
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(itemId);
                 String lore = Joiner.on("\\\\").join(item.getLore()).replace("\u00a7r", "");
                 String appearance = ItemUtils.getItemName(new ItemStack(item.getMaterial()));
+
                 if (item.hasGlow()) {
                     appearance += " (glowing)";
                 }
+
                 writer.println("|" + item.getItemName() + "|" + item.getItemTypeID() + "|" + appearance + "|" + lore);
             }
 
@@ -103,6 +109,7 @@ public class ShowCommand extends AbstractCommand {
         }
     }
 
+    @ParametersAreNonnullByDefault
     private void showDetails(CommandSender sender, MessagePager pager, String locStr) {
         BaseSTBItem item;
 
@@ -114,7 +121,7 @@ public class ShowCommand extends AbstractCommand {
 
             Player player = (Player) sender;
             // try to show either the held item or the targeted block
-            item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());
+            item = SensibleToolbox.getItemRegistry().fromItemStack(player.getInventory().getItemInMainHand());
 
             if (item == null) {
                 Block b = player.getTargetBlock((Set<Material>) null, 10);

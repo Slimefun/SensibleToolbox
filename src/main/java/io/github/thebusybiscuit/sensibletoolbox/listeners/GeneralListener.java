@@ -163,7 +163,7 @@ public class GeneralListener extends STBBaseListener {
         BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
         if (stb != null && !stb.isFlammable()) {
             event.setCancelled(true);
-            for (BlockFace face : STBUtil.directFaces) {
+            for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
                 Block b = event.getBlock().getRelative(face);
                 if (b.getType() == Material.FIRE && ThreadLocalRandom.current().nextInt(3) != 0) {
                     b.setType(Material.AIR);

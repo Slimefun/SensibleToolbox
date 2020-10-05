@@ -91,7 +91,7 @@ public class STBEnergyNet implements EnergyNet {
         }
         else {
             discovered.add(b);
-            for (BlockFace face : STBUtil.directFaces) {
+            for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
                 recursiveScan(b.getRelative(face), discovered, face.getOppositeFace());
             }
         }

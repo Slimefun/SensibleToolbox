@@ -66,7 +66,7 @@ public class HolographicMonitor extends BaseSTBBlock {
         if (hologram == null) return;
         this.hologram.clearLines();
 
-        for (BlockFace f : STBUtil.mainHorizontalFaces) {
+        for (BlockFace f : STBUtil.MAIN_HORIZONTAL_BLOCK_FACES) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
             if (net != null) {
                 double stat = net.getSupply() - net.getDemand();
