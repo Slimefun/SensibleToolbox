@@ -3,6 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.core.enderstorage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,8 +19,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import io.github.thebusybiscuit.sensibletoolbox.items.EnderBag;
-import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.text.LogUtils;
 
 public class EnderStorageManager implements Listener {
 
@@ -66,13 +67,17 @@ public class EnderStorageManager implements Listener {
     public PlayerEnderHolder getPlayerInventoryHolder(OfflinePlayer player, Integer frequency) {
         Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
         Map<Integer, PlayerEnderHolder> map = playerInvs.get(player.getUniqueId());
+
         if (map == null) {
-            map = new HashMap<Integer, PlayerEnderHolder>();
+            map = new HashMap<>();
             playerInvs.put(player.getUniqueId(), map);
         }
+
         PlayerEnderHolder h = map.get(frequency);
+
         if (h == null) {
             h = new PlayerEnderHolder(this, player, frequency);
+
             try {
                 h.loadInventory();
                 map.put(frequency, h);
@@ -82,6 +87,7 @@ public class EnderStorageManager implements Listener {
                 return null;
             }
         }
+
         return h;
     }
 
@@ -102,13 +108,19 @@ public class EnderStorageManager implements Listener {
             }
 
             for (File f : oldDir.listFiles()) {
-                if (!f.delete()) {
-                    LogUtils.warning("can't delete unwanted file: " + f);
+                try {
+                    Files.delete(f.toPath());
+                }
+                catch (IOException e) {
+                    LogUtils.warning("can't delete unwanted file: " + f, e);
                 }
             }
 
-            if (!oldDir.delete()) {
-                LogUtils.warning("can't delete old bagofholding directory");
+            try {
+                Files.delete(oldDir.toPath());
+            }
+            catch (IOException e) {
+                LogUtils.warning("can't delete old bagofholding directory", e);
             }
         }
     }

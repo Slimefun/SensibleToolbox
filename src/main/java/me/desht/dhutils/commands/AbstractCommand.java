@@ -6,10 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -22,23 +26,18 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 
 /**
- * @author des
+ * @author desht
  *
  */
 public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
-    private enum OptType {
-        BOOL,
-        STRING,
-        INT,
-        DOUBLE
-    }
+    private static final Pattern quotedStringRegex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 
     private final int minArgs;
     private final int maxArgs;
 
     private final List<CommandRecord> cmdRecs = new ArrayList<>();
-    private final Map<String, OptType> options = new HashMap<>();
+    private final Map<String, CommandOptionType> options = new HashMap<>();
     private final Map<String, Object> optVals = new HashMap<>();
 
     private String[] usage;
@@ -67,60 +66,74 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
     public abstract boolean execute(Plugin plugin, CommandSender sender, String[] args);
 
-    public void addAlias(String label) {
+    public void addAlias(@Nonnull String label) {
+        Validate.notNull(label, "The alias cannot be null");
         String[] fields = label.split(" ");
         cmdRecs.add(new CommandRecord(fields));
     }
 
+    @ParametersAreNonnullByDefault
     public boolean matchesSubCommand(String label, String[] args) {
         return matchesSubCommand(label, args, false);
     }
 
+    @ParametersAreNonnullByDefault
     public boolean matchesSubCommand(String label, String[] args, boolean partialOk) {
-        CMDREC:
         for (CommandRecord rec : cmdRecs) {
-            if (!label.equalsIgnoreCase(rec.getCommand())) continue;
-            if (!partialOk && args.length < rec.size()) continue;
-
-            int match = 0;
-
-            for (int i = 0; i < rec.size() && i < args.length; i++) {
-                if (rec.getSubCommand(i).startsWith(args[i])) {
-                    match++;
+            if (label.equalsIgnoreCase(rec.getCommand())) {
+                if (!partialOk && args.length < rec.size()) {
+                    continue;
                 }
-                else {
-                    // match failed; try the next command record, if any
-                    continue CMDREC;
-                }
-            }
 
-            if (partialOk || match == rec.size()) {
-                matchedCommand = rec;
-                return true;
+                int matches = getSubCommandMatches(rec, args);
+
+                if (matches != -1 && (partialOk || matches == rec.size())) {
+                    matchedCommand = rec;
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    public boolean matchesArgCount(String label, String args[]) {
-        for (CommandRecord rec : cmdRecs) {
-            if (!label.equalsIgnoreCase(rec.getCommand())) continue;
+    @ParametersAreNonnullByDefault
+    private int getSubCommandMatches(CommandRecord rec, String[] args) {
+        int matches = 0;
 
-            int nArgs;
-
-            if (isQuotedArgs()) {
-                List<String> a = MiscUtil.splitQuotedString(combine(args, 0));
-                nArgs = a.size() - rec.size();
+        for (int i = 0; i < rec.size() && i < args.length; i++) {
+            if (rec.getSubCommand(i).startsWith(args[i])) {
+                matches++;
             }
             else {
-                nArgs = args.length - rec.size();
+                // match failed; try the next command record, if any
+                return -1;
             }
+        }
 
-            Debugger.getInstance().debug(3, String.format("matchesArgCount: %s, nArgs=%d min=%d max=%d", label, nArgs, minArgs, maxArgs));
-            if (nArgs >= minArgs && nArgs <= maxArgs) {
-                storeMatchedArgs(args, rec);
-                return true;
+        return matches;
+    }
+
+    @ParametersAreNonnullByDefault
+    public boolean matchesArgCount(String label, String[] args) {
+        for (CommandRecord rec : cmdRecs) {
+            if (label.equalsIgnoreCase(rec.getCommand())) {
+
+                int nArgs;
+
+                if (isQuotedArgs()) {
+                    List<String> a = splitQuotedString(combine(args, 0));
+                    nArgs = a.size() - rec.size();
+                }
+                else {
+                    nArgs = args.length - rec.size();
+                }
+
+                Debugger.getInstance().debug(3, String.format("matchesArgCount: %s, nArgs=%d min=%d max=%d", label, nArgs, minArgs, maxArgs));
+                if (nArgs >= minArgs && nArgs <= maxArgs) {
+                    storeMatchedArgs(args, rec);
+                    return true;
+                }
             }
         }
 
@@ -146,7 +159,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
         String[] tmpArgs;
         if (isQuotedArgs()) {
-            tmpArgs = MiscUtil.splitQuotedString(combine(tmpResult, 0)).toArray(new String[0]);
+            tmpArgs = splitQuotedString(combine(tmpResult, 0)).toArray(new String[0]);
         }
         else {
             tmpArgs = tmpResult;
@@ -169,7 +182,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
             if (options.containsKey(opt)) {
                 try {
                     switch (options.get(opt)) {
-                    case BOOL:
+                    case BOOLEAN:
                         optVals.put(opt, true);
                         break;
                     case STRING:
@@ -260,16 +273,16 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
             String[] parts = opt.split(":");
 
             if (parts.length == 1) {
-                options.put(parts[0], OptType.BOOL);
+                options.put(parts[0], CommandOptionType.BOOLEAN);
             }
             else if (parts[1].startsWith("i")) {
-                options.put(parts[0], OptType.INT);
+                options.put(parts[0], CommandOptionType.INT);
             }
             else if (parts[1].startsWith("d")) {
-                options.put(parts[0], OptType.DOUBLE);
+                options.put(parts[0], CommandOptionType.DOUBLE);
             }
             else if (parts[1].startsWith("s")) {
-                options.put(parts[0], OptType.STRING);
+                options.put(parts[0], CommandOptionType.STRING);
             }
         }
     }
@@ -446,6 +459,39 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         }
 
         return filterPrefix(sender, res, prefix);
+    }
+
+    /**
+     * Split the given string, but ensure single & double quoted sections of the string are
+     * kept together.
+     * <p>
+     * E.g. the String 'one "two three" four' will be split into [ "one", "two three", "four" ]
+     *
+     * @param s
+     *            the String to split
+     * @return a List of items
+     */
+    @Nonnull
+    private static List<String> splitQuotedString(@Nonnull String s) {
+        List<String> matchList = new ArrayList<>();
+        Matcher regexMatcher = quotedStringRegex.matcher(s);
+
+        while (regexMatcher.find()) {
+            if (regexMatcher.group(1) != null) {
+                // Add double-quoted string without the quotes
+                matchList.add(regexMatcher.group(1));
+            }
+            else if (regexMatcher.group(2) != null) {
+                // Add single-quoted string without the quotes
+                matchList.add(regexMatcher.group(2));
+            }
+            else {
+                // Add unquoted word
+                matchList.add(regexMatcher.group());
+            }
+        }
+
+        return matchList;
     }
 
     @Override

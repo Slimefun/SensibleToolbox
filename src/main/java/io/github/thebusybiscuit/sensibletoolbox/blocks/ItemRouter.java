@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -44,7 +47,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
@@ -75,13 +78,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         super(conf);
         setStackSize(1);
         setTickRate(20);
-        if (conf.contains("modules")) {
-            loadOldStyleModules(conf);
-            updateNeeded = true;
-        }
-        else {
-            loadNewStyleModules(conf);
-        }
+        loadModules(conf);
 
         try {
             if (conf.contains("buffer")) {
@@ -94,7 +91,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
-    private void loadNewStyleModules(ConfigurationSection conf) {
+    private void loadModules(@Nonnull ConfigurationSection conf) {
         try {
             String enc = conf.getString("moduleList");
             if (enc != null && !enc.isEmpty()) {
@@ -107,34 +104,22 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
-    private void loadOldStyleModules(ConfigurationSection conf) {
-        for (String l : conf.getStringList("modules")) {
-            String[] f = l.split("::", 2);
-            try {
-                YamlConfiguration modConf = new YamlConfiguration();
-                if (f.length > 1) modConf.loadFromString(f[1]);
-                ItemRouterModule mod = (ItemRouterModule) SensibleToolbox.getItemRegistry().getItemById(f[0], modConf);
-                insertModule(mod, modConf.getInt("amount"));
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                LogUtils.warning("can't restore saved module " + f[0] + " for " + this + ": " + e.getMessage());
-            }
-        }
-    }
-
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
 
         if (getGUI() != null) {
             Inventory modInv = Bukkit.createInventory(null, 9);
+
             for (int i = 0; i < 9; i++) {
                 modInv.setItem(i, getGUI().getItem(MOD_SLOT_START + i));
             }
+
             conf.set("moduleList", BukkitSerialization.toBase64(modInv));
         }
-        else conf.set("moduleList", "");
+        else {
+            conf.set("moduleList", "");
+        }
 
         Inventory bufferInv = Bukkit.createInventory(null, 9);
         bufferInv.setItem(0, getBufferItem());
@@ -164,10 +149,12 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
         else {
             List<String> lore = new ArrayList<>(modules.size());
+
             for (ModuleAndAmount e : modules) {
                 String s = e.module.getDisplaySuffix() == null ? "" : ": " + e.module.getDisplaySuffix();
                 lore.add(ChatColor.GREEN + e.module.getItemName() + s);
             }
+
             return lore.toArray(new String[0]);
         }
     }
@@ -199,6 +186,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         return tickRate;
     }
 
+    @Nullable
     public ReceiverModule getReceiver() {
         return receiver;
     }
@@ -211,18 +199,23 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             event.setCancelled(true);
         }
         else if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && getBufferItem() != null) {
-            if (hasAccessRights(event.getPlayer())) ejectBuffer(event.getBlockFace());
+            if (hasAccessRights(event.getPlayer())) {
+                ejectBuffer(event.getBlockFace());
+            }
+
             event.setCancelled(true);
         }
-        else super.onInteractBlock(event);
+        else {
+            super.onInteractBlock(event);
+        }
     }
 
-    public void ejectBuffer(BlockFace face) {
+    public void ejectBuffer(@Nonnull BlockFace face) {
         Block b = getLocation().getBlock().getRelative(face);
         b.getWorld().dropItemNaturally(b.getLocation(), getBufferItem());
         setBufferItem(null);
         update(false);
-        b.getWorld().playSound(b.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
+        b.getWorld().playSound(b.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.0F);
     }
 
     @Override
@@ -242,7 +235,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null, "Insert one or more modules below", "When the router ticks, modules", "are executed in order, from left", "to right.");
         int slot = MOD_SLOT_START;
         for (ModuleAndAmount e : modules) {
-            gui.getInventory().setItem(slot++, e.module.toItemStack(e.amount));
+            gui.getInventory().setItem(slot, e.module.toItemStack(e.amount));
+            slot++;
         }
 
         return gui;
@@ -369,6 +363,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
         if (module instanceof DirectionalItemRouterModule) {
             DirectionalItemRouterModule dm = (DirectionalItemRouterModule) module;
+
             if (dm.getFacing() == null) {
                 dm.setFacingDirection(BlockFace.SELF);
             }
@@ -386,6 +381,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         modules.add(new ModuleAndAmount(module, count));
     }
 
+    @Nullable
     public ItemStack getBufferItem() {
         return bufferItem == null ? null : bufferItem.clone();
     }
@@ -396,7 +392,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
-    public void setBufferItem(ItemStack bufferItem) {
+    public void setBufferItem(@Nullable ItemStack bufferItem) {
         this.bufferItem = bufferItem;
 
         if (bufferItem != null && (bufferItem.getAmount() == 0 || bufferItem.getType() == Material.AIR)) {
@@ -466,7 +462,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             setBufferAmount(bufferItem.getAmount() - nExtracted);
             return receiver;
         }
-        else return null;
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -476,7 +474,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             inv.setItem(0, getBufferItem());
             return inv;
         }
-        else return null;
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -513,24 +513,36 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
-        if (!SensibleToolbox.getItemRegistry().isSTBItem(toInsert, ItemRouterModule.class)) return 0;
-        int nInserted = 0;
+        if (!SensibleToolbox.getItemRegistry().isSTBItem(toInsert, ItemRouterModule.class)) {
+            return 0;
+        }
+
+        int insertedAmount = 0;
+
         for (int modSlot = MOD_SLOT_START; modSlot < MOD_SLOT_END; modSlot++) {
             ItemStack mod = getGUI().getInventory().getItem(modSlot);
+
             if (mod == null) {
                 getGUI().getInventory().setItem(modSlot, toInsert);
-                nInserted = toInsert.getAmount();
+                insertedAmount = toInsert.getAmount();
             }
             else if (mod.isSimilar(toInsert)) {
-                nInserted = mod.getType().getMaxStackSize() - mod.getAmount();
-                nInserted = Math.min(toInsert.getAmount(), nInserted);
-                mod.setAmount(mod.getAmount() + nInserted);
+                insertedAmount = mod.getType().getMaxStackSize() - mod.getAmount();
+                insertedAmount = Math.min(toInsert.getAmount(), insertedAmount);
+                mod.setAmount(mod.getAmount() + insertedAmount);
                 getGUI().getInventory().setItem(modSlot, mod);
             }
-            if (nInserted > 0) break;
+
+            if (insertedAmount > 0) {
+                break;
+            }
         }
-        if (nInserted > 0) needToProcessModules = true;
-        return nInserted;
+
+        if (insertedAmount > 0) {
+            needToProcessModules = true;
+        }
+
+        return insertedAmount;
     }
 
     @Override
@@ -543,7 +555,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             needToProcessModules = true;
             return true;
         }
-        else return false;
+        else {
+            return false;
+        }
     }
 
     @Override
@@ -563,15 +577,23 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
         for (int i = 0; i < MOD_SLOT_COUNT; i++) {
             ItemStack stack = inv.getItem(baseSlot + i);
+
             if (stack != null) {
-                if (!mods.containsKey(stack)) mods.put(stack, stack.getAmount());
-                else mods.put(stack, mods.get(stack) + stack.getAmount());
+                if (!mods.containsKey(stack)) {
+                    mods.put(stack, stack.getAmount());
+                }
+                else {
+                    mods.put(stack, mods.get(stack) + stack.getAmount());
+                }
             }
         }
 
         for (Map.Entry<ItemStack, Integer> entry : mods.entrySet()) {
             ItemRouterModule mod = SensibleToolbox.getItemRegistry().fromItemStack(entry.getKey(), ItemRouterModule.class);
-            if (mod != null) insertModule(mod, entry.getValue());
+
+            if (mod != null) {
+                insertModule(mod, entry.getValue());
+            }
         }
 
         Debugger.getInstance().debug("re-processed modules for " + this + " tick-rate=" + getTickRate() + " stack-size=" + getStackSize());
@@ -581,6 +603,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         }
     }
 
+    @Nonnull
     public List<BlockFace> getNeighbours() {
         return neighbours;
     }

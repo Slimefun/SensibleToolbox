@@ -2,12 +2,14 @@ package io.github.thebusybiscuit.sensibletoolbox.commands;
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.MiscUtil;
-import me.desht.dhutils.PermissionUtils;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public abstract class STBAbstractCommand extends AbstractCommand {
@@ -24,6 +26,7 @@ public abstract class STBAbstractCommand extends AbstractCommand {
         super(label, minArgs, maxArgs);
     }
 
+    @Nullable
     protected UUID getID(String s) {
         if (MiscUtil.looksLikeUUID(s)) {
             return UUID.fromString(s);
@@ -34,14 +37,15 @@ public abstract class STBAbstractCommand extends AbstractCommand {
         }
     }
 
-    protected Player getTargetPlayer(CommandSender sender, String playerNameOrID) {
+    protected Player getTargetPlayer(CommandSender sender, @Nullable String playerNameOrID) {
         if (playerNameOrID == null) {
             notFromConsole(sender);
             return (Player) sender;
         }
+        else if (!sender.hasPermission("stb.friends.other")) {
+            throw new DHUtilsException("You are not allowed to do that.");
+        }
         else {
-            PermissionUtils.requirePerms(sender, "stb.friends.other");
-            // noinspection deprecation
             return MiscUtil.looksLikeUUID(playerNameOrID) ? Bukkit.getPlayer(UUID.fromString(playerNameOrID)) : Bukkit.getPlayer(playerNameOrID);
         }
     }

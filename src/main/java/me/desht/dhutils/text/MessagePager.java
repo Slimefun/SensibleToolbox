@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.text;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -14,6 +14,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
+
+import me.desht.dhutils.MiscUtil;
 
 public class MessagePager {
 

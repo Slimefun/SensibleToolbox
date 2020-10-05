@@ -100,9 +100,10 @@ public class BlockUpdateDetector extends BaseSTBBlock {
 
     @Override
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        final Block b = event.getBlock();
+        Block b = event.getBlock();
         long timeNow = getLocation().getWorld().getFullTime();
         Debugger.getInstance().debug(this + ": BUD physics: time=" + timeNow + ", lastPulse=" + lastPulse + ", duration=" + getDuration());
+
         if (timeNow - lastPulse > getDuration() + getQuiet() && isRedstoneActive()) {
             // emit a signal for one or more ticks
             lastPulse = timeNow;
@@ -122,28 +123,24 @@ public class BlockUpdateDetector extends BaseSTBBlock {
             getGUI().show(event.getPlayer());
             event.setCancelled(true);
         }
+
         super.onInteractBlock(event);
     }
 
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_PURPLE + getItemName());
-        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, new NumericGadget.NumericListener() {
 
-            @Override
-            public boolean run(int newValue) {
-                setDuration(newValue);
-                return true;
-            }
+        gui.addGadget(new NumericGadget(gui, 1, "Pulse Duration", new IntRange(1, Integer.MAX_VALUE), getDuration(), 10, 1, newValue -> {
+            setDuration(newValue);
+            return true;
         }));
-        gui.addGadget(new NumericGadget(gui, 0, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, new NumericGadget.NumericListener() {
 
-            @Override
-            public boolean run(int newValue) {
-                setQuiet(newValue);
-                return true;
-            }
+        gui.addGadget(new NumericGadget(gui, 0, "Sleep Time after Pulse", new IntRange(0, Integer.MAX_VALUE), getQuiet(), 10, 1, newValue -> {
+            setQuiet(newValue);
+            return true;
         }));
+
         gui.addGadget(new RedstoneBehaviourGadget(gui, 8));
         gui.addGadget(new AccessControlGadget(gui, 7));
         return gui;

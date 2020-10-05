@@ -33,14 +33,14 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public class STBItemRegistry implements ItemRegistry, Keyed {
 
     public static final String LORE_PREFIX = ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "\u25b9";
     public static final int MAX_ITEM_ID_LENGTH = 32;
 
-    private final Map<String, ReflectionDetails> reflectionDetailsMap = new HashMap<>();
+    private final Map<String, ReflectionDetails<?>> reflectionDetailsMap = new HashMap<>();
     private final Map<String, Class<? extends BaseSTBItem>> craftingRestrictions = new HashMap<>();
     private final Map<String, String> permissionPrefix = new HashMap<>();
     private final Map<String, Plugin> id2plugin = new HashMap<>();
@@ -69,8 +69,9 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         registerItem(item, plugin, configNode, null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void registerItem(BaseSTBItem item, Plugin plugin, String configPrefix, String permissionPrefix) {
+    public <T extends BaseSTBItem> void registerItem(T item, Plugin plugin, String configPrefix, String permissionPrefix) {
         String id = item.getItemTypeID();
 
         if (configPrefix != null) {
@@ -78,31 +79,22 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
                 plugin.getConfig().set(configPrefix + "." + item.getItemTypeID(), true);
                 plugin.saveConfig();
             }
-            if (!plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) return;
+
+            if (!plugin.getConfig().getBoolean(configPrefix + "." + item.getItemTypeID())) {
+                return;
+            }
         }
 
         Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
-        Constructor<? extends BaseSTBItem> ctor0, ctor1;
 
-        try {
-            ctor0 = item.getClass().getConstructor();
-        }
-        catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("class " + item.getClass() + " does not have a 0-argument constructor!");
-        }
-        try {
-            ctor1 = item.getClass().getConstructor(ConfigurationSection.class);
-        }
-        catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("class " + item.getClass() + " does not have a 1-argument (ConfigurationSection) constructor!");
-        }
-        ReflectionDetails details = new ReflectionDetails(item.getClass(), ctor0, ctor1);
+        ReflectionDetails<T> details = new ReflectionDetails<>((Class<T>) item.getClass());
         reflectionDetailsMap.put(id, details);
         id2plugin.put(id, plugin);
 
         if (permissionPrefix == null) {
             permissionPrefix = "stb";
         }
+
         this.permissionPrefix.put(id, permissionPrefix);
 
         // parent permission node
@@ -191,7 +183,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
     @Override
     public BaseSTBItem getItemById(String id, ConfigurationSection conf) {
-        ReflectionDetails details = reflectionDetailsMap.get(id);
+        ReflectionDetails<?> details = reflectionDetailsMap.get(id);
 
         if (details == null) {
             return null;
@@ -239,16 +231,25 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         craftingRestrictions.put(item.getItemTypeID() + ":" + mat, c);
     }
 
-    private class ReflectionDetails {
+    private class ReflectionDetails<T extends BaseSTBItem> {
 
-        private final Class<? extends BaseSTBItem> clazz;
-        private final Constructor<? extends BaseSTBItem> ctor0arg;
-        private final Constructor<? extends BaseSTBItem> ctor1arg;
+        private final Constructor<T> ctor0arg;
+        private final Constructor<T> ctor1arg;
 
-        private ReflectionDetails(Class<? extends BaseSTBItem> clazz, Constructor<? extends BaseSTBItem> ctor0arg, Constructor<? extends BaseSTBItem> ctor1arg) {
-            this.clazz = clazz;
-            this.ctor0arg = ctor0arg;
-            this.ctor1arg = ctor1arg;
+        private ReflectionDetails(Class<T> clazz) {
+            try {
+                ctor0arg = clazz.getConstructor();
+            }
+            catch (NoSuchMethodException e) {
+                throw new IllegalArgumentException("class " + clazz + " does not have a 0-argument constructor!");
+            }
+
+            try {
+                ctor1arg = clazz.getConstructor(ConfigurationSection.class);
+            }
+            catch (NoSuchMethodException e) {
+                throw new IllegalArgumentException("class " + clazz + " does not have a 1-argument (ConfigurationSection) constructor!");
+            }
         }
     }
 }

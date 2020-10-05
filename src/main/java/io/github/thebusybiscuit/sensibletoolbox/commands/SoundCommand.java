@@ -23,8 +23,8 @@ public class SoundCommand extends AbstractCommand {
         notFromConsole(sender);
         try {
             Sound sound = Sound.valueOf(args[0].toUpperCase());
-            float volume = args.length > 1 ? Float.parseFloat(args[1]) : 1.0f;
-            float pitch = args.length > 2 ? Float.parseFloat(args[2]) : 1.0f;
+            float volume = args.length > 1 ? Float.parseFloat(args[1]) : 1.0F;
+            float pitch = args.length > 2 ? Float.parseFloat(args[2]) : 1.0F;
             ((Player) sender).playSound(((Player) sender).getLocation(), sound, volume, pitch);
         }
         catch (IllegalArgumentException e) {

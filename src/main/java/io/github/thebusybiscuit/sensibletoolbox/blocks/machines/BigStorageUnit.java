@@ -31,6 +31,8 @@ import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 
+import javax.annotation.Nonnull;
+
 public class BigStorageUnit extends AbstractProcessingMachine {
 
     private static final ItemStack LOCKED_BUTTON = GUIUtil.makeTexture(Material.ENDER_EYE, ChatColor.UNDERLINE + "Locked", "Unit will remember its", "stored item, even when", "emptied");
@@ -489,6 +491,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         return stored != null && storageAmount >= getStackCapacity() * stored.getMaxStackSize();
     }
 
+    @Nonnull
     @Override
     public String getProgressMessage() {
         return ChatColor.YELLOW + "In Storage: " + getStorageAmount() + "/" + maxCapacity;

@@ -33,6 +33,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.cuboid.Cuboid;
+import me.desht.dhutils.cuboid.CuboidDirection;
 
 public abstract class CombineHoe extends BaseSTBItem {
 
@@ -291,14 +292,14 @@ public abstract class CombineHoe extends BaseSTBItem {
 
         if (amountLeft < getSeedAmount()) {
             setSeedAmount(amountLeft);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0f, 1.0f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.0F);
         }
     }
 
     @ParametersAreNonnullByDefault
     private void harvestLayer(Player player, Block b) {
         Cuboid cuboid = new Cuboid(b.getLocation());
-        cuboid = cuboid.outset(Cuboid.CuboidDirection.HORIZONTAL, Tag.LEAVES.isTagged(b.getType()) ? 1 : getWorkRadius());
+        cuboid = cuboid.outset(CuboidDirection.HORIZONTAL, Tag.LEAVES.isTagged(b.getType()) ? 1 : getWorkRadius());
 
         for (Block block : cuboid) {
             if (!block.equals(b) && (STBUtil.isPlant(block.getType()) || Tag.LEAVES.isTagged(block.getType()))) {
@@ -340,7 +341,7 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
         }
         if (count > 0) {
-            player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0f, 1.0f);
+            player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0F, 1.0F);
         }
 
         ItemUtils.damageItem(stack, false);

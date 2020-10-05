@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.dhutils.text.MessagePager;
 
 public class ExamineCommand extends AbstractCommand {
 

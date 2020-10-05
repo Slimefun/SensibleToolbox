@@ -31,9 +31,9 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.dhutils.text.MessagePager;
 
 public class ShowCommand extends AbstractCommand {
 

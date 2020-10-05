@@ -15,8 +15,8 @@ import com.google.common.collect.Lists;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
-import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.text.MessagePager;
 
 public class FriendCommand extends STBAbstractCommand {
 

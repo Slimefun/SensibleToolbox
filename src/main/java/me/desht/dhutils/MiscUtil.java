@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -17,13 +16,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import me.desht.dhutils.text.LogUtils;
+
 public class MiscUtil {
 
     private static final Map<String, String> prevColors = new HashMap<>();
 
-    public static final String STATUS_COLOUR = ChatColor.AQUA.toString();
-    public static final String ERROR_COLOUR = ChatColor.RED.toString();
-    public static final String ALERT_COLOUR = ChatColor.YELLOW.toString();
+    public static final String STATUS_COLOR = ChatColor.AQUA.toString();
+    public static final String ERROR_COLOR = ChatColor.RED.toString();
+    public static final String ALERT_COLOR = ChatColor.YELLOW.toString();
     public static final String GENERAL_COLOUR = ChatColor.WHITE.toString();
 
     private static boolean coloredConsole = true;
@@ -33,20 +34,20 @@ public class MiscUtil {
     }
 
     public static void errorMessage(CommandSender sender, String string) {
-        setPrevColor(sender.getName(), ERROR_COLOUR);
-        message(sender, ERROR_COLOUR + string, Level.WARNING);
+        setPrevColor(sender.getName(), ERROR_COLOR);
+        message(sender, ERROR_COLOR + string, Level.WARNING);
         prevColors.remove(sender.getName());
     }
 
     public static void statusMessage(CommandSender sender, String string) {
-        setPrevColor(sender.getName(), STATUS_COLOUR);
-        message(sender, STATUS_COLOUR + string, Level.INFO);
+        setPrevColor(sender.getName(), STATUS_COLOR);
+        message(sender, STATUS_COLOR + string, Level.INFO);
         prevColors.remove(sender.getName());
     }
 
     public static void alertMessage(CommandSender sender, String string) {
-        setPrevColor(sender.getName(), ALERT_COLOUR);
-        message(sender, ALERT_COLOUR + string, Level.INFO);
+        setPrevColor(sender.getName(), ALERT_COLOR);
+        message(sender, ALERT_COLOR + string, Level.INFO);
         prevColors.remove(sender.getName());
     }
 
@@ -141,40 +142,6 @@ public class MiscUtil {
         else {
             throw new IllegalArgumentException("World " + worldName + " was not found on the server.");
         }
-    }
-
-    /**
-     * Split the given string, but ensure single & double quoted sections of the string are
-     * kept together.
-     * <p>
-     * E.g. the String 'one "two three" four' will be split into [ "one", "two three", "four" ]
-     *
-     * @param s
-     *            the String to split
-     * @return a List of items
-     */
-    public static List<String> splitQuotedString(String s) {
-        List<String> matchList = new ArrayList<>();
-
-        Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
-        Matcher regexMatcher = regex.matcher(s);
-
-        while (regexMatcher.find()) {
-            if (regexMatcher.group(1) != null) {
-                // Add double-quoted string without the quotes
-                matchList.add(regexMatcher.group(1));
-            }
-            else if (regexMatcher.group(2) != null) {
-                // Add single-quoted string without the quotes
-                matchList.add(regexMatcher.group(2));
-            }
-            else {
-                // Add unquoted word
-                matchList.add(regexMatcher.group());
-            }
-        }
-
-        return matchList;
     }
 
     /**

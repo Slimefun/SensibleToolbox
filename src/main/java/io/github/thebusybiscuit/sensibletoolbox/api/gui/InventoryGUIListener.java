@@ -24,7 +24,7 @@ public interface InventoryGUIListener {
      *            the item on the player's cursor
      * @return true if the click should go ahead, false if it should be cancelled
      */
-    public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
+    boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
 
     /**
      * Called when a slot in a player inventory is clicked by a player while
@@ -42,7 +42,7 @@ public interface InventoryGUIListener {
      *            the item on the player's cursor
      * @return true if the click should go ahead, false if it should be cancelled
      */
-    public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
+    boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor);
 
     /**
      * Called when an attempt is made to shift-click an item into an inventory
@@ -59,7 +59,7 @@ public interface InventoryGUIListener {
      *            the item stack to be inserted
      * @return the number of items from the stack that were actually inserted
      */
-    public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert);
+    int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert);
 
     /**
      * Called when an attempt is made to shift-click an item out of an
@@ -73,7 +73,7 @@ public interface InventoryGUIListener {
      *            the number of items being extracted
      * @return true if items should be extracted, false otherwise
      */
-    public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract);
+    boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract);
 
     /**
      * Called when a player clicks outside the inventory window.
@@ -82,7 +82,7 @@ public interface InventoryGUIListener {
      *            player who clicked
      * @return true if the click should go ahead, false to cancel the event
      */
-    public boolean onClickOutside(HumanEntity player);
+    boolean onClickOutside(HumanEntity player);
 
     /**
      * Called when an inventory GUI window is opened.
@@ -90,7 +90,7 @@ public interface InventoryGUIListener {
      * @param player
      *            player who opened the window
      */
-    public void onGUIOpened(HumanEntity player);
+    void onGUIOpened(HumanEntity player);
 
     /**
      * Called when an inventory GUI window is closed.
@@ -98,5 +98,5 @@ public interface InventoryGUIListener {
      * @param player
      *            player who closed the window
      */
-    public void onGUIClosed(HumanEntity player);
+    void onGUIClosed(HumanEntity player);
 }

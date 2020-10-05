@@ -54,7 +54,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public class GeneralListener extends STBBaseListener {
 
@@ -244,11 +244,11 @@ public class GeneralListener extends STBBaseListener {
     public void onLabelSignBroken(BlockBreakEvent event) {
         if (Tag.WALL_SIGNS.isTagged(event.getBlock().getType())) {
             WallSign sign = (WallSign) event.getBlock().getBlockData();
-            Block b2 = event.getBlock().getRelative(sign.getFacing());
+            Block b2 = event.getBlock().getRelative(sign.getFacing().getOppositeFace());
             BaseSTBBlock stb = LocationManager.getManager().get(b2.getLocation());
 
             if (stb != null) {
-                stb.detachLabelSign(sign.getFacing().getOppositeFace());
+                stb.detachLabelSign(sign.getFacing());
             }
         }
     }
@@ -301,7 +301,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
-        
+
         if (event.getRecipe() == null) {
             return;
         }
@@ -393,7 +393,9 @@ public class GeneralListener extends STBBaseListener {
     }
 
     private int findNewSlot(InventoryClickEvent event) {
-        int from = -1, to = -2;
+        int from = -1;
+        int to = -2;
+
         switch (event.getSlotType()) {
         case QUICKBAR:
             from = 9;
@@ -406,11 +408,13 @@ public class GeneralListener extends STBBaseListener {
         default:
             break;
         }
+
         for (int i = from; i <= to; i++) {
             if (event.getWhoClicked().getInventory().getItem(i) == null) {
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -421,6 +425,7 @@ public class GeneralListener extends STBBaseListener {
                 if (slot >= 5 && slot <= 8) {
                     // armour slots
                     BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getOldCursor());
+
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
                     }
@@ -433,6 +438,7 @@ public class GeneralListener extends STBBaseListener {
     public void onArmourEquipCheck(BlockDispenseEvent event) {
         if (STBUtil.isWearable(event.getItem().getType())) {
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getItem());
+
             if (item != null && !item.isWearable()) {
                 event.setCancelled(true);
             }
@@ -442,6 +448,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onGUIInventoryClick(InventoryClickEvent event) {
         STBInventoryGUI gui = getGUIForInventoryEvent(event);
+
         if (gui != null) {
             gui.receiveEvent(event);
         }
@@ -450,6 +457,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onGUIInventoryDrag(InventoryDragEvent event) {
         STBInventoryGUI gui = getGUIForInventoryEvent(event);
+
         if (gui != null) {
             gui.receiveEvent(event);
         }
@@ -458,6 +466,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler
     public void onGUIInventoryClose(InventoryCloseEvent event) {
         STBInventoryGUI gui = getGUIForInventoryEvent(event);
+
         if (gui != null) {
             gui.receiveEvent(event);
         }

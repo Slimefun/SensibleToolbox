@@ -12,9 +12,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
-import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
+import me.desht.dhutils.text.MessagePager;
 
 public class GetcfgCommand extends AbstractCommand {
 
@@ -45,7 +45,7 @@ public class GetcfgCommand extends AbstractCommand {
     }
 
     public List<String> getPluginConfiguration(String section) {
-        ArrayList<String> res = new ArrayList<String>();
+        ArrayList<String> res = new ArrayList<>();
         Configuration config = SensibleToolboxPlugin.getInstance().getConfig();
         ConfigurationSection cs = config.getRoot();
 
@@ -59,7 +59,7 @@ public class GetcfgCommand extends AbstractCommand {
                 items = config.getDefaults().getConfigurationSection(section).getKeys(true);
             }
             else {
-                items = new HashSet<String>();
+                items = new HashSet<>();
                 if (config.getDefaults().contains(section)) items.add(section);
             }
         }
@@ -74,10 +74,10 @@ public class GetcfgCommand extends AbstractCommand {
 
     @Override
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
-        switch (args.length) {
-        case 1:
+        if (args.length == 1) {
             return getConfigCompletions(sender, plugin.getConfig(), args[0]);
-        default:
+        }
+        else {
             return noCompletions(sender);
         }
     }

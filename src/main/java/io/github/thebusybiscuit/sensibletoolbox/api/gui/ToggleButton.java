@@ -15,7 +15,7 @@ public class ToggleButton extends ClickableGadget {
     private final ItemStack trueTexture;
     private final ItemStack falseTexture;
     private final ToggleListener callback;
-    boolean value;
+    private boolean value;
 
     /**
      * Constructs a toggle button gadget.
@@ -87,6 +87,6 @@ public class ToggleButton extends ClickableGadget {
          *            the proposed new value for the toggle
          * @return true if the new value should be accepted; false otherwise
          */
-        public boolean run(boolean newValue);
+        boolean run(boolean newValue);
     }
 }

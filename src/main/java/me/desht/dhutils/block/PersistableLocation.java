@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.block;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +12,14 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 public class PersistableLocation implements ConfigurationSerializable {
 
     private final String worldName;
-    private final double x, y, z;
-    private final float pitch, yaw;
+
+    private final double x;
+    private final double y;
+    private final double z;
+
+    private final float pitch;
+    private final float yaw;
+
     private boolean savePitchAndYaw;
 
     public PersistableLocation(Location loc) {
@@ -31,8 +37,8 @@ public class PersistableLocation implements ConfigurationSerializable {
         x = toDouble(map.get("x"));
         y = toDouble(map.get("y"));
         z = toDouble(map.get("z"));
-        pitch = map.containsKey("pitch") ? ((Double) map.get("pitch")).floatValue() : 0.0f;
-        yaw = map.containsKey("yaw") ? ((Double) map.get("yaw")).floatValue() : 0.0f;
+        pitch = map.containsKey("pitch") ? ((Double) map.get("pitch")).floatValue() : 0.0F;
+        yaw = map.containsKey("yaw") ? ((Double) map.get("yaw")).floatValue() : 0.0F;
         savePitchAndYaw = map.containsKey("pitch");
     }
 
@@ -41,7 +47,7 @@ public class PersistableLocation implements ConfigurationSerializable {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.pitch = this.yaw = 0.0f;
+        this.pitch = this.yaw = 0.0F;
     }
 
     public PersistableLocation(World world, int x, int y, int z) {
@@ -49,7 +55,7 @@ public class PersistableLocation implements ConfigurationSerializable {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.pitch = this.yaw = 0.0f;
+        this.pitch = this.yaw = 0.0F;
     }
 
     public PersistableLocation(String worldName, int x, int y, int z) {
@@ -57,7 +63,7 @@ public class PersistableLocation implements ConfigurationSerializable {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.pitch = this.yaw = 0.0f;
+        this.pitch = this.yaw = 0.0F;
     }
 
     public String getWorldName() {

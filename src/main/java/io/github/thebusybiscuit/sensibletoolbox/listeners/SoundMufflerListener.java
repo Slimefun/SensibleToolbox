@@ -38,7 +38,7 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
                         event.setCancelled(true);
                     }
                     else {
-                        event.getPacket().getFloat().write(0, (float) sm.getVolume() / 100.0f);
+                        event.getPacket().getFloat().write(0, (float) sm.getVolume() / 100.0F);
                     }
                 }
             }

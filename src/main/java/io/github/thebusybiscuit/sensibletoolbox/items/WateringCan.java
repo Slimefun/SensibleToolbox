@@ -1,11 +1,10 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
-import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
-import me.desht.dhutils.MiscUtil;
+import java.util.concurrent.ThreadLocalRandom;
+
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -27,8 +26,12 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.concurrent.ThreadLocalRandom;
+import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
+import me.desht.dhutils.MiscUtil;
 
 public class WateringCan extends BaseSTBItem {
 
@@ -218,6 +221,7 @@ public class WateringCan extends BaseSTBItem {
         event.setCancelled(true);
     }
 
+    @ParametersAreNonnullByDefault
     private void waterSoil(Player player, Block b) {
         for (Block block : STBUtil.getSurroundingBlocks(b)) {
             if (getWaterLevel() <= 0) {
@@ -238,26 +242,30 @@ public class WateringCan extends BaseSTBItem {
             }
 
             if (player.isSneaking()) {
-                break; // only water one block if sneaking
+                // only water one block if sneaking
+                break;
             }
         }
     }
 
+    @ParametersAreNonnullByDefault
     private void waterCrops(Player player, Block b) {
-        for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
+        for (Block block : STBUtil.getSurroundingBlocks(b)) {
             if (getWaterLevel() <= 0) {
                 STBUtil.complain(player);
                 break;
             }
 
-            maybeGrowCrop(player, b1);
+            maybeGrowCrop(player, block);
 
             if (player.isSneaking()) {
-                break; // only water one block if sneaking
+                // only water one block if sneaking
+                break;
             }
         }
     }
 
+    @ParametersAreNonnullByDefault
     private void maybeGrowCrop(Player player, Block b) {
         if (!STBUtil.isCrop(b.getType()) || !SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
             return;
@@ -280,7 +288,7 @@ public class WateringCan extends BaseSTBItem {
         useSomeWater(player, b, 1);
     }
 
-    private void checkForFlooding(Block soil) {
+    private void checkForFlooding(@Nonnull Block soil) {
         int saturation = SoilSaturation.getSaturationLevel(soil);
         long now = System.currentTimeMillis();
         long delta = (now - SoilSaturation.getLastWatered(soil)) / 1000;

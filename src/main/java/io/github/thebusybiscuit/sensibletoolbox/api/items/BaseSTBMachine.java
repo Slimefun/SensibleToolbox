@@ -50,7 +50,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.Thoroughne
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 /**
  * Represents an STB block which acts a machine; it is chargeable and
@@ -798,7 +798,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             int i = 0;
 
             for (int slot : getOutputSlots()) {
-                inv.setItem(i++, getInventoryItem(slot));
+                inv.setItem(i, getInventoryItem(slot));
+                i++;
             }
 
             return inv;
@@ -814,7 +815,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             int i = 0;
 
             for (int slot : getOutputSlots()) {
-                setInventoryItem(slot, inventory.getItem(i++));
+                setInventoryItem(slot, inventory.getItem(i));
+                i++;
             }
         }
     }

@@ -319,7 +319,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         player.setItemInHand(toItemStack());
-        player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0F, 1.0F);
     }
 
     private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
@@ -546,8 +546,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                             Block block = b.getRelative(x, y, z);
 
                             if ((x != 0 || y != 0 || z != 0) && block.getType() == rec.source && STBUtil.isExposed(block)) {
-                                if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target,
-                                    rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
+                                if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
                                     return;
                                 }
                             }
