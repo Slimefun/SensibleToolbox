@@ -297,7 +297,8 @@ public class EnderLeash extends BaseSTBItem {
                 Horse h = (Horse) entity;
                 h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
                 h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-            } else if (entity instanceof ChestedHorse) {
+            }
+            else if (entity instanceof ChestedHorse) {
                 ChestedHorse chestedHorse = (ChestedHorse) entity;
                 chestedHorse.setCarryingChest(conf.getBoolean("chest"));
             }
