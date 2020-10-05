@@ -1,7 +1,10 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,7 +23,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public abstract class BatteryBox extends BaseSTBMachine {
 
-    private final Map<BlockFace, EnergyFlow> energyFlow = new HashMap<>();
+    private final Map<BlockFace, EnergyFlow> energyFlow = new EnumMap<>(BlockFace.class);
 
     protected BatteryBox() {
         for (BlockFace face : STBUtil.directFaces) {
@@ -42,8 +45,8 @@ public abstract class BatteryBox extends BaseSTBMachine {
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
 
-        for (BlockFace face : energyFlow.keySet()) {
-            conf.set("flow." + face, energyFlow.get(face).toString());
+        for (Map.Entry<BlockFace, EnergyFlow> entry : energyFlow.entrySet()) {
+            conf.set("flow." + entry.getKey(), entry.getValue().toString());
         }
 
         return conf;
@@ -51,17 +54,20 @@ public abstract class BatteryBox extends BaseSTBMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[0]; // no input
+        // no input
+        return new int[0];
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0]; // no output
+        // no output
+        return new int[0];
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[0]; // no upgrades
+        // no upgrades
+        return new int[0];
     }
 
     @Override
@@ -116,7 +122,8 @@ public abstract class BatteryBox extends BaseSTBMachine {
         return gui;
     }
 
-    public EnergyFlow getEnergyFlow(BlockFace face) {
+    @Nullable
+    public EnergyFlow getEnergyFlow(@Nonnull BlockFace face) {
         return energyFlow.get(face);
     }
 

@@ -79,7 +79,8 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[0]; // maybe one day
+        // maybe one day
+        return new int[0];
     }
 
     @Override
@@ -297,12 +298,14 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     @Override
     public void onInteractBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+
         if (event.getItem() == null && event.getAction() == Action.LEFT_CLICK_BLOCK && player.isSneaking()) {
             ItemStack stack = extractItems(event.getBlockFace(), null, 1, event.getPlayer().getUniqueId());
+
             if (stack != null) {
                 Block block = event.getClickedBlock();
                 block.getWorld().dropItemNaturally(block.getLocation(), stack);
-                player.playSound(block.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.6f);
+                player.playSound(block.getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 0.6F);
             }
         }
         super.onInteractBlock(event);
@@ -351,14 +354,17 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         byte lightFromSky = b.getLightFromSky();
 
         if (lightFromSky < 14) {
-            newLight = 0; // block is excessively shaded
+            // block is excessively shaded
+            newLight = 0;
         }
         else if (lightFromSky < 15) {
-            newLight--; // partially shaded
+            // partially shaded
+            newLight--;
         }
 
         if (b.getWorld().hasStorm()) {
-            newLight -= 3; // raining: big efficiency drop
+            // raining: big efficiency drop
+            newLight -= 3;
         }
 
         if (newLight < 0) {

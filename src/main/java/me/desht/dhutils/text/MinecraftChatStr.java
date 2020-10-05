@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.text;
 
 /*
  * character widths taken from Help's MinecraftFontWidthCalculator

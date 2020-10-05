@@ -216,7 +216,8 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         int n = 0;
         for (ItemStack stack : filter.getFilterList()) {
             inv.setItem(filterSlots[n], stack);
-            if (++n >= filterSlots.length) {
+            n++;
+            if (n >= filterSlots.length) {
                 break;
             }
         }

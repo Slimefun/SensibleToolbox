@@ -53,7 +53,8 @@ public class IDTracker {
     }
 
     private int getNextID() {
-        int id = nextID++;
+        int id = nextID;
+        nextID++;
         save();
         return id;
     }

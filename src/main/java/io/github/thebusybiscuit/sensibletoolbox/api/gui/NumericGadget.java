@@ -113,6 +113,6 @@ public class NumericGadget extends ClickableGadget {
          *            the proposed new value
          * @return true if the new value should be accepted; false otherwise
          */
-        public boolean run(int newValue);
+        boolean run(int newValue);
     }
 }

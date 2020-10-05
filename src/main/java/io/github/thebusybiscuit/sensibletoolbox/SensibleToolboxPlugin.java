@@ -166,16 +166,16 @@ import io.github.thebusybiscuit.sensibletoolbox.listeners.SoundMufflerListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.TrashCanListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.WorldListener;
 import io.github.thebusybiscuit.sensibletoolbox.slimefun.SlimefunBridge;
+import io.github.thebusybiscuit.sensibletoolbox.util.ItemGlow;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.ItemGlow;
-import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.MessagePager;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.CommandManager;
 import me.desht.dhutils.configuration.ConfigurationListener;
 import me.desht.dhutils.configuration.ConfigurationManager;
+import me.desht.dhutils.text.LogUtils;
+import me.desht.dhutils.text.MessagePager;
 
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 

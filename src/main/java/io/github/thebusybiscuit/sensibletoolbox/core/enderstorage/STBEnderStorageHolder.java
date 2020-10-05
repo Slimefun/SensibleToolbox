@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.core.enderstorage;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHol
 import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public abstract class STBEnderStorageHolder implements EnderStorageHolder {
 
@@ -53,23 +53,22 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
     }
 
     void saveInventory() {
-        final String encoded = BukkitSerialization.toBase64(getInventory());
-        final File saveFile = getSaveFile();
-        Bukkit.getScheduler().runTaskAsynchronously(SensibleToolboxPlugin.getInstance(), new Runnable() {
+        String encoded = BukkitSerialization.toBase64(getInventory());
+        File saveFile = getSaveFile();
 
-            @Override
-            public void run() {
-                try {
-                    File dir = saveFile.getParentFile();
-                    if (!dir.exists()) {
-                        getManager().mkdir(dir);
-                    }
-                    Files.write(encoded, saveFile, Charset.forName("UTF-8"));
-                    Debugger.getInstance().debug("saved " + this + " to " + saveFile);
+        Bukkit.getScheduler().runTaskAsynchronously(SensibleToolboxPlugin.getInstance(), () -> {
+            try {
+                File dir = saveFile.getParentFile();
+
+                if (!dir.exists()) {
+                    getManager().mkdir(dir);
                 }
-                catch (IOException e) {
-                    LogUtils.severe("Can't save ender storage " + this + ": " + e.getMessage());
-                }
+
+                Files.write(encoded, saveFile, StandardCharsets.UTF_8);
+                Debugger.getInstance().debug("saved " + this + " to " + saveFile);
+            }
+            catch (IOException e) {
+                LogUtils.severe("Can't save ender storage " + this + ": " + e.getMessage());
             }
         });
     }
@@ -79,6 +78,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
         return frequency;
     }
 
+    @Nonnull
     public EnderStorageManager getManager() {
         return manager;
     }
@@ -125,8 +125,10 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
         getManager().setChanged(this);
     }
 
+    @Nonnull
     public abstract File getSaveFile();
 
+    @Nonnull
     public abstract String getInventoryTitle();
 
     @Override

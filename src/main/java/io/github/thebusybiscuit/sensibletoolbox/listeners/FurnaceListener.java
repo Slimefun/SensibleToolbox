@@ -30,7 +30,7 @@ public class FurnaceListener extends STBBaseListener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onFurnaceInsert(final InventoryClickEvent event) {
+    public void onFurnaceInsert(InventoryClickEvent event) {
         if (event.getInventory().getType() != InventoryType.FURNACE) {
             return;
         }
@@ -95,6 +95,7 @@ public class FurnaceListener extends STBBaseListener {
         // this ensures that an STB item smelted in a furnace leaves the
         // correct result in the furnace's output slot
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getSource());
+
         if (item != null) {
             event.setResult(item.getSmeltingResult());
         }
@@ -102,6 +103,7 @@ public class FurnaceListener extends STBBaseListener {
 
     private boolean validateSmeltingIngredient(ItemStack stack) {
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
+
         if (item != null) {
             return item.getSmeltingResult() != null;
         }

@@ -14,6 +14,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Cat.Type;
@@ -40,8 +41,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.PermissionUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public class EnderLeash extends BaseSTBItem {
 
@@ -87,7 +87,8 @@ public class EnderLeash extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Capture and store one peaceful animal", "Right-click: " + ChatColor.WHITE + "capture/release animal" };
+        return new String[] { "Capture and store one peaceful animal",
+            "Right-click: " + ChatColor.WHITE + "capture/release animal" };
     }
 
     @Override
@@ -135,11 +136,14 @@ public class EnderLeash extends BaseSTBItem {
     }
 
     private boolean verifyOwner(Player player, Animals animal) {
-        if (animal instanceof Tameable && ((Tameable) animal).getOwner() != null) {
-            if (((Tameable) animal).getOwner().getUniqueId() != player.getUniqueId()) {
-                return PermissionUtils.isAllowedTo(player, "stb.enderleash.captureany");
+        if (animal instanceof Tameable)  {
+            AnimalTamer owner = ((Tameable) animal).getOwner();
+
+            if (owner.getUniqueId() != player.getUniqueId()) {
+                return player.hasPermission("stb.enderleash.captureany");
             }
         }
+
         return true;
     }
 
@@ -165,6 +169,7 @@ public class EnderLeash extends BaseSTBItem {
                 if (System.currentTimeMillis() - capturedConf.getLong("captureTime") < MIN_THAW_DELAY) {
                     return;
                 }
+
                 Block where = event.getClickedBlock().getRelative(event.getBlockFace());
                 EntityType type = EntityType.valueOf(capturedConf.getString("type"));
                 Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
@@ -231,8 +236,9 @@ public class EnderLeash extends BaseSTBItem {
             }
             else if (target instanceof ChestedHorse) {
                 ChestedHorse chestedHorse = (ChestedHorse) target;
-                conf.set("chest",chestedHorse.isCarryingChest());
+                conf.set("chest", chestedHorse.isCarryingChest());
             }
+
             AbstractHorse h = (AbstractHorse) target;
             conf.set("jumpStrength", h.getJumpStrength());
             conf.set("domestication", h.getDomestication());
@@ -287,7 +293,7 @@ public class EnderLeash extends BaseSTBItem {
         case DONKEY:
         case ZOMBIE_HORSE:
         case SKELETON_HORSE:
-            if (entity instanceof  Horse) {
+            if (entity instanceof Horse) {
                 Horse h = (Horse) entity;
                 h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
                 h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
@@ -295,10 +301,12 @@ public class EnderLeash extends BaseSTBItem {
                 ChestedHorse chestedHorse = (ChestedHorse) entity;
                 chestedHorse.setCarryingChest(conf.getBoolean("chest"));
             }
+
             AbstractHorse abstractHorse = (AbstractHorse) entity;
             abstractHorse.setJumpStrength(conf.getDouble("jumpStrength"));
             abstractHorse.setDomestication(conf.getInt("domestication"));
             abstractHorse.setMaxDomestication(conf.getInt("maxDomestication"));
+
             try {
                 Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
                 for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {

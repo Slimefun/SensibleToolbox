@@ -5,8 +5,8 @@ import javax.annotation.Nonnull;
 import com.google.common.base.Joiner;
 
 /**
- * Represents a single command record: command plus subcommands. A command object
- * contains one or more of these records.
+ * Represents a single command record: command plus subcommands.
+ * A command object contains one or more of these records.
  * 
  * @author desht
  */

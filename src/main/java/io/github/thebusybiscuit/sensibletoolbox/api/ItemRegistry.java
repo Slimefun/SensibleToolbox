@@ -11,6 +11,8 @@ import java.util.Set;
 /**
  * An interface to the STB item registry system, allow registration
  * of new STB items and obtaining existing items.
+ * 
+ * @author desht
  */
 public interface ItemRegistry {
 
@@ -24,7 +26,7 @@ public interface ItemRegistry {
      * @throws java.lang.IllegalArgumentException
      *             if the supplied item is invalid in some way
      */
-    void registerItem(BaseSTBItem item, Plugin plugin);
+    <T extends BaseSTBItem> void registerItem(T item, Plugin plugin);
 
     /**
      * Register the given item as a Sensible Toolbox item.
@@ -45,7 +47,7 @@ public interface ItemRegistry {
      * @throws java.lang.IllegalArgumentException
      *             if the supplied item is invalid in some way
      */
-    void registerItem(BaseSTBItem item, Plugin plugin, String configPrefix);
+    <T extends BaseSTBItem> void registerItem(T item, Plugin plugin, String configPrefix);
 
     /**
      * Register the given item as a Sensible Toolbox item.
@@ -73,7 +75,7 @@ public interface ItemRegistry {
      * @throws java.lang.IllegalArgumentException
      *             if the supplied item is invalid in some way
      */
-    void registerItem(BaseSTBItem item, Plugin plugin, String configPrefix, String permissionPrefix);
+    <T extends BaseSTBItem> void registerItem(T item, Plugin plugin, String configPrefix, String permissionPrefix);
 
     /**
      * Get a set of all known STB item ID's.
