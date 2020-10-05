@@ -109,7 +109,7 @@ public class EnderLeash extends BaseSTBItem {
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         Entity target = event.getRightClicked();
         Player player = event.getPlayer();
-        if (event.getHand()==EquipmentSlot.HAND && target instanceof Animals && isPassive(target) && player.getInventory().getItemInMainHand().getAmount() == 1) {
+        if (event.getHand() == EquipmentSlot.HAND && target instanceof Animals && isPassive(target) && player.getInventory().getItemInMainHand().getAmount() == 1) {
             if (capturedConf == null || !capturedConf.contains("type")) {
                 Animals animal = (Animals) target;
                 if (!checkLeash(animal)) {
@@ -162,7 +162,7 @@ public class EnderLeash extends BaseSTBItem {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getClickedBlock().getType().isInteractable()) {
             if (capturedConf != null && capturedConf.contains("type")) {
                 // Check enough time has passed since freezing entity
-                if(System.currentTimeMillis() - capturedConf.getLong("captureTime") < MIN_THAW_DELAY) {
+                if (System.currentTimeMillis() - capturedConf.getLong("captureTime") < MIN_THAW_DELAY) {
                     return;
                 }
                 Block where = event.getClickedBlock().getRelative(event.getBlockFace());
@@ -202,31 +202,34 @@ public class EnderLeash extends BaseSTBItem {
 
         switch (target.getType()) {
         case SHEEP:
-            conf.set("sheared", ((Sheep) target).isSheared());
-            conf.set("color", ((Sheep) target).getColor().toString());
+            Sheep sheep = (Sheep) target;
+            conf.set("sheared", sheep.isSheared());
+            conf.set("color", sheep.getColor().toString());
             break;
         case CAT:
-            conf.set("catType", ((Cat) target).getCatType().toString());
-            conf.set("collarColor", ((Cat) target).getCollarColor().toString());
+            Cat cat = (Cat) target;
+            conf.set("catType", cat.getCatType().toString());
+            conf.set("collarColor", cat.getCollarColor().toString());
             break;
         case PIG:
             conf.set("saddled", ((Pig) target).hasSaddle());
             break;
         case WOLF:
-            conf.set("collarColor", ((Wolf) target).getCollarColor().toString());
-            conf.set("sitting", ((Wolf) target).isSitting());
+            Wolf wolf = (Wolf) target;
+            conf.set("collarColor", wolf.getCollarColor().toString());
+            conf.set("sitting", wolf.isSitting());
             break;
         case HORSE:
         case MULE:
         case DONKEY:
         case ZOMBIE_HORSE:
         case SKELETON_HORSE:
-            if(target instanceof Horse){
+            if (target instanceof Horse) {
                 Horse horse = (Horse) target;
                 conf.set("horseStyle", horse.getStyle().toString());
                 conf.set("horseColor", horse.getColor().toString());
             }
-            if(target instanceof ChestedHorse) {
+            else if (target instanceof ChestedHorse) {
                 ChestedHorse chestedHorse = (ChestedHorse) target;
                 conf.set("chest",chestedHorse.isCarryingChest());
             }
@@ -265,16 +268,19 @@ public class EnderLeash extends BaseSTBItem {
             ((Pig) entity).setSaddle(conf.getBoolean("saddled"));
             break;
         case SHEEP:
-            ((Sheep) entity).setSheared(conf.getBoolean("sheared"));
-            ((Sheep) entity).setColor(DyeColor.valueOf(conf.getString("color")));
+            Sheep sheep = (Sheep) entity;
+            sheep.setSheared(conf.getBoolean("sheared"));
+            sheep.setColor(DyeColor.valueOf(conf.getString("color")));
             break;
         case CAT:
-            ((Cat) entity).setCatType(Type.valueOf(conf.getString("catType")));
-            ((Cat) entity).setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
+            Cat cat = (Cat) entity;
+            cat.setCatType(Type.valueOf(conf.getString("catType")));
+            cat.setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
             break;
         case WOLF:
-            ((Wolf) entity).setSitting(conf.getBoolean("sitting"));
-            ((Wolf) entity).setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
+            Wolf wolf = (Wolf) entity;
+            wolf.setSitting(conf.getBoolean("sitting"));
+            wolf.setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
             break;
         case HORSE:
         case MULE:
@@ -285,8 +291,7 @@ public class EnderLeash extends BaseSTBItem {
                 Horse h = (Horse) entity;
                 h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
                 h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-            }
-            if(entity instanceof ChestedHorse) {
+            } else if (entity instanceof ChestedHorse) {
                 ChestedHorse chestedHorse = (ChestedHorse) entity;
                 chestedHorse.setCarryingChest(conf.getBoolean("chest"));
             }
