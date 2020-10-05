@@ -1,5 +1,8 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -49,7 +52,9 @@ public class AutoBuilder extends BaseSTBMachine {
     private int buildX;
     private int buildY;
     private int buildZ;
-    private int invSlot; // the inventory slot index (into getInputSlots()) being pulled from
+
+    // the inventory slot index (into getInputSlots()) being pulled from
+    private int invSlot;
     private BuilderStatus status = BuilderStatus.NO_WORKAREA;
     private int baseScuPerOp;
 
@@ -183,11 +188,13 @@ public class AutoBuilder extends BaseSTBMachine {
         return gui;
     }
 
+    @Nonnull
     public AutoBuilderMode getBuildMode() {
         return buildMode;
     }
 
-    public void setBuildMode(AutoBuilderMode buildMode) {
+    public void setBuildMode(@Nonnull AutoBuilderMode buildMode) {
+        Validate.notNull(buildMode, "The Build mode cannot be null");
         this.buildMode = buildMode;
         setStatus(workArea == null ? BuilderStatus.NO_WORKAREA : BuilderStatus.READY);
     }
@@ -232,11 +239,14 @@ public class AutoBuilder extends BaseSTBMachine {
         return false;
     }
 
+    @Nonnull
     public BuilderStatus getStatus() {
         return status;
     }
 
-    private void setStatus(BuilderStatus status) {
+    private void setStatus(@Nonnull BuilderStatus status) {
+        Validate.notNull(status, "The Status cannot be null");
+
         if (status != this.status) {
             this.status = status;
             ChatColor c = STBUtil.dyeColorToChatColor(status.getColor());
@@ -550,16 +560,13 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     @Override
-    public void onGUIOpened(HumanEntity player) {}
-
-    @Override
     public void onGUIClosed(HumanEntity player) {
         if (player instanceof Player) {
             highlightWorkArea((Player) player);
         }
     }
 
-    private void highlightWorkArea(Player p) {
+    private void highlightWorkArea(@Nonnull Player p) {
         if (workArea != null) {
             Block[] corners = workArea.corners();
 
@@ -592,7 +599,7 @@ public class AutoBuilder extends BaseSTBMachine {
         return label;
     }
 
-    public enum AutoBuilderMode {
+    private enum AutoBuilderMode {
 
         CLEAR(-1),
         FILL(1),
@@ -601,7 +608,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
         private final int yDirection;
 
-        private AutoBuilderMode(int yDir) {
+        AutoBuilderMode(int yDir) {
             this.yDirection = yDir;
         }
 
@@ -610,7 +617,7 @@ public class AutoBuilder extends BaseSTBMachine {
         }
     }
 
-    public enum BuilderStatus {
+    private enum BuilderStatus {
 
         READY(DyeColor.LIME, "Ready to Operate!"),
         NO_WORKAREA(DyeColor.YELLOW, "No work area has", "been defined yet"),
@@ -626,19 +633,22 @@ public class AutoBuilder extends BaseSTBMachine {
         private final DyeColor color;
         private final String[] text;
 
-        BuilderStatus(DyeColor color, String... label) {
+        BuilderStatus(@Nonnull DyeColor color, String... label) {
             this.color = color;
             this.text = label;
         }
 
+        @Nonnull
         public String[] getText() {
             return text;
         }
 
+        @Nonnull
         public ItemStack makeTexture() {
             return new ItemStack(MaterialCollections.getAllWoolColors().get(color.ordinal()));
         }
 
+        @Nonnull
         public DyeColor getColor() {
             return color;
         }
@@ -650,7 +660,7 @@ public class AutoBuilder extends BaseSTBMachine {
         }
     }
 
-    public class AutoBuilderGadget extends CyclerGadget<AutoBuilderMode> {
+    private class AutoBuilderGadget extends CyclerGadget<AutoBuilderMode> {
 
         protected AutoBuilderGadget(InventoryGUI gui, int slot) {
             super(gui, slot, "Build Mode");
