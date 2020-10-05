@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.cscorelib2.data.PersistentDataAPI;
@@ -107,7 +108,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *            the action to take
      * @return true if the player has permission to take the action; false otherwise
      */
-    public final boolean checkPlayerPermission(Player player, ItemAction action) {
+    public final boolean checkPlayerPermission(@Nonnull Permissible player, @Nonnull ItemAction action) {
         String prefix = SensibleToolboxPlugin.getInstance().getItemRegistry().getPermissionPrefix(this);
         Validate.notNull(prefix, "Can't determine permission node prefix for " + getItemTypeID());
         return player.hasPermission(prefix + "." + action.getNode() + "." + getItemTypeID());

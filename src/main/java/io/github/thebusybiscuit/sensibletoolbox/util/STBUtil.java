@@ -46,8 +46,7 @@ public final class STBUtil {
     /**
      * The version of minecraft the server is running (The second number e.g. 1.16.2 gives 16)
      */
-    public static final int minecraftVersion = Integer.parseInt(
-        SensibleToolboxPlugin.getInstance().getServer().getClass().getPackage().getName().replace(".",",").split(",")[3].substring(1).split("_")[1]);
+    public static final int minecraftVersion = Integer.parseInt(SensibleToolboxPlugin.getInstance().getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1).split("_")[1]);
 
     /**
      * The block faces directly adjacent to a block.
@@ -734,31 +733,31 @@ public final class STBUtil {
      * Get the wall sign version of the sign material e.g. OAK_SIGN -> OAK_WALL_SIGN
      *
      * @param signType
-     *                 The material of the sign
+     *            The material of the sign
      * @return The wall sign version of that sign
      */
     @Nullable
     public static Material getWallSign(@Nonnull Material signType) {
         Validate.notNull(signType, "The Sign Type cannot be null");
-        if(minecraftVersion >= 16){
-            if(signType==Material.CRIMSON_SIGN) return Material.CRIMSON_WALL_SIGN;
-            else if(signType==Material.WARPED_SIGN) return Material.WARPED_WALL_SIGN;
+        if (minecraftVersion >= 16) {
+            if (signType == Material.CRIMSON_SIGN) return Material.CRIMSON_WALL_SIGN;
+            else if (signType == Material.WARPED_SIGN) return Material.WARPED_WALL_SIGN;
         }
         switch (signType) {
-            case OAK_SIGN:
-                return Material.OAK_WALL_SIGN;
-            case SPRUCE_SIGN:
-                return Material.SPRUCE_WALL_SIGN;
-            case BIRCH_SIGN:
-                return Material.BIRCH_WALL_SIGN;
-            case JUNGLE_SIGN:
-                return Material.JUNGLE_WALL_SIGN;
-            case ACACIA_SIGN:
-                return Material.ACACIA_WALL_SIGN;
-            case DARK_OAK_SIGN:
-                return Material.DARK_OAK_WALL_SIGN;
-            default:
-                return null;
+        case OAK_SIGN:
+            return Material.OAK_WALL_SIGN;
+        case SPRUCE_SIGN:
+            return Material.SPRUCE_WALL_SIGN;
+        case BIRCH_SIGN:
+            return Material.BIRCH_WALL_SIGN;
+        case JUNGLE_SIGN:
+            return Material.JUNGLE_WALL_SIGN;
+        case ACACIA_SIGN:
+            return Material.ACACIA_WALL_SIGN;
+        case DARK_OAK_SIGN:
+            return Material.DARK_OAK_WALL_SIGN;
+        default:
+            return null;
         }
     }
 }

@@ -581,7 +581,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                     Block signBlock = b.getRelative(STBUtil.getRotatedFace(getFacing(), rotation));
 
                     if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
-                        signTypes.put(rotation,signBlock.getType());
+                        signTypes.put(rotation, signBlock.getType());
                         signBlock.setType(Material.AIR);
                     }
                 }
@@ -590,13 +590,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), () -> {
             Block b = newLoc.getBlock();
-            for (Entry<Integer, Material> entry: signTypes.entrySet()) {
+            for (Entry<Integer, Material> entry : signTypes.entrySet()) {
                 int rotation = entry.getKey();
                 if (labelSigns.get(rotation)) {
                     BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
                     Block signBlock = b.getRelative(face);
 
-                    if(!placeLabelSign(signBlock, face, entry.getValue())){
+                    if (!placeLabelSign(signBlock, face, entry.getValue())) {
                         labelSigns.set(rotation, false);
                     }
                 }
@@ -945,7 +945,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 Block signBlock = b.getRelative(face);
                 Material signType = signBlock.getType();
                 // Unsure if signBlock will have the correct type at this stage
-                if(!Tag.WALL_SIGNS.isTagged(signType)) signType = Material.OAK_WALL_SIGN;
+                if (!Tag.WALL_SIGNS.isTagged(signType)) signType = Material.OAK_WALL_SIGN;
 
                 if (!placeLabelSign(signBlock, face, signType)) {
                     rescanNeeded = true;
@@ -986,7 +986,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         }
 
         Material signType = STBUtil.getWallSign(event.getPlayer().getInventory().getItemInMainHand().getType());
-        if(signType==null){
+        if (signType == null) {
             Debugger.getInstance().debug("Unsupported sign type: " + event.getPlayer().getInventory().getItemInMainHand().getType().toString());
             return false;
         }
@@ -1015,7 +1015,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.OAK_SIGN));
             return false;
         }
-        else if(!Tag.SIGNS.isTagged(signType)){
+        else if (!Tag.SIGNS.isTagged(signType)) {
             Debugger.getInstance().debug(this + ": can't place label sign as " + signType.toString() + " is not a valid sign");
             return false;
         }

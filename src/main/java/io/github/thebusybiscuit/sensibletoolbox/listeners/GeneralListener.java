@@ -301,7 +301,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         Debugger.getInstance().debug("resulting item: " + event.getInventory().getResult());
-        
+
         if (event.getRecipe() == null) {
             return;
         }

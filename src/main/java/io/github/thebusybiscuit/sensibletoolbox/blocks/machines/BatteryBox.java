@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.bukkit.block.BlockFace;
@@ -20,7 +20,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 
 public abstract class BatteryBox extends BaseSTBMachine {
 
-    private final Map<BlockFace, EnergyFlow> energyFlow = new HashMap<>();
+    private final Map<BlockFace, EnergyFlow> energyFlow = new EnumMap<>(BlockFace.class);
 
     protected BatteryBox() {
         for (BlockFace face : STBUtil.directFaces) {
@@ -42,8 +42,8 @@ public abstract class BatteryBox extends BaseSTBMachine {
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
 
-        for (BlockFace face : energyFlow.keySet()) {
-            conf.set("flow." + face, energyFlow.get(face).toString());
+        for (Map.Entry<BlockFace, EnergyFlow> entry : energyFlow.entrySet()) {
+            conf.set("flow." + entry.getKey(), entry.getValue().toString());
         }
 
         return conf;

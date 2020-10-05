@@ -546,8 +546,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                             Block block = b.getRelative(x, y, z);
 
                             if ((x != 0 || y != 0 || z != 0) && block.getType() == rec.source && STBUtil.isExposed(block)) {
-                                if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target,
-                                    rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
+                                if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
                                     return;
                                 }
                             }

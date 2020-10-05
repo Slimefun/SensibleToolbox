@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
@@ -14,6 +17,8 @@ import me.desht.dhutils.MiscUtil;
 
 /**
  * Represents the custom recipes known by a specific type of machine.
+ * 
+ * @author desht
  */
 public class CustomRecipeCollection {
 
@@ -28,7 +33,8 @@ public class CustomRecipeCollection {
      *            if true, add another recipe with the ingredients
      *            wildcarded (data value ignored)
      */
-    public void addCustomRecipe(CustomRecipe recipe, boolean allowWild) {
+    public void addCustomRecipe(@Nonnull CustomRecipe recipe, boolean allowWild) {
+        Validate.notNull(recipe, "A custom recipe cannot be null");
         String key = recipe.makeKey(false);
         ProcessingResult pr = new ProcessingResult(recipe.getResult(), recipe.getProcessingTime());
         recipes.put(key, pr);
@@ -46,7 +52,7 @@ public class CustomRecipeCollection {
      * @param recipe
      *            the custom recipe to add
      */
-    public void addCustomRecipe(CustomRecipe recipe) {
+    public void addCustomRecipe(@Nonnull CustomRecipe recipe) {
         addCustomRecipe(recipe, false);
     }
 

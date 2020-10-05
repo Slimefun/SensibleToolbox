@@ -3,6 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 import java.util.Arrays;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -53,6 +55,7 @@ public class SCURelay extends BatteryBox {
         }
     }
 
+    @Nonnull
     private IDTracker getTracker() {
         return ((SensibleToolboxPlugin) getProviderPlugin()).getScuRelayIDTracker();
     }
@@ -168,18 +171,6 @@ public class SCURelay extends BatteryBox {
             super.onInteractItem(event);
         }
     }
-
-    // @Override
-    // public void onInteractBlock(PlayerInteractEvent event) {
-    // if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-    // for (Map.Entry<Integer, RelayData> e : relayMap.entrySet()) {
-    // System.out.println(e.getKey() + ": charge = " + e.getValue().chargeLevel);
-    // System.out.println(" " + e.getValue().block1);
-    // System.out.println(" " + e.getValue().block2);
-    // }
-    // }
-    // super.onInteractBlock(event);
-    // }
 
     @Override
     public int[] getInputSlots() {
@@ -380,7 +371,7 @@ public class SCURelay extends BatteryBox {
         super.onBlockUnregistered(loc);
     }
 
-    private void updateInfoLabels(RelayData relayData) {
+    private void updateInfoLabels(@Nonnull RelayData relayData) {
         if (relayData.block1 != null) {
             relayData.block1.updateInfoLabel(relayData);
         }
@@ -392,9 +383,9 @@ public class SCURelay extends BatteryBox {
 
     private class RelayData {
 
-        SCURelay block1;
-        SCURelay block2;
-        double chargeLevel;
+        private SCURelay block1;
+        private SCURelay block2;
+        private double chargeLevel;
 
     }
 }

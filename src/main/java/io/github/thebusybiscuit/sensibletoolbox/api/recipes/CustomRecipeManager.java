@@ -1,16 +1,25 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
-
-import java.util.*;
 
 /**
  * This class manages custom recipes known to STB. A custom recipe requires a
  * machine (object which subclasses BaseSTBMachine) to produce the result.
  * Custom recipes may be shaped (ShapedCustomRecipe) or more commonly
  * shapeless (ShapelessCustomRecipe).
+ * 
+ * @author desht
  */
 public class CustomRecipeManager {
 
@@ -26,16 +35,13 @@ public class CustomRecipeManager {
      *
      * @return the custom recipe manager instance
      */
+    @Nonnull
     public static synchronized CustomRecipeManager getManager() {
         if (instance == null) {
             instance = new CustomRecipeManager();
         }
-        return instance;
-    }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+        return instance;
     }
 
     /**
@@ -46,18 +52,23 @@ public class CustomRecipeManager {
      * @param allowWild
      *            allow wildcarded data values
      */
-    public void addCustomRecipe(CustomRecipe recipe, boolean allowWild) {
+    public void addCustomRecipe(@Nonnull CustomRecipe recipe, boolean allowWild) {
+        Validate.notNull(recipe, "A custom recipe cannot be null");
         CustomRecipeCollection collection = map.get(recipe.getProcessorID());
+
         if (collection == null) {
             collection = new CustomRecipeCollection();
             map.put(recipe.getProcessorID(), collection);
         }
+
         collection.addCustomRecipe(recipe, allowWild);
 
         ItemStack result = makeSingle(recipe.getResult());
+
         if (!reverseMap.containsKey(result)) {
             reverseMap.put(result, new ArrayList<>());
         }
+
         reverseMap.get(result).add(recipe);
     }
 
@@ -67,7 +78,7 @@ public class CustomRecipeManager {
      * @param recipe
      *            the recipe to add
      */
-    public void addCustomRecipe(CustomRecipe recipe) {
+    public void addCustomRecipe(@Nonnull CustomRecipe recipe) {
         addCustomRecipe(recipe, false);
     }
 
@@ -78,7 +89,7 @@ public class CustomRecipeManager {
      *            the item for which to find recipes for
      * @return a list of custom recipes which can make the given item
      */
-    public List<CustomRecipe> getRecipesFor(ItemStack result) {
+    public List<CustomRecipe> getRecipesFor(@Nonnull ItemStack result) {
         List<CustomRecipe> res = reverseMap.get(makeSingle(result));
         return res == null ? new ArrayList<>() : new ArrayList<>(res);
     }
@@ -117,11 +128,13 @@ public class CustomRecipeManager {
      *
      * @return a set of items
      */
+    @Nonnull
     public Set<ItemStack> getAllResults() {
         return reverseMap.keySet();
     }
 
-    private static ItemStack makeSingle(ItemStack stack) {
+    @Nonnull
+    private static ItemStack makeSingle(@Nonnull ItemStack stack) {
         ItemStack stack2 = stack.clone();
         stack2.setAmount(1);
         return stack2;
