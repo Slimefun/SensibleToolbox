@@ -37,6 +37,6 @@ public final class HoloMessage {
         v.setY(0).multiply(-0.8).add(new Vector(0.5, 0.8, 0.5));
 
         Hologram h = HologramsAPI.createHologram(SensibleToolboxPlugin.getInstance(), loc.add(v));
-        SensibleToolboxPlugin.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(SensibleToolboxPlugin.getInstance(), () -> h.delete(), SensibleToolboxPlugin.getInstance().getConfig().getInt("holograms.duration-in-seconds"));
+        SensibleToolboxPlugin.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(SensibleToolboxPlugin.getInstance(), h::delete, SensibleToolboxPlugin.getInstance().getConfig().getInt("holograms.duration-in-seconds"));
     }
 }

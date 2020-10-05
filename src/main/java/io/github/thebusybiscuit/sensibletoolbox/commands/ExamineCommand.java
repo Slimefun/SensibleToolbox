@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 import me.desht.dhutils.text.MessagePager;
 
@@ -18,10 +19,14 @@ public class ExamineCommand extends AbstractCommand {
 
     @Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
-        notFromConsole(sender);
+        if (!(sender instanceof Player)) {
+            MiscUtil.errorMessage(sender, "This command can't be run from the console.");
+            return true;
+        }
+
         Player player = (Player) sender;
         MessagePager pager = MessagePager.getPager(sender).clear();
-        pager.add(STBUtil.dumpItemStack(player.getItemInHand()));
+        pager.add(STBUtil.dumpItemStack(player.getInventory().getItemInMainHand()));
         pager.showPage();
         return true;
     }

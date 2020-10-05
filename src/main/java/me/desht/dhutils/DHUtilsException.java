@@ -1,5 +1,6 @@
 package me.desht.dhutils;
 
+@Deprecated
 public class DHUtilsException extends RuntimeException {
 
     /**

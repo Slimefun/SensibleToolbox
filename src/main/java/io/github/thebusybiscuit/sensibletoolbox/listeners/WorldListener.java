@@ -1,41 +1,39 @@
 package io.github.thebusybiscuit.sensibletoolbox.listeners;
 
+import javax.annotation.Nonnull;
+
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 
+/**
+ * This {@link Listener} is responsible for any {@link WorldEvent} and loading or unloading
+ * data for these {@link World Worlds}.
+ * 
+ * @author desht
+ * 
+ * @see LocationManager
+ *
+ */
 public class WorldListener extends STBBaseListener {
 
-    public WorldListener(SensibleToolboxPlugin plugin) {
+    public WorldListener(@Nonnull SensibleToolboxPlugin plugin) {
         super(plugin);
     }
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
-        LocationManager.getManager().worldLoaded(event.getWorld());
+        LocationManager.getManager().loadWorld(event.getWorld());
     }
 
     @EventHandler
     public void onWorldUnLoad(WorldUnloadEvent event) {
-        LocationManager.getManager().worldUnloaded(event.getWorld());
+        LocationManager.getManager().unloadWorld(event.getWorld());
     }
-
-    // @EventHandler(priority = EventPriority.MONITOR)
-    // public void onChunkUnload(ChunkUnloadEvent event) {
-    // for (BaseSTBBlock stb : LocationManager.getManager().get(event.getChunk())) {
-    // stb.onChunkUnload();
-    // }
-    //// System.out.println("chunk unload: " + event.getChunk().toString() + " cancelled = " + event.isCancelled());
-    // }
-    //
-    // @EventHandler(priority = EventPriority.MONITOR)
-    // public void onChunkLoad(ChunkLoadEvent event) {
-    // for (BaseSTBBlock stb : LocationManager.getManager().get(event.getChunk())) {
-    // stb.onChunkLoad();
-    // }
-    //// System.out.println("chunk load: " + event.getChunk().toString());
-    // }
 }

@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.items.RecipeBook;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class RecipeCommand extends AbstractCommand {
@@ -25,7 +26,11 @@ public class RecipeCommand extends AbstractCommand {
 
     @Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
-        notFromConsole(sender);
+        if (!(sender instanceof Player)) {
+            MiscUtil.errorMessage(sender, "This command can't be run from the console.");
+            return true;
+        }
+
         Player player = (Player) sender;
         Inventory inv = player.getInventory();
         RecipeBook book = null;
@@ -38,7 +43,11 @@ public class RecipeCommand extends AbstractCommand {
             }
         }
 
-        Validate.notNull(book, "You must have a Recipe Book in your inventory to search for recipes!");
+        if (book == null) {
+            MiscUtil.errorMessage(sender, "You must have a Recipe Book in your inventory to search for recipes!");
+            return true;
+        }
+
         String filter = args.length > 0 ? args[0] : "";
         book.setInventorySlot(slot);
         book.setRecipeNameFilter(filter);

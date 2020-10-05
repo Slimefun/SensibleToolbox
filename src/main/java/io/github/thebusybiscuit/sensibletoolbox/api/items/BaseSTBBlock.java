@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,6 +38,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.ChatPaginator;
 
+import com.google.common.base.Objects;
+
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
@@ -48,6 +52,7 @@ import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.block.PersistableLocation;
+import me.desht.dhutils.block.RelativePosition;
 
 /**
  * Represents an STB block; an STB item which can be placed as a block in the
@@ -435,18 +440,6 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         return 0;
     }
 
-    // /**
-    // * Called when the chunk that an STB block is in gets loaded.
-    // */
-    // public void onChunkLoad() {
-    // }
-    //
-    // /**
-    // * Called when the chunk that an STB block is in gets unloaded.
-    // */
-    // public void onChunkUnload() {
-    // }
-
     /**
      * Called when an STB block has completely burned away. This is called
      * with EventPriority.MONITOR; do not attempt to cancel this event.
@@ -463,6 +456,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *
      * @return the base block location
      */
+    @Nullable
     public final Location getLocation() {
         return persistableLocation == null ? null : persistableLocation.getLocation();
     }
@@ -474,8 +468,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the direction
      * @return the relative location
      */
-    public final Location getRelativeLocation(BlockFace face) {
-        return getLocation().add(face.getModX(), face.getModY(), face.getModZ());
+    @Nullable
+    public final Location getRelativeLocation(@Nonnull BlockFace face) {
+        Location loc = getLocation();
+
+        if (loc != null) {
+            return loc.add(face.getModX(), face.getModY(), face.getModZ());
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -590,8 +592,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         Bukkit.getScheduler().runTaskLater(SensibleToolboxPlugin.getInstance(), () -> {
             Block b = newLoc.getBlock();
+
             for (Entry<Integer, Material> entry : signTypes.entrySet()) {
                 int rotation = entry.getKey();
+
                 if (labelSigns.get(rotation)) {
                     BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
                     Block signBlock = b.getRelative(face);
@@ -630,7 +634,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         // defer this so it's done after the block is actually placed in the world
         Bukkit.getScheduler().runTask(SensibleToolboxPlugin.getInstance(), () -> {
-            lastPower = getLocation().getBlock().getBlockPower();
+            Location loc = getLocation();
+
+            if (loc != null) {
+                lastPower = loc.getBlock().getBlockPower();
+            }
         });
 
         if (needToScanSigns) {
@@ -680,7 +688,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param facing
      *            the direction that the block should face
      */
-    public final void placeBlock(final Block block, Player player, BlockFace facing) {
+    public final void placeBlock(Block block, Player player, BlockFace facing) {
         setFacing(facing);
         setOwner(player.getUniqueId());
 
@@ -703,7 +711,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            item
      */
     public final void breakBlock(boolean dropItem) {
-        Location baseLoc = this.getLocation();
+        Location baseLoc = getLocation();
+
+        // The block cannot be broken if it hasn't been placed
+        if (baseLoc == null) {
+            return;
+        }
+
         Block origin = baseLoc.getBlock();
 
         pendingRemoval = true;
@@ -762,11 +776,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        BaseSTBBlock that = (BaseSTBBlock) o;
-
-        if (persistableLocation != null ? !persistableLocation.equals(that.persistableLocation) : that.persistableLocation != null) return false;
-
-        return true;
+        return Objects.equal(persistableLocation, ((BaseSTBBlock) o).persistableLocation);
     }
 
     @Override
@@ -792,6 +802,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             if (redraw) {
                 repaint(loc.getBlock());
             }
+
             LocationManager.getManager().updateLocation(loc);
         }
     }
@@ -804,7 +815,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param block
      *            the base (primary) block of this STB block
      */
-    public void repaint(Block block) {
+    public void repaint(@Nonnull Block block) {
         block.setType(getMaterial(), true);
     }
 
@@ -815,6 +826,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *
      * @return the move reaction: one of MOVE, BLOCK, or BREAK
      */
+    @Nonnull
     public PistonMoveReaction getPistonMoveReaction() {
         return PistonMoveReaction.MOVE;
     }
@@ -826,7 +838,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the mode to check
      * @return true if the block supports this behaviour; false otherwise
      */
-    public boolean supportsRedstoneBehaviour(RedstoneBehaviour behaviour) {
+    public boolean supportsRedstoneBehaviour(@Nonnull RedstoneBehaviour behaviour) {
         return true;
     }
 
@@ -835,6 +847,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *
      * @return the GUI object (may be null if this block doesn't have a GUI)
      */
+    @Nullable
     protected InventoryGUI createGUI() {
         return null;
     }
@@ -864,10 +877,12 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     @Override
     public String toString() {
-        return "STB " + getItemName() + " @ " + (getLocation() == null ? "(null)" : formatLocation(getLocation()));
+        Location loc = getLocation();
+        return "STB " + getItemName() + " @ " + (loc == null ? "(null)" : formatLocation(loc));
     }
 
-    private String formatLocation(Location loc) {
+    @Nonnull
+    private String formatLocation(@Nonnull Location loc) {
         return String.format("%d,%d,%d,%s", Integer.valueOf(loc.getBlockX()), Integer.valueOf(loc.getBlockY()), Integer.valueOf(loc.getBlockZ()), loc.getWorld().getName());
     }
 
@@ -880,7 +895,8 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the face to which the sign is attached
      * @return a 4-line string array of sign label text
      */
-    protected String[] getSignLabel(BlockFace face) {
+    @Nonnull
+    protected String[] getSignLabel(@Nonnull BlockFace face) {
         String[] lines = ChatPaginator.wordWrap(makeItemLabel(face), 13);
         String[] res = new String[4];
 
@@ -897,14 +913,17 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     protected void updateAttachedLabelSigns() {
         Location loc = getLocation();
+
         if (loc == null || labelSigns == null || labelSigns.isEmpty()) {
             return;
         }
+
         Block b = loc.getBlock();
         for (int rotation = 0; rotation < 4; rotation++) {
             if (!labelSigns.get(rotation)) {
                 continue;
             }
+
             BlockFace face = STBUtil.getRotatedFace(getFacing(), rotation);
             String[] text = getSignLabel(face);
             Block b1 = b.getRelative(face);
@@ -934,7 +953,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         return persistableLocation != null;
     }
 
-    private void reattachLabelSigns(Location loc) {
+    private void reattachLabelSigns(@Nonnull Location loc) {
         Block b = loc.getBlock();
         boolean rescanNeeded = false;
 
@@ -945,7 +964,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 Block signBlock = b.getRelative(face);
                 Material signType = signBlock.getType();
                 // Unsure if signBlock will have the correct type at this stage
-                if (!Tag.WALL_SIGNS.isTagged(signType)) signType = Material.OAK_WALL_SIGN;
+                if (!Tag.WALL_SIGNS.isTagged(signType)) {
+                    signType = Material.OAK_WALL_SIGN;
+                }
 
                 if (!placeLabelSign(signBlock, face, signType)) {
                     rescanNeeded = true;
@@ -1044,10 +1065,13 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     private void scanForAttachedLabelSigns() {
         labelSigns.clear();
-        if (getLocation() == null) {
+        Location loc = getLocation();
+
+        if (loc == null) {
             return;
         }
-        Block b = getLocation().getBlock();
+
+        Block b = loc.getBlock();
         for (BlockFace face : new BlockFace[] { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH }) {
             Block neighbour = b.getRelative(face);
 
@@ -1076,55 +1100,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     private static final UnicodeSymbol[] faceSymbols = { UnicodeSymbol.SQUARE, UnicodeSymbol.ARROW_RIGHT, UnicodeSymbol.ARROW_DOWN, UnicodeSymbol.ARROW_LEFT };
 
-    private String makeItemLabel(BlockFace face) {
+    @Nonnull
+    private String makeItemLabel(@Nonnull BlockFace face) {
         int rotation = STBUtil.getFaceRotation(getFacing(), face);
         return rotation == 1 ? ChatColor.DARK_BLUE + getItemName() + faceSymbols[rotation].toUnicode() : ChatColor.DARK_BLUE + faceSymbols[rotation].toUnicode() + getItemName();
-    }
-
-    /**
-     * Represents the relative position of an auxiliary block from a
-     * multi-block structure. The position is relative to the block's base
-     * location as returned by {@link BaseSTBBlock#getLocation()} and the
-     * block's orientation as returned by {@link BaseSTBBlock#getFacing()}
-     */
-    public class RelativePosition {
-
-        private final int front;
-        private final int up;
-        private final int left;
-
-        public RelativePosition(int front, int up, int left) {
-            Validate.isTrue(front != 0 || up != 0 || left != 0, "At least one of front, up, left must be non-zero");
-            this.front = front;
-            this.up = up;
-            this.left = left;
-        }
-
-        /**
-         * Get the distance in front of the base block.
-         *
-         * @return the distance in front, may be negative
-         */
-        public int getFront() {
-            return front;
-        }
-
-        /**
-         * Get the distance above of the base block.
-         *
-         * @return the distance above, may be negative
-         */
-        public int getUp() {
-            return up;
-        }
-
-        /**
-         * Get the distance to the left of the base block.
-         *
-         * @return the distance to the left, may be negative
-         */
-        public int getLeft() {
-            return left;
-        }
     }
 }

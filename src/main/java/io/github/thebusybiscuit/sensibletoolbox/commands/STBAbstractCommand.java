@@ -39,8 +39,12 @@ public abstract class STBAbstractCommand extends AbstractCommand {
 
     protected Player getTargetPlayer(CommandSender sender, @Nullable String playerNameOrID) {
         if (playerNameOrID == null) {
-            notFromConsole(sender);
-            return (Player) sender;
+            if (sender instanceof Player) {
+                return (Player) sender;
+            }
+            else {
+                throw new DHUtilsException("This command can't be run from the console.");
+            }
         }
         else if (!sender.hasPermission("stb.friends.other")) {
             throw new DHUtilsException("You are not allowed to do that.");

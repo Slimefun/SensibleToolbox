@@ -107,7 +107,11 @@ public class ShowCommand extends AbstractCommand {
         BaseSTBItem item;
 
         if (locStr.equals(".")) {
-            notFromConsole(sender);
+            if (!(sender instanceof Player)) {
+                MiscUtil.errorMessage(sender, "This command can't be run from the console.");
+                return;
+            }
+
             Player player = (Player) sender;
             // try to show either the held item or the targeted block
             item = SensibleToolbox.getItemRegistry().fromItemStack(player.getItemInHand());

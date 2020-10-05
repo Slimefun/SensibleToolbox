@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import me.desht.dhutils.DHUtilsException;
+import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
 public class SoundCommand extends AbstractCommand {
@@ -20,7 +21,11 @@ public class SoundCommand extends AbstractCommand {
 
     @Override
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
-        notFromConsole(sender);
+        if (!(sender instanceof Player)) {
+            MiscUtil.errorMessage(sender, "This command can't be run from the console.");
+            return true;
+        }
+
         try {
             Sound sound = Sound.valueOf(args[0].toUpperCase());
             float volume = args.length > 1 ? Float.parseFloat(args[1]) : 1.0F;

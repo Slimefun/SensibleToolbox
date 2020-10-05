@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,6 +40,8 @@ import me.desht.dhutils.block.BlockUtil;
  * A collection of miscellaneous utility methods.
  */
 public final class STBUtil {
+
+    private static final Pattern NUMBERS_PATTERN = Pattern.compile("[0-9]+");
 
     private STBUtil() {}
 
@@ -738,10 +741,16 @@ public final class STBUtil {
     @Nullable
     public static Material getWallSign(@Nonnull Material signType) {
         Validate.notNull(signType, "The Sign Type cannot be null");
+
         if (minecraftVersion >= 16) {
-            if (signType == Material.CRIMSON_SIGN) return Material.CRIMSON_WALL_SIGN;
-            else if (signType == Material.WARPED_SIGN) return Material.WARPED_WALL_SIGN;
+            if (signType == Material.CRIMSON_SIGN) {
+                return Material.CRIMSON_WALL_SIGN;
+            }
+            else if (signType == Material.WARPED_SIGN) {
+                return Material.WARPED_WALL_SIGN;
+            }
         }
+
         switch (signType) {
         case OAK_SIGN:
             return Material.OAK_WALL_SIGN;
@@ -758,5 +767,9 @@ public final class STBUtil {
         default:
             return null;
         }
+    }
+
+    public static boolean isNumber(@Nonnull String text) {
+        return NUMBERS_PATTERN.matcher(text).matches();
     }
 }

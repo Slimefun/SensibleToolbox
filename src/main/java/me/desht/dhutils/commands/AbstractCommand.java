@@ -343,12 +343,6 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         this.quotedArgs = usesQuotedArgs;
     }
 
-    protected void notFromConsole(CommandSender sender) throws DHUtilsException {
-        if (!(sender instanceof Player)) {
-            throw new DHUtilsException("This command can't be run from the console.");
-        }
-    }
-
     protected String combine(String[] args, int idx) {
         return combine(args, idx, args.length - 1);
     }

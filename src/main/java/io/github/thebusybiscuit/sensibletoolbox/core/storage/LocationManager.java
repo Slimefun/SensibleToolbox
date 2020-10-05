@@ -39,7 +39,7 @@ import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.block.PersistableLocation;
 import me.desht.dhutils.text.LogUtils;
 
-public class LocationManager {
+public final class LocationManager {
 
     private static LocationManager instance;
 
@@ -63,7 +63,7 @@ public class LocationManager {
     // a blocking queue is used to pass actual updates over to the DB writer thread
     private final BlockingQueue<UpdateRecord> updateQueue = new LinkedBlockingQueue<>();
 
-    private LocationManager(SensibleToolboxPlugin plugin) throws SQLException {
+    private LocationManager(@Nonnull SensibleToolboxPlugin plugin) throws SQLException {
         saveInterval = plugin.getConfig().getInt("save_interval", 30) * 1000;
         lastSave = System.currentTimeMillis();
 
@@ -79,13 +79,13 @@ public class LocationManager {
         }
 
         updaterTask = new Thread(new DBUpdaterTask(this));
-        updaterTask.start();
     }
 
     public static synchronized LocationManager getManager() {
         if (instance == null) {
             try {
                 instance = new LocationManager(SensibleToolboxPlugin.getInstance());
+                instance.updaterTask.start();
             }
             catch (SQLException e) {
                 e.printStackTrace();
@@ -96,6 +96,7 @@ public class LocationManager {
         return instance;
     }
 
+    @Nonnull
     DBStorage getDbStorage() {
         return dbStorage;
     }
@@ -114,7 +115,8 @@ public class LocationManager {
         Debugger.getInstance().debug(2, "Added ticking block " + stb);
     }
 
-    private Map<String, BaseSTBBlock> getWorldIndex(World w) {
+    @Nonnull
+    private Map<String, BaseSTBBlock> getWorldIndex(@Nonnull World w) {
         Map<String, BaseSTBBlock> index = blockIndex.get(w.getUID());
 
         if (index == null) {
@@ -250,10 +252,12 @@ public class LocationManager {
      */
     public BaseSTBBlock get(Location loc, boolean checkSigns) {
         Block b = loc.getBlock();
+
         if (checkSigns && Tag.WALL_SIGNS.isTagged(b.getType())) {
             WallSign sign = (WallSign) b.getBlockData();
             b = b.getRelative(sign.getFacing().getOppositeFace());
         }
+
         BaseSTBBlock stb = (BaseSTBBlock) STBUtil.getMetadataValue(b, BaseSTBBlock.STB_BLOCK);
 
         if (stb != null) {
@@ -297,8 +301,8 @@ public class LocationManager {
     @SuppressWarnings("unchecked")
     public <T extends BaseSTBBlock> T get(Location loc, Class<T> type, boolean checkSigns) {
         BaseSTBBlock stbBlock = get(loc, checkSigns);
+
         if (stbBlock != null && type.isAssignableFrom(stbBlock.getClass())) {
-            // noinspection unchecked
             return (T) stbBlock;
         }
         else {
@@ -345,9 +349,12 @@ public class LocationManager {
                     }
                     else {
                         PersistableLocation pLoc = stb.getPersistableLocation();
-                        int x = (int) pLoc.getX(), z = (int) pLoc.getZ();
+                        int x = (int) pLoc.getX();
+                        int z = (int) pLoc.getZ();
+
                         if (w.isChunkLoaded(x >> 4, z >> 4)) {
                             stb.tick();
+
                             if (stb.getTicksLived() % stb.getTickRate() == 0) {
                                 stb.onServerTick();
                             }
@@ -356,9 +363,10 @@ public class LocationManager {
                 }
             }
         }
+
         totalTicks++;
         totalTime += System.nanoTime() - now;
-        // System.out.println("tickers took " + (System.nanoTime() - now) + " ns");
+
         if (System.currentTimeMillis() - lastSave > saveInterval) {
             save();
         }
@@ -375,10 +383,12 @@ public class LocationManager {
                     LogUtils.severe("STB block @ " + rec.getLocation() + " is null, but should not be!");
                     continue;
                 }
+
                 if (stb != null) {
                     rec.setType(stb.getItemTypeID());
                     rec.setData(stb.freeze().saveToString());
                 }
+
                 updateQueue.add(rec);
             }
 
@@ -390,17 +400,7 @@ public class LocationManager {
     }
 
     public void loadFromDatabase(@Nonnull World world, @Nullable String wantedType) throws SQLException {
-        ResultSet rs;
-
-        if (wantedType == null) {
-            queryStmt.setString(1, world.getUID().toString());
-            rs = queryStmt.executeQuery();
-        }
-        else {
-            queryTypeStmt.setString(1, world.getUID().toString());
-            queryTypeStmt.setString(2, wantedType);
-            rs = queryTypeStmt.executeQuery();
-        }
+        ResultSet rs = getResultsFor(world, wantedType);
 
         while (rs.next()) {
             String type = rs.getString(5);
@@ -444,13 +444,26 @@ public class LocationManager {
         rs.close();
     }
 
+    @Nonnull
+    private ResultSet getResultsFor(@Nonnull World world, @Nullable String wantedType) throws SQLException {
+        if (wantedType == null) {
+            queryStmt.setString(1, world.getUID().toString());
+            return queryStmt.executeQuery();
+        }
+        else {
+            queryTypeStmt.setString(1, world.getUID().toString());
+            queryTypeStmt.setString(2, wantedType);
+            return queryTypeStmt.executeQuery();
+        }
+    }
+
     public void load() throws SQLException {
         for (World w : Bukkit.getWorlds()) {
             loadFromDatabase(w, null);
         }
     }
 
-    private void deferBlockLoad(String typeID) {
+    private void deferBlockLoad(@Nonnull String typeID) {
         deferredBlocks.add(typeID);
     }
 
@@ -463,7 +476,7 @@ public class LocationManager {
      * @throws SQLException
      *             if there is a problem loading from the DB
      */
-    public void loadDeferredBlocks(String type) throws SQLException {
+    public void loadDeferredBlocks(@Nonnull String type) throws SQLException {
         if (deferredBlocks.contains(type)) {
             for (World world : Bukkit.getWorlds()) {
                 loadFromDatabase(world, type);
@@ -479,7 +492,7 @@ public class LocationManager {
      * @param world
      *            the world that has been unloaded
      */
-    public void worldUnloaded(World world) {
+    public void unloadWorld(@Nonnull World world) {
         save();
 
         Map<String, BaseSTBBlock> map = blockIndex.get(world.getUID());
@@ -496,7 +509,7 @@ public class LocationManager {
      * @param world
      *            the world that has been loaded
      */
-    public void worldLoaded(World world) {
+    public void loadWorld(@Nonnull World world) {
         if (!blockIndex.containsKey(world.getUID())) {
             try {
                 loadFromDatabase(world, null);

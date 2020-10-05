@@ -28,6 +28,7 @@ public class GiveCommand extends AbstractCommand {
     public boolean execute(Plugin plugin, CommandSender sender, String[] args) {
         Player target;
         int amount = 1;
+
         if (args.length >= 3) {
             target = Bukkit.getPlayer(args[2]);
             Validate.notNull(target, "Unknown player: " + args[2]);
@@ -41,7 +42,12 @@ public class GiveCommand extends AbstractCommand {
                     throw new DHUtilsException("Invalid amount: " + args[1]);
                 }
             }
-            notFromConsole(sender);
+
+            if (!(sender instanceof Player)) {
+                MiscUtil.errorMessage(sender, "This command can't be run from the console.");
+                return true;
+            }
+
             target = (Player) sender;
         }
 
@@ -59,7 +65,8 @@ public class GiveCommand extends AbstractCommand {
             return getItemCompletions(plugin, sender, args[0]);
         }
         else if (args.length == 2) {
-            return null; // list players
+            // This will list all online Players
+            return null;
         }
         else {
             return noCompletions(sender);

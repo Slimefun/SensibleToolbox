@@ -17,6 +17,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.block.RelativePosition;
 import me.desht.dhutils.text.LogUtils;
 
 public class ValidateCommand extends STBAbstractCommand {
@@ -57,8 +58,9 @@ public class ValidateCommand extends STBAbstractCommand {
                 fixed.add(b);
             }
 
-            for (BaseSTBBlock.RelativePosition rp : stb.getBlockStructure()) {
+            for (RelativePosition rp : stb.getBlockStructure()) {
                 Block b2 = stb.getAuxiliaryBlock(loc, rp);
+
                 if (repairMeta(plugin, b2, stb, BaseSTBBlock.STB_MULTI_BLOCK)) {
                     fixed.add(b2);
                 }
@@ -69,6 +71,7 @@ public class ValidateCommand extends STBAbstractCommand {
 
     private boolean repairMeta(Plugin plugin, Block b, BaseSTBBlock stb, String key) {
         BaseSTBBlock stb2 = (BaseSTBBlock) STBUtil.getMetadataValue(b, key);
+
         if (stb != stb2) {
             // block's bukkit metadata is wrong or missing
             b.removeMetadata(key, plugin);
@@ -76,6 +79,7 @@ public class ValidateCommand extends STBAbstractCommand {
             LogUtils.info("restored bukkit metadata for STB block " + stb + ", world block: " + b);
             return true;
         }
+
         return false;
     }
 }

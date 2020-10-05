@@ -87,8 +87,7 @@ public class EnderLeash extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Capture and store one peaceful animal",
-            "Right-click: " + ChatColor.WHITE + "capture/release animal" };
+        return new String[] { "Capture and store one peaceful animal", "Right-click: " + ChatColor.WHITE + "capture/release animal" };
     }
 
     @Override
@@ -136,7 +135,7 @@ public class EnderLeash extends BaseSTBItem {
     }
 
     private boolean verifyOwner(Player player, Animals animal) {
-        if (animal instanceof Tameable)  {
+        if (animal instanceof Tameable) {
             AnimalTamer owner = ((Tameable) animal).getOwner();
 
             if (owner.getUniqueId() != player.getUniqueId()) {
