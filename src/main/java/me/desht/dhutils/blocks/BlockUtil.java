@@ -1,4 +1,4 @@
-package me.desht.dhutils.block;
+package me.desht.dhutils.blocks;
 
 import java.util.EnumMap;
 import java.util.List;

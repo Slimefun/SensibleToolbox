@@ -22,8 +22,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorage;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderTunable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 
 public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventoryHolder {
 

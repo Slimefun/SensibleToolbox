@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.util;
+package io.github.thebusybiscuit.sensibletoolbox.utils;
 
 import org.bukkit.World;
 

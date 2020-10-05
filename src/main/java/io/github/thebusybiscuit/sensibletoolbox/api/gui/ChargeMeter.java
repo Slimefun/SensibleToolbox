@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 /**
  * Shows the SCU level for an STB block. The GUI that this gadget is added to

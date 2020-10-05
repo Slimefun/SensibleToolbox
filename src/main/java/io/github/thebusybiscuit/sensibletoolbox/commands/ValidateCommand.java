@@ -14,10 +14,10 @@ import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
-import me.desht.dhutils.block.RelativePosition;
+import me.desht.dhutils.blocks.RelativePosition;
 import me.desht.dhutils.text.LogUtils;
 
 public class ValidateCommand extends STBAbstractCommand {

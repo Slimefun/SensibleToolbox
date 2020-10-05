@@ -18,7 +18,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.recipes.FuelItems;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 public class HeatEngine extends Generator {
 

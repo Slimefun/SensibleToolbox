@@ -8,7 +8,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SubspaceTransponder;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 
 public class HyperSenderModule extends AdvancedSenderModule {
 

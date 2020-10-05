@@ -16,7 +16,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 

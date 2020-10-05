@@ -33,8 +33,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.ToggleButton;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
-import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
 
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
 

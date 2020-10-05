@@ -17,7 +17,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorage;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderTunable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.EnderBox;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 
 public class EnderBag extends BaseSTBItem implements EnderTunable {
 

@@ -1,4 +1,4 @@
-package me.desht.dhutils.block;
+package me.desht.dhutils.blocks;
 
 import org.apache.commons.lang.Validate;
 

@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.core.enderstorage;
 
 import org.bukkit.ChatColor;
 
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 
 import java.io.File;
 

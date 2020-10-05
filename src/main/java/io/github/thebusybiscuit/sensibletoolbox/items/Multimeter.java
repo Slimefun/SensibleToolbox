@@ -16,8 +16,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
-import io.github.thebusybiscuit.sensibletoolbox.util.HoloMessage;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.HoloMessage;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 public class Multimeter extends BaseSTBItem {
 

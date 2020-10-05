@@ -37,10 +37,10 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.PVCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.SunlightLevels;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
-import me.desht.dhutils.block.RelativePosition;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.SunlightLevels;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
+import me.desht.dhutils.blocks.RelativePosition;
 
 public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 

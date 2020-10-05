@@ -21,7 +21,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.BasicSolarCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SiliconWafer;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 public class PVCell extends BaseSTBItem {
 

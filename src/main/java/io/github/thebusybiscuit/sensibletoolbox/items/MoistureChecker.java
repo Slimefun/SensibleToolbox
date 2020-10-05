@@ -19,8 +19,8 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.SoilSaturation;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.SoilSaturation;
 
 public class MoistureChecker extends BaseSTBItem {
 

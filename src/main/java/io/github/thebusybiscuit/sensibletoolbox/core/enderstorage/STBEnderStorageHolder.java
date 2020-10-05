@@ -17,8 +17,8 @@ import com.google.common.io.Files;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHolder;
-import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
+import io.github.thebusybiscuit.sensibletoolbox.utils.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.text.LogUtils;
 

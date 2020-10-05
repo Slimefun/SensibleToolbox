@@ -2,6 +2,8 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,6 +29,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
         super(conf);
     }
 
+    @Nullable
     public static TrashCan getTrashCan(Inventory inv) {
         InventoryHolder holder = inv.getHolder();
 
@@ -70,16 +73,12 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
      */
     public void emptyTrash(boolean noisy) {
         Location l = getLocation();
+
         if (l != null && l.getBlock().getType() == getMaterial()) {
             Dropper d = (Dropper) l.getBlock().getState();
 
-            if (noisy) {
-                for (ItemStack stack : d.getInventory()) {
-                    if (stack != null) {
-                        d.getLocation().getWorld().playSound(d.getLocation(), Sound.ENTITY_GENERIC_EAT, 1.0F, 1.0F);
-                        break;
-                    }
-                }
+            if (noisy && !d.getInventory().isEmpty()) {
+                l.getWorld().playSound(l, Sound.ENTITY_GENERIC_EAT, 1.0F, 1.0F);
             }
 
             Debugger.getInstance().debug(this + ": trash emptied");

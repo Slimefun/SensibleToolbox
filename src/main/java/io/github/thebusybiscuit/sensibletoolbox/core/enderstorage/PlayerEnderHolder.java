@@ -5,7 +5,7 @@ import java.io.File;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 
 public class PlayerEnderHolder extends STBEnderStorageHolder {
 

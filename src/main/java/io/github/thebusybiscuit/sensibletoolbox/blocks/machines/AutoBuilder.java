@@ -34,7 +34,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.LandMarker;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.ToughMachineFrame;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.dhutils.cuboid.CuboidDirection;

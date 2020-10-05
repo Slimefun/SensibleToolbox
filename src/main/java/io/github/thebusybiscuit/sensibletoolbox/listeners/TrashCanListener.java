@@ -17,6 +17,7 @@ public class TrashCanListener extends STBBaseListener {
     @EventHandler
     public void onTrashCanClosed(InventoryCloseEvent event) {
         TrashCan can = TrashCan.getTrashCan(event.getInventory());
+
         if (can != null) {
             can.emptyTrash(true);
         }
@@ -24,15 +25,10 @@ public class TrashCanListener extends STBBaseListener {
 
     @EventHandler
     public void onMoveItemToTrashCan(InventoryMoveItemEvent event) {
-        final TrashCan can = TrashCan.getTrashCan(event.getDestination());
-        if (can != null) {
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+        TrashCan can = TrashCan.getTrashCan(event.getDestination());
 
-                @Override
-                public void run() {
-                    can.emptyTrash(false);
-                }
-            });
+        if (can != null) {
+            Bukkit.getScheduler().runTask(plugin, () -> can.emptyTrash(false));
         }
     }
 

@@ -21,7 +21,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
 
 public class EnergyNetManager {

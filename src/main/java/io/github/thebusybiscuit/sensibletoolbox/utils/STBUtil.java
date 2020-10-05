@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.util;
+package io.github.thebusybiscuit.sensibletoolbox.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.MiscUtil;
-import me.desht.dhutils.block.BlockUtil;
+import me.desht.dhutils.blocks.BlockUtil;
 
 /**
  * A collection of miscellaneous utility methods.

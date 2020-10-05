@@ -38,7 +38,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.LevelMonitor;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.items.PaintBrush;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
 
 public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {

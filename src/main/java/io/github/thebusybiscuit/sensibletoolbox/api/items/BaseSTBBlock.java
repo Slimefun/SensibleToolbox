@@ -48,11 +48,11 @@ import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.STBGUIHolder;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.block.PersistableLocation;
-import me.desht.dhutils.block.RelativePosition;
+import me.desht.dhutils.blocks.PersistableLocation;
+import me.desht.dhutils.blocks.RelativePosition;
 
 /**
  * Represents an STB block; an STB item which can be placed as a block in the

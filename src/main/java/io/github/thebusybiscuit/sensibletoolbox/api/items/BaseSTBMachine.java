@@ -47,8 +47,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.MachineUpg
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.text.LogUtils;
 

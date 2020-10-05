@@ -43,9 +43,9 @@ import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ItemRout
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.ReceiverModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.SpeedModule;
 import io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules.StackModule;
-import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
-import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
-import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
+import io.github.thebusybiscuit.sensibletoolbox.utils.BukkitSerialization;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.text.LogUtils;
 
