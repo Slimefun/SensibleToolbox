@@ -19,12 +19,17 @@ package io.github.thebusybiscuit.sensibletoolbox;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,10 +41,12 @@ import org.bukkit.scheduler.BukkitTask;
 import com.comphenix.protocol.ProtocolLibrary;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
+import io.github.thebusybiscuit.cscorelib2.reflection.ReflectionUtils;
 import io.github.thebusybiscuit.cscorelib2.updater.GitHubBuildsUpdater;
 import io.github.thebusybiscuit.cscorelib2.updater.Updater;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
+import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.RecipeUtil;
@@ -179,7 +186,9 @@ import me.desht.dhutils.text.MessagePager;
 public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationListener {
 
     private static SensibleToolboxPlugin instance = null;
-    private final CommandManager cmds = new CommandManager(this);
+    private final CommandManager commandManager = new CommandManager(this);
+    private MinecraftVersion minecraftVersion = MinecraftVersion.UNKNOWN;
+
     private ConfigurationManager configManager;
     private boolean protocolLibEnabled = false;
     private SoundMufflerListener soundMufflerListener;
@@ -198,6 +207,12 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     @Override
     public void onEnable() {
         instance = this;
+
+        // We wanna ensure that the Server uses a compatible version of Minecraft
+        if (isVersionUnsupported()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         LogUtils.init(this);
         new Metrics(this, 6354);
@@ -272,6 +287,52 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
 
         enabled = true;
+    }
+
+    /**
+     * This method checks for the {@link MinecraftVersion} of the {@link Server}.
+     * If the version is unsupported, a warning will be printed to the console.
+     *
+     * @return Whether the {@link MinecraftVersion} is unsupported
+     */
+    private boolean isVersionUnsupported() {
+        String currentVersion = ReflectionUtils.getVersion();
+
+        if (currentVersion.startsWith("v")) {
+            for (MinecraftVersion version : MinecraftVersion.valuesCache) {
+                if (version.matches(currentVersion)) {
+                    minecraftVersion = version;
+                    return false;
+                }
+            }
+
+            // Looks like you are using an unsupported Minecraft Version
+            getLogger().log(Level.SEVERE, "#############################################");
+            getLogger().log(Level.SEVERE, "### Slimefun was not installed correctly!");
+            getLogger().log(Level.SEVERE, "### You are using the wrong version of Minecraft!");
+            getLogger().log(Level.SEVERE, "###");
+            getLogger().log(Level.SEVERE, "### You are using Minecraft {0}", ReflectionUtils.getVersion());
+            getLogger().log(Level.SEVERE, "### but SensibleToolbox v{0} requires you to be using", getDescription().getVersion());
+            getLogger().log(Level.SEVERE, "### Minecraft {0}", String.join(" / ", getSupportedVersions()));
+            getLogger().log(Level.SEVERE, "#############################################");
+            return true;
+        }
+
+        getLogger().log(Level.WARNING, "We could not determine the version of Minecraft you were using ({0})", currentVersion);
+        return false;
+    }
+
+    @Nonnull
+    private Collection<String> getSupportedVersions() {
+        List<String> list = new ArrayList<>();
+
+        for (MinecraftVersion version : MinecraftVersion.valuesCache) {
+            if (version != MinecraftVersion.UNKNOWN) {
+                list.add(version.getName());
+            }
+        }
+
+        return list;
     }
 
     @Override
@@ -454,20 +515,20 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     }
 
     private void registerCommands() {
-        cmds.registerCommand(new SaveCommand());
-        cmds.registerCommand(new GiveCommand());
-        cmds.registerCommand(new ShowCommand());
-        cmds.registerCommand(new ChargeCommand());
-        cmds.registerCommand(new GetcfgCommand());
-        cmds.registerCommand(new SetcfgCommand());
-        cmds.registerCommand(new DebugCommand());
-        cmds.registerCommand(new SoundCommand());
-        cmds.registerCommand(new RecipeCommand());
-        cmds.registerCommand(new ExamineCommand());
-        cmds.registerCommand(new RedrawCommand());
-        cmds.registerCommand(new FriendCommand());
-        cmds.registerCommand(new UnfriendCommand());
-        cmds.registerCommand(new ValidateCommand());
+        commandManager.registerCommand(new SaveCommand());
+        commandManager.registerCommand(new GiveCommand());
+        commandManager.registerCommand(new ShowCommand());
+        commandManager.registerCommand(new ChargeCommand());
+        commandManager.registerCommand(new GetcfgCommand());
+        commandManager.registerCommand(new SetcfgCommand());
+        commandManager.registerCommand(new DebugCommand());
+        commandManager.registerCommand(new SoundCommand());
+        commandManager.registerCommand(new RecipeCommand());
+        commandManager.registerCommand(new ExamineCommand());
+        commandManager.registerCommand(new RedrawCommand());
+        commandManager.registerCommand(new FriendCommand());
+        commandManager.registerCommand(new UnfriendCommand());
+        commandManager.registerCommand(new ValidateCommand());
     }
 
     /**
@@ -482,7 +543,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
-            return cmds.dispatch(sender, command, label, args);
+            return commandManager.dispatch(sender, command, label, args);
         }
         catch (DHUtilsException e) {
             MiscUtil.errorMessage(sender, e.getMessage());
@@ -492,7 +553,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        return cmds.onTabComplete(sender, command, label, args);
+        return commandManager.onTabComplete(sender, command, label, args);
     }
 
     @Override
@@ -619,6 +680,15 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public ProtectionManager getProtectionManager() {
         return protectionManager;
+    }
+
+    /**
+     * This returns the currently installed version of Minecraft.
+     *
+     * @return The current version of Minecraft
+     */
+    public static MinecraftVersion getMinecraftVersion() {
+        return instance.minecraftVersion;
     }
 
     public boolean isGlowingEnabled() {

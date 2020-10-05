@@ -29,6 +29,7 @@ import com.google.common.base.Joiner;
 
 import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
+import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.dhutils.DHUtilsException;
@@ -39,11 +40,6 @@ import me.desht.dhutils.blocks.BlockUtil;
  * A collection of miscellaneous utility methods.
  */
 public final class STBUtil {
-
-    /**
-     * The version of minecraft the server is running (The second number e.g. 1.16.2 gives 16)
-     */
-    public static final int minecraftVersion = Integer.parseInt(SensibleToolboxPlugin.getInstance().getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1).split("_")[1]);
 
     /**
      * The block faces directly adjacent to a block.
@@ -708,7 +704,7 @@ public final class STBUtil {
     public static Material getWallSign(@Nonnull Material signType) {
         Validate.notNull(signType, "The Sign Type cannot be null");
 
-        if (minecraftVersion >= 16) {
+        if (SensibleToolboxPlugin.getMinecraftVersion().isAtLeast(MinecraftVersion.MINECRAFT_1_16)) {
             if (signType == Material.CRIMSON_SIGN) {
                 return Material.CRIMSON_WALL_SIGN;
             }
