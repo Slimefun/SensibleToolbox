@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.text;
 
 /**
  * Programmer: Jacob Scott

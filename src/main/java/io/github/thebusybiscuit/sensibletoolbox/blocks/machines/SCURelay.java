@@ -27,8 +27,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.core.IDTracker;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SubspaceTransponder;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.UnlinkedSCURelay;
-import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.text.LogUtils;
 
 public class SCURelay extends BatteryBox {
 

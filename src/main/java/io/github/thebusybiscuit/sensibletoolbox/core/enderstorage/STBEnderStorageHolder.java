@@ -20,7 +20,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHol
 import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public abstract class STBEnderStorageHolder implements EnderStorageHolder {
 

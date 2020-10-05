@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package io.github.thebusybiscuit.sensibletoolbox.util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

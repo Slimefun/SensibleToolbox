@@ -47,7 +47,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.PersistableLocation;
+import me.desht.dhutils.block.PersistableLocation;
 
 /**
  * Represents an STB block; an STB item which can be placed as a block in the

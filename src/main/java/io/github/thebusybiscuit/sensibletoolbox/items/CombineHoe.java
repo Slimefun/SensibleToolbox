@@ -33,6 +33,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.cuboid.Cuboid;
+import me.desht.dhutils.cuboid.CuboidDirection;
 
 public abstract class CombineHoe extends BaseSTBItem {
 
@@ -298,7 +299,7 @@ public abstract class CombineHoe extends BaseSTBItem {
     @ParametersAreNonnullByDefault
     private void harvestLayer(Player player, Block b) {
         Cuboid cuboid = new Cuboid(b.getLocation());
-        cuboid = cuboid.outset(Cuboid.CuboidDirection.HORIZONTAL, Tag.LEAVES.isTagged(b.getType()) ? 1 : getWorkRadius());
+        cuboid = cuboid.outset(CuboidDirection.HORIZONTAL, Tag.LEAVES.isTagged(b.getType()) ? 1 : getWorkRadius());
 
         for (Block block : cuboid) {
             if (!block.equals(b) && (STBUtil.isPlant(block.getType()) || Tag.LEAVES.isTagged(block.getType()))) {

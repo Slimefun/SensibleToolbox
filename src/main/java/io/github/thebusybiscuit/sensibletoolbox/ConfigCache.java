@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 /**
  * Cache some frequently-access config values to reduce config lookup overhead

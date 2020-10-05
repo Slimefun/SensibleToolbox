@@ -20,7 +20,6 @@ import com.google.common.base.Joiner;
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
-import me.desht.dhutils.PermissionUtils;
 
 public class CommandManager {
 
@@ -49,8 +48,8 @@ public class CommandManager {
             AbstractCommand cmd = possibleMatches.get(0);
 
             if (cmd.matchesArgCount(cmdName, args)) {
-                if (cmd.getPermissionNode() != null) {
-                    PermissionUtils.requirePerms(sender, cmd.getPermissionNode());
+                if (cmd.getPermissionNode() != null && !sender.hasPermission(cmd.getPermissionNode())) {
+                    throw new DHUtilsException("You are not allowed to do that.");
                 }
 
                 res = cmd.execute(plugin, sender, cmd.getMatchedArgs());
@@ -115,7 +114,7 @@ public class CommandManager {
             Set<String> completions = new HashSet<>();
 
             for (AbstractCommand cmd : possibleMatches) {
-                if (cmd.getPermissionNode() != null && !PermissionUtils.isAllowedTo(sender, cmd.getPermissionNode())) {
+                if (cmd.getPermissionNode() != null && !sender.hasPermission(cmd.getPermissionNode())) {
                     continue;
                 }
 

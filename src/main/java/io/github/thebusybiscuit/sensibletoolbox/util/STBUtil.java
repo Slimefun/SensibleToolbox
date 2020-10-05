@@ -32,7 +32,6 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import me.desht.dhutils.DHUtilsException;
-import me.desht.dhutils.ItemGlow;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.block.BlockUtil;
 

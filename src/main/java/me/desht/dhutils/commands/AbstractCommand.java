@@ -26,7 +26,7 @@ import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
 
 /**
- * @author des
+ * @author desht
  *
  */
 public abstract class AbstractCommand implements Comparable<AbstractCommand> {

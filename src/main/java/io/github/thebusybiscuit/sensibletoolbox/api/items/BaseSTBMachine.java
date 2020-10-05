@@ -50,7 +50,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.Thoroughne
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.util.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 /**
  * Represents an STB block which acts a machine; it is chargeable and

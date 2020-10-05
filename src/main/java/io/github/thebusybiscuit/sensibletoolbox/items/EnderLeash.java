@@ -12,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -35,8 +36,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.util.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
-import me.desht.dhutils.PermissionUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public class EnderLeash extends BaseSTBItem {
 
@@ -130,11 +130,14 @@ public class EnderLeash extends BaseSTBItem {
     }
 
     private boolean verifyOwner(Player player, Animals animal) {
-        if (animal instanceof Tameable && ((Tameable) animal).getOwner() != null) {
-            if (((Tameable) animal).getOwner().getUniqueId() != player.getUniqueId()) {
-                return PermissionUtils.isAllowedTo(player, "stb.enderleash.captureany");
+        if (animal instanceof Tameable)  {
+            AnimalTamer owner = ((Tameable) animal).getOwner();
+
+            if (owner.getUniqueId() != player.getUniqueId()) {
+                return player.hasPermission("stb.enderleash.captureany");
             }
         }
+
         return true;
     }
 

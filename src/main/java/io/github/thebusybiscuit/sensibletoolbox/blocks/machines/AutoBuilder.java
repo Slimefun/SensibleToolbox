@@ -37,6 +37,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.ToughMachineFra
 import io.github.thebusybiscuit.sensibletoolbox.util.STBUtil;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cuboid.Cuboid;
+import me.desht.dhutils.cuboid.CuboidDirection;
 
 public class AutoBuilder extends BaseSTBMachine {
 
@@ -449,7 +450,7 @@ public class AutoBuilder extends BaseSTBMachine {
                 return BuilderStatus.TOO_NEAR;
             }
 
-            if (!w.outset(Cuboid.CuboidDirection.BOTH, MAX_DISTANCE).contains(ourLoc)) {
+            if (!w.outset(CuboidDirection.BOTH, MAX_DISTANCE).contains(ourLoc)) {
                 return BuilderStatus.TOO_FAR;
             }
 
@@ -468,7 +469,7 @@ public class AutoBuilder extends BaseSTBMachine {
             gui.addLabel("Land Markers", 11, null, "Place two Land Markers", "in these slots, set", "to two opposite corners", "of the area to work.");
         }
         else {
-            int v = workArea.volume();
+            int v = workArea.getVolume();
             String s = v == 1 ? "" : "s";
             gui.addLabel("Land Markers", 11, null, "Work Area:", MiscUtil.formatLocation(loc1), MiscUtil.formatLocation(loc2), v + " block" + s);
         }
@@ -568,7 +569,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
     private void highlightWorkArea(@Nonnull Player p) {
         if (workArea != null) {
-            Block[] corners = workArea.corners();
+            Block[] corners = workArea.getCorners();
 
             for (Block b : corners) {
                 p.sendBlockChange(b.getLocation(), Material.LIME_STAINED_GLASS.createBlockData());

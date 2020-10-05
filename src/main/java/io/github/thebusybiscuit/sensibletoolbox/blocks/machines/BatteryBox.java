@@ -3,6 +3,9 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 import java.util.EnumMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -51,17 +54,20 @@ public abstract class BatteryBox extends BaseSTBMachine {
 
     @Override
     public int[] getInputSlots() {
-        return new int[0]; // no input
+        // no input
+        return new int[0];
     }
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0]; // no output
+        // no output
+        return new int[0];
     }
 
     @Override
     public int[] getUpgradeSlots() {
-        return new int[0]; // no upgrades
+        // no upgrades
+        return new int[0];
     }
 
     @Override
@@ -116,7 +122,8 @@ public abstract class BatteryBox extends BaseSTBMachine {
         return gui;
     }
 
-    public EnergyFlow getEnergyFlow(BlockFace face) {
+    @Nullable
+    public EnergyFlow getEnergyFlow(@Nonnull BlockFace face) {
         return energyFlow.get(face);
     }
 

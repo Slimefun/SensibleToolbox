@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.block;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +12,14 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 public class PersistableLocation implements ConfigurationSerializable {
 
     private final String worldName;
-    private final double x, y, z;
-    private final float pitch, yaw;
+
+    private final double x;
+    private final double y;
+    private final double z;
+
+    private final float pitch;
+    private final float yaw;
+
     private boolean savePitchAndYaw;
 
     public PersistableLocation(Location loc) {

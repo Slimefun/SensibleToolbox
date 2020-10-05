@@ -19,8 +19,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.enderstorage.EnderStorageHolder;
 import io.github.thebusybiscuit.sensibletoolbox.items.EnderBag;
-import me.desht.dhutils.LogUtils;
 import me.desht.dhutils.MiscUtil;
+import me.desht.dhutils.text.LogUtils;
 
 public class EnderStorageManager implements Listener {
 

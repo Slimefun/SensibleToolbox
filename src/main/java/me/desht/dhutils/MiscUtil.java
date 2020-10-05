@@ -16,6 +16,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import me.desht.dhutils.text.LogUtils;
+
 public class MiscUtil {
 
     private static final Map<String, String> prevColors = new HashMap<>();

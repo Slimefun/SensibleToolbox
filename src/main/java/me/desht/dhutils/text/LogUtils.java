@@ -1,4 +1,4 @@
-package me.desht.dhutils;
+package me.desht.dhutils.text;
 
 import java.util.Locale;
 import java.util.logging.Handler;
@@ -30,14 +30,6 @@ public final class LogUtils {
 
     public static void init(@Nonnull Plugin plugin) {
         logger = plugin.getLogger();
-
-        // this feels a bit hack-ish, but it avoids the problem where we would need to
-        // modify the parent logger (which is the Bukkit.getServer().getLogger() logger,
-        // common to all plugins) just to change the log level
-        // for (Handler h : logger.getParent().getHandlers()) {
-        // logger.addHandler(h);
-        // }
-        // logger.setUseParentHandlers(false);
     }
 
     @Nonnull

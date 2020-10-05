@@ -19,7 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.LogUtils;
+import me.desht.dhutils.text.LogUtils;
 
 public class STBFriendManager implements FriendManager {
 
