@@ -3,6 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -86,8 +87,10 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         update(oldLevel == 0 && paintLevel != 0 || oldLevel != 0 && paintLevel == 0);
         updateAttachedLabelSigns();
 
-        if (getPaintLevelMonitor() != null) {
-            getPaintLevelMonitor().repaint();
+        LevelMonitor monitor = getPaintLevelMonitor();
+
+        if (monitor != null) {
+            monitor.repaint();
         }
     }
 
@@ -153,8 +156,13 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             if (brush == null) {
                 // refilling a paintbrush/roller from the can is handled in the PaintBrush object
                 getGUI().show(player);
-                getPaintLevelMonitor().repaint();
+                LevelMonitor monitor = getPaintLevelMonitor();
+
+                if (monitor != null) {
+                    monitor.repaint();
+                }
             }
+
             event.setCancelled(true);
         } else {
             super.onInteractBlock(event);
@@ -222,6 +230,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         loc.getWorld().playSound(loc, Sound.ENTITY_PLAYER_SPLASH, 1.0F, 1.0F);
     }
 
+    @Nullable
     private LevelMonitor getPaintLevelMonitor() {
         return getGUI() == null ? null : (LevelMonitor) getGUI().getMonitor(levelMonitorId);
     }
@@ -275,6 +284,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         if (getGUI().getViewers().size() == 1) {
             // last player closing inventory - eject any remaining items
             Location loc = getLocation();
+
             for (int slot : ITEM_SLOTS) {
                 ItemStack item = getGUI().getInventory().getItem(slot);
 

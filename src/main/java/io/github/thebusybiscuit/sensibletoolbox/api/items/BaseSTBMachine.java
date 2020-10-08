@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -300,9 +302,10 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         this.charge = Math.min(getMaxCharge(), Math.max(0, charge));
 
         if (isPlaced()) {
-            if (this.charge == 0) {
+            if (this.charge <= 0) {
                 onOutOfCharge();
             }
+
             if (getGUI() != null && chargeMeterId >= 0) {
                 getGUI().getMonitor(chargeMeterId).repaintNeeded();
             }
@@ -753,34 +756,33 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             int slot = slots == null ? i : slots[i];
             ItemStack stack = getInventoryItem(slot);
 
-            if (stack != null) {
-                if (receiver == null || stack.isSimilar(receiver)) {
-                    int toTake = Math.min(amount, stack.getAmount());
+            if (stack != null && (receiver == null || stack.isSimilar(receiver))) {
+                int toTake = Math.min(amount, stack.getAmount());
+
+                if (receiver != null) {
+                    toTake = Math.min(toTake, receiver.getType().getMaxStackSize() - receiver.getAmount());
+                }
+
+                if (toTake > 0) {
+                    ItemStack result = stack.clone();
+                    result.setAmount(toTake);
 
                     if (receiver != null) {
-                        toTake = Math.min(toTake, receiver.getType().getMaxStackSize() - receiver.getAmount());
+                        receiver.setAmount(receiver.getAmount() + toTake);
                     }
 
-                    if (toTake > 0) {
-                        ItemStack result = stack.clone();
-                        result.setAmount(toTake);
+                    stack.setAmount(stack.getAmount() - toTake);
+                    setInventoryItem(slot, stack);
+                    setJammed(false);
+                    update(false);
 
-                        if (receiver != null) {
-                            receiver.setAmount(receiver.getAmount() + toTake);
-                        }
-
-                        stack.setAmount(stack.getAmount() - toTake);
-                        setInventoryItem(slot, stack);
-                        setJammed(false);
-                        update(false);
-
-                        if (Debugger.getInstance().getLevel() > 1) {
-                            Debugger.getInstance().debug(2, "extracted " + STBUtil.describeItemStack(result) + " from " + this);
-                        }
-
-                        return result;
+                    if (Debugger.getInstance().getLevel() > 1) {
+                        Debugger.getInstance().debug(2, "extracted " + STBUtil.describeItemStack(result) + " from " + this);
                     }
+
+                    return result;
                 }
+
             }
         }
 
@@ -993,8 +995,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     private void processUpgrades() {
-        int nSpeed = 0;
         BlockFace ejectDirection = null;
+        int nSpeed = 0;
         int nRegulator = 0;
         int nThorough = 0;
 
@@ -1012,14 +1014,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
         setRegulatorAmount(nRegulator);
         setThoroughnessAmount(nThorough);
-        setSpeedMultiplier(Math.pow(1.4, nSpeed - nThorough));
-        setPowerMultiplier(Math.pow(1.6, nSpeed + nThorough));
+        setSpeedMultiplier(Math.pow(1.4, (double) nSpeed - nThorough));
+        setPowerMultiplier(Math.pow(1.6, (double) nSpeed + nThorough));
         setPowerMultiplier(Math.max(getPowerMultiplier() - nRegulator * 0.1, 1.0));
         setAutoEjectDirection(ejectDirection);
         Debugger.getInstance().debug("upgrades for " + this + " speed=" + getSpeedMultiplier() + " power=" + getPowerMultiplier() + " eject=" + getAutoEjectDirection());
     }
 
-    private void installEnergyCell(EnergyCell cell) {
+    private void installEnergyCell(@Nullable EnergyCell cell) {
         installedCell = cell;
         Debugger.getInstance().debug("installed energy cell " + cell + " in " + this);
         update(false);
@@ -1042,6 +1044,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                     break;
                 case CELL:
                     transferred = transferCharge(this, installedCell);
+                    break;
+                default:
                     break;
                 }
             }
@@ -1070,13 +1074,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     }
 
     private double transferCharge(Chargeable from, Chargeable to) {
-        if (to.getCharge() >= to.getMaxCharge() || from.getCharge() == 0) {
+        if (to.getCharge() >= to.getMaxCharge() || from.getCharge() <= 0) {
             return 0;
         }
 
         long tickRate = SensibleToolboxPlugin.getInstance().getEnergyNetManager().getTickRate();
-        double toTransfer = Math.min(from.getChargeRate() * tickRate, to.getMaxCharge() - to.getCharge());
-        toTransfer = Math.min(to.getChargeRate() * tickRate, toTransfer);
+        double toTransfer = Math.min(from.getChargeRate() * (double) tickRate, to.getMaxCharge() - to.getCharge());
+        toTransfer = Math.min(to.getChargeRate() * (double) tickRate, toTransfer);
         toTransfer = Math.min(from.getCharge(), toTransfer);
         to.setCharge(to.getCharge() + toTransfer);
         from.setCharge(from.getCharge() - toTransfer);

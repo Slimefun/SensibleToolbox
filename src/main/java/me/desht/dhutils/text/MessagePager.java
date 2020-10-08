@@ -21,7 +21,8 @@ public class MessagePager {
 
     public static final String BULLET = ChatColor.LIGHT_PURPLE + "\u2022 " + ChatColor.WHITE;
 
-    private static final int DEF_PAGE_SIZE = 18; // 20 lines total, minus 2 for header and footer
+    // 20 lines total, minus 2 for header and footer
+    private static final int DEF_PAGE_SIZE = 18;
 
     private static String pageCmd = "";
     private static int defaultPageSize = DEF_PAGE_SIZE;
@@ -166,10 +167,8 @@ public class MessagePager {
     }
 
     public void add(@Nonnull List<String> lines) {
-        // TODO: apply MinecraftChatStr.alignTags(lines, true)
-        // in pagesize segments before adding to buffer
-
         List<String> actual = new ArrayList<>();
+
         for (String l : lines) {
             Collections.addAll(actual, wrap(l));
         }
@@ -182,6 +181,7 @@ public class MessagePager {
                 messages.add("");
             }
         }
+
         for (String line : actual) {
             messages.add(line);
         }
@@ -238,6 +238,7 @@ public class MessagePager {
         } else if (page > getPageCount()) {
             page = 1;
         }
+
         currentPage = page;
     }
 
@@ -273,26 +274,17 @@ public class MessagePager {
 
     /**
      * Display the specified page for the player.
-     * 
-     * @param pageStr
-     *            A string containing the page number to display
-     */
-    public void showPage(String pageStr) throws NumberFormatException {
-        int pageNum = Integer.parseInt(pageStr);
-        showPage(pageNum);
-    }
-
-    /**
-     * Display the specified page for the player.
      *
      * @param pageNum
      *            The page number to display
      */
     public void showPage(int pageNum) {
         CommandSender sender = senderRef.get();
+
         if (sender == null) {
             return;
         }
+
         if (sender instanceof Player) {
             // pretty paged display
             if (pageNum < 1 || pageNum > getPageCount()) {
@@ -304,7 +296,7 @@ public class MessagePager {
             int i = (pageNum - 1) * getPageSize();
             int nMessages = getSize();
             String header = String.format("\u2524 %d-%d of %d lines (page %d/%d) \u251c", i + 1, Math.min(getPageSize() * pageNum, nMessages), nMessages, pageNum, getPageCount());
-            MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250c" + MinecraftChatStr.strPadCenterChat(header, 325, '\u2504'));
+            MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250c" + getCenteredLabel(header, 2));
 
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
                 if (parseColors) {
@@ -315,7 +307,7 @@ public class MessagePager {
             }
 
             String footer = getPageCount() > 1 ? "\u2524 Use " + pageCmd + " to see other pages \u251c" : "";
-            MiscUtil.rawMessage(player, ChatColor.GREEN + "\u2514" + MinecraftChatStr.strPadCenterChat(footer, 325, '\u2504'));
+            MiscUtil.rawMessage(player, ChatColor.GREEN + "\u2514" + getCenteredLabel(footer, 2));
 
             setPage(pageNum);
         } else {
@@ -328,6 +320,23 @@ public class MessagePager {
                 }
             }
         }
+    }
+
+    @Nonnull
+    private String getCenteredLabel(@Nonnull String label, int width) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < width; i++) {
+            builder.append('\u2504');
+        }
+
+        builder.append(label);
+
+        for (int i = 0; i < width; i++) {
+            builder.append('\u2504');
+        }
+
+        return builder.toString();
     }
 
     private String[] wrap(String line) {

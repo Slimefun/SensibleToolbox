@@ -293,13 +293,23 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         case IGNORE:
             return true;
         case HIGH:
-            return getLocation().getBlock().isBlockIndirectlyPowered();
+            return isIndirectlyPowered();
         case LOW:
-            return !getLocation().getBlock().isBlockIndirectlyPowered();
+            return !isIndirectlyPowered();
         case PULSED:
             return pulsing;
         default:
             return false;
+        }
+    }
+
+    private boolean isIndirectlyPowered() {
+        Location l = getLocation();
+
+        if (l != null) {
+            return l.getBlock().isBlockIndirectlyPowered();
+        } else {
+            throw new IllegalStateException("Block has not been placed, cannot get indirect redstone level");
         }
     }
 

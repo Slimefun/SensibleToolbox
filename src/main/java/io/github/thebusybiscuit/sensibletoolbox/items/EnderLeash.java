@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.items;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,7 +45,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
-import me.desht.dhutils.text.LogUtils;
 
 public class EnderLeash extends BaseSTBItem {
 
@@ -310,13 +310,14 @@ public class EnderLeash extends BaseSTBItem {
 
             try {
                 Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
+
                 for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {
                     abstractHorse.getInventory().setItem(i, inv.getItem(i));
                 }
             } catch (IOException e) {
-                LogUtils.warning("could not restore horse inventory!");
-                e.printStackTrace();
+                getProviderPlugin().getLogger().log(Level.WARNING, "Could not restore Horse Inventory", e);
             }
+
             break;
         default:
             break;

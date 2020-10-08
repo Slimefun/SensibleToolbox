@@ -442,7 +442,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     private class QueueSwapper extends BukkitRunnable {
 
         private final LinkedBlockingQueue<SwapRecord> queue;
-        private final ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE); // ensure we can mine anything
+
+        // ensure we can mine anything
+        private final ItemStack tool = new ItemStack(Material.DIAMOND_PICKAXE);
 
         public QueueSwapper(LinkedBlockingQueue<SwapRecord> queue) {
             this.queue = queue;
@@ -533,7 +535,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                             Block block = b.getRelative(x, y, z);
 
                             if ((x != 0 || y != 0 || z != 0) && block.getType() == rec.source && isExposed(block)) {
-                                if (queue.offer(new SwapRecord(rec.player, block, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded))) {
+                                SwapRecord record = new SwapRecord(rec.player, block, rec.source, rec.target, rec.layersLeft - 1, rec.builder, slot, rec.chargeNeeded);
+
+                                if (queue.offer(record)) {
                                     return;
                                 }
                             }
@@ -583,6 +587,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                     return true;
                 }
             }
+
             return false;
         }
     }

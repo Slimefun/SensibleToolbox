@@ -2,7 +2,6 @@ package io.github.thebusybiscuit.sensibletoolbox.commands;
 
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;

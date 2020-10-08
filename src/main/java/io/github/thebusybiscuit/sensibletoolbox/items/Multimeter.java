@@ -68,10 +68,12 @@ public class Multimeter extends BaseSTBItem {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             EnergyNet net = SensibleToolbox.getEnergyNet(event.getClickedBlock());
             Player player = event.getPlayer();
+
             if (net != null) {
                 showNetInfo(player, net, event.getClickedBlock());
             } else {
                 BaseSTBMachine machine = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), BaseSTBMachine.class, true);
+
                 if (machine != null && machine.getMaxCharge() > 0) {
                     showMachineInfo(player, machine, event.getClickedBlock());
                 } else {

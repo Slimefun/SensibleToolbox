@@ -31,14 +31,16 @@ public class SetcfgCommand extends AbstractCommand {
 
         try {
             if (args.length > 2) {
-                List<String> list = new ArrayList<String>(args.length - 1);
+                List<String> list = new ArrayList<>(args.length - 1);
                 list.addAll(Arrays.asList(args).subList(1, args.length));
                 configManager.set(key, list);
             } else {
                 configManager.set(key, val);
             }
+
             Object res = configManager.get(key);
             MiscUtil.statusMessage(sender, key + " is now set to '&e" + res + "&-'");
+
             if (key.startsWith("items_enabled.")) {
                 MiscUtil.statusMessage(sender, "Changes will take effect when server is reloaded/restarted");
             }

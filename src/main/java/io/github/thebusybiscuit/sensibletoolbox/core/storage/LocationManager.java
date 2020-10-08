@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +74,7 @@ public final class LocationManager {
             queryStmt = databaseManager.getConnection().prepareStatement("SELECT * FROM " + DatabaseManager.getFullTableName("blocks") + " WHERE world_id = ?");
             queryTypeStmt = databaseManager.getConnection().prepareStatement("SELECT * FROM " + DatabaseManager.getFullTableName("blocks") + " WHERE world_id = ? and type = ?");
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getLogger().log(Level.SEVERE, "An Exception disturbed the initialization of our LocationManager", e);
             throw new IllegalStateException("Unable to initialise DB storage: " + e.getMessage());
         }
 
@@ -82,11 +83,13 @@ public final class LocationManager {
 
     public static synchronized LocationManager getManager() {
         if (instance == null) {
+            SensibleToolboxPlugin plugin = SensibleToolboxPlugin.getInstance();
+
             try {
-                instance = new LocationManager(SensibleToolboxPlugin.getInstance());
+                instance = new LocationManager(plugin);
                 instance.updaterTask.start();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().log(Level.SEVERE, "Cannot get the LocationManager", e);
                 return null;
             }
         }
