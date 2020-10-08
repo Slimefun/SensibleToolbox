@@ -104,8 +104,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         for (int i = 0; i < rec.size() && i < args.length; i++) {
             if (rec.getSubCommand(i).startsWith(args[i])) {
                 matches++;
-            }
-            else {
+            } else {
                 // match failed; try the next command record, if any
                 return -1;
             }
@@ -124,8 +123,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
                 if (isQuotedArgs()) {
                     List<String> a = splitQuotedString(combine(args, 0));
                     nArgs = a.size() - rec.size();
-                }
-                else {
+                } else {
                     nArgs = args.length - rec.size();
                 }
 
@@ -160,8 +158,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         String[] tmpArgs;
         if (isQuotedArgs()) {
             tmpArgs = splitQuotedString(combine(tmpResult, 0)).toArray(new String[0]);
-        }
-        else {
+        } else {
             tmpArgs = tmpResult;
         }
 
@@ -174,8 +171,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
             if (tmpArgs[i].length() < 2 || !tmpArgs[i].startsWith("-")) {
                 opt = "";
-            }
-            else {
+            } else {
                 opt = tmpArgs[i].substring(1);
             }
 
@@ -200,15 +196,12 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
                     default:
                         throw new IllegalStateException("unexpected option type for " + tmpArgs[i]);
                     }
-                }
-                catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ArrayIndexOutOfBoundsException e) {
                     throw new DHUtilsException("Missing value for option '" + tmpArgs[i - 1] + "'");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new DHUtilsException("Invalid value for option '" + tmpArgs[i - 1] + "'");
                 }
-            }
-            else {
+            } else {
                 l.add(tmpArgs[i]);
             }
         }
@@ -224,8 +217,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         String indent;
         if (prefix == null || prefix.isEmpty()) {
             indent = "";
-        }
-        else {
+        } else {
             int l = prefix.length();
             indent = sender instanceof Player ? StringUtils.repeat(" ", l + 2) : StringUtils.repeat(" ", l);
         }
@@ -274,14 +266,11 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
             if (parts.length == 1) {
                 options.put(parts[0], CommandOptionType.BOOLEAN);
-            }
-            else if (parts[1].startsWith("i")) {
+            } else if (parts[1].startsWith("i")) {
                 options.put(parts[0], CommandOptionType.INT);
-            }
-            else if (parts[1].startsWith("d")) {
+            } else if (parts[1].startsWith("d")) {
                 options.put(parts[0], CommandOptionType.DOUBLE);
-            }
-            else if (parts[1].startsWith("s")) {
+            } else if (parts[1].startsWith("s")) {
                 options.put(parts[0], CommandOptionType.STRING);
             }
         }
@@ -308,7 +297,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected int getIntOption(String opt, int def) {
-        if (!optVals.containsKey(opt)) return def;
+        if (!optVals.containsKey(opt))
+            return def;
         return (Integer) optVals.get(opt);
     }
 
@@ -317,7 +307,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected String getStringOption(String opt, String def) {
-        if (!optVals.containsKey(opt)) return def;
+        if (!optVals.containsKey(opt))
+            return def;
         return (String) optVals.get(opt);
     }
 
@@ -326,7 +317,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected double getDoubleOption(String opt, double def) {
-        if (!optVals.containsKey(opt)) return def;
+        if (!optVals.containsKey(opt))
+            return def;
         return (Double) optVals.get(opt);
     }
 
@@ -335,7 +327,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected boolean getBooleanOption(String opt, boolean def) {
-        if (!optVals.containsKey(opt)) return def;
+        if (!optVals.containsKey(opt))
+            return def;
         return (Boolean) optVals.get(opt);
     }
 
@@ -442,13 +435,11 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
             for (Object o1 : obj.getClass().getEnumConstants()) {
                 res.add(o1.toString());
             }
-        }
-        else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             MiscUtil.alertMessage(sender, key + ":" + desc);
             res.add("true");
             res.add("false");
-        }
-        else {
+        } else {
             MiscUtil.alertMessage(sender, key + " = <" + obj.getClass().getSimpleName() + ">" + desc);
         }
 
@@ -474,12 +465,10 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
             if (regexMatcher.group(1) != null) {
                 // Add double-quoted string without the quotes
                 matchList.add(regexMatcher.group(1));
-            }
-            else if (regexMatcher.group(2) != null) {
+            } else if (regexMatcher.group(2) != null) {
                 // Add single-quoted string without the quotes
                 matchList.add(regexMatcher.group(2));
-            }
-            else {
+            } else {
                 // Add unquoted word
                 matchList.add(regexMatcher.group());
             }

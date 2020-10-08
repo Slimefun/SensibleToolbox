@@ -95,8 +95,7 @@ public final class BlockUtil {
             Attachable a = (Attachable) bs.getData();
             Block attachedBlock = block.getRelative(a.getAttachedFace());
             return !attachedBlock.getType().isSolid();
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -130,8 +129,7 @@ public final class BlockUtil {
             default:
                 break;
             }
-        }
-        else {
+        } else {
             switch (face) {
             case EAST:
                 plane.add(new Vector(1.0, 0.0, 0.0));
@@ -171,8 +169,7 @@ public final class BlockUtil {
             double fac = -normal.dot(w) / dot;
             u.multiply(fac);
             return p0.clone().add(u);
-        }
-        else {
+        } else {
             return null;
         }
     }

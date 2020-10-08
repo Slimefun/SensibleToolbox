@@ -38,12 +38,10 @@ public class FriendCommand extends STBAbstractCommand {
             Validate.notNull(id, "Unknown player: " + args[0]);
             fm.addFriend(target.getUniqueId(), id);
             MiscUtil.statusMessage(sender, target.getName() + " is now friends with " + args[0]);
-        }
-        else if (args.length == 0) {
+        } else if (args.length == 0) {
             // listing friends
             listFriends(sender, fm, target);
-        }
-        else {
+        } else {
             showUsage(sender);
         }
         return true;
@@ -73,8 +71,7 @@ public class FriendCommand extends STBAbstractCommand {
         if (args.length == 1) {
             // list online players
             return null;
-        }
-        else {
+        } else {
             return noCompletions(sender);
         }
     }

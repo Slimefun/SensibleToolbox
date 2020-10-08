@@ -100,20 +100,23 @@ public class AutoFarm2 extends AutoFarmingMachine {
                         Ageable ageable = (Ageable) crop.getBlockData();
 
                         if (ageable.getAge() >= ageable.getMaximumAge()) {
-                            if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
-                            else break;
+                            if (getCharge() >= getScuPerCycle())
+                                setCharge(getCharge() - getScuPerCycle());
+                            else
+                                break;
 
                             ageable.setAge(0);
                             crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
                             setJammed(!output(crops.get(crop.getType())));
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         Block block = crop.getRelative(BlockFace.UP);
                         if (crops.containsKey(block.getType()) && block.getType() != Material.COCOA) {
-                            if (getCharge() >= getScuPerCycle()) setCharge(getCharge() - getScuPerCycle());
-                            else break;
+                            if (getCharge() >= getScuPerCycle())
+                                setCharge(getCharge() - getScuPerCycle());
+                            else
+                                break;
                             block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
                             setJammed(!output(crops.get(block.getType())));
                             block.setType(Material.AIR);
@@ -122,8 +125,8 @@ public class AutoFarm2 extends AutoFarmingMachine {
                     }
                 }
             }
-        }
-        else if (buffer != null) setJammed(!output(buffer));
+        } else if (buffer != null)
+            setJammed(!output(buffer));
 
         super.onServerTick();
     }
@@ -132,7 +135,8 @@ public class AutoFarm2 extends AutoFarmingMachine {
         for (int slot : getOutputSlots()) {
             ItemStack stack = getInventoryItem(slot);
             if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-                if (stack == null) stack = new ItemStack(m);
+                if (stack == null)
+                    stack = new ItemStack(m);
                 int amount = 1;
 
                 if (!m.isBlock()) {

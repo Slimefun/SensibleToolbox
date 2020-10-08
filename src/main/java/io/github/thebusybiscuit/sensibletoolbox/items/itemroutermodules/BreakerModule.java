@@ -47,8 +47,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
             if (getFilter().shouldPass(mainDrop) && SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(getItemRouter().getOwner()), b, ProtectableAction.BREAK_BLOCK)) {
                 if (inBuffer == null) {
                     getItemRouter().setBufferItem(mainDrop);
-                }
-                else {
+                } else {
                     int toAdd = Math.min(mainDrop.getAmount(), inBuffer.getMaxStackSize() - inBuffer.getAmount());
                     getItemRouter().setBufferAmount(inBuffer.getAmount() + toAdd);
                     if (toAdd < mainDrop.getAmount()) {

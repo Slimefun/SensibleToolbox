@@ -185,8 +185,7 @@ public class Pump extends AbstractProcessingMachine {
                 setProcessing(null);
                 update(false);
                 replacePumpedBlock(toPump);
-            }
-            else {
+            } else {
                 setJammed(true);
             }
         }

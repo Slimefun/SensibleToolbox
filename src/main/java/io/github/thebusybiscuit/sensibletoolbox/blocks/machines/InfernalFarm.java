@@ -98,8 +98,7 @@ public class InfernalFarm extends AutoFarmingMachine {
                     }
                 }
             }
-        }
-        else if (buffer != null) {
+        } else if (buffer != null) {
             setJammed(!output(buffer));
         }
 
@@ -111,7 +110,8 @@ public class InfernalFarm extends AutoFarmingMachine {
             ItemStack stack = getInventoryItem(slot);
 
             if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-                if (stack == null) stack = new ItemStack(m);
+                if (stack == null)
+                    stack = new ItemStack(m);
                 int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1) : (stack.getMaxStackSize() - stack.getAmount());
                 setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
                 buffer = null;

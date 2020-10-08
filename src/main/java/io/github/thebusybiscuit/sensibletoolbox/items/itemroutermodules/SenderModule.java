@@ -55,7 +55,8 @@ public class SenderModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
-            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) return false;
+            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem()))
+                return false;
             Debugger.getInstance().debug(2, "sender in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
             Block b = loc.getBlock();
             Block target = b.getRelative(getFacing());
@@ -79,8 +80,7 @@ public class SenderModule extends DirectionalItemRouterModule {
 
                     return nReceived > 0;
                 }
-            }
-            else {
+            } else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
 
                 if (stb instanceof STBInventoryHolder) {
@@ -89,8 +89,7 @@ public class SenderModule extends DirectionalItemRouterModule {
                     int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, getFacing().getOppositeFace(), false, getItemRouter().getOwner());
                     getItemRouter().reduceBuffer(nInserted);
                     return nInserted > 0;
-                }
-                else {
+                } else {
                     // vanilla inventory holder?
                     return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
                 }
@@ -111,7 +110,8 @@ public class SenderModule extends DirectionalItemRouterModule {
     private ReceiverModule findReceiver(Block b) {
         for (int i = 0; i < MAX_SENDER_DISTANCE; i++) {
             b = b.getRelative(getFacing());
-            if (!allowsItemsThrough(b.getType())) break;
+            if (!allowsItemsThrough(b.getType()))
+                break;
         }
 
         ItemRouter rtr = SensibleToolbox.getBlockAt(b.getLocation(), ItemRouter.class, false);

@@ -71,8 +71,7 @@ public class MiscUtil {
         for (String line : string.split("\\n")) {
             if (strip) {
                 sender.sendMessage(ChatColor.stripColor(line));
-            }
-            else {
+            } else {
                 sender.sendMessage(line);
             }
         }
@@ -83,8 +82,7 @@ public class MiscUtil {
         for (String line : string.split("\\n")) {
             if (strip) {
                 LogUtils.log(level, ChatColor.stripColor(parseColorSpec(sender, line)));
-            }
-            else {
+            } else {
                 sender.sendMessage(parseColorSpec(sender, line));
             }
         }
@@ -108,11 +106,9 @@ public class MiscUtil {
             int z = Integer.parseInt(args[2]);
             World w = (sender instanceof Player) ? ((Player) sender).getWorld() : findWorld(args[3]);
             return new Location(w, x, y, z);
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new IllegalArgumentException("You must specify all of x,y,z" + s + ".");
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid number in " + arglist);
         }
     }
@@ -138,8 +134,7 @@ public class MiscUtil {
         World w = Bukkit.getServer().getWorld(worldName);
         if (w != null) {
             return w;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("World " + worldName + " was not found on the server.");
         }
     }

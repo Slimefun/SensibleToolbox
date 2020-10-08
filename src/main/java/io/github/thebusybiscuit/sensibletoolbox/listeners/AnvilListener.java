@@ -29,8 +29,7 @@ public class AnvilListener extends STBBaseListener {
                     event.setCancelled(true);
                     MiscUtil.errorMessage((Player) event.getWhoClicked(), "Sensible Toolbox items don't fit in a vanilla anvil.");
                 }
-            }
-            else if (event.getRawSlot() > 2 && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+            } else if (event.getRawSlot() > 2 && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 ItemStack item = event.getCurrentItem();
 
                 if (SensibleToolbox.getItemRegistry().isSTBItem(item)) {

@@ -69,11 +69,9 @@ public class ConfigurationManager {
     public Class<?> getType(@Nonnull String key) {
         if (config.getDefaults().contains(key)) {
             return config.getDefaults().get(key).getClass();
-        }
-        else if (config.contains(key)) {
+        } else if (config.contains(key)) {
             return config.get(key).getClass();
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("can't determine type for unknown key '" + key + "'");
         }
     }
@@ -126,44 +124,35 @@ public class ConfigurationManager {
                 List<String> list = new ArrayList<>(1);
                 list.add(val);
                 processedVal = handleListValue(key, list);
-            }
-            else if (String.class.isAssignableFrom(c)) {
+            } else if (String.class.isAssignableFrom(c)) {
                 // String config values are common, so this should be a little quicker than going
                 // through the default case below (using reflection)
                 processedVal = val;
-            }
-            else if (Enum.class.isAssignableFrom(c)) {
+            } else if (Enum.class.isAssignableFrom(c)) {
                 // this really isn't very pretty, but as far as I can tell there's no way to
                 // do this with a parameterised Enum type
                 @SuppressWarnings("rawtypes")
                 Class<? extends Enum> cSub = c.asSubclass(Enum.class);
                 try {
                     processedVal = Enum.valueOf(cSub, val.toUpperCase());
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     throw new DHUtilsException("'" + val + "' is not a valid value for '" + key + "'");
                 }
-            }
-            else {
+            } else {
                 // the class we're converting to must have a constructor taking a single String argument
                 try {
                     Constructor<?> ctor = c.getDeclaredConstructor(String.class);
                     processedVal = ctor.newInstance(val);
-                }
-                catch (NoSuchMethodException e) {
+                } catch (NoSuchMethodException e) {
                     throw new DHUtilsException("Cannot convert '" + val + "' into a " + c.getName());
-                }
-                catch (IllegalArgumentException | InstantiationException | IllegalAccessException e) {
+                } catch (IllegalArgumentException | InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
-                }
-                catch (InvocationTargetException e) {
+                } catch (InvocationTargetException e) {
                     if (e.getCause() instanceof NumberFormatException) {
                         throw new DHUtilsException("Invalid numeric value: " + val);
-                    }
-                    else if (e.getCause() instanceof IllegalArgumentException) {
+                    } else if (e.getCause() instanceof IllegalArgumentException) {
                         throw new DHUtilsException("Invalid argument: " + val);
-                    }
-                    else {
+                    } else {
                         e.printStackTrace();
                     }
                 }
@@ -176,8 +165,7 @@ public class ConfigurationManager {
             }
 
             config.set(key, processedVal);
-        }
-        else {
+        } else {
             throw new DHUtilsException("Don't know what to do with " + key + " = " + val);
         }
     }
@@ -208,18 +196,15 @@ public class ConfigurationManager {
             // remove specified item from list
             list.remove(0);
             current.removeAll(list);
-        }
-        else if (list.get(0).equals("=")) {
+        } else if (list.get(0).equals("=")) {
             // replace list
             list.remove(0);
             current = new HashSet<>(list);
-        }
-        else if (list.get(0).equals("+")) {
+        } else if (list.get(0).equals("+")) {
             // append to list
             list.remove(0);
             current.addAll(list);
-        }
-        else {
+        } else {
             // append to list
             current.addAll(list);
         }

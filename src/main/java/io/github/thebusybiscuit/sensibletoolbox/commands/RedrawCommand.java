@@ -34,8 +34,7 @@ public class RedrawCommand extends AbstractCommand {
             World w = Bukkit.getWorld(getStringOption("w"));
             Validate.notNull(w, "Unknown world: " + getStringOption("w"));
             redrawn = redraw(w, type);
-        }
-        else {
+        } else {
             for (World w : Bukkit.getWorlds()) {
                 redrawn += redraw(w, type);
             }
@@ -70,11 +69,9 @@ public class RedrawCommand extends AbstractCommand {
             }
 
             return filterPrefix(sender, worlds, args[args.length - 1]);
-        }
-        else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
+        } else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
             return filterPrefix(sender, SensibleToolbox.getItemRegistry().getItemIds(), args[args.length - 1]);
-        }
-        else {
+        } else {
             showUsage(sender);
             return noCompletions(sender);
         }

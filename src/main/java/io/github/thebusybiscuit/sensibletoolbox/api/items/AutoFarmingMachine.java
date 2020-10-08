@@ -123,8 +123,7 @@ public abstract class AutoFarmingMachine extends BaseSTBMachine {
             Item i = loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), item);
             i.setVelocity(new Vector(0, 0, 0));
             return true;
-        }
-        else {
+        } else {
             BaseSTBBlock stb = LocationManager.getManager().get(loc);
             int nInserted = stb instanceof STBInventoryHolder ? ((STBInventoryHolder) stb).insertItems(item, getAutoEjectDirection().getOppositeFace(), false, getOwner()) : VanillaInventoryUtils.vanillaInsertion(target, item, 1, getAutoEjectDirection().getOppositeFace(), false, getOwner());
             return nInserted > 0;

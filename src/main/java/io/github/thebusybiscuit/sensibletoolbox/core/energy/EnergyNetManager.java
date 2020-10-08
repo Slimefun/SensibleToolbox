@@ -127,8 +127,7 @@ public class EnergyNetManager {
 
             if (STBUtil.isCable(b)) {
                 attachedCables.add(b);
-            }
-            else {
+            } else {
                 BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
 
                 if (machine != null) {
@@ -140,8 +139,7 @@ public class EnergyNetManager {
         if (attachedCables.size() == 1 && attachedMachines.isEmpty()) {
             // simple case; cable attached to only one other cable - no need to delete the net
             thisNet.removeCable(cable);
-        }
-        else {
+        } else {
             // delete the energy net for the removed cable; this will also detach any machines
             deleteEnergyNet(thisNet.getNetID());
 
@@ -179,8 +177,7 @@ public class EnergyNetManager {
                     STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
                     newNet.addMachine(machine, face);
                     allNets.put(newNet.getNetID(), newNet);
-                }
-                else {
+                } else {
                     // cable on a net - add machine to it
                     net.addMachine(machine, face);
                 }

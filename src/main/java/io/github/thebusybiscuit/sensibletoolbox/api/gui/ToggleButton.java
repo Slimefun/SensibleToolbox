@@ -48,8 +48,7 @@ public class ToggleButton extends ClickableGadget {
         if (callback.run(newValue)) {
             value = newValue;
             event.setCurrentItem(getTexture());
-        }
-        else {
+        } else {
             // vetoed!
             if (event.getWhoClicked() instanceof Player) {
                 STBUtil.complain((Player) event.getWhoClicked());

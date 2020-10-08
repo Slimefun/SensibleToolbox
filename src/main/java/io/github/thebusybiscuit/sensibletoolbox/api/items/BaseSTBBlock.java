@@ -475,8 +475,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
         if (loc != null) {
             return loc.add(face.getModX(), face.getModY(), face.getModZ());
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -774,8 +773,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         return Objects.equal(persistableLocation, ((BaseSTBBlock) o).persistableLocation);
     }
@@ -937,8 +938,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
                 }
 
                 sign.update();
-            }
-            else {
+            } else {
                 // no sign here (the sign must have been replaced or broken at some point)
                 labelSigns.set(rotation, false);
             }
@@ -1036,12 +1036,10 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
             Debugger.getInstance().debug(this + ": can't place label sign @ " + signBlock + ", face = " + face);
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.OAK_SIGN));
             return false;
-        }
-        else if (!Tag.SIGNS.isTagged(signType)) {
+        } else if (!Tag.SIGNS.isTagged(signType)) {
             Debugger.getInstance().debug(this + ": can't place label sign as " + signType.toString() + " is not a valid sign");
             return false;
-        }
-        else {
+        } else {
             Debugger.getInstance().debug(this + ": place label sign @ " + signBlock + ", face = " + face);
 
             BlockData data = signType.createBlockData(bd -> {

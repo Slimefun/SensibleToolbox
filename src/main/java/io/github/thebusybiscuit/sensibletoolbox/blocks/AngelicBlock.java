@@ -69,8 +69,7 @@ public class AngelicBlock extends BaseSTBBlock {
 
                 if (stack.getAmount() > 1) {
                     stack.setAmount(stack.getAmount() - 1);
-                }
-                else {
+                } else {
                     stack.setAmount(0);
                 }
 

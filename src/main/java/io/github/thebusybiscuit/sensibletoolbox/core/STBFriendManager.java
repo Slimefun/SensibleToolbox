@@ -80,8 +80,7 @@ public class STBFriendManager implements FriendManager {
                     UUID id2 = UUID.fromString(k);
                     addFriend(id1, id2);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 LogUtils.warning("failed to load friend data for " + f + ": " + e.getMessage());
             }
         }
@@ -103,8 +102,7 @@ public class STBFriendManager implements FriendManager {
 
             try {
                 conf.save(f);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.warning("failed to save friend data for " + f + ": " + e.getMessage());
             }
         }
@@ -122,8 +120,7 @@ public class STBFriendManager implements FriendManager {
 
         if (lastSeparatorIndex == -1) {
             fileName = name;
-        }
-        else {
+        } else {
             fileName = name.substring(lastSeparatorIndex + 1);
         }
 
@@ -132,8 +129,7 @@ public class STBFriendManager implements FriendManager {
 
         if (extensionIndex == -1) {
             return fileName;
-        }
-        else {
+        } else {
             return fileName.substring(0, extensionIndex);
         }
     }

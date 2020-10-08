@@ -32,13 +32,11 @@ public class GiveCommand extends AbstractCommand {
         if (args.length >= 3) {
             target = Bukkit.getPlayer(args[2]);
             Validate.notNull(target, "Unknown player: " + args[2]);
-        }
-        else {
+        } else {
             if (args.length >= 2) {
                 try {
                     amount = Integer.parseInt(args[1]);
-                }
-                catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     throw new DHUtilsException("Invalid amount: " + args[1]);
                 }
             }
@@ -63,12 +61,10 @@ public class GiveCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         if (args.length == 1) {
             return getItemCompletions(plugin, sender, args[0]);
-        }
-        else if (args.length == 2) {
+        } else if (args.length == 2) {
             // This will list all online Players
             return null;
-        }
-        else {
+        } else {
             return noCompletions(sender);
         }
     }

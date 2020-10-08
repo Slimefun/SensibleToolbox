@@ -33,8 +33,7 @@ public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
             try {
                 map.load(file);
                 saveNeeded = false;
-            }
-            catch (IOException | InvalidConfigurationException e) {
+            } catch (IOException | InvalidConfigurationException e) {
                 e.printStackTrace();
             }
         }
@@ -47,8 +46,7 @@ public class PlayerUUIDTracker extends STBBaseListener implements Runnable {
                 map.save(file);
                 Debugger.getInstance().debug("Saved UUID->Name map to " + file);
                 saveNeeded = false;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

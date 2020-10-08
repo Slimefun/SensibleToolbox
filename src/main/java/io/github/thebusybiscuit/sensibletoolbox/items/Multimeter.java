@@ -70,13 +70,11 @@ public class Multimeter extends BaseSTBItem {
             Player player = event.getPlayer();
             if (net != null) {
                 showNetInfo(player, net, event.getClickedBlock());
-            }
-            else {
+            } else {
                 BaseSTBMachine machine = SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), BaseSTBMachine.class, true);
                 if (machine != null && machine.getMaxCharge() > 0) {
                     showMachineInfo(player, machine, event.getClickedBlock());
-                }
-                else {
+                } else {
                     // nothing to examine here
                     STBUtil.complain(player);
                 }

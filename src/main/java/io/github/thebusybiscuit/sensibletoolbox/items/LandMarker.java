@@ -33,12 +33,10 @@ public class LandMarker extends BaseSTBItem {
             World w = Bukkit.getWorld(worldId);
             if (w != null) {
                 loc = new Location(w, conf.getInt("x"), conf.getInt("y"), conf.getInt("z"));
-            }
-            else {
+            } else {
                 loc = null;
             }
-        }
-        else {
+        } else {
             loc = null;
         }
     }
@@ -105,8 +103,7 @@ public class LandMarker extends BaseSTBItem {
             setMarkedLocation(null);
             updateHeldItemStack(event.getPlayer(), event.getHand());
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.6F);
-        }
-        else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
+        } else if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && !event.getClickedBlock().getLocation().equals(loc)) {
             setMarkedLocation(event.getClickedBlock().getLocation());
             updateHeldItemStack(event.getPlayer(), event.getHand());
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.5F);

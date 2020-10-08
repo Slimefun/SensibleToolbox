@@ -57,8 +57,7 @@ public class STBEnergyNet implements EnergyNet {
         for (Object o : blocks) {
             if (o instanceof Block) {
                 enet.addCable((Block) o);
-            }
-            else if (o instanceof AdjacentMachine) {
+            } else if (o instanceof AdjacentMachine) {
                 AdjacentMachine rec = (AdjacentMachine) o;
                 enet.addMachine(rec.getMachine(), rec.getDirection());
             }
@@ -88,8 +87,7 @@ public class STBEnergyNet implements EnergyNet {
             if (machine != null) {
                 discovered.add(new AdjacentMachine(machine, fromDir));
             }
-        }
-        else {
+        } else {
             discovered.add(b);
             for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
                 recursiveScan(b.getRelative(face), discovered, face.getOppositeFace());
@@ -109,8 +107,7 @@ public class STBEnergyNet implements EnergyNet {
             for (BlockFace face : machine.getFacesForNet(this)) {
                 if (machine.acceptsEnergy(face)) {
                     energySinks.add(machine);
-                }
-                else if (machine.suppliesEnergy(face)) {
+                } else if (machine.suppliesEnergy(face)) {
                     energySources.add(machine);
                 }
             }
@@ -182,8 +179,10 @@ public class STBEnergyNet implements EnergyNet {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         STBEnergyNet energyNet = (STBEnergyNet) o;
 
@@ -228,8 +227,7 @@ public class STBEnergyNet implements EnergyNet {
                 double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * tickRate);
                 sink.setCharge(sink.getCharge() + toGive);
             }
-        }
-        else {
+        } else {
             // more demand than supply!
             for (ChargeableBlock source : energySources) {
                 double toTake = Math.min(source.getCharge(), source.getChargeRate() * tickRate);

@@ -150,24 +150,33 @@ public class PersistableLocation implements ConfigurationSerializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this == obj)
+            return true;
 
-        if (obj == null) return false;
+        if (obj == null)
+            return false;
 
-        if (getClass() != obj.getClass()) return false;
+        if (getClass() != obj.getClass())
+            return false;
 
         PersistableLocation other = (PersistableLocation) obj;
-        if (Float.floatToIntBits(pitch) != Float.floatToIntBits(other.pitch)) return false;
+        if (Float.floatToIntBits(pitch) != Float.floatToIntBits(other.pitch))
+            return false;
 
         if (worldName == null) {
-            if (other.worldName != null) return false;
-        }
-        else if (!worldName.equals(other.worldName)) return false;
+            if (other.worldName != null)
+                return false;
+        } else if (!worldName.equals(other.worldName))
+            return false;
 
-        if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x)) return false;
-        if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y)) return false;
-        if (Float.floatToIntBits(yaw) != Float.floatToIntBits(other.yaw)) return false;
-        if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z)) return false;
+        if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+            return false;
+        if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+            return false;
+        if (Float.floatToIntBits(yaw) != Float.floatToIntBits(other.yaw))
+            return false;
+        if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z))
+            return false;
 
         return true;
     }
@@ -180,11 +189,9 @@ public class PersistableLocation implements ConfigurationSerializable {
     private double toDouble(Object val) {
         if (val instanceof Double) {
             return (Double) val;
-        }
-        else if (val instanceof Integer) {
+        } else if (val instanceof Integer) {
             return ((Integer) val).doubleValue();
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("invalid numeric value: " + val);
         }
     }

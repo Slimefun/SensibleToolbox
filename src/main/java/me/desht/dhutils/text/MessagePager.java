@@ -235,8 +235,7 @@ public class MessagePager {
 
         if (page < 1) {
             page = getPageCount();
-        }
-        else if (page > getPageCount()) {
+        } else if (page > getPageCount()) {
             page = 1;
         }
         currentPage = page;
@@ -310,8 +309,7 @@ public class MessagePager {
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
                 if (parseColors) {
                     MiscUtil.generalMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.WHITE + getLine(i));
-                }
-                else {
+                } else {
                     MiscUtil.rawMessage(player, ChatColor.GREEN + "\u250a " + ChatColor.WHITE + getLine(i));
                 }
             }
@@ -320,14 +318,12 @@ public class MessagePager {
             MiscUtil.rawMessage(player, ChatColor.GREEN + "\u2514" + MinecraftChatStr.strPadCenterChat(footer, 325, '\u2504'));
 
             setPage(pageNum);
-        }
-        else {
+        } else {
             // just dump the whole message buffer to the console
             for (String s : messages) {
                 if (parseColors) {
                     MiscUtil.generalMessage(sender, s);
-                }
-                else {
+                } else {
                     MiscUtil.rawMessage(sender, s);
                 }
             }
@@ -340,8 +336,7 @@ public class MessagePager {
         if (sender instanceof Player) {
             String s = parseColors ? MiscUtil.parseColorSpec(sender, line) : line;
             return ChatPaginator.wordWrap(s, getLineLength());
-        }
-        else {
+        } else {
             return new String[] { line };
         }
     }

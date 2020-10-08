@@ -30,8 +30,7 @@ public abstract class STBAbstractCommand extends AbstractCommand {
     protected UUID getID(String s) {
         if (MiscUtil.looksLikeUUID(s)) {
             return UUID.fromString(s);
-        }
-        else {
+        } else {
             Player p = Bukkit.getPlayer(s);
             return p == null ? null : p.getUniqueId();
         }
@@ -41,15 +40,12 @@ public abstract class STBAbstractCommand extends AbstractCommand {
         if (playerNameOrID == null) {
             if (sender instanceof Player) {
                 return (Player) sender;
-            }
-            else {
+            } else {
                 throw new DHUtilsException("This command can't be run from the console.");
             }
-        }
-        else if (!sender.hasPermission("stb.friends.other")) {
+        } else if (!sender.hasPermission("stb.friends.other")) {
             throw new DHUtilsException("You are not allowed to do that.");
-        }
-        else {
+        } else {
             return MiscUtil.looksLikeUUID(playerNameOrID) ? Bukkit.getPlayer(UUID.fromString(playerNameOrID)) : Bukkit.getPlayer(playerNameOrID);
         }
     }

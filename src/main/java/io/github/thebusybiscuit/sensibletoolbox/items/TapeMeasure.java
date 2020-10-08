@@ -70,8 +70,7 @@ public class TapeMeasure extends BaseSTBItem {
     public String[] getExtraLore() {
         if (world != null) {
             return new String[] { ChatColor.WHITE + "Anchor point: " + ChatColor.GOLD + world + "," + x + "," + y + "," + z };
-        }
-        else {
+        } else {
             return new String[0];
         }
     }
@@ -92,12 +91,10 @@ public class TapeMeasure extends BaseSTBItem {
                 setAnchor(event.getClickedBlock());
                 updateHeldItemStack(event.getPlayer(), event.getHand());
                 MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point set.");
-            }
-            else {
+            } else {
                 makeMeasurement(event.getPlayer(), event.getClickedBlock());
             }
-        }
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             setAnchor(null);
             updateHeldItemStack(event.getPlayer(), event.getHand());
             MiscUtil.statusMessage(event.getPlayer(), "Tape measure anchor point cleared.");
@@ -126,8 +123,7 @@ public class TapeMeasure extends BaseSTBItem {
             x = clickedBlock.getX();
             y = clickedBlock.getY();
             z = clickedBlock.getZ();
-        }
-        else {
+        } else {
             world = null;
         }
     }

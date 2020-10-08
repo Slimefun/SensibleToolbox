@@ -101,8 +101,7 @@ public class DirectionGadget extends ClickableGadget {
                             ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
                         }
                     }
-                }
-                else {
+                } else {
                     owner.setFacingDirection(BlockFace.SELF);
                 }
 

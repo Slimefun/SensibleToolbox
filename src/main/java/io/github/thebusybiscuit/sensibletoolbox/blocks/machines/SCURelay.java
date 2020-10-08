@@ -125,11 +125,9 @@ public class SCURelay extends BatteryBox {
 
         if (relayData == null || relayData.block1 == null || relayData.block2 == null) {
             return 0;
-        }
-        else if (relayData.block1.worldID != relayData.block2.worldID && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
+        } else if (relayData.block1.worldID != relayData.block2.worldID && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
             return 0;
-        }
-        else {
+        } else {
             return 500;
         }
     }
@@ -166,8 +164,7 @@ public class SCURelay extends BatteryBox {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR) {
             updateHeldItemStack(event.getPlayer(), event.getHand());
             event.setCancelled(true);
-        }
-        else {
+        } else {
             super.onInteractItem(event);
         }
     }
@@ -233,8 +230,7 @@ public class SCURelay extends BatteryBox {
     private void drawTransponder(InventoryGUI gui) {
         if (hasTransponder) {
             gui.setItem(TRANSPONDER_SLOT, new SubspaceTransponder().toItemStack());
-        }
-        else {
+        } else {
             gui.setItem(TRANSPONDER_SLOT, null);
         }
     }
@@ -296,8 +292,7 @@ public class SCURelay extends BatteryBox {
 
         if (this.equals(data.block1)) {
             locStr = data.block2 == null ? "(not placed)" : MiscUtil.formatLocation(data.block2.getLocation());
-        }
-        else if (this.equals(data.block2)) {
+        } else if (this.equals(data.block2)) {
             locStr = data.block1 == null ? "(not placed)" : MiscUtil.formatLocation(data.block1.getLocation());
         }
 
@@ -329,11 +324,9 @@ public class SCURelay extends BatteryBox {
 
         if (relayData.block1 == null) {
             relayData.block1 = this;
-        }
-        else if (relayData.block2 == null) {
+        } else if (relayData.block2 == null) {
             relayData.block2 = this;
-        }
-        else {
+        } else {
             // shouldn't happen!
             LogUtils.warning("trying to register more than 2 SCU relays of ID " + relayId);
         }
@@ -350,18 +343,15 @@ public class SCURelay extends BatteryBox {
         if (relayData != null) {
             if (this.equals(relayData.block1)) {
                 relayData.block1 = null;
-            }
-            else if (this.equals(relayData.block2)) {
+            } else if (this.equals(relayData.block2)) {
                 relayData.block2 = null;
-            }
-            else {
+            } else {
                 // shouldn't happen!
                 LogUtils.warning("relay loc for ID " + relayId + " doesn't match placed relays");
             }
 
             updateInfoLabels(relayData);
-        }
-        else {
+        } else {
             // shouldn't happen!
             LogUtils.warning("can't find any register SCU relay of ID " + relayId);
         }

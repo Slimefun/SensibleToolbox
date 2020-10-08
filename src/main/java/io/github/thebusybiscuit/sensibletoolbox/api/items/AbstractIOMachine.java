@@ -69,8 +69,7 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
             if (!pendingItems.isEmpty()) {
                 // try to move previously jammed items into output
                 pushItemIntoOutput(pendingItems.pop(), false);
-            }
-            else if (getProcessing() != null && getProgress() <= 0) {
+            } else if (getProcessing() != null && getProgress() <= 0) {
                 // done processing - try to move new items into output
                 ProcessingResult recipe = getCustomRecipeFor(getProcessing());
                 pushItemIntoOutput(recipe.getResult(), true);
@@ -116,16 +115,14 @@ public abstract class AbstractIOMachine extends AbstractProcessingMachine {
                 if (inOutput == null) {
                     inOutput = result.clone();
                     result.setAmount(0);
-                }
-                else {
+                } else {
                     int toAdd = Math.min(result.getAmount(), inOutput.getMaxStackSize() - inOutput.getAmount());
                     inOutput.setAmount(inOutput.getAmount() + toAdd);
                     result.setAmount(result.getAmount() - toAdd);
                 }
 
                 setInventoryItem(slot, inOutput);
-            }
-            else {
+            } else {
                 // no space!
                 setJammed(true);
                 pendingItems.push(result);

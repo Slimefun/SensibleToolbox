@@ -144,15 +144,13 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
 
             if (stb instanceof PaintCan) {
                 refillFromCan((PaintCan) stb);
-            }
-            else if (okToColor(b, stb)) {
+            } else if (okToColor(b, stb)) {
                 int painted;
                 // Bukkit Colorable interface doesn't cover all colorable blocks at this time, only Wool
                 if (player.isSneaking()) {
                     // paint a single block
                     painted = paintBlocks(player, b);
-                }
-                else {
+                } else {
                     // paint multiple blocks around the clicked block
                     Block[] blocks = findBlocksAround(b);
                     painted = paintBlocks(player, blocks);
@@ -162,8 +160,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
                     player.playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
                 }
             }
-        }
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR && player.isSneaking()) {
             setPaintLevel(0);
         }
 
@@ -188,8 +185,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
         int needed;
         if (this.getColor() == can.getColor()) {
             needed = this.getMaxPaintLevel() - this.getPaintLevel();
-        }
-        else {
+        } else {
             this.setPaintLevel(0);
             needed = this.getMaxPaintLevel();
         }
@@ -206,25 +202,23 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     @Override
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         event.setCancelled(true);
-        if (getPaintLevel() <= 0) return;
+        if (getPaintLevel() <= 0)
+            return;
         Entity e = event.getRightClicked();
         int paintUsed = 0;
         if (e instanceof Colorable) {
             ((Colorable) e).setColor(getColor());
             paintUsed = 1;
-        }
-        else if (e instanceof Painting) {
+        } else if (e instanceof Painting) {
             Art a = ((Painting) e).getArt();
             if (getPaintLevel() >= a.getBlockHeight() * a.getBlockWidth()) {
                 IconMenu menu = buildMenu((Painting) e);
                 menu.open(event.getPlayer());
-            }
-            else {
+            } else {
                 Location loc = e.getLocation().add(0, -a.getBlockHeight() / 2.0, 0);
                 HoloMessage.popup(event.getPlayer(), loc, ChatColor.RED + "Not enough paint!");
             }
-        }
-        else if (e instanceof Wolf) {
+        } else if (e instanceof Wolf) {
             Wolf wolf = (Wolf) e;
             wolf.setCollarColor(getColor());
             paintUsed = 1;
@@ -261,8 +255,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
     private DyeColor getBlockColor(@Nonnull Block b) {
         if (STBUtil.isColorable(b.getType())) {
             return DyeColor.getByColor(getColor().getColor());
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -312,8 +305,7 @@ public class PaintBrush extends BaseSTBItem implements IconMenu.OptionClickEvent
             setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
             event.getPlayer().setItemInHand(toItemStack());
             event.getPlayer().playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             MiscUtil.errorMessage(event.getPlayer(), "Invalid artwork: " + artName);
         }
 

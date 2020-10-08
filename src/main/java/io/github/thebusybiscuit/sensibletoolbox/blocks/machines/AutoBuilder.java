@@ -175,8 +175,7 @@ public class AutoBuilder extends BaseSTBMachine {
         gui.addGadget(new ButtonGadget(gui, START_BUTTON_SLOT, "Start", null, null, () -> {
             if (getStatus() == BuilderStatus.RUNNING) {
                 stop(false);
-            }
-            else {
+            } else {
                 startup();
             }
         }));
@@ -217,8 +216,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
         if (getBuildMode() != AutoBuilderMode.CLEAR && initInventoryPointer()) {
             setStatus(BuilderStatus.NO_INVENTORY);
-        }
-        else {
+        } else {
             setStatus(BuilderStatus.RUNNING);
         }
     }
@@ -277,15 +275,13 @@ public class AutoBuilder extends BaseSTBMachine {
 
                     if (scuNeeded > getCharge()) {
                         advanceBuildPos = false;
-                    }
-                    else if (b.getType() != Material.AIR) {
+                    } else if (b.getType() != Material.AIR) {
                         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                         BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
 
                         if (stb != null) {
                             stb.breakBlock(false);
-                        }
-                        else {
+                        } else {
                             b.setType(Material.AIR);
                         }
                     }
@@ -303,15 +299,13 @@ public class AutoBuilder extends BaseSTBMachine {
                     scuNeeded = baseScuPerOp;
                     if (scuNeeded > getCharge()) {
                         advanceBuildPos = false;
-                    }
-                    else if (b.isEmpty() || b.isLiquid()) {
+                    } else if (b.isEmpty() || b.isLiquid()) {
                         ItemStack item = fetchNextBuildItem();
 
                         if (item == null) {
                             setStatus(BuilderStatus.NO_INVENTORY);
                             advanceBuildPos = false;
-                        }
-                        else {
+                        } else {
                             b.setType(item.getType());
                             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
                         }
@@ -400,8 +394,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
             if (scanSlot == invSlot) {
                 return null;
-            }
-            else {
+            } else {
                 invSlot = scanSlot;
                 stack = getGUI().getItem(getInputSlots()[invSlot]);
             }
@@ -410,8 +403,7 @@ public class AutoBuilder extends BaseSTBMachine {
         if (stack.getAmount() == 1) {
             setInventoryItem(getInputSlots()[invSlot], null);
             return stack;
-        }
-        else {
+        } else {
             ItemStack res = stack.clone();
             res.setAmount(1);
             stack.setAmount(stack.getAmount() - 1);
@@ -457,8 +449,7 @@ public class AutoBuilder extends BaseSTBMachine {
             workArea = w;
             setupLandMarkerLabel(getGUI(), loc1, loc2);
             return BuilderStatus.READY;
-        }
-        else {
+        } else {
             setupLandMarkerLabel(getGUI(), null, null);
             return BuilderStatus.NO_WORKAREA;
         }
@@ -467,8 +458,7 @@ public class AutoBuilder extends BaseSTBMachine {
     private void setupLandMarkerLabel(InventoryGUI gui, Location loc1, Location loc2) {
         if (workArea == null) {
             gui.addLabel("Land Markers", 11, null, "Place two Land Markers", "in these slots, set", "to two opposite corners", "of the area to work.");
-        }
-        else {
+        } else {
             int v = workArea.getVolume();
             String s = v == 1 ? "" : "s";
             gui.addLabel("Land Markers", 11, null, "Work Area:", MiscUtil.formatLocation(loc1), MiscUtil.formatLocation(loc2), v + " block" + s);
@@ -492,16 +482,14 @@ public class AutoBuilder extends BaseSTBMachine {
                         stack.setAmount(1);
                         getGUI().getInventory().setItem(slot, stack);
                     }
-                }
-                else if (inSlot != null) {
+                } else if (inSlot != null) {
                     getGUI().getInventory().setItem(slot, null);
                 }
                 setStatus(setupWorkArea());
             }
 
             return false; // we just put a copy of the land marker into the builder
-        }
-        else {
+        } else {
             return super.onSlotClick(player, slot, click, inSlot, onCursor);
         }
     }
@@ -518,13 +506,11 @@ public class AutoBuilder extends BaseSTBMachine {
         if (item instanceof LandMarker && getStatus() != BuilderStatus.RUNNING) {
             if (((LandMarker) item).getMarkedLocation() != null) {
                 insertLandMarker(toInsert);
-            }
-            else {
+            } else {
                 STBUtil.complain((Player) player, "Land Marker doesn't have a location set!");
             }
             return 0; // we just put a copy of the land marker into the builder
-        }
-        else {
+        } else {
             return super.onShiftClickInsert(player, slot, toInsert);
         }
     }
@@ -536,8 +522,7 @@ public class AutoBuilder extends BaseSTBMachine {
         if (getInventoryItem(LANDMARKER_SLOT_1) == null) {
             setInventoryItem(LANDMARKER_SLOT_1, stack);
             setStatus(setupWorkArea());
-        }
-        else if (getInventoryItem(LANDMARKER_SLOT_2) == null) {
+        } else if (getInventoryItem(LANDMARKER_SLOT_2) == null) {
             setInventoryItem(LANDMARKER_SLOT_2, stack);
             setStatus(setupWorkArea());
         }
@@ -549,8 +534,7 @@ public class AutoBuilder extends BaseSTBMachine {
             setInventoryItem(slot, null);
             setStatus(BuilderStatus.NO_WORKAREA);
             return false;
-        }
-        else {
+        } else {
             return super.onShiftClickExtract(player, slot, toExtract);
         }
     }

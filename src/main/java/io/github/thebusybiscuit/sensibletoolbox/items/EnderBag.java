@@ -116,8 +116,7 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
 
                     event.setCancelled(true);
                     return;
-                }
-                else if (clicked.getType().isInteractable()) {
+                } else if (clicked.getType().isInteractable()) {
                     return;
                 }
             }

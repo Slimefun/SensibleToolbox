@@ -39,8 +39,7 @@ public class FurnaceListener extends STBBaseListener {
             if (!validateSmeltingIngredient(event.getCursor())) {
                 event.setCancelled(true);
             }
-        }
-        else if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
+        } else if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 if (!validateSmeltingIngredient(event.getCurrentItem()) && !event.getCurrentItem().getType().isFuel()) {
                     event.setCancelled(true);
@@ -106,8 +105,7 @@ public class FurnaceListener extends STBBaseListener {
 
         if (item != null) {
             return item.getSmeltingResult() != null;
-        }
-        else {
+        } else {
             // vanilla item - need to ensure it's actually smeltable (i.e. wasn't added
             // as a furnace recipe because it's the material for some custom STB item)
             return RecipeCalculator.getSmeltedOutput(stack.getType()) != null;

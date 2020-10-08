@@ -60,16 +60,14 @@ public class NumericGadget extends ClickableGadget {
         int newValue = value;
         if (event.isLeftClick()) {
             newValue -= event.isShiftClick() ? altIncr : incr;
-        }
-        else if (event.isRightClick()) {
+        } else if (event.isRightClick()) {
             newValue += event.isShiftClick() ? altIncr : incr;
         }
         newValue = Math.max(Math.min(newValue, range.getMaximumInteger()), range.getMinimumInteger());
         if (newValue != value && callback.run(newValue)) {
             value = newValue;
             event.setCurrentItem(getTexture());
-        }
-        else {
+        } else {
             // vetoed by the block!
             if (event.getWhoClicked() instanceof Player) {
                 STBUtil.complain((Player) event.getWhoClicked());

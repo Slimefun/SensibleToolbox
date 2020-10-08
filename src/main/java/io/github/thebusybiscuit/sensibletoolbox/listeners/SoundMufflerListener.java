@@ -36,8 +36,7 @@ public class SoundMufflerListener extends PacketAdapter implements Listener {
                 if (loc.getWorld().equals(sm.getLocation().getWorld()) && loc.distanceSquared(sm.getLocation()) < distance) {
                     if (sm.getVolume() == 0) {
                         event.setCancelled(true);
-                    }
-                    else {
+                    } else {
                         event.getPacket().getFloat().write(0, (float) sm.getVolume() / 100.0F);
                     }
                 }

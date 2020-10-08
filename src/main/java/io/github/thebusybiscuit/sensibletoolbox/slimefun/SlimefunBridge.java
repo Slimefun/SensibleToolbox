@@ -57,8 +57,7 @@ public final class SlimefunBridge implements SlimefunAddon {
                     recipe.add(null);
                     recipe.add(null);
                     recipe.add(null);
-                }
-                else if (r instanceof STBFurnaceRecipe) {
+                } else if (r instanceof STBFurnaceRecipe) {
                     recipe.add(null);
                     recipe.add(null);
                     recipe.add(null);
@@ -68,15 +67,13 @@ public final class SlimefunBridge implements SlimefunAddon {
                     recipe.add(null);
                     recipe.add(null);
                     recipe.add(null);
-                }
-                else if (item.getRecipe() instanceof ShapelessRecipe) {
+                } else if (item.getRecipe() instanceof ShapelessRecipe) {
                     recipeType = new RecipeType(MinecraftRecipe.SHAPELESS_CRAFTING);
 
                     for (ItemStack input : ((ShapelessRecipe) item.getRecipe()).getIngredientList()) {
                         if (input == null) {
                             recipe.add(null);
-                        }
-                        else {
+                        } else {
                             recipe.add(RecipeBook.getIngredient(item, input));
                         }
                     }
@@ -84,16 +81,14 @@ public final class SlimefunBridge implements SlimefunAddon {
                     for (int i = recipe.size(); i < 9; i++) {
                         recipe.add(null);
                     }
-                }
-                else if (item.getRecipe() instanceof ShapedRecipe) {
+                } else if (item.getRecipe() instanceof ShapedRecipe) {
                     recipeType = new RecipeType(MinecraftRecipe.SHAPED_CRAFTING);
 
                     for (String row : ((ShapedRecipe) item.getRecipe()).getShape()) {
                         for (int i = 0; i < 3; i++) {
                             try {
                                 recipe.add(RecipeBook.getIngredient(item, ((ShapedRecipe) item.getRecipe()).getIngredientMap().get(Character.valueOf(row.charAt(i)))));
-                            }
-                            catch (StringIndexOutOfBoundsException x) {
+                            } catch (StringIndexOutOfBoundsException x) {
                                 recipe.add(null);
                             }
                         }
@@ -111,8 +106,7 @@ public final class SlimefunBridge implements SlimefunAddon {
             if (item instanceof Generator) {
                 List<ItemStack> fuels = ((Generator) item).getFuelInformation();
                 sfItem = new STBSlimefunGenerator(category, itemStack, recipeType, recipe.toArray(new ItemStack[0]), fuels);
-            }
-            else {
+            } else {
                 sfItem = new STBSlimefunItem(category, itemStack, recipeType, recipe.toArray(new ItemStack[0]));
             }
 

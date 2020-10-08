@@ -156,8 +156,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                 getPaintLevelMonitor().repaint();
             }
             event.setCancelled(true);
-        }
-        else {
+        } else {
             super.onInteractBlock(event);
         }
     }
@@ -249,8 +248,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         if (!validItem(toInsert)) {
             return 0;
-        }
-        else {
+        } else {
             Map<Integer, ItemStack> excess = getGUI().getInventory().addItem(toInsert);
             int inserted = toInsert.getAmount();
 
@@ -323,14 +321,11 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             if (stack != null) {
                 if (stack.getType() == Material.MILK_BUCKET && !stack.hasItemMeta() && bucketSlot == -1) {
                     bucketSlot = slot;
-                }
-                else if (MaterialCollections.getAllDyeColors().contains(stack.getType()) && !stack.hasItemMeta() && dyeSlot == -1) {
+                } else if (MaterialCollections.getAllDyeColors().contains(stack.getType()) && !stack.hasItemMeta() && dyeSlot == -1) {
                     dyeSlot = slot;
-                }
-                else if (validItem(stack) && dyeableSlot == -1) {
+                } else if (validItem(stack) && dyeableSlot == -1) {
                     dyeableSlot = slot;
-                }
-                else {
+                } else {
                     // not an item we want - eject it
                     getLocation().getWorld().dropItemNaturally(getLocation(), stack);
                     inventory.setItem(slot, null);
@@ -363,14 +358,12 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
                     toUse = Math.min(getMaxPaintLevel() / paintPerDye, dyeAmount);
                     setColor(newColor);
                     setPaintLevel(paintPerDye * toUse);
-                }
-                else {
+                } else {
                     // yes, they mix
                     setColor(mixedColor);
                     setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + paintPerDye * toUse));
                 }
-            }
-            else {
+            } else {
                 // either adding to an empty can, or adding more of the same color
                 setColor(newColor);
                 setPaintLevel(Math.min(getMaxPaintLevel(), getPaintLevel() + paintPerDye * toUse));
@@ -386,8 +379,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             inventory.setItem(dyeSlot, dyeStack.getAmount() > 0 ? dyeStack : null);
 
             return true;
-        }
-        else if (dyeableSlot >= 0 && getPaintLevel() > 0) {
+        } else if (dyeableSlot >= 0 && getPaintLevel() > 0) {
             // soak up some paint with the dyeable item(s)
             // TODO: Fix Paint Can
             // int toDye = inventory.getItem(dyeableSlot).getAmount();
@@ -404,8 +396,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             // Location loc = getLocation();
             // loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0f, 1.0f);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -413,8 +404,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
     private DyeColor mixDyes(DyeColor dye1, DyeColor dye2) {
         if (dye1 == dye2) {
             return dye1;
-        }
-        else if (dye1.compareTo(dye2) > 0) {
+        } else if (dye1.compareTo(dye2) > 0) {
             DyeColor tmp = dye2;
             dye2 = dye1;
             dye1 = tmp;
@@ -424,32 +414,23 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
         if (dye1 == DyeColor.YELLOW && dye2 == DyeColor.RED) {
             return DyeColor.ORANGE;
-        }
-        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.RED) {
+        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.RED) {
             return DyeColor.PINK;
-        }
-        else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.GREEN) {
+        } else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.GREEN) {
             return DyeColor.CYAN;
-        }
-        else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.RED) {
+        } else if (dye1 == DyeColor.BLUE && dye2 == DyeColor.RED) {
             return DyeColor.PURPLE;
-        }
-        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLACK) {
+        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLACK) {
             return DyeColor.GRAY;
-        }
-        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLUE) {
+        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.BLUE) {
             return DyeColor.LIGHT_BLUE;
-        }
-        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GREEN) {
+        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GREEN) {
             return DyeColor.LIME;
-        }
-        else if (dye1 == DyeColor.PINK && dye2 == DyeColor.PURPLE) {
+        } else if (dye1 == DyeColor.PINK && dye2 == DyeColor.PURPLE) {
             return DyeColor.MAGENTA;
-        }
-        else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
+        } else if (dye1 == DyeColor.WHITE && dye2 == DyeColor.GRAY) {
             return DyeColor.LIGHT_GRAY;
-        }
-        else {
+        } else {
             // colors don't mix
             return null;
         }

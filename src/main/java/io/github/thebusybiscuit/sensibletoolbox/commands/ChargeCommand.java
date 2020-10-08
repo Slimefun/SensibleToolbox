@@ -44,8 +44,7 @@ public class ChargeCommand extends AbstractCommand {
 
         if (item instanceof Chargeable) {
             chargeable = (Chargeable) item;
-        }
-        else {
+        } else {
             Block b = player.getTargetBlock((Set<Material>) null, 10);
 
             if (Tag.WALL_SIGNS.isTagged(b.getType()) || Tag.STANDING_SIGNS.isTagged(b.getType())) {
@@ -75,8 +74,7 @@ public class ChargeCommand extends AbstractCommand {
                 MiscUtil.errorMessage(sender, "Must be in range 0-" + max);
                 return true;
             }
-        }
-        else {
+        } else {
             amount = max;
         }
 
@@ -84,8 +82,7 @@ public class ChargeCommand extends AbstractCommand {
 
         if (item != null) {
             player.getInventory().setItemInMainHand(item.toItemStack());
-        }
-        else if (block != null) {
+        } else if (block != null) {
             block.update(true);
             MiscUtil.statusMessage(player, "&6" + block.getItemName() + "&- charged to " + STBUtil.getChargeString(chargeable));
         }

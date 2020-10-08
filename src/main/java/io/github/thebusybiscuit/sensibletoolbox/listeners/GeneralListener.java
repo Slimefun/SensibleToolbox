@@ -120,8 +120,7 @@ public class GeneralListener extends STBBaseListener {
         if (stb != null) {
             if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.BREAK)) {
                 stb.onBlockDamage(event);
-            }
-            else {
+            } else {
                 event.setCancelled(true);
             }
         }
@@ -133,11 +132,9 @@ public class GeneralListener extends STBBaseListener {
         if (stb != null) {
             if (!(stb instanceof BaseSTBBlock)) {
                 event.setCancelled(true);
-            }
-            else if (!stb.checkPlayerPermission(event.getPlayer(), ItemAction.PLACE)) {
+            } else if (!stb.checkPlayerPermission(event.getPlayer(), ItemAction.PLACE)) {
                 event.setCancelled(true);
-            }
-            else if (!((BaseSTBBlock) stb).validatePlaceable(event.getBlock().getLocation())) {
+            } else if (!((BaseSTBBlock) stb).validatePlaceable(event.getBlock().getLocation())) {
                 event.setCancelled(true);
             }
         }
@@ -195,8 +192,7 @@ public class GeneralListener extends STBBaseListener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (STBUtil.isCable(event.getBlock())) {
             plugin.getEnergyNetManager().onCableRemoved(event.getBlock());
-        }
-        else {
+        } else {
             ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
 
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
@@ -259,8 +255,7 @@ public class GeneralListener extends STBBaseListener {
         BaseSTBBlock item = LocationManager.getManager().get(block.getLocation());
         if (item != null) {
             item.handlePhysicsEvent(event);
-        }
-        else {
+        } else {
             if (block.getType() == Material.LEVER) {
                 Directional l = (Directional) block.getState().getData();
                 item = LocationManager.getManager().get(block.getRelative(l.getFacing()).getLocation());
@@ -332,8 +327,7 @@ public class GeneralListener extends STBBaseListener {
                     Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
                     event.getInventory().setResult(null);
                     break;
-                }
-                else if (item instanceof Chargeable && result instanceof Chargeable) {
+                } else if (item instanceof Chargeable && result instanceof Chargeable) {
                     // add the ingredient's charge to the final item's charge
                     finalSCU += ((Chargeable) item).getCharge();
                 }
@@ -382,8 +376,7 @@ public class GeneralListener extends STBBaseListener {
                         }
                     }
                 }
-            }
-            else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
+            } else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getCursor());
                 if (item != null && !item.isWearable()) {
                     event.setCancelled(true);
@@ -475,11 +468,9 @@ public class GeneralListener extends STBBaseListener {
     private STBInventoryGUI getGUIForInventoryEvent(InventoryEvent event) {
         if (event.getInventory().getHolder() instanceof STBGUIHolder) {
             return (STBInventoryGUI) ((STBGUIHolder) event.getInventory().getHolder()).getGUI();
-        }
-        else if (event.getInventory().getHolder() instanceof Player) {
+        } else if (event.getInventory().getHolder() instanceof Player) {
             return (STBInventoryGUI) STBInventoryGUI.getOpenGUI((Player) event.getInventory().getHolder());
-        }
-        else {
+        } else {
             return null;
         }
     }

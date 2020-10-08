@@ -29,8 +29,7 @@ public class DBStorage {
         try {
             System.out.println("[CS-CoreLib - Database] Loading SQL Driver...");
             Class.forName("org.sqlite.JDBC");
-        }
-        catch (Exception x) {
+        } catch (Exception x) {
             System.err.println("ERROR: Failed to load SQL Driver: org.sqlite.JDBC");
             x.printStackTrace();
             return null;
@@ -50,8 +49,7 @@ public class DBStorage {
             if (!tableExists(fullName)) {
                 stmt.executeUpdate("CREATE TABLE " + fullName + "(" + ddl + ")");
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
             throw e;
         }

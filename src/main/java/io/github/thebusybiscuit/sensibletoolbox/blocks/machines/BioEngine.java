@@ -157,7 +157,8 @@ public class BioEngine extends Generator {
 
     @Override
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
-        if (!super.isValidUpgrade(player, upgrade)) return false;
+        if (!super.isValidUpgrade(player, upgrade))
+            return false;
         if (!(upgrade instanceof RegulatorUpgrade)) {
             STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
             return false;
@@ -220,8 +221,7 @@ public class BioEngine extends Generator {
                         break;
                     }
                 }
-            }
-            else if (getProgress() > 0) {
+            } else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
                 double burnRate = Math.max(getBurnRate() * Math.min(getProgress(), TICK_FREQUENCY), 1.0);

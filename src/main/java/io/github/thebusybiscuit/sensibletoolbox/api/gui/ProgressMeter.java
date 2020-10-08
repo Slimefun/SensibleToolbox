@@ -48,8 +48,7 @@ public class ProgressMeter extends MonitorGadget {
                     meta.setLore(GUIUtil.makeLore(lore));
                 }
                 stack.setItemMeta(meta);
-            }
-            else {
+            } else {
                 stack = STBInventoryGUI.BG_TEXTURE;
             }
             getGUI().getInventory().setItem(machine.getProgressCounterSlot(), stack);
@@ -57,8 +56,7 @@ public class ProgressMeter extends MonitorGadget {
         if (machine.getProgressItemSlot() > 0 && machine.getProgressItemSlot() < getGUI().getInventory().getSize()) {
             if (machine.getProcessing() != null) {
                 getGUI().getInventory().setItem(machine.getProgressItemSlot(), machine.getProcessing());
-            }
-            else {
+            } else {
                 getGUI().getInventory().setItem(machine.getProgressItemSlot(), STBInventoryGUI.BG_TEXTURE);
             }
         }
@@ -68,11 +66,9 @@ public class ProgressMeter extends MonitorGadget {
     public int[] getSlots() {
         if (machine.getProgressCounterSlot() > 0 && machine.getProgressItemSlot() > 0) {
             return new int[] { machine.getProgressCounterSlot(), machine.getProgressItemSlot() };
-        }
-        else if (machine.getProgressCounterSlot() > 0) {
+        } else if (machine.getProgressCounterSlot() > 0) {
             return new int[] { machine.getProgressCounterSlot() };
-        }
-        else {
+        } else {
             return new int[] { machine.getProgressItemSlot() };
         }
     }

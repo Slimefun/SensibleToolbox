@@ -100,8 +100,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         if (getSeedType() != null && getSeedAmount() > 0) {
             String s = ItemUtils.getItemName(new ItemStack(getSeedType()));
             return new String[] { ChatColor.WHITE + "Seed bag: " + ChatColor.GOLD + getSeedAmount() + " x " + s };
-        }
-        else {
+        } else {
             return new String[0];
         }
     }
@@ -121,8 +120,7 @@ public abstract class CombineHoe extends BaseSTBItem {
                 plantSeeds(event.getPlayer(), b);
                 event.setCancelled(true);
                 return;
-            }
-            else if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
+            } else if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
                 tillSoil(event.getPlayer(), b);
                 event.setCancelled(true);
                 return;
@@ -161,8 +159,7 @@ public abstract class CombineHoe extends BaseSTBItem {
             }
 
             ItemUtils.damageItem(player.getInventory().getItemInMainHand(), false);
-        }
-        else if (STBUtil.isPlant(b.getType())) {
+        } else if (STBUtil.isPlant(b.getType())) {
             harvestLayer(player, b);
             ItemUtils.damageItem(player.getInventory().getItemInMainHand(), false);
         }
@@ -191,11 +188,9 @@ public abstract class CombineHoe extends BaseSTBItem {
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         if (STBUtil.getCropType(toInsert.getType()) == null) {
             return 0;
-        }
-        else if (!verifyUnique(gui.getInventory(), toInsert, slot)) {
+        } else if (!verifyUnique(gui.getInventory(), toInsert, slot)) {
             return 0;
-        }
-        else {
+        } else {
             Map<Integer, ItemStack> excess = gui.getInventory().addItem(toInsert);
             int inserted = toInsert.getAmount();
 
@@ -229,12 +224,10 @@ public abstract class CombineHoe extends BaseSTBItem {
                 if (seedType != null && seedType != stack.getType()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), stack);
                     err = "Mixed items in the seed bag??";
-                }
-                else if (STBUtil.getCropType(stack.getType()) == null) {
+                } else if (STBUtil.getCropType(stack.getType()) == null) {
                     player.getWorld().dropItemNaturally(player.getLocation(), stack);
                     err = "Non-seed items in the seed bag??";
-                }
-                else {
+                } else {
                     seedType = stack.getType();
                     count += stack.getAmount();
                 }

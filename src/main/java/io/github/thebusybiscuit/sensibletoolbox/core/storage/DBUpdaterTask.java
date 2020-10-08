@@ -70,12 +70,10 @@ public class DBUpdaterTask implements Runnable {
                 }
 
                 Debugger.getInstance().debug("DB write complete: rows modified = " + n);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }

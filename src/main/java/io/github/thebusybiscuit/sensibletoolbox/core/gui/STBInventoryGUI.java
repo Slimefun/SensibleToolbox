@@ -98,8 +98,7 @@ public class STBInventoryGUI implements InventoryGUI {
     private static void setOpenGUI(Player player, InventoryGUI gui) {
         if (gui != null) {
             player.setMetadata(STB_OPEN_GUI, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), gui));
-        }
-        else {
+        } else {
             player.removeMetadata(STB_OPEN_GUI, SensibleToolboxPlugin.getInstance());
         }
     }
@@ -238,8 +237,7 @@ public class STBInventoryGUI implements InventoryGUI {
                 default:
                     break;
                 }
-            }
-            else if (event.getRawSlot() > 0) {
+            } else if (event.getRawSlot() > 0) {
                 // clicking inside the player's inventory
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                     int nInserted = listener.onShiftClickInsert(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
@@ -248,17 +246,14 @@ public class STBInventoryGUI implements InventoryGUI {
                         stack.setAmount(stack.getAmount() - nInserted);
                         event.setCurrentItem(stack.getAmount() > 0 ? stack : null);
                     }
-                }
-                else {
+                } else {
                     shouldCancel = !listener.onPlayerInventoryClick(event.getWhoClicked(), event.getSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
                 }
-            }
-            else {
+            } else {
                 // clicking outside the inventory entirely
                 shouldCancel = !listener.onClickOutside(event.getWhoClicked());
             }
-        }
-        finally {
+        } finally {
             if (shouldCancel) {
                 event.setCancelled(true);
             }
@@ -280,13 +275,11 @@ public class STBInventoryGUI implements InventoryGUI {
                     int slot = (event.getRawSlots().toArray(new Integer[1]))[0];
                     shouldCancel = !listener.onSlotClick(event.getWhoClicked(), slot, ClickType.LEFT, inventory.getItem(slot), event.getOldCursor());
                 }
-            }
-            else {
+            } else {
                 // drag is purely in the player's inventory; allow it
                 shouldCancel = false;
             }
-        }
-        finally {
+        } finally {
             if (shouldCancel) {
                 event.setCancelled(true);
             }
@@ -383,8 +376,7 @@ public class STBInventoryGUI implements InventoryGUI {
                 for (int i = 0; i < slots.length; i++) {
                     inventory.setItem(slots[i], tmpInv.getItem(i));
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.severe("can't restore inventory for " + getOwningItem().getItemName());
             }
         }

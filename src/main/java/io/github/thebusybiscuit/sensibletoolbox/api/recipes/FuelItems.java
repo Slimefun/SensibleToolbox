@@ -41,8 +41,7 @@ public class FuelItems {
     public void addFuel(ItemStack stack, boolean ignoreData, double chargePerTick, int burnTime) {
         if (ignoreData) {
             fuelMaterials.put(stack.getType(), new FuelValues(chargePerTick, burnTime));
-        }
-        else {
+        } else {
             fuels.put(getSingle(stack), new FuelValues(chargePerTick, burnTime));
         }
 
@@ -84,8 +83,7 @@ public class FuelItems {
     private ItemStack getSingle(ItemStack stack) {
         if (stack.getAmount() == 1) {
             return stack;
-        }
-        else {
+        } else {
             ItemStack stack2 = stack.clone();
             stack2.setAmount(1);
             return stack2;

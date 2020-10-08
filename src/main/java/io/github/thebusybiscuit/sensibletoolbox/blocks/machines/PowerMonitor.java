@@ -76,8 +76,7 @@ public class PowerMonitor extends BaseSTBBlock {
 
                 if (stat > 0) {
                     prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+ " + ChatColor.GREEN;
-                }
-                else {
+                } else {
                     prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "- " + ChatColor.RED;
                 }
 

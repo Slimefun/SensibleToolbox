@@ -88,12 +88,10 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
         if (hand == EquipmentSlot.HAND) {
             ItemStack item = inv.getItemInMainHand();
             inv.setItemInMainHand(toItemStack(item.getAmount()));
-        }
-        else if (hand == EquipmentSlot.OFF_HAND) {
+        } else if (hand == EquipmentSlot.OFF_HAND) {
             ItemStack item = inv.getItemInOffHand();
             inv.setItemInOffHand(toItemStack(item.getAmount()));
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(hand.name() + " is not a hand! (HAND, OFF_HAND)");
         }
     }

@@ -109,8 +109,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
             try {
                 LocationManager.getManager().loadDeferredBlocks(id);
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 LogUtils.severe("There was a problem restoring blocks of type '" + id + "' from persisted storage:");
                 e.printStackTrace();
             }
@@ -157,8 +156,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
         if (optional.isPresent()) {
             return YamlConfiguration.loadConfiguration(new StringReader(optional.get()));
-        }
-        else {
+        } else {
             return new MemoryConfiguration();
         }
     }
@@ -169,8 +167,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
         if (item != null && type.isAssignableFrom(item.getClass())) {
             return type.cast(item);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -190,8 +187,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
         try {
             return conf == null ? details.ctor0arg.newInstance() : details.ctor1arg.newInstance(conf);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LogUtils.warning("failed to create STB item from item ID: " + id);
             e.printStackTrace();
             return null;
@@ -208,8 +204,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         BaseSTBItem item = fromItemStack(stack);
         if (c == null) {
             return item != null;
-        }
-        else {
+        } else {
             return c.isInstance(item);
         }
     }
@@ -238,15 +233,13 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         private ReflectionDetails(Class<T> clazz) {
             try {
                 ctor0arg = clazz.getConstructor();
-            }
-            catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException("class " + clazz + " does not have a 0-argument constructor!");
             }
 
             try {
                 ctor1arg = clazz.getConstructor(ConfigurationSection.class);
-            }
-            catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException("class " + clazz + " does not have a 1-argument (ConfigurationSection) constructor!");
             }
         }

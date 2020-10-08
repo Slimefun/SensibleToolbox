@@ -114,18 +114,15 @@ public class EnderLeash extends BaseSTBItem {
                 Animals animal = (Animals) target;
                 if (!checkLeash(animal)) {
                     STBUtil.complain(player, "Can't capture a leashed animal!");
-                }
-                else if (!verifyOwner(player, animal)) {
+                } else if (!verifyOwner(player, animal)) {
                     STBUtil.complain(player, "This animal is owned by someone else!");
-                }
-                else {
+                } else {
                     capturedConf = freezeEntity(animal);
                     target.getWorld().playEffect(target.getLocation(), Effect.ENDER_SIGNAL, 0);
                     target.remove();
                     updateHeldItemStack(event.getPlayer(), event.getHand());
                 }
-            }
-            else {
+            } else {
                 // workaround CB bug to ensure client is updated properly
                 STBUtil.complain(event.getPlayer(), "Ender Leash already has a captured animal");
                 player.updateInventory();
@@ -152,8 +149,7 @@ public class EnderLeash extends BaseSTBItem {
             if (leashHolder instanceof LeashHitch) {
                 leashHolder.remove();
                 animal.getWorld().dropItemNaturally(animal.getLocation(), new ItemStack(Material.LEAD));
-            }
-            else {
+            } else {
                 return false;
             }
         }
@@ -232,8 +228,7 @@ public class EnderLeash extends BaseSTBItem {
                 Horse horse = (Horse) target;
                 conf.set("horseStyle", horse.getStyle().toString());
                 conf.set("horseColor", horse.getColor().toString());
-            }
-            else if (target instanceof ChestedHorse) {
+            } else if (target instanceof ChestedHorse) {
                 ChestedHorse chestedHorse = (ChestedHorse) target;
                 conf.set("chest", chestedHorse.isCarryingChest());
             }
@@ -296,8 +291,7 @@ public class EnderLeash extends BaseSTBItem {
                 Horse h = (Horse) entity;
                 h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
                 h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-            }
-            else if (entity instanceof ChestedHorse) {
+            } else if (entity instanceof ChestedHorse) {
                 ChestedHorse chestedHorse = (ChestedHorse) entity;
                 chestedHorse.setCarryingChest(conf.getBoolean("chest"));
             }
@@ -312,8 +306,7 @@ public class EnderLeash extends BaseSTBItem {
                 for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {
                     abstractHorse.getInventory().setItem(i, inv.getItem(i));
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.warning("could not restore horse inventory!");
                 e.printStackTrace();
             }
@@ -332,8 +325,7 @@ public class EnderLeash extends BaseSTBItem {
             }
             String l = ChatColor.WHITE + "Captured: " + ChatColor.GOLD + getCapturedEntityType().toString() + name;
             return new String[] { l };
-        }
-        else {
+        } else {
             return new String[0];
         }
     }

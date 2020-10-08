@@ -251,8 +251,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
         try {
             LocationManager.getManager().load();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.SEVERE, "An Error occured while loading Locations...", e);
             setEnabled(false);
             return;
@@ -498,9 +497,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
         }
         if (protocolLibEnabled) {
-            if (getConfig().getBoolean("options.glowing_items")) ItemGlow.init(this);
-        }
-        else {
+            if (getConfig().getBoolean("options.glowing_items"))
+                ItemGlow.init(this);
+        } else {
             LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
             LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
         }
@@ -544,8 +543,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
             return commandManager.dispatch(sender, command, label, args);
-        }
-        catch (DHUtilsException e) {
+        } catch (DHUtilsException e) {
             MiscUtil.errorMessage(sender, e.getMessage());
             return true;
         }
@@ -560,17 +558,13 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     public <T> T onConfigurationValidate(ConfigurationManager configurationManager, String key, T oldVal, T newVal) {
         if (key.equals("save_interval")) {
             Validate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
-        }
-        else if (key.equals("energy.tick_rate")) {
+        } else if (key.equals("energy.tick_rate")) {
             Validate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
-        }
-        else if (key.startsWith("gui.texture.")) {
+        } else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
-        }
-        else if (key.equals("default_access")) {
+        } else if (key.equals("default_access")) {
             getEnumValue(newVal.toString().toUpperCase(), AccessControl.class);
-        }
-        else if (key.equals("default_redstone")) {
+        } else if (key.equals("default_redstone")) {
             getEnumValue(newVal.toString().toUpperCase(), RedstoneBehaviour.class);
         }
         return newVal;
@@ -582,13 +576,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             Method m = c.getMethod("valueOf", String.class);
             // noinspection unchecked
             return (T) m.invoke(null, value);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
                 e.printStackTrace();
                 throw new DHUtilsException(e.getMessage());
-            }
-            else {
+            } else {
                 throw new DHUtilsException("Unknown value: " + value);
             }
         }
@@ -602,33 +594,24 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
             if (dbg.getLevel() > 0) {
                 dbg.setTarget(getServer().getConsoleSender());
-            }
-            else {
+            } else {
                 dbg.setTarget(null);
             }
-        }
-        else if (key.equals("save_interval")) {
+        } else if (key.equals("save_interval")) {
             LocationManager.getManager().setSaveInterval((Integer) newVal);
-        }
-        else if (key.equals("energy.tick_rate")) {
+        } else if (key.equals("energy.tick_rate")) {
             scheduleEnergyNetTicker();
-        }
-        else if (key.startsWith("gui.texture.")) {
+        } else if (key.startsWith("gui.texture.")) {
             STBInventoryGUI.buildStockTextures();
-        }
-        else if (key.equals("default_access")) {
+        } else if (key.equals("default_access")) {
             getConfigCache().setDefaultAccess(AccessControl.valueOf(newVal.toString().toUpperCase()));
-        }
-        else if (key.equals("default_redstone")) {
+        } else if (key.equals("default_redstone")) {
             getConfigCache().setDefaultRedstone(RedstoneBehaviour.valueOf(newVal.toString().toUpperCase()));
-        }
-        else if (key.equals("particle_effects")) {
+        } else if (key.equals("particle_effects")) {
             getConfigCache().setParticleLevel((Integer) newVal);
-        }
-        else if (key.equals("noisy_machines")) {
+        } else if (key.equals("noisy_machines")) {
             getConfigCache().setNoisyMachines((Boolean) newVal);
-        }
-        else if (key.equals("creative_ender_access")) {
+        } else if (key.equals("creative_ender_access")) {
             getConfigCache().setCreativeEnderAccess((Boolean) newVal);
         }
     }

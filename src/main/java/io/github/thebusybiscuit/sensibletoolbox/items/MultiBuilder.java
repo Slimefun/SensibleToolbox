@@ -180,11 +180,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
         if (delta == 0) {
             return;
-        }
-        else if (delta >= 6) {
+        } else if (delta >= 6) {
             delta -= 9;
-        }
-        else if (delta <= -6) {
+        } else if (delta <= -6) {
             delta += 9;
         }
 
@@ -193,8 +191,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
         if (o < 0) {
             o = Mode.values().length - 1;
-        }
-        else if (o >= Mode.values().length) {
+        } else if (o >= Mode.values().length) {
             o = 0;
         }
 
@@ -211,8 +208,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // set the target material
                 material = clicked.getType();
                 player.setItemInHand(toItemStack());
-            }
-            else if (material != null) {
+            } else if (material != null) {
                 // replace multiple blocks
                 int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
                 int layers = 3 + sharpness;
@@ -221,8 +217,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             }
 
             event.setCancelled(true);
-        }
-        else if (event.getAction() == Action.LEFT_CLICK_BLOCK && material != null) {
+        } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && material != null) {
             // replace a single block
             startSwap(event.getPlayer(), this, clicked, material, 0);
             event.setCancelled(true);
@@ -262,14 +257,11 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         // we won't replace any block which can hold items, or any STB block, or any unbreakable block
         if (SensibleToolbox.getBlockAt(b.getLocation(), true) != null) {
             return false;
-        }
-        else if (VanillaInventoryUtils.isVanillaInventory(b)) {
+        } else if (VanillaInventoryUtils.isVanillaInventory(b)) {
             return false;
-        }
-        else if (b.getType().getHardness() >= 3600000) {
+        } else if (b.getType().getHardness() >= 3600000) {
             return false;
-        }
-        else {
+        } else {
             return SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK);
         }
     }
@@ -283,8 +275,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             if (!blocks.isEmpty()) {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     doBuild(player, event.getClickedBlock(), blocks);
-                }
-                else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     showBuildPreview(player, blocks);
                 }
             }
@@ -377,8 +368,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
             if (frac > 0.85 || frac < 0.15) {
                 return face.getModY() != 0;
-            }
-            else {
+            } else {
                 return face.getModY() == 0;
             }
         case UP:
@@ -408,17 +398,13 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
         if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
             return BlockFace.NORTH;
-        }
-        else if (45 <= rot && rot < 135) {
+        } else if (45 <= rot && rot < 135) {
             return BlockFace.EAST;
-        }
-        else if (135 <= rot && rot < 225) {
+        } else if (135 <= rot && rot < 225) {
             return BlockFace.SOUTH;
-        }
-        else if (225 <= rot && rot < 315) {
+        } else if (225 <= rot && rot < 315) {
             return BlockFace.WEST;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("impossible rotation: " + rot);
         }
     }
@@ -520,8 +506,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // give materials to the player...
                 if (builderItem.getEnchantmentLevel(Enchantment.SILK_TOUCH) == 1) {
                     tool.addEnchantment(Enchantment.SILK_TOUCH, 1);
-                }
-                else {
+                } else {
                     tool.removeEnchantment(Enchantment.SILK_TOUCH);
                 }
 

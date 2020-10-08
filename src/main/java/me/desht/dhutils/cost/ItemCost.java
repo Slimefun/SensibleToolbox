@@ -80,8 +80,7 @@ public class ItemCost {
         if (playerFirst) {
             invs.add(player.getInventory());
             invs.addAll(Arrays.asList(extraInventories));
-        }
-        else {
+        } else {
             invs.addAll(Arrays.asList(extraInventories));
             invs.add(player.getInventory());
         }
@@ -105,7 +104,8 @@ public class ItemCost {
         for (Entry<Integer, ? extends ItemStack> entry : matchingInvSlots.entrySet()) {
             if (matches(entry.getValue())) {
                 remainingCheck -= entry.getValue().getAmount();
-                if (remainingCheck <= 0) break;
+                if (remainingCheck <= 0)
+                    break;
             }
         }
 
@@ -115,8 +115,7 @@ public class ItemCost {
     public void apply(@Nonnull Player player) {
         if (getAmount() > 0) {
             chargeItems(player.getInventory());
-        }
-        else {
+        } else {
             int dropped = addItems(player.getInventory());
             dropExcess(player, dropped);
         }
@@ -138,16 +137,14 @@ public class ItemCost {
         if (playerFirst) {
             invs[0] = player.getInventory();
             System.arraycopy(extraInventories, 0, invs, 1, extraInventories.length);
-        }
-        else {
+        } else {
             System.arraycopy(extraInventories, 0, invs, 0, extraInventories.length);
             invs[extraInventories.length] = player.getInventory();
         }
 
         if (getAmount() > 0) {
             chargeItems(invs);
-        }
-        else {
+        } else {
             int dropped = addItems(invs);
             dropExcess(player, dropped);
         }
@@ -211,8 +208,7 @@ public class ItemCost {
                     entry.getValue().setAmount(-quantity);
                     taken.add(entry.getValue().clone());
                     break;
-                }
-                else {
+                } else {
                     inventory.removeItem(entry.getValue());
                     taken.add(entry.getValue().clone());
                 }
@@ -228,8 +224,7 @@ public class ItemCost {
     protected boolean matches(@Nonnull ItemStack stack) {
         if (toMatch.getType() != stack.getType()) {
             return false;
-        }
-        else if (matchMeta) {
+        } else if (matchMeta) {
             String d1 = stack.hasItemMeta() ? stack.getItemMeta().getDisplayName() : null;
             String d2 = toMatch.hasItemMeta() ? toMatch.getItemMeta().getDisplayName() : null;
 
@@ -238,8 +233,7 @@ public class ItemCost {
             }
 
             return true;
-        }
-        else {
+        } else {
             return true;
         }
     }

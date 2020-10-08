@@ -87,8 +87,7 @@ public class EjectorUpgrade extends MachineUpgrade implements Directional {
             setFacingDirection(event.getBlockFace().getOppositeFace());
             updateHeldItemStack(event.getPlayer(), event.getHand());
             event.setCancelled(true);
-        }
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             // open ejector configuration GUI
             Block b = event.getClickedBlock();
             BaseSTBMachine machine = b == null ? null : SensibleToolbox.getBlockAt(b.getLocation(), BaseSTBMachine.class, true);

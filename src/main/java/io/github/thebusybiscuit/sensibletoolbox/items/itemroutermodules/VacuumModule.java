@@ -118,15 +118,13 @@ public class VacuumModule extends DirectionalItemRouterModule {
                             toSlurp = onGround.getAmount();
                             getItemRouter().setBufferItem(onGround);
                             item.remove();
-                        }
-                        else if (newBuffer.isSimilar(onGround)) {
+                        } else if (newBuffer.isSimilar(onGround)) {
                             toSlurp = Math.min(onGround.getAmount(), newBuffer.getType().getMaxStackSize() - newBuffer.getAmount());
                             getItemRouter().setBufferAmount(newBuffer.getAmount() + toSlurp);
                             onGround.setAmount(onGround.getAmount() - toSlurp);
                             if (onGround.getAmount() == 0) {
                                 item.remove();
-                            }
-                            else {
+                            } else {
                                 item.setItemStack(onGround);
                             }
                         }

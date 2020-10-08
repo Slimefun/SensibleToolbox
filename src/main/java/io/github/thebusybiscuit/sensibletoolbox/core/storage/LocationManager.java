@@ -72,8 +72,7 @@ public final class LocationManager {
             dbStorage.getConnection().setAutoCommit(false);
             queryStmt = dbStorage.getConnection().prepareStatement("SELECT * FROM " + DBStorage.makeTableName("blocks") + " WHERE world_id = ?");
             queryTypeStmt = dbStorage.getConnection().prepareStatement("SELECT * FROM " + DBStorage.makeTableName("blocks") + " WHERE world_id = ? and type = ?");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalStateException("Unable to initialise DB storage: " + e.getMessage());
         }
@@ -86,8 +85,7 @@ public final class LocationManager {
             try {
                 instance = new LocationManager(SensibleToolboxPlugin.getInstance());
                 instance.updaterTask.start();
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
                 return null;
             }
@@ -163,8 +161,7 @@ public final class LocationManager {
             addPendingDBOperation(loc, locStr, UpdateRecord.Operation.DELETE);
             getWorldIndex(loc.getWorld()).remove(locStr);
             Debugger.getInstance().debug("Unregistered " + stb + " @ " + loc);
-        }
-        else {
+        } else {
             LogUtils.warning("Attempt to unregister non-existent STB block @ " + loc);
         }
     }
@@ -203,8 +200,7 @@ public final class LocationManager {
             if (existingRec == null) {
                 // brand new insertion
                 pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.INSERT, loc));
-            }
-            else if (existingRec.getOp() == UpdateRecord.Operation.DELETE) {
+            } else if (existingRec.getOp() == UpdateRecord.Operation.DELETE) {
                 // re-inserting where a block was just deleted
                 pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.UPDATE, loc));
             }
@@ -218,8 +214,7 @@ public final class LocationManager {
             if (existingRec != null && existingRec.getOp() == UpdateRecord.Operation.INSERT) {
                 // remove a recent insertion
                 pendingUpdates.remove(locStr);
-            }
-            else {
+            } else {
                 pendingUpdates.put(locStr, new UpdateRecord(UpdateRecord.Operation.DELETE, loc));
             }
             break;
@@ -262,8 +257,7 @@ public final class LocationManager {
 
         if (stb != null) {
             return stb;
-        }
-        else {
+        } else {
             // perhaps it's part of a multi-block structure
             return (BaseSTBBlock) STBUtil.getMetadataValue(b, BaseSTBBlock.STB_MULTI_BLOCK);
         }
@@ -304,8 +298,7 @@ public final class LocationManager {
 
         if (stbBlock != null && type.isAssignableFrom(stbBlock.getClass())) {
             return (T) stbBlock;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -346,8 +339,7 @@ public final class LocationManager {
                     if (stb.isPendingRemoval()) {
                         Debugger.getInstance().debug("Removing block " + stb + " from tickers list");
                         iter.remove();
-                    }
-                    else {
+                    } else {
                         PersistableLocation pLoc = stb.getPersistableLocation();
                         int x = (int) pLoc.getX();
                         int z = (int) pLoc.getZ();
@@ -424,18 +416,15 @@ public final class LocationManager {
 
                     if (stbItem instanceof BaseSTBBlock) {
                         registerLocation(loc, (BaseSTBBlock) stbItem, false);
-                    }
-                    else {
+                    } else {
                         LogUtils.severe("STB item " + type + " @ " + loc + " is not a block!");
                     }
-                }
-                else {
+                } else {
                     // defer it - should hopefully be registered by another plugin later
                     Debugger.getInstance().debug("deferring load for unrecognised block type '" + type + "'");
                     deferBlockLoad(type);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LogUtils.severe(String.format("Can't load STB block at %s,%d,%d,%d: %s", world.getName(), x, y, z, e.getMessage()));
             }
@@ -449,8 +438,7 @@ public final class LocationManager {
         if (wantedType == null) {
             queryStmt.setString(1, world.getUID().toString());
             return queryStmt.executeQuery();
-        }
-        else {
+        } else {
             queryTypeStmt.setString(1, world.getUID().toString());
             queryTypeStmt.setString(2, wantedType);
             return queryTypeStmt.executeQuery();
@@ -513,8 +501,7 @@ public final class LocationManager {
         if (!blockIndex.containsKey(world.getUID())) {
             try {
                 loadFromDatabase(world, null);
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
                 LogUtils.severe("can't load STB data for world " + world.getName() + ": " + e.getMessage());
             }
@@ -566,16 +553,14 @@ public final class LocationManager {
         try {
             // 5 seconds is hopefully enough for the DB thread to finish its work
             updaterTask.join(5000);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
         }
 
         try {
             dbStorage.getConnection().close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

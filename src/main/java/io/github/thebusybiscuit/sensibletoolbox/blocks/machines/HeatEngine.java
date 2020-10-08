@@ -57,7 +57,8 @@ public class HeatEngine extends Generator {
 
     public HeatEngine(ConfigurationSection conf) {
         super(conf);
-        if (getProgress() > 0) currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
+        if (getProgress() > 0)
+            currentFuel = fuelItems.get(getInventory().getItem(getProgressItemSlot()));
         slowBurnThreshold = getMaxCharge() * 0.75;
     }
 
@@ -88,7 +89,8 @@ public class HeatEngine extends Generator {
 
     @Override
     protected void playActiveParticleEffect() {
-        if (getTicksLived() % 20 == 0) getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
+        if (getTicksLived() % 20 == 0)
+            getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
     }
 
     @Override
@@ -123,7 +125,8 @@ public class HeatEngine extends Generator {
 
     @Override
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
-        if (!super.isValidUpgrade(player, upgrade)) return false;
+        if (!super.isValidUpgrade(player, upgrade))
+            return false;
 
         if (!(upgrade instanceof RegulatorUpgrade)) {
             STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
@@ -189,8 +192,7 @@ public class HeatEngine extends Generator {
                         break;
                     }
                 }
-            }
-            else if (getProgress() > 0) {
+            } else if (getProgress() > 0) {
                 // currently processing....
                 // if charge is > 75%, burn rate reduces to conserve fuel
                 double burnRate = Math.max(getBurnRate() * Math.min(getProgress(), TICK_FREQUENCY), 1.0);

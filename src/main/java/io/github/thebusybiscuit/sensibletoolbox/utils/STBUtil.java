@@ -289,17 +289,13 @@ public final class STBUtil {
 
         if ((0 <= rot && rot < 45) || (315 <= rot && rot < 360.0)) {
             return BlockFace.SOUTH;
-        }
-        else if (45 <= rot && rot < 135) {
+        } else if (45 <= rot && rot < 135) {
             return BlockFace.WEST;
-        }
-        else if (135 <= rot && rot < 225) {
+        } else if (135 <= rot && rot < 225) {
             return BlockFace.NORTH;
-        }
-        else if (225 <= rot && rot < 315) {
+        } else if (225 <= rot && rot < 315) {
             return BlockFace.EAST;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("impossible rotation: " + rot);
         }
     }
@@ -319,11 +315,9 @@ public final class STBUtil {
 
         if (d < 0.333) {
             cc = ChatColor.RED;
-        }
-        else if (d < 0.666) {
+        } else if (d < 0.666) {
             cc = ChatColor.GOLD;
-        }
-        else {
+        } else {
             cc = ChatColor.GREEN;
         }
 
@@ -522,8 +516,7 @@ public final class STBUtil {
                     l.add("Enchant " + e.getKey() + " = " + e.getValue());
                 }
             }
-        }
-        else {
+        } else {
             l.add("No metadata");
         }
 
@@ -561,8 +554,7 @@ public final class STBUtil {
         for (int i = 1; i < fields.length; i++) {
             if (StringUtils.isNumeric(fields[i])) {
                 amount = Integer.parseInt(fields[i]);
-            }
-            else if (fields[i].equalsIgnoreCase("glow")) {
+            } else if (fields[i].equalsIgnoreCase("glow")) {
                 glowing = true;
             }
         }
@@ -592,11 +584,9 @@ public final class STBUtil {
 
         if (face1 == face2) {
             return 0;
-        }
-        else if (face1 == face2.getOppositeFace()) {
+        } else if (face1 == face2.getOppositeFace()) {
             return 2;
-        }
-        else {
+        } else {
             return face2 == BlockUtil.getLeft(face1) ? 3 : 1;
         }
     }
@@ -707,8 +697,7 @@ public final class STBUtil {
         if (SensibleToolboxPlugin.getMinecraftVersion().isAtLeast(MinecraftVersion.MINECRAFT_1_16)) {
             if (signType == Material.CRIMSON_SIGN) {
                 return Material.CRIMSON_WALL_SIGN;
-            }
-            else if (signType == Material.WARPED_SIGN) {
+            } else if (signType == Material.WARPED_SIGN) {
                 return Material.WARPED_WALL_SIGN;
             }
         }

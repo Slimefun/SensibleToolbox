@@ -87,8 +87,7 @@ public final class LogUtils {
     public static void warning(@Nonnull String message, @Nullable Exception err) {
         if (err == null) {
             warning(message);
-        }
-        else {
+        } else {
             logger.log(Level.WARNING, getMsg(message, err));
         }
     }
@@ -96,8 +95,7 @@ public final class LogUtils {
     public static void severe(@Nonnull String message, @Nullable Exception err) {
         if (err == null) {
             severe(message);
-        }
-        else {
+        } else {
             logger.log(Level.SEVERE, getMsg(message, err));
         }
     }

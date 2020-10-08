@@ -60,8 +60,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         try {
             Inventory inv = BukkitSerialization.fromBase64(conf.getString("stored"));
             setStoredItemType(inv.getItem(0));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -126,8 +125,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (stored != null) {
             this.stored = stored.clone();
             this.stored.setAmount(1);
-        }
-        else if (!isLocked()) {
+        } else if (!isLocked()) {
             this.stored = null;
         }
 
@@ -136,8 +134,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     private void updateSignQuantityLine() {
-        if (isLocked()) signLabel[1] = ChatColor.DARK_RED + Integer.toString(getTotalAmount());
-        else signLabel[1] = getTotalAmount() > 0 ? Integer.toString(getTotalAmount()) : "";
+        if (isLocked())
+            signLabel[1] = ChatColor.DARK_RED + Integer.toString(getTotalAmount());
+        else
+            signLabel[1] = getTotalAmount() > 0 ? Integer.toString(getTotalAmount()) : "";
     }
 
     private void updateSignItemLines() {
@@ -145,9 +145,9 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             String[] lines = WordUtils.wrap(ItemUtils.getItemName(stored), 15).split("\\n");
             signLabel[2] = lines[0];
             String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
-            if (lines.length > 1) signLabel[3] = pfx + lines[1];
-        }
-        else {
+            if (lines.length > 1)
+                signLabel[3] = pfx + lines[1];
+        } else {
             signLabel[2] = ChatColor.ITALIC + "Empty";
             signLabel[3] = "";
         }
@@ -203,8 +203,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public String[] getExtraLore() {
         if (isLocked() && getStoredItemType() != null) {
             return new String[] { ChatColor.WHITE + "Locked: " + ChatColor.YELLOW + ItemUtils.getItemName(getStoredItemType()) };
-        }
-        else {
+        } else {
             return new String[0];
         }
     }
@@ -303,8 +302,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
                 if (stackOut == null) {
                     stackOut = stored.clone();
                     stackOut.setAmount(toPush);
-                }
-                else {
+                } else {
                     stackOut.setAmount(stackOut.getAmount() + toPush);
                 }
                 setOutputItem(stackOut);
@@ -389,24 +387,20 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             }
 
             event.setCancelled(true);
-        }
-        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking() && hasAccessRights(player)) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking() && hasAccessRights(player)) {
             Long lastInsert = (Long) STBUtil.getMetadataValue(player, STB_LAST_BSU_INSERT);
             long now = System.currentTimeMillis();
 
             if (inHand.getType() == Material.AIR && lastInsert != null && now - lastInsert < DOUBLE_CLICK_TIME) {
                 rightClickFullInsert(player);
                 event.setCancelled(true);
-            }
-            else if (inHand.isSimilar(getStoredItemType())) {
+            } else if (inHand.isSimilar(getStoredItemType())) {
                 rightClickInsert(player, player.getInventory().getHeldItemSlot());
                 event.setCancelled(true);
-            }
-            else {
+            } else {
                 super.onInteractBlock(event);
             }
-        }
-        else {
+        } else {
             super.onInteractBlock(event);
         }
     }
@@ -461,8 +455,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             setCharge(getCharge() - chargeNeeded);
             player.setMetadata(STB_LAST_BSU_INSERT, new FixedMetadataValue(getProviderPlugin(), System.currentTimeMillis()));
             return toInsert;
-        }
-        else {
+        } else {
             STBUtil.complain(player, getItemName() + " has insufficient charge to accept items.");
             return 0;
         }
@@ -528,20 +521,17 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
         if (!isRedstoneActive() || getCharge() < chargeNeeded) {
             return 0;
-        }
-        else if (stored == null) {
+        } else if (stored == null) {
             setStoredItemType(item);
             setStorageAmount(item.getAmount());
             setCharge(getCharge() - chargeNeeded);
             return item.getAmount();
-        }
-        else if (item.isSimilar(stored)) {
+        } else if (item.isSimilar(stored)) {
             int toInsert = Math.min(item.getAmount(), maxCapacity - getStorageAmount());
             setStorageAmount(getStorageAmount() + toInsert);
             setCharge(getCharge() - chargeNeeded);
             return toInsert;
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -602,8 +592,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             ItemStack returned = tmpStored.clone();
             returned.setAmount(fromStorage + fromOutput);
             return returned;
-        }
-        else {
+        } else {
             receiver.setAmount(receiver.getAmount() + fromStorage + fromOutput);
             return receiver;
         }
@@ -615,8 +604,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             Inventory inv = Bukkit.createInventory(this, 9);
             inv.setItem(0, getOutputItem());
             return inv;
-        }
-        else {
+        } else {
             return null;
         }
     }

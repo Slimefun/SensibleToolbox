@@ -53,12 +53,10 @@ public class CommandManager {
                 }
 
                 res = cmd.execute(plugin, sender, cmd.getMatchedArgs());
-            }
-            else {
+            } else {
                 cmd.showUsage(sender, label);
             }
-        }
-        else if (possibleMatches.isEmpty()) {
+        } else if (possibleMatches.isEmpty()) {
             // no match
             String s = cmdList.size() == 1 ? "" : "s";
             MiscUtil.errorMessage(sender, cmdList.size() + " possible matching command" + s + " in " + desc + ":");
@@ -66,8 +64,7 @@ public class CommandManager {
             for (AbstractCommand cmd : MiscUtil.asSortedList(cmdList)) {
                 cmd.showUsage(sender, label, "\u2022 ");
             }
-        }
-        else {
+        } else {
             // multiple possible matches
             MiscUtil.errorMessage(sender, possibleMatches.size() + " possible matching commands in " + desc + ":");
             for (AbstractCommand cmd : MiscUtil.asSortedList(possibleMatches)) {
@@ -81,8 +78,7 @@ public class CommandManager {
     public boolean dispatch(CommandSender sender, Command command, String label, String[] args) {
         try {
             return dispatch(sender, command.getName(), label, args);
-        }
-        catch (DHUtilsException e) {
+        } catch (DHUtilsException e) {
             MiscUtil.errorMessage(sender, e.getMessage());
             return true;
         }
@@ -95,21 +91,18 @@ public class CommandManager {
 
         if (possibleMatches.isEmpty()) {
             return noCompletions(sender);
-        }
-        else if (possibleMatches.size() == 1 && args.length > possibleMatches.get(0).getMatchedCommand().size()) {
+        } else if (possibleMatches.size() == 1 && args.length > possibleMatches.get(0).getMatchedCommand().size()) {
             // tab completion to be done by the command itself
             Debugger.getInstance().debug("tab complete: pass to command: " + possibleMatches.get(0).getMatchedCommand());
             int from = possibleMatches.get(0).getMatchedCommand().size();
 
             try {
                 return possibleMatches.get(0).onTabComplete(plugin, sender, subRange(args, from));
-            }
-            catch (DHUtilsException e) {
+            } catch (DHUtilsException e) {
                 MiscUtil.errorMessage(sender, e.getMessage());
                 return noCompletions(sender);
             }
-        }
-        else {
+        } else {
             // tab completion done here; try to fill in the subcommand
             Set<String> completions = new HashSet<>();
 

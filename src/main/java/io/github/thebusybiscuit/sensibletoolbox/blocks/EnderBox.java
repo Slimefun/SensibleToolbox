@@ -122,8 +122,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
 
             if (!hasAccessRights(player)) {
                 STBUtil.complain(player, "That " + getItemName() + " is private!");
-            }
-            else {
+            } else {
                 Inventory inv = isGlobal() ? EnderStorage.getEnderInventory(getEnderFrequency()) : EnderStorage.getEnderInventory(player, getEnderFrequency());
                 player.openInventory(inv);
                 player.playSound(getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5F, 1.0F);
@@ -136,8 +135,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public int insertItems(ItemStack item, BlockFace face, boolean sorting, UUID uuid) {
         if (hasAccessRights(uuid)) {
             return getInventoryHolderFor(uuid).insertItems(item, face, sorting, uuid);
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -146,8 +144,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
         if (hasAccessRights(uuid)) {
             return getInventoryHolderFor(uuid).extractItems(face, receiver, amount, uuid);
-        }
-        else {
+        } else {
             return null;
         }
     }

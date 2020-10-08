@@ -110,8 +110,7 @@ public class PVCell extends BaseSTBItem {
                     if (nInserted > 0) {
                         if (event.getHand() == EquipmentSlot.HAND) {
                             player.getInventory().setItemInMainHand(null);
-                        }
-                        else {
+                        } else {
                             player.getInventory().setItemInOffHand(null);
                         }
                         player.playSound(event.getClickedBlock().getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 0.6F);
@@ -149,8 +148,7 @@ public class PVCell extends BaseSTBItem {
 
         if (sec >= 60) {
             return ChatColor.WHITE + "Lifetime: " + ChatColor.YELLOW.toString() + (sec / 60) + " min";
-        }
-        else {
+        } else {
             return ChatColor.WHITE + "Lifetime: " + ChatColor.YELLOW.toString() + sec + " sec";
         }
     }

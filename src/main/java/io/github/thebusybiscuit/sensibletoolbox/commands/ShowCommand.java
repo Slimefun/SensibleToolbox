@@ -53,8 +53,7 @@ public class ShowCommand extends AbstractCommand {
 
         if (args.length >= 1) {
             showDetails(sender, pager, args[0]);
-        }
-        else if (getBooleanOption("perf")) {
+        } else if (getBooleanOption("perf")) {
             for (World w : Bukkit.getWorlds()) {
                 pager.add(w.getName() + ": " + w.getLoadedChunks().length + " loaded chunks");
             }
@@ -62,19 +61,16 @@ public class ShowCommand extends AbstractCommand {
             long avg = LocationManager.getManager().getAverageTimePerTick();
             double pct = avg / 200000.0;
             pager.add(avg + " ns/tick (" + pct + "%) spent in ticking STB blocks");
-        }
-        else if (getBooleanOption("dump")) {
+        } else if (getBooleanOption("dump")) {
             dumpItemData(plugin, sender);
-        }
-        else {
+        } else {
             String id = getStringOption("type");
 
             if (hasOption("w")) {
                 World w = Bukkit.getWorld(getStringOption("w"));
                 Validate.notNull(w, "Unknown world: " + getStringOption("w"));
                 show(pager, w, id);
-            }
-            else {
+            } else {
                 for (World w : Bukkit.getWorlds()) {
                     show(pager, w, id);
                 }
@@ -103,8 +99,7 @@ public class ShowCommand extends AbstractCommand {
             }
 
             MiscUtil.statusMessage(sender, "STB item data dumped to " + out);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -127,14 +122,12 @@ public class ShowCommand extends AbstractCommand {
                 Block b = player.getTargetBlock((Set<Material>) null, 10);
                 item = LocationManager.getManager().get(b.getLocation(), true);
             }
-        }
-        else {
+        } else {
             try {
                 Location loc = MiscUtil.parseLocation(locStr);
                 item = LocationManager.getManager().get(loc);
                 Validate.notNull(item, "No STB block at " + locStr);
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 throw new DHUtilsException(e.getMessage());
             }
         }
@@ -151,8 +144,7 @@ public class ShowCommand extends AbstractCommand {
                     // is it safe to assume base64-encoded string always starts with "rO" ?
                     String s = getStringFromBase64(o);
                     pager.add(ChatColor.WHITE + k + " = " + ChatColor.YELLOW + s);
-                }
-                else {
+                } else {
                     pager.add(ChatColor.WHITE + k + " = " + ChatColor.YELLOW + o);
                 }
             }
@@ -171,8 +163,7 @@ public class ShowCommand extends AbstractCommand {
                 }
             }
             s = Joiner.on(", ").join(l);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             s = "???";
         }
 
@@ -207,11 +198,9 @@ public class ShowCommand extends AbstractCommand {
             }
 
             return filterPrefix(sender, worlds, args[args.length - 1]);
-        }
-        else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
+        } else if (args.length >= 2 && args[args.length - 2].equals("-id")) {
             return filterPrefix(sender, SensibleToolbox.getItemRegistry().getItemIds(), args[args.length - 1]);
-        }
-        else {
+        } else {
             showUsage(sender);
             return noCompletions(sender);
         }

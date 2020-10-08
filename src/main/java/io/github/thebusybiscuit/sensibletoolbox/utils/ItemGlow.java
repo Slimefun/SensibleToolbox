@@ -49,8 +49,7 @@ public final class ItemGlow {
             public void onPacketSending(PacketEvent event) {
                 if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
                     addGlow(new ItemStack[] { event.getPacket().getItemModifier().read(0) });
-                }
-                else {
+                } else {
                     addGlow(event.getPacket().getItemArrayModifier().read(0));
                 }
             }
@@ -81,8 +80,7 @@ public final class ItemGlow {
             if (!stack.getItemMeta().hasEnchant(flag)) {
                 stack.addUnsafeEnchantment(flag, GLOW_FLAG_LEVEL);
             }
-        }
-        else if (stack.getEnchantmentLevel(flag) == GLOW_FLAG_LEVEL) {
+        } else if (stack.getEnchantmentLevel(flag) == GLOW_FLAG_LEVEL) {
             stack.removeEnchantment(flag);
         }
     }
@@ -97,8 +95,7 @@ public final class ItemGlow {
     public static boolean hasGlow(@Nullable ItemStack stack) {
         if (stack == null) {
             return false;
-        }
-        else {
+        } else {
             return stack.getEnchantmentLevel(getFlag(stack)) == GLOW_FLAG_LEVEL;
         }
     }

@@ -110,8 +110,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                     MachineUpgrade upgrade = (MachineUpgrade) SensibleToolbox.getItemRegistry().getItemById(f[0], upgConf);
                     upgrade.setAmount(amount);
                     upgrades.add(upgrade);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     LogUtils.warning("can't restore saved module " + f[0] + " for " + this + ": " + e.getMessage());
                 }
             }
@@ -345,8 +344,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
             if (i == 0) {
                 s.append(ChatColor.GOLD.toString());
-            }
-            else if (i == 2) {
+            } else if (i == 2) {
                 s.append(ChatColor.GREEN.toString());
             }
         }
@@ -633,8 +631,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             int amount = partialOK ? 1 : item.getAmount();
             if (outSlot == null) {
                 return slot;
-            }
-            else if (outSlot.isSimilar(item) && outSlot.getAmount() + amount <= item.getType().getMaxStackSize()) {
+            } else if (outSlot.isSimilar(item) && outSlot.getAmount() + amount <= item.getType().getMaxStackSize()) {
                 return slot;
             }
         }
@@ -727,8 +724,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             if (inMachine == null) {
                 nInserted = toInsert.getAmount();
                 setInventoryItem(slot, toInsert);
-            }
-            else {
+            } else {
                 nInserted = Math.min(toInsert.getAmount(), inMachine.getType().getMaxStackSize() - inMachine.getAmount());
 
                 if (nInserted > 0) {
@@ -803,8 +799,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             }
 
             return inv;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -830,17 +825,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             if (inSlot != null) {
                 update(false);
             }
-        }
-        else if (isOutputSlot(slot)) {
+        } else if (isOutputSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
                 return false;
-            }
-            else if (inSlot != null) {
+            } else if (inSlot != null) {
                 setJammed(false);
                 update(false);
             }
-        }
-        else if (isUpgradeSlot(slot)) {
+        } else if (isUpgradeSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
                 if (!isValidUpgrade(player, SensibleToolbox.getItemRegistry().fromItemStack(onCursor))) {
                     return false;
@@ -848,19 +840,16 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             }
 
             needToProcessUpgrades = true;
-        }
-        else if (slot == getEnergyCellSlot()) {
+        } else if (slot == getEnergyCellSlot()) {
             if (onCursor.getType() != Material.AIR) {
                 EnergyCell cell = SensibleToolbox.getItemRegistry().fromItemStack(onCursor, EnergyCell.class);
 
                 if (cell != null) {
                     installEnergyCell(cell);
-                }
-                else {
+                } else {
                     return false;
                 }
-            }
-            else if (inSlot != null) {
+            } else if (inSlot != null) {
                 installEnergyCell(null);
             }
         }
@@ -907,8 +896,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             if (inInventory == null) {
                 setInventoryItem(slot, stack);
                 return 0;
-            }
-            else if (inInventory.isSimilar(stack)) {
+            } else if (inInventory.isSimilar(stack)) {
                 int toInsert = Math.min(stack.getAmount(), stack.getMaxStackSize() - inInventory.getAmount());
                 inInventory.setAmount(inInventory.getAmount() + toInsert);
                 setInventoryItem(slot, inInventory);
@@ -940,8 +928,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         if (item instanceof EjectorUpgrade && ((EjectorUpgrade) item).getFacing() == BlockFace.SELF) {
             STBUtil.complain(player, "Ejector upgrade must have a direction configured.");
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
@@ -951,15 +938,12 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         // allow extraction to continue in all cases
         if (slot == getEnergyCellSlot() && toExtract != null) {
             installEnergyCell(null);
-        }
-        else if (isUpgradeSlot(slot)) {
+        } else if (isUpgradeSlot(slot)) {
             needToProcessUpgrades = true;
-        }
-        else if (isOutputSlot(slot) && getInventoryItem(slot) != null) {
+        } else if (isOutputSlot(slot) && getInventoryItem(slot) != null) {
             setJammed(false);
             update(false);
-        }
-        else if (isInputSlot(slot) && getInventoryItem(slot) != null) {
+        } else if (isInputSlot(slot) && getInventoryItem(slot) != null) {
             update(false);
         }
 
@@ -995,8 +979,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                     if (getLocation() != null) {
                         getLocation().getWorld().dropItemNaturally(getLocation(), stack);
                     }
-                }
-                else {
+                } else {
                     upgrade.setAmount(stack.getAmount());
                     upgrades.add(upgrade);
 
@@ -1018,14 +1001,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         for (MachineUpgrade upgrade : upgrades) {
             if (upgrade instanceof SpeedUpgrade) {
                 nSpeed += upgrade.getAmount();
-            }
-            else if (upgrade instanceof EjectorUpgrade) {
+            } else if (upgrade instanceof EjectorUpgrade) {
                 ejectDirection = ((EjectorUpgrade) upgrade).getFacing();
-            }
-            else if (upgrade instanceof RegulatorUpgrade) {
+            } else if (upgrade instanceof RegulatorUpgrade) {
                 nRegulator += upgrade.getAmount();
-            }
-            else if (upgrade instanceof ThoroughnessUpgrade) {
+            } else if (upgrade instanceof ThoroughnessUpgrade) {
                 nThorough += upgrade.getAmount();
             }
         }

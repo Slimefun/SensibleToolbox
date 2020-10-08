@@ -30,8 +30,7 @@ public class UpdateRecord {
             this.x = loc.getBlockX();
             this.y = loc.getBlockY();
             this.z = loc.getBlockZ();
-        }
-        else {
+        } else {
             this.worldID = null;
             this.x = this.y = this.z = 0;
         }
@@ -39,15 +38,21 @@ public class UpdateRecord {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         UpdateRecord that = (UpdateRecord) o;
 
-        if (x != that.x) return false;
-        if (y != that.y) return false;
-        if (z != that.z) return false;
-        if (worldID != null ? !worldID.equals(that.worldID) : that.worldID != null) return false;
+        if (x != that.x)
+            return false;
+        if (y != that.y)
+            return false;
+        if (z != that.z)
+            return false;
+        if (worldID != null ? !worldID.equals(that.worldID) : that.worldID != null)
+            return false;
 
         return true;
     }

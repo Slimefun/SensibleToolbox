@@ -77,8 +77,7 @@ public class DistributorModule extends DirectionalItemRouterModule {
                 int nInserted = ((STBInventoryHolder) stb).insertItems(toInsert, face.getOppositeFace(), false, getItemRouter().getOwner());
                 getItemRouter().reduceBuffer(nInserted);
                 return nInserted > 0;
-            }
-            else {
+            } else {
                 // vanilla inventory holder?
                 return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
             }

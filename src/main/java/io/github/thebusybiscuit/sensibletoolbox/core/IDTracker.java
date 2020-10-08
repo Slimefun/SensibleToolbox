@@ -28,12 +28,10 @@ public class IDTracker {
             try {
                 conf.load(file);
                 nextID = conf.getInt("nextID");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             nextID = 1;
             save();
         }
@@ -46,8 +44,7 @@ public class IDTracker {
 
         try {
             conf.save(file);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

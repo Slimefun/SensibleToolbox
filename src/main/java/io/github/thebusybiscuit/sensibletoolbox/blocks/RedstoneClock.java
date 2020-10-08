@@ -48,8 +48,7 @@ public class RedstoneClock extends BaseSTBBlock {
             if (newValue > getOnDuration()) {
                 setInterval(newValue);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }));
@@ -58,8 +57,7 @@ public class RedstoneClock extends BaseSTBBlock {
             if (newValue < getInterval()) {
                 setOnDuration(newValue);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }));
@@ -141,14 +139,14 @@ public class RedstoneClock extends BaseSTBBlock {
             // power up
             active = true;
             repaint(b);
-        }
-        else if (time % getInterval() == getOnDuration()) {
+        } else if (time % getInterval() == getOnDuration()) {
             // power down
             active = false;
             repaint(b);
         }
 
-        if (time % 50 == 10) playParticles(new Color(255, 0, 0));
+        if (time % 50 == 10)
+            playParticles(new Color(255, 0, 0));
         super.onServerTick();
     }
 

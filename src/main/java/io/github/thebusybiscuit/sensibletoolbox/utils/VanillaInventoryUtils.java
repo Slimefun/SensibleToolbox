@@ -42,8 +42,7 @@ public class VanillaInventoryUtils {
 
         if (state instanceof InventoryHolder) {
             return Optional.of(((InventoryHolder) state).getInventory());
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -78,8 +77,10 @@ public class VanillaInventoryUtils {
 
         Optional<Inventory> targetInv = getVanillaInventory(target);
 
-        if (!targetInv.isPresent()) return 0;
-        else return vanillaInsertion(targetInv.get(), source, amount, side, sorting);
+        if (!targetInv.isPresent())
+            return 0;
+        else
+            return vanillaInsertion(targetInv.get(), source, amount, side, sorting);
     }
 
     /**
@@ -135,8 +136,7 @@ public class VanillaInventoryUtils {
                     }
                 }
                 return stack.getAmount(); // shouldn't get here!
-            }
-            else {
+            } else {
                 source.setAmount(source.getAmount() - stack.getAmount());
                 return stack.getAmount();
             }
@@ -168,8 +168,10 @@ public class VanillaInventoryUtils {
 
         Optional<Inventory> targetInv = getVanillaInventory(target);
 
-        if (!targetInv.isPresent()) return null;
-        else return pullFromInventory(targetInv.get(), amount, buffer, filter);
+        if (!targetInv.isPresent())
+            return null;
+        else
+            return pullFromInventory(targetInv.get(), amount, buffer, filter);
     }
 
     /**
@@ -207,8 +209,7 @@ public class VanillaInventoryUtils {
                         if (buffer == null) {
                             buffer = stack.clone();
                             buffer.setAmount(toTake);
-                        }
-                        else {
+                        } else {
                             buffer.setAmount(buffer.getAmount() + toTake);
                         }
 
@@ -242,24 +243,20 @@ public class VanillaInventoryUtils {
             // ingredient slot
             if (!STBUtil.isPotionIngredient(stack.getType())) {
                 excess = stack;
-            }
-            else {
+            } else {
                 excess = putStack(targetInv, 3, stack);
             }
-        }
-        else {
+        } else {
             // water/potion slots
             if (stack.getType() != Material.GLASS_BOTTLE && stack.getType() != Material.POTION) {
                 excess = stack;
-            }
-            else {
+            } else {
                 for (int slot = 0; slot <= 2; slot++) {
                     excess = putStack(targetInv, slot, stack);
 
                     if (excess == null) {
                         break; // all fitted
-                    }
-                    else {
+                    } else {
                         // some or none fitted, continue with other slots
                         stack.setAmount(excess.getAmount());
                     }
@@ -313,8 +310,7 @@ public class VanillaInventoryUtils {
         if (current == null) {
             inv.setItem(slot, stack);
             return null;
-        }
-        else if (current.isSimilar(stack)) {
+        } else if (current.isSimilar(stack)) {
             int toAdd = Math.min(stack.getAmount(), current.getType().getMaxStackSize() - current.getAmount());
             current.setAmount(current.getAmount() + toAdd);
             inv.setItem(slot, current);
@@ -322,12 +318,10 @@ public class VanillaInventoryUtils {
                 ItemStack leftover = stack.clone();
                 leftover.setAmount(stack.getAmount() - toAdd);
                 return leftover;
-            }
-            else {
+            } else {
                 return null;
             }
-        }
-        else {
+        } else {
             return stack;
         }
     }
@@ -338,8 +332,7 @@ public class VanillaInventoryUtils {
         for (ItemStack stack : inv) {
             if (candidate.isSimilar(stack)) {
                 return true;
-            }
-            else if (stack != null) {
+            } else if (stack != null) {
                 isEmpty = false;
             }
         }

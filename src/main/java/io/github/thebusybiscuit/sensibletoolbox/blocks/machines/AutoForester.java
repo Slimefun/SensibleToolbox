@@ -88,8 +88,7 @@ public class AutoForester extends AutoFarmingMachine {
                 if (Tag.LOGS.isTagged(log.getType())) {
                     if (getCharge() >= getScuPerCycle()) {
                         setCharge(getCharge() - getScuPerCycle());
-                    }
-                    else {
+                    } else {
                         break;
                     }
 
@@ -110,12 +109,10 @@ public class AutoForester extends AutoFarmingMachine {
 
                             if (sapling.isPresent()) {
                                 b.setType(sapling.get());
-                            }
-                            else {
+                            } else {
                                 b.setType(Material.AIR);
                             }
-                        }
-                        else {
+                        } else {
                             b.setType(Material.AIR);
                         }
                     }
@@ -123,8 +120,7 @@ public class AutoForester extends AutoFarmingMachine {
                     break;
                 }
             }
-        }
-        else if (buffer != null) {
+        } else if (buffer != null) {
             setJammed(!output(buffer));
         }
 

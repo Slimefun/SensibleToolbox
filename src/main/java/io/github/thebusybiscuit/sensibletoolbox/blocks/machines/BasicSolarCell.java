@@ -178,8 +178,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             PVCell pvCell = new PVCell();
             pvCell.setLifespan(pvCellLife);
             gui.setItem(PV_CELL_SLOT, pvCell.toItemStack());
-        }
-        else {
+        } else {
             gui.setItem(PV_CELL_SLOT, null);
         }
     }
@@ -212,8 +211,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
         if (pvCellLife == 0) {
             l2[l.length] = ChatColor.GRAY.toString() + ChatColor.ITALIC + "No PV Cell installed";
-        }
-        else {
+        } else {
             l2[l.length] = PVCell.formatCellLife(pvCellLife);
         }
         return l2;
@@ -357,8 +355,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
         if (lightFromSky < 14) {
             // block is excessively shaded
             newLight = 0;
-        }
-        else if (lightFromSky < 15) {
+        } else if (lightFromSky < 15) {
             // partially shaded
             newLight--;
         }
@@ -410,8 +407,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     public ItemStack getLightMeterIndicator() {
         if (pvCellLife == 0) {
             return GUIUtil.makeTexture(Material.BLACK_WOOL, ChatColor.WHITE + "No PV Cell inserted!", ChatColor.GRAY + "Insert a PV Cell in the top left");
-        }
-        else {
+        } else {
             DyeColor dc = colors[effectiveLightLevel];
             ChatColor cc = STBUtil.dyeColorToChatColor(dc);
             double mult = getChargeMultiplier(effectiveLightLevel);

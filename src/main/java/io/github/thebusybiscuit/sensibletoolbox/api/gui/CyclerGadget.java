@@ -153,7 +153,8 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
 
         do {
             n = (n + adjust) % stacks.length;
-            if (n < 0) n += stacks.length;
+            if (n < 0)
+                n += stacks.length;
             // noinspection unchecked
             currentValue = (T) currentValue.getClass().getEnumConstants()[n];
             if (n == b) {
@@ -200,8 +201,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
             UUID id = ((BaseSTBBlock) stbItem).getOwner();
             String name = SensibleToolboxPlugin.getInstance().getUuidTracker().getPlayerName(((BaseSTBBlock) stbItem).getOwner());
             return name == null ? id.toString() : name;
-        }
-        else {
+        } else {
             return "";
         }
     }

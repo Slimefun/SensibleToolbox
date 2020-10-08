@@ -63,7 +63,8 @@ public class HolographicMonitor extends BaseSTBBlock {
     @Override
     public void onServerTick() {
         super.onServerTick();
-        if (hologram == null) return;
+        if (hologram == null)
+            return;
         this.hologram.clearLines();
 
         for (BlockFace f : STBUtil.MAIN_HORIZONTAL_BLOCK_FACES) {
@@ -72,8 +73,10 @@ public class HolographicMonitor extends BaseSTBBlock {
                 double stat = net.getSupply() - net.getDemand();
                 String prefix;
 
-                if (stat > 0) prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
-                else prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
+                if (stat > 0)
+                    prefix = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "+";
+                else
+                    prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
 
                 this.hologram.appendTextLine(prefix + " " + ChatColor.GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t");
                 break;

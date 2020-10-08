@@ -31,8 +31,7 @@ public class SoundCommand extends AbstractCommand {
             float volume = args.length > 1 ? Float.parseFloat(args[1]) : 1.0F;
             float pitch = args.length > 2 ? Float.parseFloat(args[2]) : 1.0F;
             ((Player) sender).playSound(((Player) sender).getLocation(), sound, volume, pitch);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new DHUtilsException(e.getMessage());
         }
         return true;
@@ -42,8 +41,7 @@ public class SoundCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         if (args.length == 1) {
             return getEnumCompletions(sender, Sound.class, args[0]);
-        }
-        else {
+        } else {
             return noCompletions(sender);
         }
     }

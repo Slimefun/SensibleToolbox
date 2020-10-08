@@ -116,8 +116,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
         if (l != null && l.getBlock().getType() == getMaterial()) {
             Dropper d = (Dropper) getLocation().getBlock().getState();
             return d.getInventory();
-        }
-        else {
+        } else {
             return null;
         }
     }

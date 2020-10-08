@@ -338,18 +338,15 @@ public class Str extends OutputStream {
                 if (c == '\u00A7') {
                     ret += c;
                     lastCol = true;
-                }
-                else {
+                } else {
                     if (!lastCol) {
                         if (width - 1 >= 0) {
                             width -= 1;
                             ret += c;
-                        }
-                        else {
+                        } else {
                             return ret;
                         }
-                    }
-                    else {
+                    } else {
                         ret += c;
                         lastCol = false;
                     }
@@ -365,8 +362,7 @@ public class Str extends OutputStream {
         for (char c : str.toLowerCase().toCharArray()) {
             if (st) {
                 ret.append(Character.toTitleCase(c));
-            }
-            else {
+            } else {
                 ret.append(c);
             }
             st = c == ' ';

@@ -117,8 +117,7 @@ public class HyperStorageUnit extends BigStorageUnit {
             String[] l2 = Arrays.copyOf(l, l.length + 1);
             l2[l2.length - 1] = ChatColor.WHITE + "Stored: " + ChatColor.YELLOW + getTotalAmount() + " " + ItemUtils.getItemName(getStoredItemType());
             return l2;
-        }
-        else {
+        } else {
             return super.getExtraLore();
         }
     }

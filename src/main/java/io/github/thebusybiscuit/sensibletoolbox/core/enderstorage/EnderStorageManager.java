@@ -55,8 +55,7 @@ public class EnderStorageManager implements Listener {
             try {
                 h.loadInventory();
                 globalInvs.put(frequency, h);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.severe("Can't load global ender storage: " + h.getSaveFile());
                 return null;
             }
@@ -81,8 +80,7 @@ public class EnderStorageManager implements Listener {
             try {
                 h.loadInventory();
                 map.put(frequency, h);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.severe("Can't load player ender storage: " + h.getSaveFile());
                 return null;
             }
@@ -110,16 +108,14 @@ public class EnderStorageManager implements Listener {
             for (File f : oldDir.listFiles()) {
                 try {
                     Files.delete(f.toPath());
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     LogUtils.warning("can't delete unwanted file: " + f, e);
                 }
             }
 
             try {
                 Files.delete(oldDir.toPath());
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.warning("can't delete old bagofholding directory", e);
             }
         }

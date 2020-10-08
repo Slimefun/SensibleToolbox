@@ -94,7 +94,8 @@ public abstract class EnergyCell extends BaseSTBItem implements Chargeable {
             int held = player.getInventory().getHeldItemSlot();
 
             for (int slot = 0; slot < 8; slot++) {
-                if (slot == held) continue;
+                if (slot == held)
+                    continue;
 
                 ItemStack stack = player.getInventory().getItem(slot);
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);

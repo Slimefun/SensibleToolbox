@@ -78,8 +78,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             @SuppressWarnings("unchecked")
             List<ItemStack> l = (List<ItemStack>) conf.getList("filtered");
             filter = Filter.fromItemList(isWhite, l, filterType);
-        }
-        else {
+        } else {
             filter = new Filter();
         }
     }
@@ -102,8 +101,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     public String[] getExtraLore() {
         if (filter == null) {
             return new String[0];
-        }
-        else {
+        } else {
             String[] lore = new String[(filter.size() + 1) / 2 + 2];
             String what = filter.isWhiteList() ? "white-listed" : "black-listed";
             String s = filter.size() == 1 ? "" : "s";
@@ -161,14 +159,12 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             setFacingDirection(event.getBlockFace().getOppositeFace());
             event.getPlayer().getInventory().setItem(event.getHand(), toItemStack(event.getItem().getAmount()));
             event.setCancelled(true);
-        }
-        else if (event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
+        } else if (event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
             // unset module direction
             setFacingDirection(BlockFace.SELF);
             event.getPlayer().getInventory().setItem(event.getHand(), toItemStack(event.getItem().getAmount()));
             event.setCancelled(true);
-        }
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemRouter rtr = event.getClickedBlock() == null ? null : SensibleToolbox.getBlockAt(event.getClickedBlock().getLocation(), ItemRouter.class, true);
             if (event.getClickedBlock() == null || (rtr == null && !event.getClickedBlock().getType().isInteractable())) {
                 // open module configuration GUI
@@ -186,8 +182,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
             if (getFilter() != null) {
                 getFilter().setWhiteList(newValue);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }));
@@ -234,8 +229,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         if (onCursor.getType() == Material.AIR) {
             gui.getInventory().setItem(slot, null);
-        }
-        else {
+        } else {
             ItemStack stack = onCursor.clone();
             stack.setAmount(1);
             gui.getInventory().setItem(slot, stack);
@@ -291,8 +285,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         BaseSTBBlock stb = SensibleToolbox.getBlockAt(targetLoc, true);
         if (stb instanceof STBInventoryHolder) {
             pulled = ((STBInventoryHolder) stb).extractItems(from.getOppositeFace(), inBuffer, nToPull, getItemRouter().getOwner());
-        }
-        else {
+        } else {
             // possible vanilla inventory holder
             pulled = VanillaInventoryUtils.pullFromInventory(targetLoc.getBlock(), nToPull, inBuffer, getFilter(), getItemRouter().getOwner());
         }
@@ -315,8 +308,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         if (nInserted == 0) {
             // no insertion happened
             return false;
-        }
-        else {
+        } else {
             // some or all items were inserted, buffer size has been adjusted accordingly
             getItemRouter().setBufferItem(buffer.getAmount() == 0 ? null : buffer);
             return true;

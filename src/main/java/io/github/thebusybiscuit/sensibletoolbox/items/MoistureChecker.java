@@ -118,20 +118,15 @@ public class MoistureChecker extends BaseSTBItem {
 
         if (saturation < 10) {
             return Material.YELLOW_WOOL.createBlockData();
-        }
-        else if (saturation < 30) {
+        } else if (saturation < 30) {
             return Material.BROWN_WOOL.createBlockData();
-        }
-        else if (saturation < 50) {
+        } else if (saturation < 50) {
             return Material.GREEN_WOOL.createBlockData();
-        }
-        else if (saturation < 70) {
+        } else if (saturation < 70) {
             return Material.LIGHT_BLUE_WOOL.createBlockData();
-        }
-        else if (saturation < 90) {
+        } else if (saturation < 90) {
             return Material.CYAN_WOOL.createBlockData();
-        }
-        else {
+        } else {
             return Material.BLUE_WOOL.createBlockData();
         }
     }

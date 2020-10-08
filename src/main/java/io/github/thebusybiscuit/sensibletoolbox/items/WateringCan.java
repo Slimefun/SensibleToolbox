@@ -126,47 +126,40 @@ public class WateringCan extends BaseSTBItem {
                 neighbour.setType(Material.AIR);
                 setWaterLevel(MAX_LEVEL);
                 newStack = toItemStack();
-            }
-            else if (STBUtil.isCrop(block.getType())) {
+            } else if (STBUtil.isCrop(block.getType())) {
                 // attempt to grow the crops in a 3x3 area, and use some water from the can
                 waterCrops(player, block);
                 waterSoil(player, block.getRelative(BlockFace.DOWN));
                 newStack = toItemStack();
-            }
-            else if (block.getType() == Material.FARMLAND) {
+            } else if (block.getType() == Material.FARMLAND) {
                 if (STBUtil.isCrop(block.getRelative(BlockFace.UP).getType())) {
                     waterCrops(player, block.getRelative(BlockFace.UP));
                     waterSoil(player, block);
                     newStack = toItemStack();
-                }
-                else {
+                } else {
                     // make the soil wetter if possible
                     waterSoil(player, block);
                     newStack = toItemStack();
                 }
-            }
-            else if (block.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
+            } else if (block.getType() == Material.COBBLESTONE && getWaterLevel() >= 10) {
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     block.setType(Material.MOSSY_COBBLESTONE);
                 }
 
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
-            }
-            else if (block.getType() == Material.STONE_BRICKS && getWaterLevel() >= 10) {
+            } else if (block.getType() == Material.STONE_BRICKS && getWaterLevel() >= 10) {
                 if (ThreadLocalRandom.current().nextBoolean()) {
                     block.setType(Material.MOSSY_STONE_BRICKS);
                 }
 
                 useSomeWater(player, block, 10);
                 newStack = toItemStack();
-            }
-            else if (block.getType() == Material.DIRT && maybeGrowGrass(block)) {
+            } else if (block.getType() == Material.DIRT && maybeGrowGrass(block)) {
                 useSomeWater(player, block, 1);
                 newStack = toItemStack();
             }
-        }
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             Block b = player.getEyeLocation().getBlock();
 
             if (b.getType() == Material.WATER) {
@@ -183,8 +176,7 @@ public class WateringCan extends BaseSTBItem {
         if (newStack != null) {
             if (event.getHand() == EquipmentSlot.HAND) {
                 player.getInventory().setItemInMainHand(newStack);
-            }
-            else {
+            } else {
                 player.getInventory().setItemInOffHand(newStack);
             }
         }
@@ -298,8 +290,7 @@ public class WateringCan extends BaseSTBItem {
             soil.breakNaturally();
             soil.setType(Material.WATER);
             SoilSaturation.clear(soil);
-        }
-        else {
+        } else {
             SoilSaturation.setLastWatered(soil, System.currentTimeMillis());
             SoilSaturation.setSaturationLevel(soil, saturation);
         }

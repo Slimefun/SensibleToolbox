@@ -44,8 +44,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
                 inventory.setItem(i, savedInv.getItem(i));
             }
             Debugger.getInstance().debug("loaded " + this + " from " + saveFile);
-        }
-        else {
+        } else {
             // no saved inventory - player must not have used the bag before
             inventory = Bukkit.createInventory(this, EnderStorageManager.BAG_SIZE, getInventoryTitle());
             saveInventory();
@@ -66,8 +65,7 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
 
                 Files.write(encoded, saveFile, StandardCharsets.UTF_8);
                 Debugger.getInstance().debug("saved " + this + " to " + saveFile);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogUtils.severe("Can't save ender storage " + this + ": " + e.getMessage());
             }
         });
@@ -133,8 +131,10 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         return frequency == ((STBEnderStorageHolder) o).frequency;
     }

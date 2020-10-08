@@ -92,8 +92,7 @@ public class CustomRecipeCollection {
 
         if (recipes.containsKey(key)) {
             return true;
-        }
-        else {
+        } else {
             key = makeKey(shaped, true, input);
             return recipes.containsKey(key);
         }
@@ -110,12 +109,10 @@ public class CustomRecipeCollection {
             if (stack == null) {
                 if (shaped) {
                     l.add("");
-                }
-                else {
+                } else {
                     throw new IllegalArgumentException("null items not allowed for shapeless recipes");
                 }
-            }
-            else {
+            } else {
                 l.add(stack.getAmount() + "x" + RecipeUtil.makeRecipeKey(ignoreData, stack));
             }
         }

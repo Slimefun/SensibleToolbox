@@ -50,8 +50,7 @@ public final class BukkitSerialization {
 
             // Serialize that array
             return Base64Coder.encodeLines(outputStream.toByteArray());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException("Unable to save item stacks.", e);
         }
     }
@@ -75,8 +74,7 @@ public final class BukkitSerialization {
             }
 
             return inventory;
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new IOException("Unable to decode class type.", e);
         }
     }

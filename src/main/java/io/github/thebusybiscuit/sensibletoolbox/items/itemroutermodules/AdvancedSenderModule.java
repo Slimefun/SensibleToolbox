@@ -34,8 +34,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
         if (conf.contains("linkedLoc")) {
             try {
                 linkedLoc = MiscUtil.parseLocation(conf.getString("linkedLoc"));
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 linkedLoc = null;
             }
         }
@@ -89,18 +88,15 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
             if (rtr != null && rtr.getReceiver() != null) {
                 linkToRouter(rtr);
                 updateHeldItemStack(event.getPlayer(), event.getHand());
-            }
-            else {
+            } else {
                 STBUtil.complain(event.getPlayer());
             }
             event.setCancelled(true);
-        }
-        else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+        } else if (event.getPlayer().isSneaking() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             linkToRouter(null);
             updateHeldItemStack(event.getPlayer(), event.getHand());
             event.setCancelled(true);
-        }
-        else if (event.getItem().getAmount() == 1 && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        } else if (event.getItem().getAmount() == 1 && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             super.onInteractItem(event);
         }
     }
