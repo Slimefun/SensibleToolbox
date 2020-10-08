@@ -86,6 +86,7 @@ import io.github.thebusybiscuit.sensibletoolbox.core.STBFriendManager;
 import io.github.thebusybiscuit.sensibletoolbox.core.STBItemRegistry;
 import io.github.thebusybiscuit.sensibletoolbox.core.enderstorage.EnderStorageManager;
 import io.github.thebusybiscuit.sensibletoolbox.core.energy.EnergyNetManager;
+import io.github.thebusybiscuit.sensibletoolbox.core.energy.SCURelayConnection;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.items.AdvancedMoistureChecker;
@@ -182,7 +183,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private STBFriendManager friendManager;
     private EnergyNetManager enetManager;
     private ConfigCache configCache;
-    private IDTracker scuRelayIDTracker;
+    private IDTracker<SCURelayConnection> scuRelayIDTracker;
     private ProtectionManager protectionManager;
 
     @Override
@@ -621,7 +622,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         return configCache;
     }
 
-    public IDTracker getScuRelayIDTracker() {
+    public IDTracker<SCURelayConnection> getScuRelayIDTracker() {
         return scuRelayIDTracker;
     }
 

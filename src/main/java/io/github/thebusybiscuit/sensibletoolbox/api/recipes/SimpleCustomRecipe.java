@@ -7,18 +7,25 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Simple one-to-one mapping of an ingredient to a result. See
  * {@link ShapelessCustomRecipe} for a class
  * which supports multiple ingredients and results.
+ * 
+ * @author desht
  */
 public class SimpleCustomRecipe implements CustomRecipe {
 
-    private final String processorID; // id of STB item which makes this
+    // id of STB item which makes this
+    private final String processorID;
     private final ItemStack ingredient;
     private final ItemStack result;
-    private final int processingTime; // in ticks
+    private final int processingTime;
 
+    @ParametersAreNonnullByDefault
     public SimpleCustomRecipe(BaseSTBItem processor, ItemStack ingredient, ItemStack result, int processingTime) {
         this.processorID = processor.getItemTypeID();
         this.ingredient = ingredient;
@@ -35,6 +42,7 @@ public class SimpleCustomRecipe implements CustomRecipe {
         return result;
     }
 
+    @Nonnull
     public String getProcessorID() {
         return processorID;
     }
@@ -74,6 +82,7 @@ public class SimpleCustomRecipe implements CustomRecipe {
      *
      * @return the ingredient
      */
+    @Nonnull
     public ItemStack getIngredient() {
         return ingredient;
     }

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 
@@ -41,6 +42,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -514,8 +516,8 @@ public class RecipeBook extends BaseSTBItem {
                     ItemStack stack2 = item2.toItemStack();
                     stack2.setDurability(stack.getDurability());
                     return stack2;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception | LinkageError e) {
+                    SensibleToolboxPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception while reading crafting ingredients", e);
                 }
             }
         }

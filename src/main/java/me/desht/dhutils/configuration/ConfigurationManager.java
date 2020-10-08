@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -146,14 +147,14 @@ public class ConfigurationManager {
                 } catch (NoSuchMethodException e) {
                     throw new DHUtilsException("Cannot convert '" + val + "' into a " + c.getName());
                 } catch (IllegalArgumentException | InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    plugin.getLogger().log(Level.SEVERE, "Exception while parsing a config value", e);
                 } catch (InvocationTargetException e) {
                     if (e.getCause() instanceof NumberFormatException) {
                         throw new DHUtilsException("Invalid numeric value: " + val);
                     } else if (e.getCause() instanceof IllegalArgumentException) {
                         throw new DHUtilsException("Invalid argument: " + val);
                     } else {
-                        e.printStackTrace();
+                        plugin.getLogger().log(Level.SEVERE, "Exception while parsing a config value", e);
                     }
                 }
             }

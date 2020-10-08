@@ -3,6 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.api.gui;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -153,12 +155,17 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
 
         do {
             n = (n + adjust) % stacks.length;
-            if (n < 0)
+
+            if (n < 0) {
                 n += stacks.length;
+            }
+
             // noinspection unchecked
             currentValue = (T) currentValue.getClass().getEnumConstants()[n];
+
             if (n == b) {
-                break; // avoid infinite loop due to no supported behaviour
+                // avoid infinite loop due to no supported behaviour
+                break;
             }
         }
         while (!supported(stbItem, currentValue));
@@ -186,9 +193,11 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         if (lore.length > 0) {
             String ownerName = getOwnerName();
             List<String> l = Lists.newArrayListWithCapacity(lore.length);
+
             for (String s : lore) {
                 l.add(ChatColor.GRAY + s.replace("<OWNER>", ownerName));
             }
+
             meta.setLore(l);
         }
 
@@ -196,6 +205,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         return stack;
     }
 
+    @Nonnull
     private String getOwnerName() {
         if (stbItem instanceof BaseSTBBlock) {
             UUID id = ((BaseSTBBlock) stbItem).getOwner();

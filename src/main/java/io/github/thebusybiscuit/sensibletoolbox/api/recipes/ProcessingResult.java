@@ -1,17 +1,21 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.inventory.ItemStack;
 
 /**
  * Represents the result of a custom recipe; an item and the time it takes
  * to make that item.
+ * 
+ * @author desht
  */
 public class ProcessingResult {
 
     private final ItemStack result;
-    private final int processingTime; // in ticks
+    private final int processingTime;
 
-    public ProcessingResult(ItemStack result, int processingTime) {
+    public ProcessingResult(@Nonnull ItemStack result, int processingTime) {
         this.result = result;
         this.processingTime = processingTime;
     }
@@ -27,10 +31,11 @@ public class ProcessingResult {
     }
 
     /**
-     * Get the resulting item.
+     * Get the resulting {@link ItemStack}.
      *
      * @return a item
      */
+    @Nonnull
     public ItemStack getResult() {
         return result.clone();
     }

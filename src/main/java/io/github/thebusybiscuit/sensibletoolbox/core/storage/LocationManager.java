@@ -50,7 +50,7 @@ public final class LocationManager {
     private int saveInterval; // ms
     private long totalTicks;
     private long totalTime;
-    private final DBStorage dbStorage;
+    private final DatabaseManager databaseManager;
     private final Thread updaterTask;
     private static final BlockAccess blockAccess = new BlockAccess();
 
@@ -68,10 +68,10 @@ public final class LocationManager {
         lastSave = System.currentTimeMillis();
 
         try {
-            dbStorage = new DBStorage();
-            dbStorage.getConnection().setAutoCommit(false);
-            queryStmt = dbStorage.getConnection().prepareStatement("SELECT * FROM " + DBStorage.makeTableName("blocks") + " WHERE world_id = ?");
-            queryTypeStmt = dbStorage.getConnection().prepareStatement("SELECT * FROM " + DBStorage.makeTableName("blocks") + " WHERE world_id = ? and type = ?");
+            databaseManager = new DatabaseManager(plugin.getLogger());
+            databaseManager.getConnection().setAutoCommit(false);
+            queryStmt = databaseManager.getConnection().prepareStatement("SELECT * FROM " + DatabaseManager.getFullTableName("blocks") + " WHERE world_id = ?");
+            queryTypeStmt = databaseManager.getConnection().prepareStatement("SELECT * FROM " + DatabaseManager.getFullTableName("blocks") + " WHERE world_id = ? and type = ?");
         } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalStateException("Unable to initialise DB storage: " + e.getMessage());
@@ -95,8 +95,8 @@ public final class LocationManager {
     }
 
     @Nonnull
-    DBStorage getDbStorage() {
-        return dbStorage;
+    DatabaseManager getDatabaseConnection() {
+        return databaseManager;
     }
 
     public void addTicker(BaseSTBBlock stb) {
@@ -563,7 +563,7 @@ public final class LocationManager {
         }
 
         try {
-            dbStorage.getConnection().close();
+            databaseManager.getConnection().close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

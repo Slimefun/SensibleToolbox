@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 public class SupplementaryResult {
 
     private final ItemStack result;
-    private final int chance; // out of 1000
+
+    // x out of 1000
+    private final int chance;
 
     /**
      * Create a supplementary result.
@@ -31,6 +35,7 @@ public class SupplementaryResult {
      *
      * @return the item
      */
+    @Nonnull
     public ItemStack getResult() {
         return result;
     }

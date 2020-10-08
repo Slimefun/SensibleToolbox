@@ -10,9 +10,9 @@ import javax.annotation.Nonnull;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-public class IDTracker {
+public class IDTracker<T> {
 
-    private final Map<Integer, Object> map = new HashMap<>();
+    private final Map<Integer, T> map = new HashMap<>();
     private final Plugin plugin;
     private final String name;
     private int nextID;
@@ -56,7 +56,7 @@ public class IDTracker {
         return id;
     }
 
-    public Object get(int id) {
+    public T get(int id) {
         return map.get(id);
     }
 
@@ -64,11 +64,11 @@ public class IDTracker {
         return map.containsKey(id);
     }
 
-    public void add(int id, Object data) {
+    public void add(int id, T data) {
         map.put(id, data);
     }
 
-    public int add(Object data) {
+    public int add(T data) {
         int id = getNextID();
         map.put(id, data);
         return id;

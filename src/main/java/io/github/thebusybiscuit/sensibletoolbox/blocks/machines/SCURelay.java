@@ -20,11 +20,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+import com.google.common.base.Objects;
+
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.core.IDTracker;
+import io.github.thebusybiscuit.sensibletoolbox.core.energy.SCURelayConnection;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SubspaceTransponder;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.UnlinkedSCURelay;
 import me.desht.dhutils.MiscUtil;
@@ -46,17 +49,17 @@ public class SCURelay extends BatteryBox {
         super(conf);
         relayId = conf.getInt("relayId");
         hasTransponder = conf.getBoolean("transponder", false);
-        IDTracker tracker = getTracker();
+        IDTracker<SCURelayConnection> tracker = getTracker();
 
         if (!tracker.contains(relayId)) {
-            RelayData relayData = new RelayData();
-            relayData.chargeLevel = super.getCharge();
+            SCURelayConnection relayData = new SCURelayConnection();
+            relayData.setChargeLevel(super.getCharge());
             tracker.add(relayId, relayData);
         }
     }
 
     @Nonnull
-    private IDTracker getTracker() {
+    private IDTracker<SCURelayConnection> getTracker() {
         return ((SensibleToolboxPlugin) getProviderPlugin()).getScuRelayIDTracker();
     }
 
@@ -121,11 +124,18 @@ public class SCURelay extends BatteryBox {
             return 0;
         }
 
-        RelayData relayData = (RelayData) getTracker().get(relayId);
+        SCURelayConnection connection = getTracker().get(relayId);
 
-        if (relayData == null || relayData.block1 == null || relayData.block2 == null) {
+        if (connection == null) {
             return 0;
-        } else if (relayData.block1.worldID != relayData.block2.worldID && (!relayData.block1.hasTransponder || !relayData.block2.hasTransponder)) {
+        }
+
+        SCURelay block1 = connection.getFirst();
+        SCURelay block2 = connection.getSecond();
+
+        if (block1 == null || block2 == null) {
+            return 0;
+        } else if (!Objects.equal(block1.worldID, block2.worldID) && (!block1.hasTransponder || !block2.hasTransponder)) {
             return 0;
         } else {
             return 500;
@@ -134,23 +144,25 @@ public class SCURelay extends BatteryBox {
 
     @Override
     public double getCharge() {
-        RelayData relayData = (RelayData) getTracker().get(relayId);
-        return relayData == null ? 0 : relayData.chargeLevel;
+        SCURelayConnection relayData = getTracker().get(relayId);
+        return relayData == null ? 0 : relayData.getChargeLevel();
     }
 
     @Override
     public void setCharge(double charge) {
-        RelayData relayData = (RelayData) getTracker().get(relayId);
+        SCURelayConnection connection = getTracker().get(relayId);
 
-        if (relayData != null) {
-            relayData.chargeLevel = charge;
+        if (connection != null) {
+            SCURelay block1 = connection.getFirst();
+            SCURelay block2 = connection.getSecond();
+            connection.setChargeLevel(charge);
 
-            if (relayData.block1 != null) {
-                relayData.block1.notifyCharge();
+            if (block1 != null) {
+                block1.notifyCharge();
             }
 
-            if (relayData.block2 != null) {
-                relayData.block2.notifyCharge();
+            if (block2 != null) {
+                block2.notifyCharge();
             }
         }
     }
@@ -287,13 +299,15 @@ public class SCURelay extends BatteryBox {
         return false;
     }
 
-    private void updateInfoLabel(RelayData data) {
+    private void updateInfoLabel(@Nonnull SCURelayConnection connection) {
         String locStr = "(unknown)";
+        SCURelay block1 = connection.getFirst();
+        SCURelay block2 = connection.getSecond();
 
-        if (this.equals(data.block1)) {
-            locStr = data.block2 == null ? "(not placed)" : MiscUtil.formatLocation(data.block2.getLocation());
-        } else if (this.equals(data.block2)) {
-            locStr = data.block1 == null ? "(not placed)" : MiscUtil.formatLocation(data.block1.getLocation());
+        if (this.equals(block1)) {
+            locStr = block2 == null ? "(not placed)" : MiscUtil.formatLocation(block2.getLocation());
+        } else if (this.equals(block2)) {
+            locStr = block1 == null ? "(not placed)" : MiscUtil.formatLocation(block1.getLocation());
         }
 
         getGUI().addLabel("SCU Relay : #" + relayId, 0, null, ChatColor.DARK_AQUA + "Partner Location: " + locStr, "Relay will only accept/supply power", "when both partners are placed");
@@ -306,7 +320,7 @@ public class SCURelay extends BatteryBox {
 
     @Override
     public boolean onCrafted() {
-        relayId = getTracker().add(new RelayData());
+        relayId = getTracker().add(new SCURelayConnection());
         return true;
     }
 
@@ -320,18 +334,20 @@ public class SCURelay extends BatteryBox {
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
         super.onBlockRegistered(location, isPlacing);
-        RelayData relayData = (RelayData) getTracker().get(relayId);
+        SCURelayConnection connection = getTracker().get(relayId);
+        SCURelay block1 = connection.getFirst();
+        SCURelay block2 = connection.getSecond();
 
-        if (relayData.block1 == null) {
-            relayData.block1 = this;
-        } else if (relayData.block2 == null) {
-            relayData.block2 = this;
+        if (block1 == null) {
+            connection.setFirstBlock(this);
+        } else if (block2 == null) {
+            connection.setSecondBlock(this);
         } else {
-            // shouldn't happen!
+            // This shouldn't happen!
             LogUtils.warning("trying to register more than 2 SCU relays of ID " + relayId);
         }
 
-        updateInfoLabels(relayData);
+        updateInfoLabels(connection);
         worldID = location.getWorld().getUID();
     }
 
@@ -339,18 +355,22 @@ public class SCURelay extends BatteryBox {
     public void onBlockUnregistered(Location loc) {
         getGUI().setItem(TRANSPONDER_SLOT, null);
 
-        RelayData relayData = (RelayData) getTracker().get(relayId);
-        if (relayData != null) {
-            if (this.equals(relayData.block1)) {
-                relayData.block1 = null;
-            } else if (this.equals(relayData.block2)) {
-                relayData.block2 = null;
+        SCURelayConnection connection = getTracker().get(relayId);
+
+        if (connection != null) {
+            SCURelay block1 = connection.getFirst();
+            SCURelay block2 = connection.getSecond();
+
+            if (this.equals(block1)) {
+                connection.setFirstBlock(null);
+            } else if (this.equals(block2)) {
+                connection.setSecondBlock(null);
             } else {
                 // shouldn't happen!
                 LogUtils.warning("relay loc for ID " + relayId + " doesn't match placed relays");
             }
 
-            updateInfoLabels(relayData);
+            updateInfoLabels(connection);
         } else {
             // shouldn't happen!
             LogUtils.warning("can't find any register SCU relay of ID " + relayId);
@@ -361,21 +381,16 @@ public class SCURelay extends BatteryBox {
         super.onBlockUnregistered(loc);
     }
 
-    private void updateInfoLabels(@Nonnull RelayData relayData) {
-        if (relayData.block1 != null) {
-            relayData.block1.updateInfoLabel(relayData);
+    private void updateInfoLabels(@Nonnull SCURelayConnection connection) {
+        SCURelay block1 = connection.getFirst();
+        SCURelay block2 = connection.getSecond();
+
+        if (block1 != null) {
+            block1.updateInfoLabel(connection);
         }
 
-        if (relayData.block2 != null) {
-            relayData.block2.updateInfoLabel(relayData);
+        if (block2 != null) {
+            block2.updateInfoLabel(connection);
         }
-    }
-
-    private class RelayData {
-
-        private SCURelay block1;
-        private SCURelay block2;
-        private double chargeLevel;
-
     }
 }

@@ -2,12 +2,14 @@ package io.github.thebusybiscuit.sensibletoolbox.core.storage;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.dhutils.Debugger;
 
-public class DBUpdaterTask implements Runnable {
+class DBUpdaterTask implements Runnable {
 
     private final LocationManager manager;
     private final PreparedStatement insertStmt;
@@ -17,10 +19,10 @@ public class DBUpdaterTask implements Runnable {
     public DBUpdaterTask(@Nonnull LocationManager manager) throws SQLException {
         this.manager = manager;
 
-        String tableName = DBStorage.makeTableName("blocks");
-        insertStmt = manager.getDbStorage().getConnection().prepareStatement("INSERT INTO " + tableName + " VALUES(?,?,?,?,?,?)");
-        updateStmt = manager.getDbStorage().getConnection().prepareStatement("UPDATE " + tableName + " SET data = ?, type = ? WHERE world_id = ? and x = ? and y = ? and z = ?");
-        deleteStmt = manager.getDbStorage().getConnection().prepareStatement("DELETE FROM " + tableName + " WHERE world_id = ? and x = ? and y = ? and z = ?");
+        String tableName = DatabaseManager.getFullTableName("blocks");
+        insertStmt = manager.getDatabaseConnection().getConnection().prepareStatement("INSERT INTO " + tableName + " VALUES(?,?,?,?,?,?)");
+        updateStmt = manager.getDatabaseConnection().getConnection().prepareStatement("UPDATE " + tableName + " SET data = ?, type = ? WHERE world_id = ? and x = ? and y = ? and z = ?");
+        deleteStmt = manager.getDatabaseConnection().getConnection().prepareStatement("DELETE FROM " + tableName + " WHERE world_id = ? and x = ? and y = ? and z = ?");
     }
 
     @Override
@@ -40,7 +42,7 @@ public class DBUpdaterTask implements Runnable {
                     finished = true;
                     break;
                 case COMMIT:
-                    manager.getDbStorage().getConnection().commit();
+                    manager.getDatabaseConnection().getConnection().commit();
                     break;
                 case INSERT:
                     insertStmt.setString(1, rec.getWorldID().toString());
@@ -71,10 +73,10 @@ public class DBUpdaterTask implements Runnable {
 
                 Debugger.getInstance().debug("DB write complete: rows modified = " + n);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                SensibleToolboxPlugin.getInstance().getLogger().log(Level.SEVERE, "Database Thread was interrupted", e);
                 Thread.currentThread().interrupt();
             } catch (SQLException e) {
-                e.printStackTrace();
+                SensibleToolboxPlugin.getInstance().getLogger().log(Level.SEVERE, "An Exception has disturbed the Database Thread", e);
             }
         }
 

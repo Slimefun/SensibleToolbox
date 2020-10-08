@@ -3,6 +3,9 @@ package io.github.thebusybiscuit.sensibletoolbox.items;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -135,7 +138,7 @@ public class EnderLeash extends BaseSTBItem {
         if (animal instanceof Tameable) {
             AnimalTamer owner = ((Tameable) animal).getOwner();
 
-            if (owner.getUniqueId() != player.getUniqueId()) {
+            if (!owner.getUniqueId().equals(player.getUniqueId())) {
                 return player.hasPermission("stb.enderleash.captureany");
             }
         }
@@ -146,6 +149,7 @@ public class EnderLeash extends BaseSTBItem {
     private boolean checkLeash(Animals animal) {
         if (animal.isLeashed()) {
             Entity leashHolder = animal.getLeashHolder();
+
             if (leashHolder instanceof LeashHitch) {
                 leashHolder.remove();
                 animal.getWorld().dropItemNaturally(animal.getLocation(), new ItemStack(Material.LEAD));
@@ -153,30 +157,33 @@ public class EnderLeash extends BaseSTBItem {
                 return false;
             }
         }
+
         return true;
     }
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getClickedBlock().getType().isInteractable()) {
-            if (capturedConf != null && capturedConf.contains("type")) {
-                // Check enough time has passed since freezing entity
-                if (System.currentTimeMillis() - capturedConf.getLong("captureTime") < MIN_THAW_DELAY) {
-                    return;
-                }
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock().getType().isInteractable()) {
+            return;
+        }
 
-                Block where = event.getClickedBlock().getRelative(event.getBlockFace());
-                EntityType type = EntityType.valueOf(capturedConf.getString("type"));
-                Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
-                thawEntity((Animals) e, capturedConf);
-                capturedConf = null;
-                updateHeldItemStack(event.getPlayer(), event.getHand());
-                event.setCancelled(true);
+        if (capturedConf != null && capturedConf.contains("type")) {
+            // Check enough time has passed since freezing entity
+            if (System.currentTimeMillis() - capturedConf.getLong("captureTime") < MIN_THAW_DELAY) {
+                return;
             }
+
+            Block where = event.getClickedBlock().getRelative(event.getBlockFace());
+            EntityType type = EntityType.valueOf(capturedConf.getString("type"));
+            Entity e = where.getWorld().spawnEntity(where.getLocation().add(0.5, 0.0, 0.5), type);
+            thawEntity((Animals) e, capturedConf);
+            capturedConf = null;
+            updateHeldItemStack(event.getPlayer(), event.getHand());
+            event.setCancelled(true);
         }
     }
 
-    private boolean isPassive(Entity entity) {
+    private boolean isPassive(@Nonnull Entity entity) {
         return !(entity instanceof Wolf) || !((Wolf) entity).isAngry();
     }
 
@@ -330,6 +337,7 @@ public class EnderLeash extends BaseSTBItem {
         }
     }
 
+    @Nullable
     public EntityType getCapturedEntityType() {
         return capturedConf == null ? null : EntityType.valueOf(capturedConf.getString("type"));
     }

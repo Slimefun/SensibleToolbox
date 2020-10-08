@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,12 +29,12 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.cscorelib2.data.PersistentDataAPI;
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.ItemRegistry;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.ItemAction;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
-import me.desht.dhutils.text.LogUtils;
 
 public class STBItemRegistry implements ItemRegistry, Keyed {
 
@@ -110,8 +111,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
             try {
                 LocationManager.getManager().loadDeferredBlocks(id);
             } catch (SQLException e) {
-                LogUtils.severe("There was a problem restoring blocks of type '" + id + "' from persisted storage:");
-                e.printStackTrace();
+                SensibleToolboxPlugin.getInstance().getLogger().log(Level.SEVERE, e, () -> "There was a problem restoring blocks of type '" + id + "' from persisted storage");
             }
         }
     }
@@ -187,9 +187,8 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
         try {
             return conf == null ? details.ctor0arg.newInstance() : details.ctor1arg.newInstance(conf);
-        } catch (Exception e) {
-            LogUtils.warning("failed to create STB item from item ID: " + id);
-            e.printStackTrace();
+        } catch (Exception | LinkageError e) {
+            SensibleToolboxPlugin.getInstance().getLogger().log(Level.SEVERE, e, () -> "Failed to create STB item from item ID: " + id);
             return null;
         }
     }
