@@ -225,7 +225,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         craftingRestrictions.put(item.getItemTypeID() + ":" + mat, c);
     }
 
-    private class ReflectionDetails<T extends BaseSTBItem> {
+    private final class ReflectionDetails<T extends BaseSTBItem> {
 
         private final Constructor<T> ctor0arg;
         private final Constructor<T> ctor1arg;

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -718,5 +720,25 @@ public final class STBUtil {
         default:
             return null;
         }
+    }
+
+    /**
+     * Given a UUID, attempt to get the player name for that UUID. This will
+     * only succeed if that player has previously connected to this server,
+     * in which case the last known name for the UUID will be returned. If
+     * the player has changed their name since last logging in, this change
+     * will not be reflected in the return value for this method.
+     * <p/>
+     * This method does not require contacting any external servers, so is
+     * safe to call from the main server thread.
+     *
+     * @param uuid
+     *            the UUID to check
+     * @return the last known player name for this UUID, if any (null if name not known)
+     */
+    @Nullable
+    public static String getPlayerNameFromUUID(@Nonnull UUID uuid) {
+        Validate.notNull(uuid, "UUID cannot be null!");
+        return Bukkit.getOfflinePlayer(uuid).getName();
     }
 }

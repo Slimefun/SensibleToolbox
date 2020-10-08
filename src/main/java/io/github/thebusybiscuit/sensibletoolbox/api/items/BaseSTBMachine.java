@@ -1,7 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -70,7 +70,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     private final String frozenInput;
     private final String frozenOutput;
     private final List<MachineUpgrade> upgrades = new ArrayList<>();
-    private final Map<BlockFace, EnergyNet> energyNets = new HashMap<>();
+    private final Map<BlockFace, EnergyNet> energyNets = new EnumMap<>(BlockFace.class);
     private int regulatorAmount;
     private int thoroughnessAmount;
     private String chargeLabel;

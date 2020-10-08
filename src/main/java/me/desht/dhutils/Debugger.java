@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
  * @author desht
  *
  */
-public class Debugger {
+public final class Debugger {
 
     private static final String DEBUG_COLOR = ChatColor.DARK_GREEN.toString();
     private static Debugger instance;

@@ -1,11 +1,14 @@
 package io.github.thebusybiscuit.sensibletoolbox.core.storage;
 
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import java.util.UUID;
-
-public class UpdateRecord {
+class UpdateRecord {
 
     private final Operation op;
     private final UUID worldID;
@@ -15,16 +18,19 @@ public class UpdateRecord {
     private String type;
     private String data;
 
+    @Nonnull
     public static UpdateRecord finishingRecord() {
         return new UpdateRecord(Operation.FINISH, null);
     }
 
+    @Nonnull
     public static UpdateRecord commitRecord() {
         return new UpdateRecord(Operation.COMMIT, null);
     }
 
-    public UpdateRecord(Operation op, Location loc) {
+    protected UpdateRecord(@Nonnull Operation op, @Nullable Location loc) {
         this.op = op;
+
         if (loc != null) {
             this.worldID = loc.getWorld().getUID();
             this.x = loc.getBlockX();
@@ -32,7 +38,9 @@ public class UpdateRecord {
             this.z = loc.getBlockZ();
         } else {
             this.worldID = null;
-            this.x = this.y = this.z = 0;
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
         }
     }
 
@@ -51,10 +59,8 @@ public class UpdateRecord {
             return false;
         if (z != that.z)
             return false;
-        if (worldID != null ? !worldID.equals(that.worldID) : that.worldID != null)
-            return false;
 
-        return true;
+        return worldID != null ? worldID.equals(that.worldID) : that.worldID == null;
     }
 
     @Override
@@ -66,6 +72,7 @@ public class UpdateRecord {
         return result;
     }
 
+    @Nonnull
     public Operation getOp() {
         return op;
     }
@@ -113,20 +120,8 @@ public class UpdateRecord {
         }
     }
 
+    @Nonnull
     public Location getLocation() {
         return new Location(Bukkit.getWorld(worldID), x, y, z);
-    }
-
-    public enum Operation {
-
-        INSERT,
-        UPDATE,
-        DELETE,
-        FINISH,
-        COMMIT;
-
-        public boolean hasData() {
-            return this != FINISH && this != COMMIT;
-        }
     }
 }

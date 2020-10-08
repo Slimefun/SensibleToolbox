@@ -1,30 +1,13 @@
 package io.github.thebusybiscuit.sensibletoolbox;
 
-/*
- * This file is part of SensibleToolbox
- * 
- * SensibleToolbox is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * SensibleToolbox is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with SensibleToolbox. If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
@@ -167,7 +150,6 @@ import io.github.thebusybiscuit.sensibletoolbox.listeners.ElevatorListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.FurnaceListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.GeneralListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.MobListener;
-import io.github.thebusybiscuit.sensibletoolbox.listeners.PlayerUUIDTracker;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.SoundMufflerListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.TrashCanListener;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.WorldListener;
@@ -192,7 +174,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private ConfigurationManager configManager;
     private boolean protocolLibEnabled = false;
     private SoundMufflerListener soundMufflerListener;
-    private PlayerUUIDTracker uuidTracker;
     private boolean enabled = false;
     private boolean holographicDisplays = false;
     private BukkitTask energyTask = null;
@@ -477,8 +458,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         pm.registerEvents(new TrashCanListener(this), this);
         pm.registerEvents(new ElevatorListener(this), this);
         pm.registerEvents(new AnvilListener(this), this);
-        uuidTracker = new PlayerUUIDTracker(this);
-        pm.registerEvents(uuidTracker, this);
 
         if (isProtocolLibEnabled()) {
             soundMufflerListener = new SoundMufflerListener(this);
@@ -563,26 +542,19 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         } else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
         } else if (key.equals("default_access")) {
-            getEnumValue(newVal.toString().toUpperCase(), AccessControl.class);
+            getEnumValue(newVal.toString().toUpperCase(Locale.ROOT), AccessControl.class);
         } else if (key.equals("default_redstone")) {
-            getEnumValue(newVal.toString().toUpperCase(), RedstoneBehaviour.class);
+            getEnumValue(newVal.toString().toUpperCase(Locale.ROOT), RedstoneBehaviour.class);
         }
         return newVal;
     }
 
-    @SuppressWarnings({ "unchecked" })
-    private <T> T getEnumValue(String value, Class<T> c) {
+    @ParametersAreNonnullByDefault
+    private <T extends Enum<T>> T getEnumValue(String value, Class<T> c) {
         try {
-            Method m = c.getMethod("valueOf", String.class);
-            // noinspection unchecked
-            return (T) m.invoke(null, value);
-        } catch (Exception e) {
-            if (!(e instanceof InvocationTargetException) || !(e.getCause() instanceof IllegalArgumentException)) {
-                e.printStackTrace();
-                throw new DHUtilsException(e.getMessage());
-            } else {
-                throw new DHUtilsException("Unknown value: " + value);
-            }
+            return Enum.valueOf(c, value);
+        } catch (IllegalArgumentException x) {
+            throw new DHUtilsException("Unknown value for Type (" + c.getSimpleName() + "): " + value);
         }
     }
 
@@ -604,9 +576,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         } else if (key.startsWith("gui.texture.")) {
             STBInventoryGUI.buildStockTextures();
         } else if (key.equals("default_access")) {
-            getConfigCache().setDefaultAccess(AccessControl.valueOf(newVal.toString().toUpperCase()));
+            getConfigCache().setDefaultAccess(AccessControl.valueOf(newVal.toString().toUpperCase(Locale.ROOT)));
         } else if (key.equals("default_redstone")) {
-            getConfigCache().setDefaultRedstone(RedstoneBehaviour.valueOf(newVal.toString().toUpperCase()));
+            getConfigCache().setDefaultRedstone(RedstoneBehaviour.valueOf(newVal.toString().toUpperCase(Locale.ROOT)));
         } else if (key.equals("particle_effects")) {
             getConfigCache().setParticleLevel((Integer) newVal);
         } else if (key.equals("noisy_machines")) {
@@ -655,10 +627,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
 
     public SoundMufflerListener getSoundMufflerListener() {
         return soundMufflerListener;
-    }
-
-    public PlayerUUIDTracker getUuidTracker() {
-        return uuidTracker;
     }
 
     public ProtectionManager getProtectionManager() {

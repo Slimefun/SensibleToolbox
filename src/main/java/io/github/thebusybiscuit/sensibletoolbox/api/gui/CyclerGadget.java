@@ -13,9 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.Lists;
 
-import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 /**
  * A gadget which can cycle through the values of the given parameterised enum
@@ -199,7 +199,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
     private String getOwnerName() {
         if (stbItem instanceof BaseSTBBlock) {
             UUID id = ((BaseSTBBlock) stbItem).getOwner();
-            String name = SensibleToolboxPlugin.getInstance().getUuidTracker().getPlayerName(((BaseSTBBlock) stbItem).getOwner());
+            String name = STBUtil.getPlayerNameFromUUID(id);
             return name == null ? id.toString() : name;
         } else {
             return "";
