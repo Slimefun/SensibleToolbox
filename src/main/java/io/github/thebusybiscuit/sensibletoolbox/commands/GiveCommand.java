@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -11,7 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import me.desht.dhutils.DHUtilsException;
+import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.commands.AbstractCommand;
 
@@ -31,13 +32,18 @@ public class GiveCommand extends AbstractCommand {
 
         if (args.length >= 3) {
             target = Bukkit.getPlayer(args[2]);
-            Validate.notNull(target, "Unknown player: " + args[2]);
+
+            if (target == null) {
+                MiscUtil.errorMessage(sender, args[2] + " is not a valid Player or not online!");
+                return true;
+            }
         } else {
             if (args.length >= 2) {
-                try {
+                if (STBUtil.isNumeric(args[1])) {
                     amount = Integer.parseInt(args[1]);
-                } catch (NumberFormatException e) {
-                    throw new DHUtilsException("Invalid amount: " + args[1]);
+                } else {
+                    MiscUtil.errorMessage(sender, args[1] + " is not a valid amount!");
+                    return true;
                 }
             }
 
@@ -49,7 +55,7 @@ public class GiveCommand extends AbstractCommand {
             target = (Player) sender;
         }
 
-        String id = args[0].replace(" ", "").toLowerCase();
+        String id = args[0].replace(" ", "").toLowerCase(Locale.ROOT);
         BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(id);
         Validate.notNull(item, "Unknown SensibleToolbox item: " + args[0]);
         target.getInventory().addItem(item.toItemStack(amount));

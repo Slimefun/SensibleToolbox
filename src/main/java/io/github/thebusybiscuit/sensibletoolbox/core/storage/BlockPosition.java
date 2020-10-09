@@ -1,13 +1,23 @@
 package io.github.thebusybiscuit.sensibletoolbox.core.storage;
 
+import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+
 import org.bukkit.Location;
 
 /**
  * Stores the X,Y,Z position of a block - no world information
+ * 
+ * @author desht
  */
 public class BlockPosition {
 
-    private final int x, y, z;
+    private static final Pattern STRING_PATTERN = Pattern.compile(",");
+
+    private final int x;
+    private final int y;
+    private final int z;
 
     public BlockPosition(int x, int y, int z) {
         this.x = x;
@@ -53,8 +63,9 @@ public class BlockPosition {
         return z;
     }
 
-    public static BlockPosition fromString(String s) {
-        String[] f = s.split(",");
+    @Nonnull
+    public static BlockPosition fromString(@Nonnull String s) {
+        String[] f = STRING_PATTERN.split(s);
         return new BlockPosition(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2]));
     }
 

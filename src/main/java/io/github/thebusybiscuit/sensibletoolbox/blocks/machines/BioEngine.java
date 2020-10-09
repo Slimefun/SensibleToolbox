@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.FuelItems;
+import io.github.thebusybiscuit.sensibletoolbox.api.recipes.FuelValues;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
@@ -25,7 +26,7 @@ public class BioEngine extends Generator {
     private static final int TICK_FREQUENCY = 10;
     private static final FuelItems fuelItems = new FuelItems();
     private final double slowBurnThreshold;
-    private FuelItems.FuelValues currentFuel;
+    private FuelValues currentFuel;
 
     static {
         fuelItems.addFuel(new ItemStack(Material.ROTTEN_FLESH), true, 2, 60);
@@ -261,7 +262,7 @@ public class BioEngine extends Generator {
         update(false);
     }
 
-    private ItemStack makeProcessingItem(FuelItems.FuelValues fuel, ItemStack input) {
+    private ItemStack makeProcessingItem(FuelValues fuel, ItemStack input) {
         ItemStack toProcess = input.clone();
         toProcess.setAmount(1);
         ItemMeta meta = toProcess.getItemMeta();

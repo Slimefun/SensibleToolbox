@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,6 +56,8 @@ public final class STBUtil {
      * The block faces in all eight compass directions, plus the block itself.
      */
     public static final BlockFace[] ALL_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH };
+
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
 
     private STBUtil() {}
 
@@ -740,5 +743,9 @@ public final class STBUtil {
     public static String getPlayerNameFromUUID(@Nonnull UUID uuid) {
         Validate.notNull(uuid, "UUID cannot be null!");
         return Bukkit.getOfflinePlayer(uuid).getName();
+    }
+
+    public static boolean isNumeric(@Nonnull String string) {
+        return NUMBER_PATTERN.matcher(string).matches();
     }
 }

@@ -1,5 +1,8 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -68,7 +71,8 @@ public class Elevator extends BaseSTBBlock implements Colorable {
         return recipe;
     }
 
-    public Elevator findOtherElevator(BlockFace direction) {
+    @Nullable
+    public Elevator findOtherElevator(@Nonnull BlockFace direction) {
         Validate.isTrue(direction == BlockFace.UP || direction == BlockFace.DOWN, "direction must be UP or DOWN");
 
         Block b = getLocation().getBlock();
@@ -76,11 +80,13 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
         while (b.getY() > 0 && b.getY() < b.getWorld().getMaxHeight()) {
             b = b.getRelative(direction);
+
             if (b.getType().isSolid()) {
                 res = SensibleToolbox.getBlockAt(b.getLocation(), Elevator.class, false);
                 break;
             }
         }
+
         return (res != null && res.getColor() == getColor()) ? res : null;
     }
 }

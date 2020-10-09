@@ -211,6 +211,7 @@ public class Pump extends AbstractProcessingMachine {
         if (STBUtil.isInfiniteWaterSource(block)) {
             return;
         }
+
         switch (block.getType()) {
         case WATER:
             block.setType(Material.AIR);

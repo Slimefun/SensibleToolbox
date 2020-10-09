@@ -4,12 +4,25 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.SCURelay;
+
+/**
+ * The {@link IDTracker} tracks a numeric id that is automatically incremented.
+ * It is currently only used by the {@link SCURelay}.
+ * 
+ * @author desht
+ * @author TheBusyBiscuit
+ *
+ * @param <T>
+ *            The Type of data to track
+ */
 public class IDTracker<T> {
 
     private final Map<Integer, T> map = new HashMap<>();
@@ -29,7 +42,7 @@ public class IDTracker<T> {
                 conf.load(file);
                 nextID = conf.getInt("nextID");
             } catch (Exception e) {
-                e.printStackTrace();
+                plugin.getLogger().log(Level.SEVERE, e, () -> "Could not read the next id from the config file: " + name);
             }
         } else {
             nextID = 1;
@@ -45,7 +58,7 @@ public class IDTracker<T> {
         try {
             conf.save(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().log(Level.SEVERE, e, () -> "Failed to save id tracker file: " + name);
         }
     }
 

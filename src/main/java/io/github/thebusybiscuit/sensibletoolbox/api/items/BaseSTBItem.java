@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -56,12 +57,12 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
     private Map<Enchantment, Integer> enchants;
 
     protected BaseSTBItem() {
-        typeID = getClass().getSimpleName().toLowerCase();
+        typeID = getClass().getSimpleName().toLowerCase(Locale.ROOT);
         providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
     }
 
     protected BaseSTBItem(ConfigurationSection conf) {
-        typeID = getClass().getSimpleName().toLowerCase();
+        typeID = getClass().getSimpleName().toLowerCase(Locale.ROOT);
         providerPlugin = SensibleToolboxPlugin.getInstance().getItemRegistry().getPlugin(this);
     }
 

@@ -41,11 +41,13 @@ public class Smelter extends AbstractIOMachine {
     public void addCustomRecipes(CustomRecipeManager crm) {
         // add a corresponding smelter recipe for every known vanilla furnace recipe
         Iterator<Recipe> iter = Bukkit.recipeIterator();
+
         while (iter.hasNext()) {
             Recipe r = iter.next();
 
             if (r instanceof FurnaceRecipe) {
                 FurnaceRecipe fr = (FurnaceRecipe) r;
+
                 if (RecipeUtil.isVanillaSmelt(fr.getInput().getType())) {
                     crm.addCustomRecipe(new SimpleCustomRecipe(this, fr.getInput(), fr.getResult(), getProcessingTime(fr.getInput())));
                 }

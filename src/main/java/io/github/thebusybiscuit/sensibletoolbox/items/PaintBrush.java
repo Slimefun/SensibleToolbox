@@ -46,7 +46,6 @@ public class PaintBrush extends BaseSTBItem {
 
     private int paintLevel;
     private DyeColor color;
-    private Painting editingPainting = null;
 
     public PaintBrush() {
         super();
@@ -173,7 +172,8 @@ public class PaintBrush extends BaseSTBItem {
 
     private boolean okToColor(Block b, BaseSTBBlock stb) {
         if (stb != null && !(stb instanceof Colorable)) {
-            // we don't want blocks which happen to use a Colorable material to be paintable
+            // we don't want blocks which happen to use a
+            // Colorable material to be paintable
             return false;
         }
 
@@ -305,7 +305,7 @@ public class PaintBrush extends BaseSTBItem {
     }
 
     private void openArtworkMenu(@Nonnull Player p, @Nonnull EquipmentSlot hand, @Nonnull Painting painting) {
-        editingPainting = painting;
+        Painting editingPainting = painting;
 
         Art[] other = getOtherArt(painting.getArt());
         ChestMenu menu = new ChestMenu(getProviderPlugin(), "Select Artwork");
@@ -322,6 +322,7 @@ public class PaintBrush extends BaseSTBItem {
                 pl.closeInventory();
                 return false;
             });
+
             i++;
         }
 

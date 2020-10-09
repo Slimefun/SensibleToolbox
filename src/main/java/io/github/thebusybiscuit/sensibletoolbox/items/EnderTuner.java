@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.items;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -80,14 +82,18 @@ public class EnderTuner extends BaseSTBItem {
     public void onInteractItem(PlayerInteractEvent event) {
         Block clicked = event.getClickedBlock();
         BaseSTBBlock stb = clicked == null ? null : SensibleToolbox.getBlockAt(clicked.getLocation(), true);
-        if (stb instanceof EnderTunable && stb.hasAccessRights(event.getPlayer()))
+
+        if (stb instanceof EnderTunable && stb.hasAccessRights(event.getPlayer())) {
             tuningBlock = (EnderTunable) stb;
+        }
+
         inventoryGUI = makeTuningGUI(event.getPlayer());
         inventoryGUI.show(event.getPlayer());
         event.setCancelled(true);
     }
 
-    private InventoryGUI makeTuningGUI(Player player) {
+    @Nonnull
+    private InventoryGUI makeTuningGUI(@Nonnull Player player) {
         InventoryGUI gui = GUIUtil.createGUI(player, this, TUNING_GUI_SIZE, ChatColor.DARK_PURPLE + "Ender Tuner");
 
         for (int slot = 0; slot < gui.getInventory().getSize(); slot++) {
@@ -104,43 +110,45 @@ public class EnderTuner extends BaseSTBItem {
             freq = tuningBlock.getEnderFrequency();
             global = tuningBlock.isGlobal();
             gui.addGadget(new AccessControlGadget(gui, ACCESS_CONTROL_SLOT, (BaseSTBBlock) tuningBlock));
-        } else
+        } else {
             gui.addLabel("Ender Bag", TUNED_ITEM_SLOT - 1, null, "Place an Ender Bag or", "Ender Box here to tune", "its Ender frequency");
+        }
 
-        gui.addGadget(new ToggleButton(gui, GLOBAL_BUTTON_SLOT, global, GLOBAL_TEXTURE, PERSONAL_TEXTURE, new ToggleButton.ToggleListener() {
+        gui.addGadget(new ToggleButton(gui, GLOBAL_BUTTON_SLOT, global, GLOBAL_TEXTURE, PERSONAL_TEXTURE, newValue -> {
+            ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
-            @Override
-            public boolean run(boolean newValue) {
-                ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
-                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-                if (item instanceof EnderTunable) {
-                    ((EnderTunable) item).setGlobal(newValue);
-                    gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
-                    if (tuningBlock != null)
-                        tuningBlock.setGlobal(newValue);
+            if (item instanceof EnderTunable) {
+                ((EnderTunable) item).setGlobal(newValue);
+                gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
+
+                if (tuningBlock != null) {
+                    tuningBlock.setGlobal(newValue);
+                } else {
                     return true;
                 }
-                return false;
             }
+
+            return false;
 
         }));
 
-        gui.addGadget(new NumericGadget(gui, FREQUENCY_BUTTON_SLOT, "Ender Frequency", new IntRange(1, EnderStorage.MAX_ENDER_FREQUENCY), freq, 1, 10, new NumericGadget.NumericListener() {
+        gui.addGadget(new NumericGadget(gui, FREQUENCY_BUTTON_SLOT, "Ender Frequency", new IntRange(1, EnderStorage.MAX_ENDER_FREQUENCY), freq, 1, 10, newValue -> {
+            ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
+            BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
-            @Override
-            public boolean run(int newValue) {
-                ItemStack stack = gui.getItem(TUNED_ITEM_SLOT);
-                BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
-                if (item instanceof EnderTunable) {
-                    ((EnderTunable) item).setEnderFrequency(newValue);
-                    gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
-                    if (tuningBlock != null)
-                        tuningBlock.setEnderFrequency(newValue);
-                    return true;
-                } else
-                    return false;
+            if (item instanceof EnderTunable) {
+                ((EnderTunable) item).setEnderFrequency(newValue);
+                gui.setItem(TUNED_ITEM_SLOT, item.toItemStack(stack.getAmount()));
+
+                if (tuningBlock != null) {
+                    tuningBlock.setEnderFrequency(newValue);
+                }
+
+                return true;
+            } else {
+                return false;
             }
-
         }));
 
         return gui;
@@ -178,9 +186,11 @@ public class EnderTuner extends BaseSTBItem {
     @Override
     public int onShiftClickInsert(HumanEntity player, int slot, ItemStack toInsert) {
         if (tuningBlock != null) {
-            if (player instanceof Player)
+            if (player instanceof Player) {
                 STBUtil.complain((Player) player);
-            return 0;
+            } else {
+                return 0;
+            }
         }
 
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(toInsert);
@@ -190,18 +200,19 @@ public class EnderTuner extends BaseSTBItem {
             ((NumericGadget) inventoryGUI.getGadget(FREQUENCY_BUTTON_SLOT)).setValue(((EnderTunable) item).getEnderFrequency());
             ((ToggleButton) inventoryGUI.getGadget(GLOBAL_BUTTON_SLOT)).setValue(((EnderTunable) item).isGlobal());
             return toInsert.getAmount();
-        }
-
-        else
+        } else {
             return 0;
+        }
     }
 
     @Override
     public boolean onShiftClickExtract(HumanEntity player, int slot, ItemStack toExtract) {
         if (tuningBlock != null) {
-            if (player instanceof Player)
+            if (player instanceof Player) {
                 STBUtil.complain((Player) player);
-            return false;
+            } else {
+                return false;
+            }
         }
 
         if (slot == TUNED_ITEM_SLOT && inventoryGUI.getItem(slot) != null) {

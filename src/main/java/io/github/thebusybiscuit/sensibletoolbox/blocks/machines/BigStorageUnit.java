@@ -3,6 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,8 +32,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMach
 import io.github.thebusybiscuit.sensibletoolbox.utils.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
-
-import javax.annotation.Nonnull;
 
 public class BigStorageUnit extends AbstractProcessingMachine {
 
@@ -255,14 +255,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     protected InventoryGUI createGUI() {
         InventoryGUI gui = super.createGUI();
 
-        gui.addGadget(new ToggleButton(gui, 26, isLocked(), LOCKED_BUTTON, UNLOCKED_BUTTON, new ToggleButton.ToggleListener() {
-
-            @Override
-            public boolean run(boolean newValue) {
-                setLocked(newValue);
-                return true;
-            }
+        gui.addGadget(new ToggleButton(gui, 26, isLocked(), LOCKED_BUTTON, UNLOCKED_BUTTON, newValue -> {
+            setLocked(newValue);
+            return true;
         }));
+
         return gui;
     }
 
@@ -322,7 +319,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
             getProgressMeter().setMaxProgress(maxCapacity);
             setProcessing(stored);
-            setProgress(maxCapacity - getStorageAmount());
+            setProgress(maxCapacity - (double) getStorageAmount());
             update(false);
             updateAttachedLabelSigns();
             oldTotalAmount = getTotalAmount();
@@ -359,7 +356,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     public void onBlockRegistered(Location location, boolean isPlacing) {
         getProgressMeter().setMaxProgress(maxCapacity);
         setProcessing(stored);
-        setProgress(maxCapacity - storageAmount);
+        setProgress(maxCapacity - (double) storageAmount);
         ItemStack output = getOutputItem();
         outputAmount = output == null ? 0 : output.getAmount();
         oldTotalAmount += outputAmount;
