@@ -1,32 +1,27 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.GoldCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 
-public class AutoFarm2 extends AutoFarmingMachine {
+public class AutoFarm2 extends AutoFarm {
 
-    private static final Map<Material, Material> crops = new HashMap<>();
+    private static final Map<Material, Material> crops = new EnumMap<>(Material.class);
     private static final int RADIUS = 5;
 
     static {
@@ -46,11 +41,6 @@ public class AutoFarm2 extends AutoFarmingMachine {
     public AutoFarm2(ConfigurationSection conf) {
         super(conf);
         blocks = new HashSet<>();
-    }
-
-    @Override
-    public Material getMaterial() {
-        return Material.BROWN_TERRACOTTA;
     }
 
     @Override
@@ -80,18 +70,6 @@ public class AutoFarm2 extends AutoFarmingMachine {
     }
 
     @Override
-    public void onBlockRegistered(Location location, boolean isPlacing) {
-        int i = RADIUS / 2;
-        for (int x = -i; x <= i; x++) {
-            for (int z = -i; z <= i; z++) {
-                blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
-            }
-        }
-
-        super.onBlockRegistered(location, isPlacing);
-    }
-
-    @Override
     public void onServerTick() {
         if (!isJammed()) {
             for (Block crop : blocks) {
@@ -100,10 +78,11 @@ public class AutoFarm2 extends AutoFarmingMachine {
                         Ageable ageable = (Ageable) crop.getBlockData();
 
                         if (ageable.getAge() >= ageable.getMaximumAge()) {
-                            if (getCharge() >= getScuPerCycle())
+                            if (getCharge() >= getScuPerCycle()) {
                                 setCharge(getCharge() - getScuPerCycle());
-                            else
+                            } else {
                                 break;
+                            }
 
                             ageable.setAge(0);
                             crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
@@ -112,11 +91,14 @@ public class AutoFarm2 extends AutoFarmingMachine {
                         }
                     } else {
                         Block block = crop.getRelative(BlockFace.UP);
+
                         if (crops.containsKey(block.getType()) && block.getType() != Material.COCOA) {
-                            if (getCharge() >= getScuPerCycle())
+                            if (getCharge() >= getScuPerCycle()) {
                                 setCharge(getCharge() - getScuPerCycle());
-                            else
+                            } else {
                                 break;
+                            }
+
                             block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
                             setJammed(!output(crops.get(block.getType())));
                             block.setType(Material.AIR);
@@ -125,30 +107,11 @@ public class AutoFarm2 extends AutoFarmingMachine {
                     }
                 }
             }
-        } else if (buffer != null)
+        } else if (buffer != null) {
             setJammed(!output(buffer));
+        }
 
         super.onServerTick();
-    }
-
-    private boolean output(Material m) {
-        for (int slot : getOutputSlots()) {
-            ItemStack stack = getInventoryItem(slot);
-            if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-                if (stack == null)
-                    stack = new ItemStack(m);
-                int amount = 1;
-
-                if (!m.isBlock()) {
-                    amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1) : (stack.getMaxStackSize() - stack.getAmount());
-                }
-
-                setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
-                buffer = null;
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

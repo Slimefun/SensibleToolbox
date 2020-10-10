@@ -41,7 +41,6 @@ import io.github.thebusybiscuit.sensibletoolbox.blocks.PaintCan;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.RedstoneClock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.SoundMuffler;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.TrashCan;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.AdvancedFarm;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.AutoBuilder;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.AutoFarm;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.AutoFarm2;
@@ -437,7 +436,6 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         itemRegistry.registerItem(new FishingNet(), this, configPrefix, permissionNode);
         itemRegistry.registerItem(new AutoFarm(), this, configPrefix, permissionNode);
         itemRegistry.registerItem(new AutoForester(), this, configPrefix, permissionNode);
-        itemRegistry.registerItem(new AdvancedFarm(), this, configPrefix, permissionNode);
         itemRegistry.registerItem(new InfernalFarm(), this, configPrefix, permissionNode);
         itemRegistry.registerItem(new AutoFarm2(), this, configPrefix, permissionNode);
 

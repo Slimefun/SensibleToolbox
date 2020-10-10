@@ -2,24 +2,19 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
-import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.GoldCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 
-public class InfernalFarm extends AutoFarmingMachine {
+public class InfernalFarm extends AutoFarm {
 
     private static final int RADIUS = 5;
 
@@ -67,19 +62,6 @@ public class InfernalFarm extends AutoFarmingMachine {
     }
 
     @Override
-    public void onBlockRegistered(Location location, boolean isPlacing) {
-        int i = RADIUS / 2;
-
-        for (int x = -i; x <= i; x++) {
-            for (int z = -i; z <= i; z++) {
-                blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
-            }
-        }
-
-        super.onBlockRegistered(location, isPlacing);
-    }
-
-    @Override
     public void onServerTick() {
         if (!isJammed()) {
             if (getCharge() >= getScuPerCycle()) {
@@ -103,22 +85,6 @@ public class InfernalFarm extends AutoFarmingMachine {
         }
 
         super.onServerTick();
-    }
-
-    private boolean output(Material m) {
-        for (int slot : getOutputSlots()) {
-            ItemStack stack = getInventoryItem(slot);
-
-            if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-                if (stack == null)
-                    stack = new ItemStack(m);
-                int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1) : (stack.getMaxStackSize() - stack.getAmount());
-                setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
-                buffer = null;
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+
+import javax.annotation.Nonnull;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -23,7 +25,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 
 public class AutoFarm extends AutoFarmingMachine {
 
-    private static final Map<Material, Material> crops = new HashMap<>();
+    private static final Map<Material, Material> crops = new EnumMap<>(Material.class);
     private static final int RADIUS = 3;
 
     static {
@@ -78,10 +80,12 @@ public class AutoFarm extends AutoFarmingMachine {
 
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
-        int i = RADIUS / 2;
-        for (int x = -i; x <= i; x++) {
-            for (int z = -i; z <= i; z++) {
-                blocks.add(new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY() + 2, location.getBlockZ() + z).getBlock());
+        int range = RADIUS / 2;
+        Block block = location.getBlock();
+
+        for (int x = -range; x <= range; x++) {
+            for (int z = -range; z <= range; z++) {
+                blocks.add(block.getRelative(x, 0, z));
             }
         }
 
@@ -114,13 +118,21 @@ public class AutoFarm extends AutoFarmingMachine {
         super.onServerTick();
     }
 
-    private boolean output(Material m) {
+    protected boolean output(@Nonnull Material m) {
         for (int slot : getOutputSlots()) {
             ItemStack stack = getInventoryItem(slot);
+
             if (stack == null || (stack.getType() == m && stack.getAmount() < stack.getMaxStackSize())) {
-                if (stack == null)
+                if (stack == null) {
                     stack = new ItemStack(m);
-                int amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1) : (stack.getMaxStackSize() - stack.getAmount());
+                }
+
+                int amount = 1;
+
+                if (!m.isBlock()) {
+                    amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1) : (stack.getMaxStackSize() - stack.getAmount());
+                }
+
                 setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
                 buffer = null;
                 return true;

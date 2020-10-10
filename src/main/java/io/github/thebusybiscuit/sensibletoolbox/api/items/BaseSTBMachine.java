@@ -295,7 +295,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     @Override
     public void setCharge(double charge) {
-        if (charge == this.charge) {
+        // Check if the charge is the same, in which case we don't need to do anything
+        if (Double.doubleToLongBits(charge) == Double.doubleToLongBits(this.charge)) {
             return;
         }
 
@@ -312,11 +313,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
             // does the charge indicator label need updating?
             int c8 = (int) ((getCharge() * 8) / getMaxCharge());
+
             if (c8 != charge8) {
                 charge8 = c8;
                 buildChargeLabel();
                 updateAttachedLabelSigns();
             }
+
             update(false);
         }
     }
@@ -632,12 +635,19 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         for (int slot : getOutputSlots()) {
             ItemStack outSlot = getInventoryItem(slot);
             int amount = partialOK ? 1 : item.getAmount();
+
             if (outSlot == null) {
                 return slot;
-            } else if (outSlot.isSimilar(item) && outSlot.getAmount() + amount <= item.getType().getMaxStackSize()) {
-                return slot;
+            } else if (outSlot.isSimilar(item)) {
+                // Check if the slot has enough room
+                int max = item.getMaxStackSize();
+
+                if (outSlot.getAmount() + amount <= max) {
+                    return slot;
+                }
             }
         }
+
         return -1;
     }
 
@@ -704,6 +714,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 return true;
             }
         }
+
         return false;
     }
 
@@ -740,6 +751,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 Debugger.getInstance().debug(2, "inserted " + nInserted + " out of " + STBUtil.describeItemStack(toInsert) + " into " + this);
             }
         }
+
         return nInserted;
     }
 
@@ -824,9 +836,11 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             if (onCursor.getType() != Material.AIR && !acceptsItemType(onCursor)) {
                 return false;
             }
+
             if (inSlot != null) {
                 update(false);
             }
+
         } else if (isOutputSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
                 return false;
@@ -836,7 +850,9 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             }
         } else if (isUpgradeSlot(slot)) {
             if (onCursor.getType() != Material.AIR) {
-                if (!isValidUpgrade(player, SensibleToolbox.getItemRegistry().fromItemStack(onCursor))) {
+                BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(onCursor);
+
+                if (!isValidUpgrade(player, stb)) {
                     return false;
                 }
             }
@@ -855,6 +871,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 installEnergyCell(null);
             }
         }
+
         return true;
     }
 
@@ -869,6 +886,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 if (getInventoryItem(upgradeSlot) != null) {
                     toInsert.setAmount(toInsert.getAmount() + getInventoryItem(upgradeSlot).getAmount());
                 }
+
                 setInventoryItem(upgradeSlot, toInsert);
                 needToProcessUpgrades = true;
                 return toInsert.getAmount();
@@ -882,7 +900,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         }
 
         int remaining = doInsertion(toInsert.clone());
-
         return toInsert.getAmount() - remaining;
     }
 
@@ -892,6 +909,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         }
 
         int remaining = stack.getAmount();
+
         for (int slot : getInputSlots()) {
             ItemStack inInventory = getInventoryItem(slot);
 
@@ -910,6 +928,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 return 0;
             }
         }
+
         return remaining;
     }
 
@@ -965,11 +984,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                 return slot;
             }
         }
+
         return -1;
     }
 
     private void scanUpgradeSlots() {
         upgrades.clear();
+
         for (int slot : getUpgradeSlots()) {
             ItemStack stack = getInventoryItem(slot);
 
@@ -978,6 +999,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
                 if (upgrade == null) {
                     setInventoryItem(slot, null);
+
                     if (getLocation() != null) {
                         getLocation().getWorld().dropItemNaturally(getLocation(), stack);
                     }
@@ -1084,8 +1106,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         toTransfer = Math.min(from.getCharge(), toTransfer);
         to.setCharge(to.getCharge() + toTransfer);
         from.setCharge(from.getCharge() - toTransfer);
-        // System.out.println("transfer " + toTransfer + " charge from " + from + " to " + to + " from now=" +
-        // from.getCharge() + " to now=" + to.getCharge());
         return toTransfer;
     }
 
@@ -1118,11 +1138,13 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     @Override
     public List<BlockFace> getFacesForNet(EnergyNet net) {
         List<BlockFace> res = new ArrayList<>();
+
         for (Map.Entry<BlockFace, EnergyNet> entry : energyNets.entrySet()) {
             if (entry.getValue().getNetID() == net.getNetID()) {
                 res.add(entry.getKey());
             }
         }
+
         return res;
     }
 

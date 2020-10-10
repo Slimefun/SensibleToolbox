@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,16 +28,19 @@ public class STBEnergyNet implements EnergyNet {
     public static final String STB_ENET_ID = "STB_ENet_ID";
     public static final int MAX_BLOCKS_IN_CABLE = 512;
     private static int freeID = 1;
+
     private final int netID;
     private final String worldName;
-    private final List<BlockPosition> cables = new ArrayList<>();
-    private final Set<ChargeableBlock> machines = new HashSet<>();
     private double totalDemand;
     private double totalSupply;
+
+    private final EnergyNetManager enetManager;
+    private final List<BlockPosition> cables = new ArrayList<>();
+    private final Set<ChargeableBlock> machines = new HashSet<>();
     private final Set<ChargeableBlock> energySinks = new HashSet<>();
     private final Set<ChargeableBlock> energySources = new HashSet<>();
-    private final EnergyNetManager enetManager;
 
+    @ParametersAreNonnullByDefault
     private STBEnergyNet(String worldName, EnergyNetManager manager) {
         this.worldName = worldName;
         this.netID = getNextFreeID();
@@ -84,11 +88,13 @@ public class STBEnergyNet implements EnergyNet {
 
         if (!STBUtil.isCable(b)) {
             BaseSTBMachine machine = LocationManager.getManager().get(b.getLocation(), BaseSTBMachine.class);
+
             if (machine != null) {
                 discovered.add(new AdjacentMachine(machine, fromDir));
             }
         } else {
             discovered.add(b);
+
             for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
                 recursiveScan(b.getRelative(face), discovered, face.getOppositeFace());
             }
@@ -148,16 +154,20 @@ public class STBEnergyNet implements EnergyNet {
 
     public void shutdown() {
         World w = Bukkit.getWorld(worldName);
+
         if (w != null) {
             for (BlockPosition pos : cables) {
                 Block b = w.getBlockAt(pos.getX(), pos.getY(), pos.getZ());
                 b.removeMetadata(STB_ENET_ID, SensibleToolboxPlugin.getInstance());
             }
         }
+
         cables.clear();
+
         for (ChargeableBlock machine : machines) {
             machine.detachFromEnergyNet(this);
         }
+
         machines.clear();
         Debugger.getInstance().debug("Enet #" + getNetID() + " shutdown complete");
     }
@@ -179,10 +189,13 @@ public class STBEnergyNet implements EnergyNet {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         STBEnergyNet energyNet = (STBEnergyNet) o;
 
@@ -201,13 +214,14 @@ public class STBEnergyNet implements EnergyNet {
 
         for (ChargeableBlock machine : energySources) {
             if (machine.getCharge() > 0) {
-                totalSupply += Math.min(machine.getCharge(), machine.getChargeRate() * tickRate);
+                totalSupply += Math.min(machine.getCharge(), (double) machine.getChargeRate() * tickRate);
             }
         }
+
         for (ChargeableBlock machine : energySinks) {
             if (machine.getCharge() < machine.getMaxCharge()) {
                 double needed = machine.getMaxCharge() - machine.getCharge();
-                needed = Math.min(needed, machine.getChargeRate() * tickRate);
+                needed = Math.min(needed, (double) machine.getChargeRate() * tickRate);
                 totalDemand += needed;
             }
         }
@@ -217,24 +231,27 @@ public class STBEnergyNet implements EnergyNet {
         }
 
         double ratio = totalDemand / totalSupply;
+
         if (ratio <= 1.0) {
             // there's enough power to supply all sinks
             for (ChargeableBlock source : energySources) {
-                double toTake = Math.min(source.getCharge(), source.getChargeRate() * tickRate);
+                double toTake = Math.min(source.getCharge(), (double) source.getChargeRate() * tickRate);
                 source.setCharge(source.getCharge() - toTake * ratio);
             }
+
             for (ChargeableBlock sink : energySinks) {
-                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * tickRate);
+                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), (double) sink.getChargeRate() * tickRate);
                 sink.setCharge(sink.getCharge() + toGive);
             }
         } else {
             // more demand than supply!
             for (ChargeableBlock source : energySources) {
-                double toTake = Math.min(source.getCharge(), source.getChargeRate() * tickRate);
+                double toTake = Math.min(source.getCharge(), (double) source.getChargeRate() * tickRate);
                 source.setCharge(source.getCharge() - toTake);
             }
+
             for (ChargeableBlock sink : energySinks) {
-                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), sink.getChargeRate() * tickRate);
+                double toGive = Math.min(sink.getMaxCharge() - sink.getCharge(), (double) sink.getChargeRate() * tickRate);
                 sink.setCharge(sink.getCharge() + toGive / ratio);
             }
         }
