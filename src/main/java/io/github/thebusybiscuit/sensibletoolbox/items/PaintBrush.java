@@ -105,7 +105,7 @@ public class PaintBrush extends BaseSTBItem {
 
     @Override
     public String[] getLore() {
-        return new String[] { "Paints colorable blocks:", " Wool, carpet, stained clay/glass", "R-click block: paint up to " + getMaxBlocksAffected() + " blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush", "R-click paintains: Change artwork", };
+        return new String[] { "Paints colorable blocks:", " Wool, carpet, stained clay/glass", "R-click block: paint up to " + getMaxBlocksAffected() + " blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: paint block", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click air: empty brush", "R-click paintings: Change artwork", };
     }
 
     @Override
@@ -241,7 +241,8 @@ public class PaintBrush extends BaseSTBItem {
         }
     }
 
-    private Block[] findBlocksAround(Block b) {
+    @Nonnull
+    private Block[] findBlocksAround(@Nonnull Block b) {
         Set<Block> blocks = new HashSet<>();
         find(b, b.getType(), blocks, getMaxBlocksAffected());
         return blocks.toArray(new Block[0]);
