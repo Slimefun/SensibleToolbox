@@ -257,7 +257,7 @@ public class GeneralListener extends STBBaseListener {
             item.handlePhysicsEvent(event);
         } else {
             if (block.getType() == Material.LEVER) {
-                Directional l = (Directional) block.getState().getData();
+                Directional l = (Directional) block.getBlockData();
                 item = LocationManager.getManager().get(block.getRelative(l.getFacing()).getLocation());
 
                 if (item != null) {
