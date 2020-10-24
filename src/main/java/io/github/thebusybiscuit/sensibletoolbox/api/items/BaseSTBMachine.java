@@ -44,11 +44,11 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.EnergyCell;
-import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.EjectorUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.MachineUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.RegulatorUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.SpeedUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.EjectorUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.MachineUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.RegulatorUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.SpeedUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.ThoroughnessUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
@@ -698,7 +698,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     /**
      * Check whether the given slot can be used to install upgrades, i.e. STB items
-     * which subclass {@link io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.MachineUpgrade}
+     * which subclass {@link io.github.thebusybiscuit.sensibletoolbox.items.upgrades.MachineUpgrade}
      *
      * @param slot
      *            the slot to check

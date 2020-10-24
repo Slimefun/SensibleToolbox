@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades;
+package io.github.thebusybiscuit.sensibletoolbox.items.upgrades;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -7,27 +7,32 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
-public class RegulatorUpgrade extends MachineUpgrade {
+public class SpeedUpgrade extends MachineUpgrade {
 
-    public RegulatorUpgrade() {}
+    public SpeedUpgrade() {}
 
-    public RegulatorUpgrade(ConfigurationSection conf) {
+    public SpeedUpgrade(ConfigurationSection conf) {
         super(conf);
     }
 
     @Override
     public Material getMaterial() {
-        return Material.ENDER_EYE;
+        return Material.SUGAR;
+    }
+
+    @Override
+    public boolean hasGlow() {
+        return true;
     }
 
     @Override
     public String getItemName() {
-        return "Regulator Upgrade";
+        return "Speed Upgrade";
     }
 
     @Override
     public String[] getLore() {
-        return new String[] { "Adds intelligence to machines", "for more efficient resource", "usage.  Effect varies by machine." };
+        return new String[] { "Place in a machine block", "Speed: x1.4", "Power Usage: x1.6" };
     }
 
     @Override
@@ -35,16 +40,11 @@ public class RegulatorUpgrade extends MachineUpgrade {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         SimpleCircuit sc = new SimpleCircuit();
         registerCustomIngredients(sc);
-        recipe.shape("ISI", "IEI", "IRI");
+        recipe.shape("ISI", "IBI", "IGI");
         recipe.setIngredient('I', Material.IRON_BARS);
         recipe.setIngredient('S', sc.getMaterial());
-        recipe.setIngredient('E', Material.ENDER_EYE);
-        recipe.setIngredient('R', Material.REDSTONE);
+        recipe.setIngredient('B', Material.BLAZE_ROD);
+        recipe.setIngredient('G', Material.GOLD_INGOT);
         return recipe;
-    }
-
-    @Override
-    public boolean hasGlow() {
-        return true;
     }
 }

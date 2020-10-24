@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades;
+package io.github.thebusybiscuit.sensibletoolbox.items.upgrades;
 
 import org.bukkit.configuration.ConfigurationSection;
 

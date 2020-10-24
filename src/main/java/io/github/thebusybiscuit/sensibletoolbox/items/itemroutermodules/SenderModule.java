@@ -14,7 +14,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
+import io.github.thebusybiscuit.sensibletoolbox.blocks.router.ItemRouter;
 import me.desht.dhutils.Debugger;
 
 public class SenderModule extends DirectionalItemRouterModule {

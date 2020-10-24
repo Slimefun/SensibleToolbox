@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.blocks;
+package io.github.thebusybiscuit.sensibletoolbox.blocks.router;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private static final int MOD_SLOT_END = 36;
     private static final int MOD_SLOT_COUNT = 9;
 
-    private final List<ModuleAndAmount> modules = new ArrayList<>();
+    private final List<InstalledModule> modules = new ArrayList<>();
     private ItemStack bufferItem;
     private int stackSize;
     private int tickRate;
@@ -146,9 +146,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         } else {
             List<String> lore = new ArrayList<>(modules.size());
 
-            for (ModuleAndAmount e : modules) {
-                String s = e.module.getDisplaySuffix() == null ? "" : ": " + e.module.getDisplaySuffix();
-                lore.add(ChatColor.GREEN + e.module.getItemName() + s);
+            for (InstalledModule e : modules) {
+                String s = e.getModule().getDisplaySuffix() == null ? "" : ": " + e.getModule().getDisplaySuffix();
+                lore.add(ChatColor.GREEN + e.getModule().getItemName() + s);
             }
 
             return lore.toArray(new String[0]);
@@ -230,8 +230,8 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         gui.addLabel("Item Router Modules", MODULE_LABEL_SLOT, null, "Insert one or more modules below", "When the router ticks, modules", "are executed in order, from left", "to right.");
         int slot = MOD_SLOT_START;
 
-        for (ModuleAndAmount e : modules) {
-            gui.getInventory().setItem(slot, e.module.toItemStack(e.amount));
+        for (InstalledModule e : modules) {
+            gui.getInventory().setItem(slot, e.toItemStack());
             slot++;
         }
 
@@ -283,9 +283,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
         if (isRedstoneActive()) {
             Location loc = getLocation();
 
-            for (ModuleAndAmount e : modules) {
-                if (e.module instanceof DirectionalItemRouterModule) {
-                    DirectionalItemRouterModule dmod = (DirectionalItemRouterModule) e.module;
+            for (InstalledModule e : modules) {
+                if (e.getModule() instanceof DirectionalItemRouterModule) {
+                    DirectionalItemRouterModule dmod = (DirectionalItemRouterModule) e.getModule();
                     if (dmod.execute(loc.clone())) {
                         didSomeWork = true;
                         if (dmod.isTerminator()) {
@@ -372,7 +372,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             receiver = (ReceiverModule) module;
         }
 
-        modules.add(new ModuleAndAmount(module, count));
+        modules.add(new InstalledModule(module, count));
     }
 
     @Nullable
@@ -592,16 +592,5 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Nonnull
     public List<BlockFace> getNeighbours() {
         return neighbours;
-    }
-
-    private class ModuleAndAmount {
-
-        private final ItemRouterModule module;
-        private final int amount;
-
-        private ModuleAndAmount(ItemRouterModule module, int amount) {
-            this.module = module;
-            this.amount = amount;
-        }
     }
 }

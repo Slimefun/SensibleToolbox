@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 import org.bukkit.configuration.ConfigurationSection;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
+import io.github.thebusybiscuit.sensibletoolbox.blocks.router.ItemRouter;
 
 public abstract class ItemRouterModule extends BaseSTBItem {
 

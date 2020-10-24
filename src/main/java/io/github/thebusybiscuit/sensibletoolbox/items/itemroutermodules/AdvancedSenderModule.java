@@ -12,7 +12,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.blocks.ItemRouter;
+import io.github.thebusybiscuit.sensibletoolbox.blocks.router.ItemRouter;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import me.desht.dhutils.Debugger;

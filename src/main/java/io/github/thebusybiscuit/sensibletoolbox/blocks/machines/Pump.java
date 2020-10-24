@@ -1,10 +1,11 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,11 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.thebusybiscuit.cscorelib2.blocks.Vein;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
 
 public class Pump extends AbstractProcessingMachine {
 
@@ -195,19 +196,19 @@ public class Pump extends AbstractProcessingMachine {
         super.onServerTick();
     }
 
+    @Nonnull
     private Block findNextBlockToPump() {
-        switch (getRelativeLocation(pumpFace).getBlock().getType()) {
-        case LAVA:
-            List<Location> list = new ArrayList<>();
-            list.add(getRelativeLocation(pumpFace));
-            Vein.calculate(getRelativeLocation(pumpFace), getRelativeLocation(pumpFace), list, 128);
-            return list.get(list.size() - 1).getBlock();
-        default:
-            return getRelativeLocation(pumpFace).getBlock();
+        Block target = getRelativeLocation(pumpFace).getBlock();
+
+        if (target.getType() == Material.LAVA) {
+            List<Block> list = Vein.find(target, 64, block -> block.getType() == Material.LAVA);
+            return list.get(list.size() - 1);
+        } else {
+            return target;
         }
     }
 
-    private void replacePumpedBlock(Block block) {
+    private void replacePumpedBlock(@Nonnull Block block) {
         if (STBUtil.isInfiniteWaterSource(block)) {
             return;
         }
@@ -224,38 +225,35 @@ public class Pump extends AbstractProcessingMachine {
         }
     }
 
-    private ItemStack makeProcessingItem(Block toPump, Material container) {
-        if (!STBUtil.isLiquidSourceBlock(toPump)) {
+    @Nullable
+    private ItemStack makeProcessingItem(@Nonnull Block fluid, @Nonnull Material container) {
+        if (!STBUtil.isLiquidSourceBlock(fluid)) {
             return null;
         }
-        Material res;
-        switch (container) {
-        case BUCKET:
-            switch (toPump.getType()) {
-            case LAVA:
-                res = Material.LAVA_BUCKET;
-                break;
-            case WATER:
-                res = Material.WATER_BUCKET;
-                break;
-            default:
-                res = null;
-            }
-            break;
-        case GLASS_BOTTLE:
-            switch (toPump.getType()) {
-            case WATER:
-                res = Material.POTION;
-                break;
-            default:
-                res = null;
-            }
-            break;
-        default:
-            res = null;
-        }
 
-        return res == null ? null : new ItemStack(res);
+        Material type = fluid.getType();
+
+        if (container == Material.BUCKET) {
+            switch (type) {
+            case LAVA:
+                return new ItemStack(Material.LAVA_BUCKET);
+            case BUBBLE_COLUMN:
+            case WATER:
+                return new ItemStack(Material.WATER_BUCKET);
+            default:
+                return null;
+            }
+        } else if (container == Material.GLASS_BOTTLE) {
+            switch (type) {
+            case BUBBLE_COLUMN:
+            case WATER:
+                return new ItemStack(Material.POTION);
+            default:
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override

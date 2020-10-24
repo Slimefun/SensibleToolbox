@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.ProcessingResult;
-import io.github.thebusybiscuit.sensibletoolbox.items.machineupgrades.ThoroughnessUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.ThoroughnessUpgrade;
 
 /**
  * Represents a machine which processes items from its input slots to
