@@ -388,10 +388,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             Long lastInsert = (Long) STBUtil.getMetadataValue(player, STB_LAST_BSU_INSERT);
             long now = System.currentTimeMillis();
 
-            if (inHand.getType() == Material.AIR && lastInsert != null && now - lastInsert < DOUBLE_CLICK_TIME) {
+            if ((inHand == null || inHand.getType() == Material.AIR) && lastInsert != null && now - lastInsert < DOUBLE_CLICK_TIME) {
                 rightClickFullInsert(player);
                 event.setCancelled(true);
-            } else if (inHand.isSimilar(getStoredItemType())) {
+            } else if (inHand != null && inHand.isSimilar(getStoredItemType())) {
                 rightClickInsert(player, player.getInventory().getHeldItemSlot());
                 event.setCancelled(true);
             } else {
