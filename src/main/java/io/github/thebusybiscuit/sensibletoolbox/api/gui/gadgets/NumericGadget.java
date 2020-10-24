@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.IntRange;
@@ -9,11 +9,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 /**
  * A GUI gadget which allows an integer value to be displayed
  * and changed.
+ * 
+ * @author desht
  */
 public class NumericGadget extends ClickableGadget {
 
@@ -97,20 +101,5 @@ public class NumericGadget extends ClickableGadget {
         meta.setLore(GUIUtil.makeLore(lore));
         icon.setItemMeta(meta);
         return icon;
-    }
-
-    /**
-     * A callback to be executed when a numeric gadget is clicked.
-     */
-    public interface NumericListener {
-
-        /**
-         * Called when the value of the numeric gadget is to be changed.
-         *
-         * @param newValue
-         *            the proposed new value
-         * @return true if the new value should be accepted; false otherwise
-         */
-        boolean run(int newValue);
     }
 }

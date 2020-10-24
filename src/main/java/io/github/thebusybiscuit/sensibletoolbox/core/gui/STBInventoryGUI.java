@@ -24,12 +24,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.ClickableGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUIListener;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.MonitorGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.ClickableGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.MonitorGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.BukkitSerialization;

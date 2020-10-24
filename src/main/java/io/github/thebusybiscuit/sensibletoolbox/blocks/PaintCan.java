@@ -30,18 +30,19 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollection;
 import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.AccessControlGadget;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.LevelMonitor;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.AccessControlGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.ButtonGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.LevelMonitor;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.LevelReporter;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.items.PaintBrush;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
 
-public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter {
+public class PaintCan extends BaseSTBBlock implements LevelReporter {
 
     private static final int MAX_PAINT_LEVEL = 200;
     private static final int PAINT_PER_DYE = 25;

@@ -5,11 +5,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.ClickableGadget;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.MonitorGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -45,7 +48,7 @@ public interface InventoryGUI {
      * @param gadget
      *            the gadget to add
      */
-    void addGadget(ClickableGadget gadget);
+    void addGadget(@Nonnull ClickableGadget gadget);
 
     /**
      * Get the clickable gadget in the given slot.

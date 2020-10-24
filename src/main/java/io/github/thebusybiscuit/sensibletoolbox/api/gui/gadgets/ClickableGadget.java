@@ -1,10 +1,14 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+
 /**
  * Abstract base class for all clickable gadgets.
+ * 
+ * @author desht
  */
 public abstract class ClickableGadget extends Gadget {
 

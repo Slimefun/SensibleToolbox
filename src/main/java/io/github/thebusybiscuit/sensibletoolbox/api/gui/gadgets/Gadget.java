@@ -1,7 +1,11 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
+
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 
 /**
  * Abstract base class for all gadgets.
+ * 
+ * @author desht
  */
 public abstract class Gadget {
 

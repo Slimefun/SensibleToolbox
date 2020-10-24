@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -47,10 +48,10 @@ import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AbstractProcessingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -192,7 +193,7 @@ public class RecipeBook extends BaseSTBItem {
     }
 
     protected void buildFilteredList() {
-        String filterString = recipeNameFilter.toLowerCase();
+        String filterString = recipeNameFilter.toLowerCase(Locale.ROOT);
 
         if (filterString.isEmpty() && recipeTypeFilter == RecipeType.ALL) {
             filteredItems = fullItemList;
@@ -200,7 +201,7 @@ public class RecipeBook extends BaseSTBItem {
             filteredItems = new ArrayList<>();
 
             for (ItemStack stack : fullItemList) {
-                if (filterString.isEmpty() || ItemUtils.getItemName(stack).toLowerCase().contains(filterString)) {
+                if (filterString.isEmpty() || ItemUtils.getItemName(stack).toLowerCase(Locale.ROOT).contains(filterString)) {
                     BaseSTBItem stbItem = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
                     if (includeItem(stbItem)) {

@@ -1,14 +1,17 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 /**
  * A gadget which can display and update the access control for an STB block.
+ * 
+ * @author desht
  */
 public class AccessControlGadget extends CyclerGadget<AccessControl> {
 

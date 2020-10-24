@@ -2,11 +2,14 @@ package me.desht.dhutils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,7 +21,9 @@ import org.bukkit.entity.Player;
 
 import me.desht.dhutils.text.LogUtils;
 
-public class MiscUtil {
+public final class MiscUtil {
+
+    private MiscUtil() {}
 
     private static final Map<String, String> prevColors = new HashMap<>();
 
@@ -132,6 +137,7 @@ public class MiscUtil {
      */
     public static World findWorld(String worldName) {
         World w = Bukkit.getServer().getWorld(worldName);
+
         if (w != null) {
             return w;
         } else {
@@ -148,11 +154,12 @@ public class MiscUtil {
      */
     public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
         List<T> list = new ArrayList<>(c);
-        java.util.Collections.sort(list);
+        Collections.sort(list);
         return list;
     }
 
-    public static boolean looksLikeUUID(String s) {
+    public static boolean looksLikeUUID(@Nonnull String s) {
+        // TODO: Turn this into a regular expression
         return s.length() == 36 && s.charAt(8) == '-' && s.charAt(13) == '-' && s.charAt(18) == '-' && s.charAt(23) == '-';
     }
 }

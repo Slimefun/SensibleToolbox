@@ -1,14 +1,18 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 
 /**
  * A GUI gadget which allows code to be run when it's clicked.
+ * 
+ * @author desht
  */
 public class ButtonGadget extends ClickableGadget {
 
@@ -38,9 +42,11 @@ public class ButtonGadget extends ClickableGadget {
         labelTexture = texture == null ? STBInventoryGUI.BUTTON_TEXTURE.clone() : texture.clone();
         ItemMeta meta = labelTexture.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE + ChatColor.UNDERLINE.toString() + text);
+
         if (lore != null) {
             meta.setLore(GUIUtil.makeLore(lore));
         }
+
         labelTexture.setItemMeta(meta);
     }
 
@@ -59,6 +65,7 @@ public class ButtonGadget extends ClickableGadget {
      */
     public ButtonGadget(InventoryGUI owner, int slot, ItemStack texture, Runnable callback) {
         super(owner, slot);
+
         this.callback = callback;
         this.labelTexture = texture.clone();
     }

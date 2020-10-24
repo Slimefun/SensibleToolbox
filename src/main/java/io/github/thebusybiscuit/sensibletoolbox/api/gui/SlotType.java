@@ -17,5 +17,5 @@ public enum SlotType {
      * A slot which holds an interactable control of some kind
      * (e.g. a button, a label, a monitor for some value...)
      */
-    GADGET
+    GADGET;
 }

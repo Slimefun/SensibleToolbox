@@ -13,7 +13,7 @@ import org.bukkit.util.Vector;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.ProgressMeter;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.ProgressMeter;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
 import net.md_5.bungee.api.ChatColor;

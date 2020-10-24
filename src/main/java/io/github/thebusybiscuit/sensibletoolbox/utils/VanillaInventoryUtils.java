@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -23,8 +25,13 @@ import me.desht.dhutils.Debugger;
 
 /**
  * Utility methods to interact with vanilla inventories.
+ * 
+ * @author desht
+ * @author TheBusyBiscuit
  */
-public class VanillaInventoryUtils {
+public final class VanillaInventoryUtils {
+
+    private VanillaInventoryUtils() {}
 
     public static boolean isVanillaInventory(Block b) {
         return getVanillaInventory(b).isPresent();
@@ -37,7 +44,7 @@ public class VanillaInventoryUtils {
      *            the block containing the target inventory
      * @return the block's inventory, or null if the block does not have one
      */
-    public static Optional<Inventory> getVanillaInventory(Block target) {
+    public static Optional<Inventory> getVanillaInventory(@Nonnull Block target) {
         BlockState state = target.getState();
 
         if (state instanceof InventoryHolder) {

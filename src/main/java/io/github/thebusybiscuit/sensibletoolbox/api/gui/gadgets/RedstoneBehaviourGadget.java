@@ -1,15 +1,18 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 /**
  * A GUI gadget which allows a STB block's redstone behaviour to be
  * displayed and changed.
+ * 
+ * @author desht
  */
 public class RedstoneBehaviourGadget extends CyclerGadget<RedstoneBehaviour> {
 
@@ -23,6 +26,7 @@ public class RedstoneBehaviourGadget extends CyclerGadget<RedstoneBehaviour> {
      */
     public RedstoneBehaviourGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Redstone Mode");
+
         add(RedstoneBehaviour.IGNORE, ChatColor.GRAY, Material.GUNPOWDER, "Operate regardless of", "redstone signal level");
         add(RedstoneBehaviour.HIGH, ChatColor.RED, Material.REDSTONE, "Require a redstone", "signal to operate");
         add(RedstoneBehaviour.LOW, ChatColor.YELLOW, Material.GLOWSTONE_DUST, "Require no redstone", "signal to operate");

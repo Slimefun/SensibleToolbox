@@ -1,13 +1,16 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.apache.commons.lang.Validate;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.LightMeterHolder;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 
 /**
  * Measures the light intensity for an STB block. The GUI that this gadget
  * is added to must be owned by an STB block which implements
- * {@link io.github.thebusybiscuit.sensibletoolbox.api.LightMeterHolder}.
+ * {@link LightMeterHolder}.
+ * 
+ * @author desht
  */
 public class LightMeter extends MonitorGadget {
 

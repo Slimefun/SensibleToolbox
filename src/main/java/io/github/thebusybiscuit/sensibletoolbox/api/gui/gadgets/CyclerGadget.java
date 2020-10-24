@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.Lists;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
@@ -27,6 +28,8 @@ import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
  *
  * @param <T>
  *            an enum type
+ * 
+ * @author desht
  */
 public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
 
@@ -182,6 +185,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
         if (stacks[currentValue.ordinal()] == null) {
             stacks[currentValue.ordinal()] = makeTexture(currentValue, Material.STONE, ChatColor.GRAY);
         }
+
         return stacks[currentValue.ordinal()];
     }
 

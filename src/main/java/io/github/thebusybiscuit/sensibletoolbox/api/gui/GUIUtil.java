@@ -3,6 +3,9 @@ package io.github.thebusybiscuit.sensibletoolbox.api.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,8 +16,12 @@ import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 
 /**
  * A collection of miscellaneous GUI-related utility methods.
+ * 
+ * @author desht
  */
-public class GUIUtil {
+public final class GUIUtil {
+
+    private GUIUtil() {}
 
     /**
      * Get the GUI which the given player currently has open, if any.
@@ -23,7 +30,8 @@ public class GUIUtil {
      *            the player
      * @return the GUI the player is currently viewing, or null
      */
-    public static InventoryGUI getOpenGUI(Player player) {
+    @Nullable
+    public static InventoryGUI getOpenGUI(@Nonnull Player player) {
         return STBInventoryGUI.getOpenGUI(player);
     }
 
@@ -42,9 +50,11 @@ public class GUIUtil {
         ItemStack res = new ItemStack(material);
         ItemMeta meta = res.getItemMeta();
         meta.setDisplayName(title);
+
         if (lore.length > 0) {
             meta.setLore(makeLore(lore));
         }
+
         res.setItemMeta(meta);
         return res;
     }
@@ -71,11 +81,14 @@ public class GUIUtil {
      *            array containing the lore text
      * @return a list of properly colored lore text
      */
+    @Nonnull
     public static List<String> makeLore(String... lore) {
         List<String> res = new ArrayList<>();
+
         for (String s : lore) {
             res.add(ChatColor.GRAY + s);
         }
+
         return res;
     }
 
@@ -92,6 +105,7 @@ public class GUIUtil {
      *            the GUI title
      * @return a new inventory GUI object
      */
+    @Nonnull
     public static InventoryGUI createGUI(InventoryGUIListener listener, int size, String title) {
         return new STBInventoryGUI(listener, size, title);
     }
@@ -111,6 +125,7 @@ public class GUIUtil {
      *            the GUI title
      * @return a new inventory GUI object
      */
+    @Nonnull
     public static InventoryGUI createGUI(Player player, InventoryGUIListener listener, int size, String title) {
         return new STBInventoryGUI(player, listener, size, title);
     }

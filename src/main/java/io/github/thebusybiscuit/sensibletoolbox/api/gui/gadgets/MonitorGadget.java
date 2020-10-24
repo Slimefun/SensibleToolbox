@@ -1,9 +1,12 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 /**
  * Abstract base class for all clickable gadgets.
+ * 
+ * @author desht
  */
 public abstract class MonitorGadget extends Gadget {
 

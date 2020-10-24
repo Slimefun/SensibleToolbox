@@ -1,5 +1,6 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
@@ -10,23 +11,28 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Directional;
 
-import com.google.common.collect.Maps;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 
 /**
  * A GUI gadget which allows the facing direction of a directional item to be
  * changed. This is actually a compound gadget: a central button with six
  * surrounding toggle buttons.
+ * 
+ * @author desht
  */
 public class DirectionGadget extends ClickableGadget {
 
     private final ItemStack mainTexture;
-    private final Map<Integer, BlockFace> directionSlots = Maps.newHashMap();
+    private final Map<Integer, BlockFace> directionSlots = new HashMap<>();
     private boolean allowSelf;
 
     public DirectionGadget(InventoryGUI gui, int slot, ItemStack mainTexture) {
         super(gui, slot);
+
         Validate.isTrue(gui.getOwningItem() instanceof Directional, "DirectionalGadget can only be used on a directional item!");
         Validate.isTrue(slot >= 9 && slot < gui.getInventory().getSize() - 9 && slot % 9 > 0 && slot % 9 < 8, "DirectionalGadget can't be placed at edge of inventory window!");
+
         this.mainTexture = mainTexture;
         this.allowSelf = true;
         directionSlots.put(slot - 10, BlockFace.UP);
@@ -47,6 +53,7 @@ public class DirectionGadget extends ClickableGadget {
         // specific direction handlers are dealt with in makeDirectionButton()
         if (allowSelf) {
             ((Directional) getGUI().getOwningItem()).setFacingDirection(BlockFace.SELF);
+
             for (int slot : directionSlots.keySet()) {
                 ((ToggleButton) getGUI().getGadget(slot)).setValue(false);
             }
@@ -82,31 +89,28 @@ public class DirectionGadget extends ClickableGadget {
     private ToggleButton makeDirectionButton(final InventoryGUI gui, final int slot, final BlockFace face) {
         ItemStack trueStack = GUIUtil.makeTexture(Material.ORANGE_WOOL, ChatColor.YELLOW + face.toString());
         ItemStack falseStack = GUIUtil.makeTexture(Material.LIGHT_GRAY_WOOL, ChatColor.YELLOW + face.toString());
-        final Directional owner = (Directional) gui.getOwningItem();
+        Directional owner = (Directional) gui.getOwningItem();
 
-        return new ToggleButton(gui, slot, owner.getFacing() == face, trueStack, falseStack, new ToggleButton.ToggleListener() {
-
-            @Override
-            public boolean run(boolean newValue) {
-                // acts sort of like a radio button - switching one on switches all other
-                // off, but switching one off leaves all switch off
-                if (!newValue && !allowSelf) {
-                    return false;
-                }
-                if (newValue) {
-                    owner.setFacingDirection(face);
-
-                    for (int otherSlot : directionSlots.keySet()) {
-                        if (slot != otherSlot) {
-                            ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
-                        }
-                    }
-                } else {
-                    owner.setFacingDirection(BlockFace.SELF);
-                }
-
-                return true;
+        return new ToggleButton(gui, slot, owner.getFacing() == face, trueStack, falseStack, newValue -> {
+            // acts sort of like a radio button - switching one on switches all other
+            // off, but switching one off leaves all switch off
+            if (!newValue && !allowSelf) {
+                return false;
             }
+
+            if (newValue) {
+                owner.setFacingDirection(face);
+
+                for (int otherSlot : directionSlots.keySet()) {
+                    if (slot != otherSlot) {
+                        ((ToggleButton) gui.getGadget(otherSlot)).setValue(false);
+                    }
+                }
+            } else {
+                owner.setFacingDirection(BlockFace.SELF);
+            }
+
+            return true;
         });
     }
 }

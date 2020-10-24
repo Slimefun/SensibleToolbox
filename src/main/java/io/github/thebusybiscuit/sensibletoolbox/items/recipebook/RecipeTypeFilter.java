@@ -3,8 +3,8 @@ package io.github.thebusybiscuit.sensibletoolbox.items.recipebook;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-import io.github.thebusybiscuit.sensibletoolbox.api.gui.CyclerGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.CyclerGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 
 class RecipeTypeFilter extends CyclerGadget<RecipeType> {

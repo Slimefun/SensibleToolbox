@@ -1,14 +1,17 @@
-package io.github.thebusybiscuit.sensibletoolbox.api.gui;
+package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 /**
  * A GUI gadget which allows a toggleable (boolean) value to be
  * displayed and changed.
+ * 
+ * @author desht
  */
 public class ToggleButton extends ClickableGadget {
 
@@ -72,20 +75,5 @@ public class ToggleButton extends ClickableGadget {
             value = newValue;
             updateGUI();
         }
-    }
-
-    /**
-     * A callback to be executed when a toggle button is clicked.
-     */
-    public interface ToggleListener {
-
-        /**
-         * Called when a toggle button is clicked.
-         *
-         * @param newValue
-         *            the proposed new value for the toggle
-         * @return true if the new value should be accepted; false otherwise
-         */
-        boolean run(boolean newValue);
     }
 }
