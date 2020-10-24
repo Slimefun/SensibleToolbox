@@ -21,7 +21,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.STBFurnaceRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.SimpleCustomRecipe;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.machines.Generator;
-import io.github.thebusybiscuit.sensibletoolbox.items.RecipeBook;
+import io.github.thebusybiscuit.sensibletoolbox.items.recipebook.RecipeBook;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;

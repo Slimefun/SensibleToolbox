@@ -1,4 +1,4 @@
-package io.github.thebusybiscuit.sensibletoolbox.items;
+package io.github.thebusybiscuit.sensibletoolbox.items.recipebook;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
