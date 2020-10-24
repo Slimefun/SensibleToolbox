@@ -20,6 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -40,7 +41,6 @@ public abstract class CombineHoe extends BaseSTBItem {
     private Material seedType;
     private int seedAmount;
     private InventoryGUI gui;
-    private int durability;
 
     @Nonnull
     public static String getInventoryTitle() {
@@ -112,7 +112,6 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        durability = ((Damageable) event.getItem().getItemMeta()).getDamage();
         Block b = event.getClickedBlock();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -121,11 +120,12 @@ public abstract class CombineHoe extends BaseSTBItem {
                 event.setCancelled(true);
                 return;
             } else if (b.getType() == Material.DIRT || b.getType() == Material.GRASS) {
-                tillSoil(event.getPlayer(), b);
+                tillSoil(event.getPlayer(), event.getItem(), event.getHand(), b);
                 event.setCancelled(true);
                 return;
             }
         }
+
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getClickedBlock() == null || !event.getClickedBlock().getType().isInteractable()) {
                 gui = GUIUtil.createGUI(event.getPlayer(), this, 9, getInventoryTitle());
@@ -214,21 +214,22 @@ public abstract class CombineHoe extends BaseSTBItem {
 
     @Override
     public void onGUIClosed(HumanEntity player) {
-        Material seedType = null;
+        Material seeds = null;
         int count = 0;
         String err = null;
 
         for (int i = 0; i < gui.getInventory().getSize(); i++) {
             ItemStack stack = gui.getInventory().getItem(i);
+
             if (stack != null) {
-                if (seedType != null && seedType != stack.getType()) {
+                if (seeds != null && seeds != stack.getType()) {
                     player.getWorld().dropItemNaturally(player.getLocation(), stack);
-                    err = "Mixed items in the seed bag??";
+                    err = "Mixed items in the seed bag?";
                 } else if (STBUtil.getCropType(stack.getType()) == null) {
                     player.getWorld().dropItemNaturally(player.getLocation(), stack);
-                    err = "Non-seed items in the seed bag??";
+                    err = "Non-seed items in the seed bag?";
                 } else {
-                    seedType = stack.getType();
+                    seeds = stack.getType();
                     count += stack.getAmount();
                 }
             }
@@ -239,7 +240,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         }
 
         setSeedAmount(count);
-        setSeedType(seedType);
+        setSeedType(seeds);
     }
 
     private void populateSeedBag(InventoryGUI gui) {
@@ -305,9 +306,9 @@ public abstract class CombineHoe extends BaseSTBItem {
     }
 
     @ParametersAreNonnullByDefault
-    private void tillSoil(Player player, Block b) {
-        ItemStack stack = player.getItemInHand();
-        short count = 0;
+    private void tillSoil(Player player, ItemStack stack, EquipmentSlot hand, Block b) {
+        int count = 0;
+        int damage = ((Damageable) stack.getItemMeta()).getDamage();
 
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
             if (!SensibleToolbox.getProtectionManager().hasPermission(player, b1, ProtectableAction.BREAK_BLOCK)) {
@@ -324,7 +325,7 @@ public abstract class CombineHoe extends BaseSTBItem {
                     above.breakNaturally();
                 }
 
-                if (stack.getDurability() + count >= stack.getType().getMaxDurability()) {
+                if (damage + count >= stack.getType().getMaxDurability()) {
                     break;
                 }
             }
@@ -333,11 +334,11 @@ public abstract class CombineHoe extends BaseSTBItem {
                 break;
             }
         }
+
         if (count > 0) {
             player.playSound(b.getLocation(), Sound.BLOCK_GRASS_BREAK, 1.0F, 1.0F);
+            ItemUtils.damageItem(stack, count, false);
         }
-
-        ItemUtils.damageItem(stack, false);
     }
 
     public int getWorkRadius() {

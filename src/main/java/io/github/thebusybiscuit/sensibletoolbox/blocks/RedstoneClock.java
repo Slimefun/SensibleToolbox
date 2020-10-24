@@ -44,6 +44,7 @@ public class RedstoneClock extends BaseSTBBlock {
     @Override
     protected InventoryGUI createGUI() {
         InventoryGUI gui = GUIUtil.createGUI(this, 9, ChatColor.DARK_RED + getItemName());
+
         gui.addGadget(new NumericGadget(gui, 0, "Pulse Interval", new IntRange(1, Integer.MAX_VALUE), getInterval(), 10, 1, newValue -> {
             if (newValue > getOnDuration()) {
                 setInterval(newValue);
@@ -135,6 +136,7 @@ public class RedstoneClock extends BaseSTBBlock {
         Location loc = getLocation();
         Block b = loc.getBlock();
         long time = getTicksLived();
+
         if (time % getInterval() == 0 && isRedstoneActive()) {
             // power up
             active = true;
@@ -145,8 +147,10 @@ public class RedstoneClock extends BaseSTBBlock {
             repaint(b);
         }
 
-        if (time % 50 == 10)
+        if (time % 50 == 10) {
             playParticles(new Color(255, 0, 0));
+        }
+
         super.onServerTick();
     }
 
@@ -176,6 +180,7 @@ public class RedstoneClock extends BaseSTBBlock {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             getGUI().show(event.getPlayer());
         }
+
         super.onInteractBlock(event);
     }
 

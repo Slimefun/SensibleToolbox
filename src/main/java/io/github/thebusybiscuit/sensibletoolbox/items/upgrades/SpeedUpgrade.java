@@ -7,7 +7,7 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
-public class SpeedUpgrade extends MachineUpgrade {
+public class SpeedUpgrade extends AbstractMachineUpgrade {
 
     public SpeedUpgrade() {}
 

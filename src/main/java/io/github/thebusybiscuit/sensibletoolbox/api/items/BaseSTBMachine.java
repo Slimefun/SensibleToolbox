@@ -45,7 +45,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.recipes.CustomRecipeManager;
 import io.github.thebusybiscuit.sensibletoolbox.core.gui.STBInventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.items.energycells.EnergyCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.EjectorUpgrade;
-import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.MachineUpgrade;
+import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.AbstractMachineUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.RegulatorUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.SpeedUpgrade;
 import io.github.thebusybiscuit.sensibletoolbox.items.upgrades.ThoroughnessUpgrade;
@@ -71,7 +71,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     private int chargeMeterId;
     private final String frozenInput;
     private final String frozenOutput;
-    private final List<MachineUpgrade> upgrades = new ArrayList<>();
+    private final List<AbstractMachineUpgrade> upgrades = new ArrayList<>();
     private final Map<BlockFace, EnergyNet> energyNets = new EnumMap<>(BlockFace.class);
     private int regulatorAmount;
     private int thoroughnessAmount;
@@ -109,7 +109,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
                     if (f.length > 2) {
                         upgConf.loadFromString(f[2]);
                     }
-                    MachineUpgrade upgrade = (MachineUpgrade) SensibleToolbox.getItemRegistry().getItemById(f[0], upgConf);
+                    AbstractMachineUpgrade upgrade = (AbstractMachineUpgrade) SensibleToolbox.getItemRegistry().getItemById(f[0], upgConf);
                     upgrade.setAmount(amount);
                     upgrades.add(upgrade);
                 } catch (Exception e) {
@@ -132,7 +132,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         conf.set("chargeDirection", getChargeDirection().toString());
         List<String> upg = new ArrayList<>();
 
-        for (MachineUpgrade upgrade : upgrades) {
+        for (AbstractMachineUpgrade upgrade : upgrades) {
             upg.add(upgrade.getItemTypeID() + "::" + upgrade.getAmount() + "::" + upgrade.freeze().saveToString());
         }
 
@@ -698,7 +698,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     /**
      * Check whether the given slot can be used to install upgrades, i.e. STB items
-     * which subclass {@link io.github.thebusybiscuit.sensibletoolbox.items.upgrades.MachineUpgrade}
+     * which subclass {@link io.github.thebusybiscuit.sensibletoolbox.items.upgrades.AbstractMachineUpgrade}
      *
      * @param slot
      *            the slot to check
@@ -942,7 +942,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      * @return true if this item is a valid upgrade, false otherwise
      */
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem item) {
-        if (!(item instanceof MachineUpgrade)) {
+        if (!(item instanceof AbstractMachineUpgrade)) {
             return false;
         }
 
@@ -995,7 +995,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             ItemStack stack = getInventoryItem(slot);
 
             if (stack != null) {
-                MachineUpgrade upgrade = SensibleToolbox.getItemRegistry().fromItemStack(stack, MachineUpgrade.class);
+                AbstractMachineUpgrade upgrade = SensibleToolbox.getItemRegistry().fromItemStack(stack, AbstractMachineUpgrade.class);
 
                 if (upgrade == null) {
                     setInventoryItem(slot, null);
@@ -1022,7 +1022,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
         int nRegulator = 0;
         int nThorough = 0;
 
-        for (MachineUpgrade upgrade : upgrades) {
+        for (AbstractMachineUpgrade upgrade : upgrades) {
             if (upgrade instanceof SpeedUpgrade) {
                 nSpeed += upgrade.getAmount();
             } else if (upgrade instanceof EjectorUpgrade) {

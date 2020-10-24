@@ -22,7 +22,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.DirectionGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
-public class EjectorUpgrade extends MachineUpgrade implements Directional {
+public class EjectorUpgrade extends AbstractMachineUpgrade implements Directional {
 
     public static final int DIRECTION_LABEL_SLOT = 2;
     private BlockFace direction;

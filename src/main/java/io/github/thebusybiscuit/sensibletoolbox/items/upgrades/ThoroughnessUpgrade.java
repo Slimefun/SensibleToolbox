@@ -7,7 +7,7 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
 
-public class ThoroughnessUpgrade extends MachineUpgrade {
+public class ThoroughnessUpgrade extends AbstractMachineUpgrade {
 
     public static final int BONUS_OUTPUT_CHANCE = 8; // percent
 

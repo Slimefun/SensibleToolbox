@@ -117,6 +117,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockDamage(BlockDamageEvent event) {
         BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+
         if (stb != null) {
             if (stb.checkPlayerPermission(event.getPlayer(), ItemAction.BREAK)) {
                 stb.onBlockDamage(event);
@@ -129,6 +130,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockPrePlaceCheck(BlockPlaceEvent event) {
         BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(event.getItemInHand());
+
         if (stb != null) {
             if (!(stb instanceof BaseSTBBlock)) {
                 event.setCancelled(true);
@@ -143,6 +145,7 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockWillPlace(BlockPlaceEvent event) {
         BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(event.getItemInHand());
+
         if (stb != null) {
             // sanity check: we should only get here if the item is an STB block, since
             // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
@@ -158,10 +161,13 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockMayBurnAway(BlockBurnEvent event) {
         BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+
         if (stb != null && !stb.isFlammable()) {
             event.setCancelled(true);
+
             for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
                 Block b = event.getBlock().getRelative(face);
+
                 if (b.getType() == Material.FIRE && ThreadLocalRandom.current().nextInt(3) != 0) {
                     b.setType(Material.AIR);
                 }
@@ -172,10 +178,12 @@ public class GeneralListener extends STBBaseListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockBurntAway(BlockBurnEvent event) {
         BaseSTBBlock stb = LocationManager.getManager().get(event.getBlock().getLocation());
+
         if (stb != null) {
             if (!stb.isFlammable()) {
                 LogUtils.warning("Non-flammable STB block " + stb + " was not protected from flame?");
             }
+
             stb.breakBlock(false);
             stb.onBlockBurnt(event);
         }
@@ -194,7 +202,6 @@ public class GeneralListener extends STBBaseListener {
             plugin.getEnergyNetManager().onCableRemoved(event.getBlock());
         } else {
             ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
-
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
             if (item != null) {
@@ -253,6 +260,7 @@ public class GeneralListener extends STBBaseListener {
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Block block = event.getBlock();
         BaseSTBBlock item = LocationManager.getManager().get(block.getLocation());
+
         if (item != null) {
             item.handlePhysicsEvent(event);
         } else {
@@ -279,16 +287,18 @@ public class GeneralListener extends STBBaseListener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        Iterator<Block> iter = event.blockList().iterator();
-        while (iter.hasNext()) {
-            Block b = iter.next();
+        Iterator<Block> iterator = event.blockList().iterator();
+
+        while (iterator.hasNext()) {
+            Block b = iterator.next();
             BaseSTBBlock stb = LocationManager.getManager().get(b.getLocation());
 
             if (stb != null) {
                 if (stb.onEntityExplode(event)) {
                     stb.breakBlock(ThreadLocalRandom.current().nextInt(100) < plugin.getConfig().getInt("explode_item_drop_chance"));
                 }
-                iter.remove();
+
+                iterator.remove();
             }
         }
     }
@@ -310,6 +320,7 @@ public class GeneralListener extends STBBaseListener {
                     return;
                 }
             }
+
             if (!result.validateCrafting(event.getInventory())) {
                 event.getInventory().setResult(null);
                 return;
@@ -322,6 +333,7 @@ public class GeneralListener extends STBBaseListener {
         // (e.g. 4 gold dust can't make a glowstone block even though gold dust uses glowstone dust for its material)
         for (ItemStack ingredient : event.getInventory().getMatrix()) {
             BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(ingredient);
+
             if (item != null) {
                 if (!item.isIngredientFor(event.getRecipe().getResult())) {
                     Debugger.getInstance().debug(item + " is not an ingredient for " + event.getRecipe().getResult());
@@ -347,6 +359,7 @@ public class GeneralListener extends STBBaseListener {
             for (ItemStack ingredient : event.getInventory().getMatrix()) {
                 if (ingredient != null) {
                     Class<? extends BaseSTBItem> c = result.getCraftingRestriction(ingredient.getType());
+
                     if (c != null && !SensibleToolbox.getItemRegistry().isSTBItem(ingredient, c)) {
                         Debugger.getInstance().debug("stopped crafting of " + result + " with vanilla item: " + ingredient.getType());
                         event.getInventory().setResult(null);
@@ -354,10 +367,12 @@ public class GeneralListener extends STBBaseListener {
                     }
                 }
             }
+
             if (result.onCrafted()) {
                 event.getInventory().setResult(result.toItemStack(event.getInventory().getResult().getAmount()));
             }
         }
+
         Debugger.getInstance().debug("resulting item now: " + event.getInventory().getResult());
     }
 
@@ -367,9 +382,11 @@ public class GeneralListener extends STBBaseListener {
             if (event.getSlotType() == InventoryType.SlotType.QUICKBAR || event.getSlotType() == InventoryType.SlotType.CONTAINER) {
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && STBUtil.isWearable(event.getCurrentItem().getType())) {
                     BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getCurrentItem());
+
                     if (item != null && !item.isWearable()) {
                         event.setCancelled(true);
                         int newSlot = findNewSlot(event);
+
                         if (newSlot >= 0) {
                             event.getWhoClicked().getInventory().setItem(newSlot, event.getCurrentItem());
                             event.setCurrentItem(null);
@@ -378,6 +395,7 @@ public class GeneralListener extends STBBaseListener {
                 }
             } else if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
                 BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(event.getCursor());
+
                 if (item != null && !item.isWearable()) {
                     event.setCancelled(true);
                 }
@@ -490,7 +508,8 @@ public class GeneralListener extends STBBaseListener {
         Long when = (Long) STBUtil.getMetadataValue(event.getBlock(), LAST_PISTON_EXTEND);
         long now = System.currentTimeMillis();
 
-        if (when != null && now - when < 50) { // 50 ms = 1 tick
+        // 50 ms = 1 tick
+        if (when != null && now - when < 50) {
             return;
         }
 
@@ -500,6 +519,7 @@ public class GeneralListener extends STBBaseListener {
             Block moving = event.getBlock().getRelative(event.getDirection(), i);
             Block to = moving.getRelative(event.getDirection());
             BaseSTBBlock stb = LocationManager.getManager().get(moving.getLocation());
+
             if (stb != null) {
                 switch (stb.getPistonMoveReaction()) {
                 case MOVE:

@@ -7,7 +7,7 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
-public class RegulatorUpgrade extends MachineUpgrade {
+public class RegulatorUpgrade extends AbstractMachineUpgrade {
 
     public RegulatorUpgrade() {}
 
