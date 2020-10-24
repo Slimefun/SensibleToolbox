@@ -26,7 +26,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.material.Dye;
 
 import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollection;
 import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
@@ -201,7 +200,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
 
     @Override
     public int getMaxLevel() {
-        return MAX_PAINT_LEVEL;
+        return getMaxPaintLevel();
     }
 
     @Override
@@ -235,12 +234,8 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         return getGUI() == null ? null : (LevelMonitor) getGUI().getMonitor(levelMonitorId);
     }
 
-    private boolean validItem(ItemStack item) {
-        return false;
-        // TODO: Fix Paint Can
-        // return !item.hasItemMeta() && (STBUtil.isColorable(item.getType()) || item.getType() == Material.MILK_BUCKET
-        // || MaterialCollections.getAllDyeColors().contains(item.getType()) || item.getType() == Material.GLASS ||
-        // item.getType() == Material.THIN_GLASS);
+    private boolean validItem(@Nonnull ItemStack item) {
+        return !item.hasItemMeta() && (STBUtil.isColorable(item.getType()) || item.getType() == Material.MILK_BUCKET || STBUtil.isDye(item.getType()));
     }
 
     @Override
@@ -331,7 +326,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
             if (stack != null) {
                 if (stack.getType() == Material.MILK_BUCKET && !stack.hasItemMeta() && bucketSlot == -1) {
                     bucketSlot = slot;
-                } else if (MaterialCollections.getAllDyeColors().contains(stack.getType()) && !stack.hasItemMeta() && dyeSlot == -1) {
+                } else if (STBUtil.isDye(stack.getType()) && !stack.hasItemMeta() && dyeSlot == -1) {
                     dyeSlot = slot;
                 } else if (validItem(stack) && dyeableSlot == -1) {
                     dyeableSlot = slot;
@@ -348,8 +343,7 @@ public class PaintCan extends BaseSTBBlock implements LevelMonitor.LevelReporter
         if (bucketSlot >= 0 && dyeSlot >= 0) {
             // we have milk & some dye - mix it up!
             ItemStack dyeStack = inventory.getItem(dyeSlot);
-            Dye dye = (Dye) dyeStack.getData();
-            DyeColor newColor = dye.getColor();
+            DyeColor newColor = STBUtil.getColorFromDye(dyeStack.getType());
             int dyeAmount = dyeStack.getAmount();
             int paintPerDye = getItemConfig().getInt("paint_per_dye", PAINT_PER_DYE);
             int toUse = Math.min((getMaxPaintLevel() - getPaintLevel()) / paintPerDye, dyeAmount);

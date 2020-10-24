@@ -257,27 +257,118 @@ public final class STBUtil {
      * @return true if the material is colorable; false otherwise
      */
     public static boolean isColorable(Material mat) {
-        if (Tag.WOOL.isTagged(mat)) {
-            return true;
-        }
-
-        if (Tag.CARPETS.isTagged(mat)) {
-            return true;
-        }
-
         switch (mat) {
-        // TODO: Fix glass coloring
-        // case STAINED_GLASS:
-        // case STAINED_GLASS_PANE:
-        // case STAINED_CLAY:
-        // return true;
+        case WHITE_WOOL:
+        case ORANGE_WOOL:
+        case MAGENTA_WOOL:
+        case LIGHT_BLUE_WOOL:
+        case YELLOW_WOOL:
+        case LIME_WOOL:
+        case PINK_WOOL:
+        case GRAY_WOOL:
+        case LIGHT_GRAY_WOOL:
+        case CYAN_WOOL:
+        case PURPLE_WOOL:
+        case BLUE_WOOL:
+        case BROWN_WOOL:
+        case GREEN_WOOL:
+        case RED_WOOL:
+        case BLACK_WOOL:
+            return true;
+        case WHITE_CARPET:
+        case ORANGE_CARPET:
+        case MAGENTA_CARPET:
+        case LIGHT_BLUE_CARPET:
+        case YELLOW_CARPET:
+        case LIME_CARPET:
+        case PINK_CARPET:
+        case GRAY_CARPET:
+        case LIGHT_GRAY_CARPET:
+        case CYAN_CARPET:
+        case PURPLE_CARPET:
+        case BLUE_CARPET:
+        case BROWN_CARPET:
+        case GREEN_CARPET:
+        case RED_CARPET:
+        case BLACK_CARPET:
+            return true;
+        case GLASS:
+        case WHITE_STAINED_GLASS:
+        case ORANGE_STAINED_GLASS:
+        case MAGENTA_STAINED_GLASS:
+        case LIGHT_BLUE_STAINED_GLASS:
+        case YELLOW_STAINED_GLASS:
+        case LIME_STAINED_GLASS:
+        case PINK_STAINED_GLASS:
+        case GRAY_STAINED_GLASS:
+        case LIGHT_GRAY_STAINED_GLASS:
+        case CYAN_STAINED_GLASS:
+        case PURPLE_STAINED_GLASS:
+        case BLUE_STAINED_GLASS:
+        case BROWN_STAINED_GLASS:
+        case GREEN_STAINED_GLASS:
+        case RED_STAINED_GLASS:
+        case BLACK_STAINED_GLASS:
+            return true;
+        case GLASS_PANE:
+        case WHITE_STAINED_GLASS_PANE:
+        case ORANGE_STAINED_GLASS_PANE:
+        case MAGENTA_STAINED_GLASS_PANE:
+        case LIGHT_BLUE_STAINED_GLASS_PANE:
+        case YELLOW_STAINED_GLASS_PANE:
+        case LIME_STAINED_GLASS_PANE:
+        case PINK_STAINED_GLASS_PANE:
+        case GRAY_STAINED_GLASS_PANE:
+        case LIGHT_GRAY_STAINED_GLASS_PANE:
+        case CYAN_STAINED_GLASS_PANE:
+        case PURPLE_STAINED_GLASS_PANE:
+        case BLUE_STAINED_GLASS_PANE:
+        case BROWN_STAINED_GLASS_PANE:
+        case GREEN_STAINED_GLASS_PANE:
+        case RED_STAINED_GLASS_PANE:
+        case BLACK_STAINED_GLASS_PANE:
+            return true;
+        case TERRACOTTA:
+        case WHITE_TERRACOTTA:
+        case ORANGE_TERRACOTTA:
+        case MAGENTA_TERRACOTTA:
+        case LIGHT_BLUE_TERRACOTTA:
+        case YELLOW_TERRACOTTA:
+        case LIME_TERRACOTTA:
+        case PINK_TERRACOTTA:
+        case GRAY_TERRACOTTA:
+        case LIGHT_GRAY_TERRACOTTA:
+        case CYAN_TERRACOTTA:
+        case PURPLE_TERRACOTTA:
+        case BLUE_TERRACOTTA:
+        case BROWN_TERRACOTTA:
+        case GREEN_TERRACOTTA:
+        case RED_TERRACOTTA:
+        case BLACK_TERRACOTTA:
+            return true;
+        case WHITE_CONCRETE:
+        case ORANGE_CONCRETE:
+        case MAGENTA_CONCRETE:
+        case LIGHT_BLUE_CONCRETE:
+        case YELLOW_CONCRETE:
+        case LIME_CONCRETE:
+        case PINK_CONCRETE:
+        case GRAY_CONCRETE:
+        case LIGHT_GRAY_CONCRETE:
+        case CYAN_CONCRETE:
+        case PURPLE_CONCRETE:
+        case BLUE_CONCRETE:
+        case BROWN_CONCRETE:
+        case GREEN_CONCRETE:
+        case RED_CONCRETE:
+        case BLACK_CONCRETE:
         default:
             return false;
         }
     }
 
     /**
-     * Given a yaw value, get the closest block face for the given yaw. The yaw value
+     * Given a yaw value: get the closest block face for the given yaw. The yaw value
      * is usually obtained via {@link org.bukkit.Location#getYaw()}
      *
      * @param yaw
@@ -720,6 +811,48 @@ public final class STBUtil {
             return Material.ACACIA_WALL_SIGN;
         case DARK_OAK_SIGN:
             return Material.DARK_OAK_WALL_SIGN;
+        default:
+            return null;
+        }
+    }
+
+    public static boolean isDye(@Nonnull Material type) {
+        return getColorFromDye(type) != null;
+    }
+
+    @Nullable
+    public static DyeColor getColorFromDye(@Nonnull Material type) {
+        switch (type) {
+        case WHITE_DYE:
+            return DyeColor.WHITE;
+        case ORANGE_DYE:
+            return DyeColor.ORANGE;
+        case MAGENTA_DYE:
+            return DyeColor.MAGENTA;
+        case LIGHT_BLUE_DYE:
+            return DyeColor.LIGHT_BLUE;
+        case YELLOW_DYE:
+            return DyeColor.YELLOW;
+        case LIME_DYE:
+            return DyeColor.LIME;
+        case PINK_DYE:
+            return DyeColor.PINK;
+        case GRAY_DYE:
+            return DyeColor.GRAY;
+        case LIGHT_GRAY_DYE:
+            return DyeColor.LIGHT_GRAY;
+        case PURPLE_DYE:
+            return DyeColor.PURPLE;
+        case BLUE_DYE:
+            return DyeColor.BLUE;
+        case BROWN_DYE:
+            return DyeColor.BROWN;
+        case GREEN_DYE:
+            return DyeColor.GREEN;
+        case RED_DYE:
+            return DyeColor.RED;
+        case BLACK_DYE:
+            return DyeColor.BLACK;
         default:
             return null;
         }
