@@ -33,17 +33,21 @@ public abstract class STBEnderStorageHolder implements EnderStorageHolder {
         this.manager = manager;
     }
 
-    @SuppressWarnings("resource")
     void loadInventory() throws IOException {
         File saveFile = getSaveFile();
+
         if (saveFile.exists()) {
-            String encoded = new Scanner(saveFile).useDelimiter("\\A").next();
-            Inventory savedInv = BukkitSerialization.fromBase64(encoded);
-            inventory = Bukkit.createInventory(this, savedInv.getSize(), getInventoryTitle());
-            for (int i = 0; i < savedInv.getSize(); i++) {
-                inventory.setItem(i, savedInv.getItem(i));
+            try (Scanner scanner = new Scanner(saveFile, StandardCharsets.UTF_8.name()).useDelimiter("\\A")) {
+                String encoded = scanner.next();
+                Inventory savedInv = BukkitSerialization.fromBase64(encoded);
+                inventory = Bukkit.createInventory(this, savedInv.getSize(), getInventoryTitle());
+
+                for (int i = 0; i < savedInv.getSize(); i++) {
+                    inventory.setItem(i, savedInv.getItem(i));
+                }
+
+                Debugger.getInstance().debug("loaded " + this + " from " + saveFile);
             }
-            Debugger.getInstance().debug("loaded " + this + " from " + saveFile);
         } else {
             // no saved inventory - player must not have used the bag before
             inventory = Bukkit.createInventory(this, EnderStorageManager.BAG_SIZE, getInventoryTitle());

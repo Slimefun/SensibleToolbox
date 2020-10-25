@@ -50,8 +50,10 @@ public class EnderStorageManager implements Listener {
     public GlobalEnderHolder getGlobalInventoryHolder(int frequency) {
         Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
         GlobalEnderHolder h = globalInvs.get(frequency);
+
         if (h == null) {
             h = new GlobalEnderHolder(this, frequency);
+
             try {
                 h.loadInventory();
                 globalInvs.put(frequency, h);
@@ -60,6 +62,7 @@ public class EnderStorageManager implements Listener {
                 return null;
             }
         }
+
         return h;
     }
 
@@ -134,6 +137,7 @@ public class EnderStorageManager implements Listener {
             for (EnderStorageHolder holder : updateNeeded) {
                 ((STBEnderStorageHolder) holder).saveInventory();
             }
+
             updateNeeded.clear();
         }
     }

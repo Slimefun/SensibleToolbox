@@ -96,7 +96,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         redstoneBehaviour = RedstoneBehaviour.valueOf(conf.getString("redstoneBehaviour", "IGNORE"));
         accessControl = AccessControl.valueOf(conf.getString("accessControl", "PUBLIC"));
         ticksLived = 0;
-        needToScanSigns = !conf.contains("labels"); // coming from pre-v0.0.4
+        needToScanSigns = true;
         byte faces = (byte) conf.getInt("labels", 0);
         labelSigns.or(BitSet.valueOf(new byte[] { faces }));
     }
@@ -104,9 +104,11 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     @Override
     public YamlConfiguration freeze() {
         YamlConfiguration conf = super.freeze();
+
         if (getOwner() != null) {
             conf.set("owner", getOwner().toString());
         }
+
         conf.set("facing", getFacing().toString());
         conf.set("redstoneBehaviour", getRedstoneBehaviour().toString());
         conf.set("accessControl", getAccessControl().toString());
@@ -120,6 +122,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *
      * @return the redstone behaviour
      */
+    @Nonnull
     public final RedstoneBehaviour getRedstoneBehaviour() {
         return redstoneBehaviour;
     }
@@ -131,7 +134,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param redstoneBehaviour
      *            the new desired redstone behaviour
      */
-    public final void setRedstoneBehaviour(RedstoneBehaviour redstoneBehaviour) {
+    public final void setRedstoneBehaviour(@Nonnull RedstoneBehaviour redstoneBehaviour) {
         this.redstoneBehaviour = redstoneBehaviour;
         update(false);
     }
@@ -142,6 +145,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *
      * @return the access control setting
      */
+    @Nonnull
     public final AccessControl getAccessControl() {
         return accessControl;
     }
@@ -153,7 +157,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param accessControl
      *            the new desired access control
      */
-    public final void setAccessControl(AccessControl accessControl) {
+    public final void setAccessControl(@Nonnull AccessControl accessControl) {
         this.accessControl = accessControl;
         update(false);
     }
@@ -246,7 +250,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the player to check
      * @return true if the block may be accessed
      */
-    public final boolean hasAccessRights(Player player) {
+    public final boolean hasAccessRights(@Nonnull Player player) {
         switch (getAccessControl()) {
         case PUBLIC:
             return true;
@@ -269,7 +273,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the UUID to check
      * @return true if the block may be accessed
      */
-    public final boolean hasAccessRights(UUID uuid) {
+    public final boolean hasAccessRights(@Nonnull UUID uuid) {
         switch (getAccessControl()) {
         case PUBLIC:
             return true;
@@ -378,7 +382,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param event
      *            the interaction event
      */
-    public void onInteractBlock(PlayerInteractEvent event) {
+    public void onInteractBlock(@Nonnull PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && Tag.SIGNS.isTagged(event.getPlayer().getInventory().getItemInMainHand().getType()) && !Tag.STANDING_SIGNS.isTagged(event.getClickedBlock().getType()) && !Tag.WALL_SIGNS.isTagged(event.getClickedBlock().getType())) {
             // attach a label sign
             if (attachLabelSign(event)) {
@@ -396,7 +400,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the sign change event
      * @return true if the sign should be popped off the block
      */
-    public boolean onSignChange(SignChangeEvent event) {
+    public boolean onSignChange(@Nonnull SignChangeEvent event) {
         return false;
     }
 
@@ -513,7 +517,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *             if the new location is null or the block's current location is non-null
      */
     public final void setLocation(LocationManager.BlockAccess blockAccess, Location loc) {
-        Validate.notNull(blockAccess, "Don't call this method directly");
+        Validate.notNull(blockAccess, "Do not call this method directly");
         Validate.notNull(loc, "Location must not be null");
         Validate.isTrue(persistableLocation == null, "Attempt to change the location of existing STB block @ " + persistableLocation);
         persistableLocation = new PersistableLocation(loc);
@@ -926,7 +930,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     protected void updateAttachedLabelSigns() {
         Location loc = getLocation();
 
-        if (loc == null || labelSigns == null || labelSigns.isEmpty()) {
+        if (loc == null || labelSigns.isEmpty()) {
             return;
         }
 

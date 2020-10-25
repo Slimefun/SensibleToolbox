@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -100,22 +100,25 @@ public class ShapelessCustomRecipe implements CustomRecipe {
     @Override
     public Collection<ItemStack> calculateSupplementaryResults() {
         List<ItemStack> res = Lists.newArrayList();
-        Random rnd = new Random();
+
         for (SupplementaryResult sr : listSupplementaryResults()) {
-            if (rnd.nextInt(1000) < sr.getChance()) {
+            if (ThreadLocalRandom.current().nextInt(1000) < sr.getChance()) {
                 res.add(sr.getResult());
             }
         }
+
         return res;
     }
 
     @Override
     public String makeKey(boolean ignoreData) {
         List<String> l = Lists.newArrayList();
+
         for (Map.Entry<String, Integer> m : ingredients.entrySet()) {
             String s = ignoreData ? m.getKey().replaceAll(":\\d+", "") : m.getKey();
             l.add(m.getValue() + "x" + s);
         }
+
         return Joiner.on(";").join(MiscUtil.asSortedList(l));
     }
 }

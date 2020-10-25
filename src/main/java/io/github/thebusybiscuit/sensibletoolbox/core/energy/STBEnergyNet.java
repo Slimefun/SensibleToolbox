@@ -226,7 +226,7 @@ public class STBEnergyNet implements EnergyNet {
             }
         }
 
-        if (totalDemand == 0.0 || totalSupply == 0.0) {
+        if (totalDemand <= 0 || totalSupply <= 0) {
             return;
         }
 

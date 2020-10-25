@@ -1,6 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.utils;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -113,7 +114,7 @@ public final class VanillaInventoryUtils {
             ItemStack stack = source.clone();
             stack.setAmount(Math.min(amount, stack.getAmount()));
             Debugger.getInstance().debug(2, "inserting " + stack + " into " + targetInv.getHolder());
-            HashMap<Integer, ItemStack> excess;
+            Map<Integer, ItemStack> excess;
 
             switch (targetInv.getType()) {
             case FURNACE:
@@ -142,7 +143,9 @@ public final class VanillaInventoryUtils {
                         return stack.getAmount() - s.getAmount();
                     }
                 }
-                return stack.getAmount(); // shouldn't get here!
+
+                // We shouldn't get here!
+                return stack.getAmount();
             } else {
                 source.setAmount(source.getAmount() - stack.getAmount());
                 return stack.getAmount();
@@ -242,8 +245,8 @@ public final class VanillaInventoryUtils {
         }
     }
 
-    private static HashMap<Integer, ItemStack> addToBrewingStand(BrewerInventory targetInv, ItemStack stack, BlockFace side) {
-        HashMap<Integer, ItemStack> res = new HashMap<>();
+    private static Map<Integer, ItemStack> addToBrewingStand(BrewerInventory targetInv, ItemStack stack, BlockFace side) {
+        Map<Integer, ItemStack> res = new HashMap<>();
         ItemStack excess = null;
 
         if (side == BlockFace.UP) {
@@ -262,7 +265,8 @@ public final class VanillaInventoryUtils {
                     excess = putStack(targetInv, slot, stack);
 
                     if (excess == null) {
-                        break; // all fitted
+                        // all fitted
+                        break;
                     } else {
                         // some or none fitted, continue with other slots
                         stack.setAmount(excess.getAmount());
@@ -277,18 +281,11 @@ public final class VanillaInventoryUtils {
         return res;
     }
 
-    private static HashMap<Integer, ItemStack> addToFurnace(FurnaceInventory targetInv, ItemStack stack, BlockFace side) {
-        HashMap<Integer, ItemStack> res = new HashMap<>();
-        int slot;
+    private static Map<Integer, ItemStack> addToFurnace(FurnaceInventory targetInv, ItemStack stack, BlockFace side) {
+        Map<Integer, ItemStack> res = new HashMap<>();
 
-        switch (side) {
-        case UP:
-            slot = 0;
-            break; // smelting slot
-        default:
-            slot = 1;
-            break; // fuel slot
-        }
+        // 0 == Smelting | 1 == Fuel
+        int slot = side == BlockFace.UP ? 0 : 1;
 
         ItemStack excess = putStack(targetInv, slot, stack);
 
@@ -321,6 +318,7 @@ public final class VanillaInventoryUtils {
             int toAdd = Math.min(stack.getAmount(), current.getType().getMaxStackSize() - current.getAmount());
             current.setAmount(current.getAmount() + toAdd);
             inv.setItem(slot, current);
+
             if (toAdd < stack.getAmount()) {
                 ItemStack leftover = stack.clone();
                 leftover.setAmount(stack.getAmount() - toAdd);

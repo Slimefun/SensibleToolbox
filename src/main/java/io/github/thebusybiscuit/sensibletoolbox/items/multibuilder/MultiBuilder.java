@@ -237,7 +237,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
         double chargeNeeded = chargePerOp * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
-        queue.offer(new SwapRecord(player, origin, origin.getType(), target, maxBlocks, builder, -1, chargeNeeded));
+        queue.add(new SwapRecord(player, origin, origin.getType(), target, maxBlocks, builder, -1, chargeNeeded));
     }
 
     private int howMuchDoesPlayerHave(Player p, Material mat) {
@@ -395,6 +395,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private BlockFace getRotation(Location loc) {
         double rot = (loc.getYaw() - 90) % 360;
+
         if (rot < 0) {
             rot += 360;
         }
