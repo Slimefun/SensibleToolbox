@@ -205,7 +205,7 @@
         <dependency>
             <groupId>com.github.TheBusyBiscuit</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-16</version>
+            <version>RC-17</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -229,7 +229,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.5.0</version>
+            <version>4.5.1</version>
             <scope>provided</scope>
         </dependency>
 
