@@ -128,6 +128,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
                 }
 
                 Debugger.getInstance().debug(3, String.format("matchesArgCount: %s, nArgs=%d min=%d max=%d", label, nArgs, minArgs, maxArgs));
+
                 if (nArgs >= minArgs && nArgs <= maxArgs) {
                     storeMatchedArgs(args, rec);
                     return true;
@@ -196,10 +197,8 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
                     default:
                         throw new IllegalStateException("unexpected option type for " + tmpArgs[i]);
                     }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    throw new DHUtilsException("Missing value for option '" + tmpArgs[i - 1] + "'");
                 } catch (Exception e) {
-                    throw new DHUtilsException("Invalid value for option '" + tmpArgs[i - 1] + "'");
+                    throw new DHUtilsException("Missing value for option '" + tmpArgs[i - 1] + "'");
                 }
             } else {
                 l.add(tmpArgs[i]);
@@ -307,9 +306,11 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected String getStringOption(String opt, String def) {
-        if (!optVals.containsKey(opt))
+        if (!optVals.containsKey(opt)) {
             return def;
-        return (String) optVals.get(opt);
+        } else {
+            return (String) optVals.get(opt);
+        }
     }
 
     protected double getDoubleOption(String opt) {
@@ -317,9 +318,11 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected double getDoubleOption(String opt, double def) {
-        if (!optVals.containsKey(opt))
+        if (!optVals.containsKey(opt)) {
             return def;
-        return (Double) optVals.get(opt);
+        } else {
+            return (Double) optVals.get(opt);
+        }
     }
 
     protected boolean getBooleanOption(String opt) {
@@ -327,9 +330,11 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected boolean getBooleanOption(String opt, boolean def) {
-        if (!optVals.containsKey(opt))
+        if (!optVals.containsKey(opt)) {
             return def;
-        return (Boolean) optVals.get(opt);
+        } else {
+            return (Boolean) optVals.get(opt);
+        }
     }
 
     public void setQuotedArgs(boolean usesQuotedArgs) {
@@ -342,12 +347,15 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
     protected String combine(String[] args, int idx1, int idx2) {
         StringBuilder result = new StringBuilder();
+
         for (int i = idx1; i <= idx2 && i < args.length; i++) {
             result.append(args[i]);
+
             if (i < idx2) {
                 result.append(" ");
             }
         }
+
         return result.toString();
     }
 
@@ -399,9 +407,9 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     protected List<String> getResult(List<String> res, CommandSender sender, boolean sorted) {
         if (res.isEmpty()) {
             return sender == null ? Collections.emptyList() : CommandManager.noCompletions(sender);
+        } else {
+            return sorted ? MiscUtil.asSortedList(res) : res;
         }
-
-        return sorted ? MiscUtil.asSortedList(res) : res;
     }
 
     protected List<String> getEnumCompletions(CommandSender sender, Class<? extends Enum<?>> c, String prefix) {

@@ -210,20 +210,20 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
                 // replace multiple blocks
                 int sharpness = event.getItem().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
                 int layers = 3 + sharpness;
-                startSwap(event.getPlayer(), this, clicked, material, layers);
+                startSwap(event.getPlayer(), event.getItem(), this, clicked, material, layers);
                 Debugger.getInstance().debug(this + ": replacing " + layers + " layers of blocks");
             }
 
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && material != null) {
             // replace a single block
-            startSwap(event.getPlayer(), this, clicked, material, 0);
+            startSwap(event.getPlayer(), event.getItem(), this, clicked, material, 0);
             event.setCancelled(true);
         }
     }
 
     @ParametersAreNonnullByDefault
-    private void startSwap(Player player, MultiBuilder builder, Block origin, Material target, int maxBlocks) {
+    private void startSwap(Player player, ItemStack item, MultiBuilder builder, Block origin, Material target, int maxBlocks) {
         LinkedBlockingQueue<SwapRecord> queue = swapQueues.get(player.getWorld().getUID());
 
         if (queue == null) {
@@ -236,7 +236,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }
 
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
-        double chargeNeeded = chargePerOp * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargeNeeded = chargePerOp * Math.pow(0.8, item.getEnchantmentLevel(Enchantment.DIG_SPEED));
         queue.add(new SwapRecord(player, origin, origin.getType(), target, maxBlocks, builder, -1, chargeNeeded));
     }
 
@@ -269,11 +269,11 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Set<Block> blocks = getBuildCandidates(player, event.getClickedBlock(), event.getBlockFace());
+            Set<Block> blocks = getBuildCandidates(player, event.getItem(), event.getClickedBlock(), event.getBlockFace());
 
             if (!blocks.isEmpty()) {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    doBuild(player, event.getClickedBlock(), blocks);
+                    doBuild(player, event.getHand(), event.getItem(), event.getClickedBlock(), blocks);
                 } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     showBuildPreview(player, blocks);
                 }
@@ -297,10 +297,9 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         }, 20L);
     }
 
-    private void doBuild(Player player, Block source, Set<Block> actualBlocks) {
-        ItemStack inHand = player.getItemInHand();
+    private void doBuild(Player player, EquipmentSlot hand, ItemStack item, Block source, Set<Block> actualBlocks) {
         int chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION);
-        double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, inHand.getEnchantmentLevel(Enchantment.DIG_SPEED));
+        double chargeNeeded = chargePerOp * actualBlocks.size() * Math.pow(0.8, item.getEnchantmentLevel(Enchantment.DIG_SPEED));
         // we know at this point that the tool has sufficient charge and that the player has sufficient material
         setCharge(getCharge() - chargeNeeded);
         ItemCost cost = new ItemCost(source.getType(), actualBlocks.size());
@@ -310,14 +309,14 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             b.setType(source.getType(), true);
         }
 
-        player.setItemInHand(toItemStack());
+        updateHeldItemStack(player, hand);
         player.playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1.0F, 1.0F);
     }
 
     @Nonnull
-    private Set<Block> getBuildCandidates(Player player, Block clickedBlock, BlockFace blockFace) {
-        int sharpness = player.getItemInHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, player.getItemInHand().getEnchantmentLevel(Enchantment.DIG_SPEED));
+    private Set<Block> getBuildCandidates(Player player, ItemStack item, Block clickedBlock, BlockFace blockFace) {
+        int sharpness = item.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+        double chargePerOp = getItemConfig().getInt("scu_per_op", DEF_SCU_PER_OPERATION) * Math.pow(0.8, item.getEnchantmentLevel(Enchantment.DIG_SPEED));
         int ch = (int) (getCharge() / chargePerOp);
 
         if (ch == 0) {
@@ -377,16 +376,14 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
         case UP:
         case DOWN:
             BlockFace playerFace = getRotation(player.getLocation());
-            switch (playerFace) {
-            case EAST:
-            case WEST:
+
+            if (playerFace == BlockFace.EAST || playerFace == BlockFace.WEST) {
                 return face.getModZ() == 0;
-            case NORTH:
-            case SOUTH:
+            } else if (playerFace == BlockFace.NORTH || playerFace == BlockFace.SOUTH) {
                 return face.getModX() == 0;
-            default:
-                break;
             }
+
+            break;
         default:
             break;
         }
