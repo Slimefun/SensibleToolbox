@@ -243,7 +243,7 @@
         <dependency>
             <groupId>com.github.thebusybiscuit</groupId>
             <artifactId>CS-CoreLib2</artifactId>
-            <version>0.25</version>
+            <version>0.26</version>
             <scope>compile</scope>
         </dependency>
 
