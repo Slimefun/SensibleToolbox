@@ -60,6 +60,20 @@ public class InfernalFarm extends AutoFarm {
         res.setIngredient('N', Material.NETHER_BRICK);
         return res;
     }
+    
+    @Override
+    public void onBlockRegistered(Location location, boolean isPlacing) {
+        int range = RADIUS / 2;
+        Block block = location.getBlock();
+
+        for (int x = -range; x <= range; x++) {
+            for (int z = -range; z <= range; z++) {
+                blocks.add(block.getRelative(x, 2, z));
+            }
+        }
+
+        super.onBlockRegistered(location, isPlacing);
+    }
 
     @Override
     public void onServerTick() {
@@ -71,9 +85,9 @@ public class InfernalFarm extends AutoFarm {
 
                         if (ageable.getAge() >= ageable.getMaximumAge()) {
                             setCharge(getCharge() - getScuPerCycle());
-
                             ageable.setAge(0);
                             crop.getWorld().playEffect(crop.getLocation(), Effect.STEP_SOUND, crop.getType());
+                            crop.setBlockData(ageable);
                             setJammed(!output(Material.NETHER_WART));
                             break;
                         }
