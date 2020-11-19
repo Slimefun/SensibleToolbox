@@ -78,7 +78,7 @@ public final class LocationManager {
             throw new IllegalStateException("Unable to initialise DB storage: " + e.getMessage());
         }
 
-        updaterTask = new Thread(new DBUpdaterTask(this));
+        updaterTask = new Thread(new DBUpdaterTask(this), "STB - Database Thread");
     }
 
     public static synchronized LocationManager getManager() {
