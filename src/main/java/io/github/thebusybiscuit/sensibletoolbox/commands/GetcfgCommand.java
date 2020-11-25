@@ -57,14 +57,16 @@ public class GetcfgCommand extends AbstractCommand {
                 items = config.getDefaults().getConfigurationSection(section).getKeys(true);
             } else {
                 items = new HashSet<>();
-                if (config.getDefaults().contains(section))
+                if (config.getDefaults().contains(section)) {
                     items.add(section);
+                }
             }
         }
 
         for (String k : items) {
-            if (cs.isConfigurationSection(k))
+            if (cs.isConfigurationSection(k)) {
                 continue;
+            }
             res.add("&f" + k + "&- = '&e" + cs.get(k) + "&-'");
         }
         Collections.sort(res);
