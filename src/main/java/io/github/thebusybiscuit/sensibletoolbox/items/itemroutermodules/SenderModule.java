@@ -55,8 +55,9 @@ public class SenderModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         if (getItemRouter() != null && getItemRouter().getBufferItem() != null) {
-            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem()))
+            if (getFilter() != null && !getFilter().shouldPass(getItemRouter().getBufferItem())) {
                 return false;
+            }
             Debugger.getInstance().debug(2, "sender in " + getItemRouter() + " has: " + getItemRouter().getBufferItem());
             Block b = loc.getBlock();
             Block target = b.getRelative(getFacing());
@@ -110,8 +111,9 @@ public class SenderModule extends DirectionalItemRouterModule {
     private ReceiverModule findReceiver(Block b) {
         for (int i = 0; i < MAX_SENDER_DISTANCE; i++) {
             b = b.getRelative(getFacing());
-            if (!allowsItemsThrough(b.getType()))
+            if (!allowsItemsThrough(b.getType())) {
                 break;
+            }
         }
 
         ItemRouter rtr = SensibleToolbox.getBlockAt(b.getLocation(), ItemRouter.class, false);
