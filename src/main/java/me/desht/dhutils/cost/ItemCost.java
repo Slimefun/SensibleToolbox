@@ -104,8 +104,9 @@ public class ItemCost {
         for (Entry<Integer, ? extends ItemStack> entry : matchingInvSlots.entrySet()) {
             if (matches(entry.getValue())) {
                 remainingCheck -= entry.getValue().getAmount();
-                if (remainingCheck <= 0)
+                if (remainingCheck <= 0) {
                     break;
+                }
             }
         }
 
