@@ -72,8 +72,9 @@ public class MagmaticEngine extends Generator {
 
     @Override
     protected void playActiveParticleEffect() {
-        if (getTicksLived() % 20 == 0)
+        if (getTicksLived() % 20 == 0) {
             getLocation().getWorld().playEffect(getLocation(), Effect.MOBSPAWNER_FLAMES, 1);
+        }
     }
 
     @Override
@@ -108,8 +109,9 @@ public class MagmaticEngine extends Generator {
 
     @Override
     protected boolean isValidUpgrade(HumanEntity player, BaseSTBItem upgrade) {
-        if (!super.isValidUpgrade(player, upgrade))
+        if (!super.isValidUpgrade(player, upgrade)) {
             return false;
+        }
         if (!(upgrade instanceof RegulatorUpgrade)) {
             STBUtil.complain(player, upgrade.getItemName() + " is not accepted by a " + getItemName());
             return false;
@@ -183,10 +185,11 @@ public class MagmaticEngine extends Generator {
                 if (getProgress() <= 0) {
                     // fuel burnt
                     ItemStack bucket = getInventoryItem(getOutputSlots()[0]);
-                    if (bucket == null)
+                    if (bucket == null) {
                         bucket = new ItemStack(Material.BUCKET);
-                    else
+                    } else {
                         bucket.setAmount(bucket.getAmount() + 1);
+                    }
                     setInventoryItem(getOutputSlots()[0], bucket);
                     setProcessing(null);
                     update(false);
@@ -201,8 +204,10 @@ public class MagmaticEngine extends Generator {
     }
 
     private void pullItemIntoProcessing(int inputSlot) {
-        if (getInventoryItem(getOutputSlots()[0]) != null && getInventoryItem(getOutputSlots()[0]).getAmount() >= getInventoryItem(getOutputSlots()[0]).getMaxStackSize())
+        ItemStack outputItem = getInventoryItem(getOutputSlots()[0]);
+        if (outputItem != null && outputItem.getAmount() >= outputItem.getMaxStackSize()) {
             return;
+        }
         ItemStack stack = getInventoryItem(inputSlot);
         currentFuel = fuelItems.get(stack);
 
