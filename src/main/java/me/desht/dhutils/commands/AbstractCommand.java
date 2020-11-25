@@ -296,8 +296,9 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     protected int getIntOption(String opt, int def) {
-        if (!optVals.containsKey(opt))
+        if (!optVals.containsKey(opt)) {
             return def;
+        }
         return (Integer) optVals.get(opt);
     }
 
