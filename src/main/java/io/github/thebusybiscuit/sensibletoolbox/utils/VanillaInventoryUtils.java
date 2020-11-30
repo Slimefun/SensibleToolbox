@@ -85,10 +85,11 @@ public final class VanillaInventoryUtils {
 
         Optional<Inventory> targetInv = getVanillaInventory(target);
 
-        if (!targetInv.isPresent())
+        if (!targetInv.isPresent()) {
             return 0;
-        else
+        } else {
             return vanillaInsertion(targetInv.get(), source, amount, side, sorting);
+        }
     }
 
     /**
@@ -178,10 +179,11 @@ public final class VanillaInventoryUtils {
 
         Optional<Inventory> targetInv = getVanillaInventory(target);
 
-        if (!targetInv.isPresent())
+        if (!targetInv.isPresent()) {
             return null;
-        else
+        } else {
             return pullFromInventory(targetInv.get(), amount, buffer, filter);
+        }
     }
 
     /**

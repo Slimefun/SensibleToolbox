@@ -180,8 +180,9 @@ public class FishingNet extends AbstractProcessingMachine {
                 setInventoryItem(slot, result);
                 setProcessing(null);
                 update(false);
-            } else
+            } else {
                 setJammed(true);
+            }
         }
 
         handleAutoEjection();
@@ -192,15 +193,16 @@ public class FishingNet extends AbstractProcessingMachine {
     @Override
     public boolean acceptsItemType(ItemStack stack) {
         ItemMeta bait = new FishBait().toItemStack().getItemMeta();
-        if (!stack.hasItemMeta())
+        if (!stack.hasItemMeta()) {
             return false;
-        if (!stack.getItemMeta().hasLore())
+        } else if (!stack.getItemMeta().hasLore()) {
             return false;
-        if (!stack.getItemMeta().hasDisplayName())
+        } else if (!stack.getItemMeta().hasDisplayName()) {
             return false;
-        if (stack.getItemMeta().getDisplayName().equals(bait.getDisplayName()) && stack.getItemMeta().getLore().toString().equals(bait.getLore().toString()))
+        } else if (stack.getItemMeta().getDisplayName().equals(bait.getDisplayName()) && stack.getItemMeta().getLore().toString().equals(bait.getLore().toString())) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 }

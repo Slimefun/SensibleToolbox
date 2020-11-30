@@ -313,8 +313,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     private void findNeighbourInventories() {
         neighbours.clear();
         Location loc = getLocation();
-        if (loc == null)
+        if (loc == null) {
             return;
+        }
         Block b = loc.getBlock();
 
         for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
@@ -432,15 +433,16 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
             int nInserted = Math.min(item.getAmount(), item.getType().getMaxStackSize() - bufferItem.getAmount());
             setBufferAmount(bufferItem.getAmount() + nInserted);
             return nInserted;
-        } else
+        } else {
             return 0;
+        }
     }
 
     @Override
     public ItemStack extractItems(BlockFace face, ItemStack receiver, int amount, UUID uuid) {
-        if (!hasAccessRights(uuid) || bufferItem == null)
+        if (!hasAccessRights(uuid) || bufferItem == null) {
             return null;
-        else if (receiver == null) {
+        } else if (receiver == null) {
             ItemStack returned = bufferItem.clone();
             int nExtracted = Math.min(amount, bufferItem.getAmount());
             returned.setAmount(nExtracted);
@@ -470,8 +472,9 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
 
     @Override
     public void updateOutputItems(UUID uuid, Inventory inventory) {
-        if (hasAccessRights(uuid))
+        if (hasAccessRights(uuid)) {
             setBufferItem(inventory.getItem(0));
+        }
     }
 
     @Override
@@ -482,18 +485,21 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         if (slot == BUFFER_ITEM_SLOT) {
-            if (inSlot == null || onCursor.getType() != Material.AIR)
+            if (inSlot == null || onCursor.getType() != Material.AIR) {
                 return false;
+            }
             needToScanBufferSlot = true;
             return true;
         } else if (slot >= MOD_SLOT_START && slot < MOD_SLOT_END) {
             if (onCursor.getType() == Material.AIR || SensibleToolbox.getItemRegistry().isSTBItem(onCursor, ItemRouterModule.class)) {
                 needToProcessModules = true;
                 return true;
-            } else
+            } else {
                 return false;
-        } else
+            }
+        } else {
             return false;
+        }
     }
 
     @Override

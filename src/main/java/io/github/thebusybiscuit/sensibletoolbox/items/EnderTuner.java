@@ -157,8 +157,9 @@ public class EnderTuner extends BaseSTBItem {
     @Override
     public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         if (tuningBlock != null) {
-            if (player instanceof Player)
+            if (player instanceof Player) {
                 STBUtil.complain((Player) player);
+            }
             return false;
         }
 

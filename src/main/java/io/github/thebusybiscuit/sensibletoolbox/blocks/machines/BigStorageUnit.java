@@ -134,10 +134,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     }
 
     private void updateSignQuantityLine() {
-        if (isLocked())
+        if (isLocked()) {
             signLabel[1] = ChatColor.DARK_RED + Integer.toString(getTotalAmount());
-        else
+        } else {
             signLabel[1] = getTotalAmount() > 0 ? Integer.toString(getTotalAmount()) : "";
+        }
     }
 
     private void updateSignItemLines() {
@@ -145,8 +146,9 @@ public class BigStorageUnit extends AbstractProcessingMachine {
             String[] lines = WordUtils.wrap(ItemUtils.getItemName(stored), 15).split("\\n");
             signLabel[2] = lines[0];
             String pfx = lines[0].startsWith("\u00a7") ? lines[0].substring(0, 2) : "";
-            if (lines.length > 1)
+            if (lines.length > 1) {
                 signLabel[3] = pfx + lines[1];
+            }
         } else {
             signLabel[2] = ChatColor.ITALIC + "Empty";
             signLabel[3] = "";

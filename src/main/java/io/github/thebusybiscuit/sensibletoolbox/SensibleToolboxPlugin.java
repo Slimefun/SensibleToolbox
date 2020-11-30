@@ -474,8 +474,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
         }
         if (protocolLibEnabled) {
-            if (getConfig().getBoolean("options.glowing_items"))
+            if (getConfig().getBoolean("options.glowing_items")) {
                 ItemGlow.init(this);
+            }
         } else {
             LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
             LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");

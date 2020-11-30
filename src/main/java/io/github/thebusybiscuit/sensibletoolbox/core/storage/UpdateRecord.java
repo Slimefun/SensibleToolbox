@@ -46,19 +46,24 @@ class UpdateRecord {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         UpdateRecord that = (UpdateRecord) o;
 
-        if (x != that.x)
+        if (x != that.x) {
             return false;
-        if (y != that.y)
+        }
+        if (y != that.y) {
             return false;
-        if (z != that.z)
+        }
+        if (z != that.z) {
             return false;
+        }
 
         return worldID != null ? worldID.equals(that.worldID) : that.worldID == null;
     }
