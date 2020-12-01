@@ -2,6 +2,8 @@ package io.github.thebusybiscuit.sensibletoolbox.slimefun;
 
 import java.util.List;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.slimefun4.core.attributes.RecipeDisplayItem;
@@ -13,6 +15,7 @@ public class STBSlimefunGenerator extends STBSlimefunItem implements RecipeDispl
 
     private final List<ItemStack> fuel;
 
+    @ParametersAreNonnullByDefault
     public STBSlimefunGenerator(Category category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe, List<ItemStack> fuel) {
         super(category, item, recipeType, recipe);
 

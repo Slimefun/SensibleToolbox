@@ -217,6 +217,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *
      * @return the owning player's UUID, or null if the block has not been placed yet
      */
+    @Nullable
     public final UUID getOwner() {
         return owner;
     }
@@ -227,7 +228,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param owner
      *            the new owning player's UUID
      */
-    public final void setOwner(UUID owner) {
+    public final void setOwner(@Nullable UUID owner) {
         this.owner = owner;
     }
 

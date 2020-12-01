@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.slimefun;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotConfigurable;
@@ -11,6 +13,7 @@ import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 
 public class STBSlimefunItem extends SlimefunItem implements NotPlaceable, NotConfigurable {
 
+    @ParametersAreNonnullByDefault
     public STBSlimefunItem(Category category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, recipeType, recipe);
 

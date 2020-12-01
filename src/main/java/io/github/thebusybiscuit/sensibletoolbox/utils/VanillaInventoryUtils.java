@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
@@ -79,7 +80,7 @@ public final class VanillaInventoryUtils {
             return 0;
         }
 
-        if (!SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(inserterId), target, ProtectableAction.ACCESS_INVENTORIES)) {
+        if (inserterId == null || !SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(inserterId), target, ProtectableAction.INTERACT_BLOCK)) {
             return 0;
         }
 
@@ -170,10 +171,12 @@ public final class VanillaInventoryUtils {
      * @param pullerId
      *            UUID of the player doing the pulling
      *            (may be null or the UUID of an offline player)
+     * 
      * @return the items pulled, or null if nothing was pulled
      */
-    public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, UUID pullerId) {
-        if (!SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(pullerId), target, ProtectableAction.ACCESS_INVENTORIES)) {
+    @Nullable
+    public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, @Nullable UUID pullerId) {
+        if (pullerId == null || !SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(pullerId), target, ProtectableAction.INTERACT_BLOCK)) {
             return null;
         }
 
