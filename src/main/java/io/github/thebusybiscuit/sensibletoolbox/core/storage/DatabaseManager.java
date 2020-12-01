@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
@@ -20,6 +21,9 @@ import me.desht.dhutils.text.LogUtils;
  * This class is responsible for connecting to our database.
  * 
  * @author desht
+ * @author TheBusyBiscuit
+ * 
+ * @see LocationManager
  *
  */
 class DatabaseManager {
@@ -33,15 +37,23 @@ class DatabaseManager {
         setupTable();
     }
 
+    @Nonnull
     public Connection getConnection() {
         return connection;
     }
 
+    @Nonnull
     private Connection connectToSQLite() throws SQLException {
         logger.info("Connecting to local database...");
-        // Class.forName(...) is no longer required as of JDBC 4.0+
-        File dbFile = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), "blocks.db");
-        return DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+        File file = new File(SensibleToolboxPlugin.getInstance().getDataFolder(), "blocks.db");
+
+        try {
+            // Class.forName(...) is no longer required as of JDBC 4.0+
+            return DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+        } catch (Exception | LinkageError x) {
+            logger.log(Level.SEVERE, x, () -> "Could not connect to local database: \"jdbc:sqlite:" + file.getAbsolutePath() + "\"");
+            throw new IllegalStateException("Database connection could not be established.");
+        }
     }
 
     private void setupTable() throws SQLException {

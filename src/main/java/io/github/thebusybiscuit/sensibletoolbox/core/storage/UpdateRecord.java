@@ -10,7 +10,7 @@ import org.bukkit.Location;
 
 class UpdateRecord {
 
-    private final Operation op;
+    private final DatabaseOperation op;
     private final UUID worldID;
     private final int x;
     private final int y;
@@ -20,15 +20,15 @@ class UpdateRecord {
 
     @Nonnull
     public static UpdateRecord finishingRecord() {
-        return new UpdateRecord(Operation.FINISH, null);
+        return new UpdateRecord(DatabaseOperation.FINISH, null);
     }
 
     @Nonnull
     public static UpdateRecord commitRecord() {
-        return new UpdateRecord(Operation.COMMIT, null);
+        return new UpdateRecord(DatabaseOperation.COMMIT, null);
     }
 
-    protected UpdateRecord(@Nonnull Operation op, @Nullable Location loc) {
+    protected UpdateRecord(@Nonnull DatabaseOperation op, @Nullable Location loc) {
         this.op = op;
 
         if (loc != null) {
@@ -78,7 +78,7 @@ class UpdateRecord {
     }
 
     @Nonnull
-    public Operation getOp() {
+    public DatabaseOperation getOp() {
         return op;
     }
 

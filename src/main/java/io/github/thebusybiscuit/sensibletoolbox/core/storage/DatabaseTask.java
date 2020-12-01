@@ -9,14 +9,14 @@ import javax.annotation.Nonnull;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import me.desht.dhutils.Debugger;
 
-class DBUpdaterTask implements Runnable {
+class DatabaseTask implements Runnable {
 
     private final LocationManager manager;
     private final PreparedStatement insertStmt;
     private final PreparedStatement updateStmt;
     private final PreparedStatement deleteStmt;
 
-    public DBUpdaterTask(@Nonnull LocationManager manager) throws SQLException {
+    public DatabaseTask(@Nonnull LocationManager manager) throws SQLException {
         this.manager = manager;
 
         String tableName = DatabaseManager.getFullTableName("blocks");

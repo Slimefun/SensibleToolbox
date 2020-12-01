@@ -47,6 +47,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.ChargeableBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.STBGUIHolder;
+import io.github.thebusybiscuit.sensibletoolbox.core.storage.BlockAccess;
 import io.github.thebusybiscuit.sensibletoolbox.core.storage.LocationManager;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
@@ -516,7 +517,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @throws IllegalArgumentException
      *             if the new location is null or the block's current location is non-null
      */
-    public final void setLocation(LocationManager.BlockAccess blockAccess, Location loc) {
+    public final void setLocation(BlockAccess blockAccess, Location loc) {
         Validate.notNull(blockAccess, "Do not call this method directly");
         Validate.notNull(loc, "Location must not be null");
         Validate.isTrue(persistableLocation == null, "Attempt to change the location of existing STB block @ " + persistableLocation);
@@ -562,7 +563,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * @param newLoc
      *            the block's new location
      */
-    public final void moveTo(LocationManager.BlockAccess blockAccess, final Location oldLoc, final Location newLoc) {
+    public final void moveTo(BlockAccess blockAccess, final Location oldLoc, final Location newLoc) {
         Validate.notNull(blockAccess, "Don't call this method directly");
 
         oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, SensibleToolbox.getPluginInstance());
@@ -634,7 +635,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            being placed by a player; if false, because the block
      *            is being restored from persisted data
      */
-    public final void preRegister(LocationManager.BlockAccess blockAccess, Location location, boolean isPlacing) {
+    public final void preRegister(BlockAccess blockAccess, Location location, boolean isPlacing) {
         Validate.notNull(blockAccess, "Don't call this method directly");
         location.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
 
@@ -786,7 +787,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -798,7 +799,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return persistableLocation != null ? persistableLocation.hashCode() : 0;
     }
 

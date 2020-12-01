@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.core.storage;
 
-enum Operation {
+enum DatabaseOperation {
 
     INSERT,
     UPDATE,
