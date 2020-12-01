@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -404,8 +405,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
     }
 
-    private boolean isItemOkay(ItemStack item) {
-        if (Tag.SIGNS.isTagged(item.getType())) {
+    private boolean isItemOkay(@Nullable ItemStack item) {
+        if (item == null) {
+            return true;
+        } else if (Tag.SIGNS.isTagged(item.getType())) {
             return false;
         }
 
