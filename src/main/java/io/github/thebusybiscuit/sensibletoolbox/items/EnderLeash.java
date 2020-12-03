@@ -138,7 +138,7 @@ public class EnderLeash extends BaseSTBItem {
         if (animal instanceof Tameable) {
             AnimalTamer owner = ((Tameable) animal).getOwner();
 
-            if (!owner.getUniqueId().equals(player.getUniqueId())) {
+            if (owner != null && !owner.getUniqueId().equals(player.getUniqueId())) {
                 return player.hasPermission("stb.enderleash.captureany");
             }
         }
