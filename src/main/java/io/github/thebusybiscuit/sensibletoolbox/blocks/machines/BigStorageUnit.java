@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -368,6 +369,11 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
     @Override
     public void onInteractBlock(PlayerInteractEvent event) {
+        // Prevent this from triggering twice
+        if (event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+
         Player player = event.getPlayer();
         ItemStack inHand = event.getItem();
 
@@ -395,7 +401,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
                 rightClickFullInsert(player);
                 event.setCancelled(true);
             } else if (inHand != null && inHand.isSimilar(getStoredItemType())) {
-                rightClickInsert(player, player.getInventory().getHeldItemSlot());
+                rightClickInsert(player, player.getInventory().getHeldItemSlot(), inHand);
                 event.setCancelled(true);
             } else {
                 super.onInteractBlock(event);
@@ -428,14 +434,13 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
             ItemStack stack = player.getInventory().getItem(slot);
 
-            if (stack != null && stack.isSimilar(getStoredItemType()) && rightClickInsert(player, slot) == 0) {
+            if (stack != null && stack.isSimilar(getStoredItemType()) && rightClickInsert(player, slot, stack) == 0) {
                 break;
             }
         }
     }
 
-    private int rightClickInsert(Player player, int slot) {
-        ItemStack stack = player.getInventory().getItem(slot);
+    private int rightClickInsert(@Nonnull Player player, int slot, @Nonnull ItemStack stack) {
         int toInsert = Math.min(stack.getAmount(), maxCapacity - getStorageAmount());
 
         if (toInsert == 0) {
