@@ -15,6 +15,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.STBInventoryHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.router.ItemRouter;
+import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
 import me.desht.dhutils.Debugger;
 
 public class SenderModule extends DirectionalItemRouterModule {
@@ -80,6 +81,11 @@ public class SenderModule extends DirectionalItemRouterModule {
                     }
 
                     return nReceived > 0;
+                } else {
+                	// Not router found with receiver module in range. Vanilla inventory holder adjacent to source router?
+                	if (VanillaInventoryUtils.isVanillaInventory(target)) {
+                		return vanillaInsertion(target, nToInsert, getFacing().getOppositeFace());
+                	}       
                 }
             } else {
                 BaseSTBBlock stb = SensibleToolbox.getBlockAt(target.getLocation(), true);
