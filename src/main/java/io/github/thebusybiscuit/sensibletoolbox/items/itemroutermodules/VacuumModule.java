@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -60,7 +63,8 @@ public class VacuumModule extends DirectionalItemRouterModule {
         return recipe;
     }
 
-    private static List<Item> getItemEntities(World w) {
+    @Nonnull
+    private static List<Item> getItemEntities(@Nonnull World w) {
         // Caching the list of item entities per-world can avoid the overhead of
         // repeated getEntities() calls if there are many vacuum modules in operation.
         List<Item> list = recentItemCache.get(w.getUID());
@@ -81,25 +85,18 @@ public class VacuumModule extends DirectionalItemRouterModule {
 
     @Override
     public boolean execute(Location loc) {
-        int thresholdDist = RADIUS * RADIUS;
         loc.add(0.5, 0.5, 0.5);
 
-        for (final Item item : getItemEntities(loc.getWorld())) {
-            if (!item.isValid()) {
-                // important, since we're looking at entities cached in the last second
-                continue;
-            }
+        for (Entity entity : loc.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS, n -> n instanceof Item && n.isValid())) {
+            Item item = (Item) entity;
 
-            double dist = loc.distanceSquared(item.getLocation());
-            if (dist >= thresholdDist) {
-                continue;
-            }
-
-            final ItemStack onGround = item.getItemStack();
+            ItemStack onGround = item.getItemStack();
             ItemStack buffer = getItemRouter().getBufferItem();
             Location itemLoc = item.getLocation();
+
             if (item.getPickupDelay() <= 0 && getFilter().shouldPass(onGround) && rightDirection(itemLoc, loc) && (buffer == null || buffer.isSimilar(onGround)) && STBUtil.getMetadataValue(item, STB_VACUUMED) == null) {
                 double rtrY = loc.getY();
+                double dist = loc.distanceSquared(item.getLocation());
                 Vector vel = loc.subtract(itemLoc).toVector().normalize().multiply(Math.min(dist * 0.06, 0.7));
 
                 if (itemLoc.getY() < rtrY) {
@@ -122,6 +119,7 @@ public class VacuumModule extends DirectionalItemRouterModule {
                             toSlurp = Math.min(onGround.getAmount(), newBuffer.getType().getMaxStackSize() - newBuffer.getAmount());
                             getItemRouter().setBufferAmount(newBuffer.getAmount() + toSlurp);
                             onGround.setAmount(onGround.getAmount() - toSlurp);
+
                             if (onGround.getAmount() == 0) {
                                 item.remove();
                             } else {
