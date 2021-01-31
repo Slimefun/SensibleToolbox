@@ -20,6 +20,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.comphenix.protocol.ProtocolLib;
 import com.comphenix.protocol.ProtocolLibrary;
 
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
@@ -442,6 +443,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         if (isProtocolLibEnabled()) {
             itemRegistry.registerItem(new SoundMuffler(), this, configPrefix, permissionNode);
         }
+
         if (isHolographicDisplaysEnabled()) {
             itemRegistry.registerItem(new HolographicMonitor(), this, configPrefix, permissionNode);
         }
@@ -469,10 +471,11 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private void setupProtocolLib() {
         Plugin pLib = getServer().getPluginManager().getPlugin("ProtocolLib");
 
-        if (pLib != null && pLib.isEnabled() && pLib instanceof ProtocolLibrary) {
+        if (pLib instanceof ProtocolLib && pLib.isEnabled()) {
             protocolLibEnabled = true;
             Debugger.getInstance().debug("Hooked ProtocolLib v" + pLib.getDescription().getVersion());
         }
+
         if (protocolLibEnabled) {
             if (getConfig().getBoolean("options.glowing_items")) {
                 ItemGlow.init(this);
