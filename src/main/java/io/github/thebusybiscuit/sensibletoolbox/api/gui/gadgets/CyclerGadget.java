@@ -170,8 +170,7 @@ public abstract class CyclerGadget<T extends Enum<T>> extends ClickableGadget {
                 // avoid infinite loop due to no supported behaviour
                 break;
             }
-        }
-        while (!supported(stbItem, currentValue));
+        } while (!supported(stbItem, currentValue));
         event.setCurrentItem(getTexture());
         apply(stbItem, currentValue);
     }

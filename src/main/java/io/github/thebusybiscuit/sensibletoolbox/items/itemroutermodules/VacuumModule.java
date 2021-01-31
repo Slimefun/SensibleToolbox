@@ -144,20 +144,20 @@ public class VacuumModule extends DirectionalItemRouterModule {
         }
 
         switch (getFacing()) {
-        case NORTH:
-            return itemLoc.getZ() < rtrLoc.getZ();
-        case EAST:
-            return itemLoc.getX() > rtrLoc.getX();
-        case SOUTH:
-            return itemLoc.getZ() > rtrLoc.getZ();
-        case WEST:
-            return itemLoc.getX() > rtrLoc.getX();
-        case UP:
-            return itemLoc.getY() > rtrLoc.getY();
-        case DOWN:
-            return itemLoc.getY() < rtrLoc.getY();
-        default:
-            return true;
+            case NORTH:
+                return itemLoc.getZ() < rtrLoc.getZ();
+            case EAST:
+                return itemLoc.getX() > rtrLoc.getX();
+            case SOUTH:
+                return itemLoc.getZ() > rtrLoc.getZ();
+            case WEST:
+                return itemLoc.getX() > rtrLoc.getX();
+            case UP:
+                return itemLoc.getY() > rtrLoc.getY();
+            case DOWN:
+                return itemLoc.getY() < rtrLoc.getY();
+            default:
+                return true;
         }
     }
 }

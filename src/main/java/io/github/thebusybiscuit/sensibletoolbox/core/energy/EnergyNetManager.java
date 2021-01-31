@@ -74,37 +74,37 @@ public class EnergyNetManager {
         List<AdjacentMachine> adjacentMachines;
 
         switch (netIds.size()) {
-        case 0:
-            // not connected to any net, start a new one IFF there is one or more adjacent machines
-            adjacentMachines = getAdjacentMachines(cable);
-            if (!adjacentMachines.isEmpty()) {
+            case 0:
+                // not connected to any net, start a new one IFF there is one or more adjacent machines
+                adjacentMachines = getAdjacentMachines(cable);
+                if (!adjacentMachines.isEmpty()) {
+                    STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
+                    allNets.put(newNet.getNetID(), newNet);
+                    addConnectedCables(cable, newNet);
+                }
+                break;
+            case 1:
+                // connected to a single net; just add this cable to that net
+                Integer[] id = netIds.toArray(new Integer[1]);
+                STBEnergyNet net = allNets.get(id[0]);
+                net.addCable(cable);
+                // attach any adjacent machines
+                adjacentMachines = getAdjacentMachines(cable);
+                for (AdjacentMachine record : adjacentMachines) {
+                    net.addMachine(record.getMachine(), record.getDirection().getOppositeFace());
+                }
+                // and any connected cable which isn't part of a net
+                addConnectedCables(cable, net);
+                break;
+            default:
+                // connected to more than one different net!
+                // delete those nets, then re-scan and build a new single unified net
+                for (int netId : netIds) {
+                    deleteEnergyNet(netId);
+                }
+
                 STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
                 allNets.put(newNet.getNetID(), newNet);
-                addConnectedCables(cable, newNet);
-            }
-            break;
-        case 1:
-            // connected to a single net; just add this cable to that net
-            Integer[] id = netIds.toArray(new Integer[1]);
-            STBEnergyNet net = allNets.get(id[0]);
-            net.addCable(cable);
-            // attach any adjacent machines
-            adjacentMachines = getAdjacentMachines(cable);
-            for (AdjacentMachine record : adjacentMachines) {
-                net.addMachine(record.getMachine(), record.getDirection().getOppositeFace());
-            }
-            // and any connected cable which isn't part of a net
-            addConnectedCables(cable, net);
-            break;
-        default:
-            // connected to more than one different net!
-            // delete those nets, then re-scan and build a new single unified net
-            for (int netId : netIds) {
-                deleteEnergyNet(netId);
-            }
-
-            STBEnergyNet newNet = STBEnergyNet.buildNet(cable, this);
-            allNets.put(newNet.getNetID(), newNet);
         }
     }
 

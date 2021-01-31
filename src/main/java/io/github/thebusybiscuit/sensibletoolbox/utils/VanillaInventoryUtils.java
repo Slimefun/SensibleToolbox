@@ -119,23 +119,23 @@ public final class VanillaInventoryUtils {
             Map<Integer, ItemStack> excess;
 
             switch (targetInv.getType()) {
-            case FURNACE:
-                if (side == BlockFace.DOWN) {
-                    // no insertion from below
-                    return 0;
-                }
-                excess = addToFurnace((FurnaceInventory) targetInv, stack, side);
-                break;
-            case BREWING:
-                if (side == BlockFace.DOWN) {
-                    // no insertion from below
-                    return 0;
-                }
-                excess = addToBrewingStand((BrewerInventory) targetInv, stack, side);
-                break;
-            default:
-                excess = targetInv.addItem(stack);
-                break;
+                case FURNACE:
+                    if (side == BlockFace.DOWN) {
+                        // no insertion from below
+                        return 0;
+                    }
+                    excess = addToFurnace((FurnaceInventory) targetInv, stack, side);
+                    break;
+                case BREWING:
+                    if (side == BlockFace.DOWN) {
+                        // no insertion from below
+                        return 0;
+                    }
+                    excess = addToBrewingStand((BrewerInventory) targetInv, stack, side);
+                    break;
+                default:
+                    excess = targetInv.addItem(stack);
+                    break;
             }
 
             if (!excess.isEmpty()) {
@@ -241,12 +241,12 @@ public final class VanillaInventoryUtils {
 
     private static IntRange getExtractionSlots(Inventory inv) {
         switch (inv.getType()) {
-        case FURNACE:
-            return new IntRange(2);
-        case BREWING:
-            return new IntRange(0, 2);
-        default:
-            return new IntRange(0, inv.getSize() - 1);
+            case FURNACE:
+                return new IntRange(2);
+            case BREWING:
+                return new IntRange(0, 2);
+            default:
+                return new IntRange(0, inv.getSize() - 1);
         }
     }
 

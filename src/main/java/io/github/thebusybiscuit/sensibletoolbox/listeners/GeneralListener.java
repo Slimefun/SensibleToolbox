@@ -408,16 +408,16 @@ public class GeneralListener extends STBBaseListener {
         int to = -2;
 
         switch (event.getSlotType()) {
-        case QUICKBAR:
-            from = 9;
-            to = 35;
-            break;
-        case CONTAINER:
-            from = 0;
-            to = 8;
-            break;
-        default:
-            break;
+            case QUICKBAR:
+                from = 9;
+                to = 35;
+                break;
+            case CONTAINER:
+                from = 0;
+                to = 8;
+                break;
+            default:
+                break;
         }
 
         for (int i = from; i <= to; i++) {
@@ -522,19 +522,19 @@ public class GeneralListener extends STBBaseListener {
 
             if (stb != null) {
                 switch (stb.getPistonMoveReaction()) {
-                case MOVE:
-                    // this has to be deferred, because it's possible that this piston extension was caused
-                    // by a STB block ticking, and modifying the tickers list directly would throw a CME
-                    Bukkit.getScheduler().runTask(plugin, () -> LocationManager.getManager().moveBlock(stb, moving.getLocation(), to.getLocation()));
-                    break;
-                case BLOCK:
-                    event.setCancelled(true);
-                    return; // if this one blocks, all subsequent blocks do too
-                case BREAK:
-                    stb.breakBlock(true);
-                    break;
-                default:
-                    break;
+                    case MOVE:
+                        // this has to be deferred, because it's possible that this piston extension was caused
+                        // by a STB block ticking, and modifying the tickers list directly would throw a CME
+                        Bukkit.getScheduler().runTask(plugin, () -> LocationManager.getManager().moveBlock(stb, moving.getLocation(), to.getLocation()));
+                        break;
+                    case BLOCK:
+                        event.setCancelled(true);
+                        return; // if this one blocks, all subsequent blocks do too
+                    case BREAK:
+                        stb.breakBlock(true);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -547,19 +547,19 @@ public class GeneralListener extends STBBaseListener {
 
             if (stb != null) {
                 switch (stb.getPistonMoveReaction()) {
-                case MOVE:
-                    BlockFace dir = event.getDirection().getOppositeFace();
-                    Location to = event.getRetractLocation().add(dir.getModX(), dir.getModY(), dir.getModZ());
-                    Bukkit.getScheduler().runTask(plugin, () -> LocationManager.getManager().moveBlock(stb, event.getRetractLocation(), to));
-                    break;
-                case BLOCK:
-                    event.setCancelled(true);
-                    break;
-                case BREAK:
-                    stb.breakBlock(true);
-                    break;
-                default:
-                    break;
+                    case MOVE:
+                        BlockFace dir = event.getDirection().getOppositeFace();
+                        Location to = event.getRetractLocation().add(dir.getModX(), dir.getModY(), dir.getModZ());
+                        Bukkit.getScheduler().runTask(plugin, () -> LocationManager.getManager().moveBlock(stb, event.getRetractLocation(), to));
+                        break;
+                    case BLOCK:
+                        event.setCancelled(true);
+                        break;
+                    case BREAK:
+                        stb.breakBlock(true);
+                        break;
+                    default:
+                        break;
                 }
             }
         }

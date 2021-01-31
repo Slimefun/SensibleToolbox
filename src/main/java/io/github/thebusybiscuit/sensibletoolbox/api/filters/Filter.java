@@ -102,24 +102,24 @@ public class Filter implements Cloneable {
         }
 
         switch (filterType) {
-        case MATERIAL:
-            for (ItemStack f : filteredItems) {
-                if (f.getType() == stack.getType()) {
-                    return whiteList;
+            case MATERIAL:
+                for (ItemStack f : filteredItems) {
+                    if (f.getType() == stack.getType()) {
+                        return whiteList;
+                    }
                 }
-            }
 
-            return !whiteList;
-        case ITEM_META:
-            for (ItemStack f : filteredItems) {
-                if (f.isSimilar(stack)) {
-                    return whiteList;
+                return !whiteList;
+            case ITEM_META:
+                for (ItemStack f : filteredItems) {
+                    if (f.isSimilar(stack)) {
+                        return whiteList;
+                    }
                 }
-            }
 
-            return !whiteList;
-        default:
-            return !whiteList;
+                return !whiteList;
+            default:
+                return !whiteList;
         }
     }
 

@@ -254,14 +254,14 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public final boolean hasAccessRights(@Nonnull Player player) {
         switch (getAccessControl()) {
-        case PUBLIC:
-            return true;
-        case PRIVATE:
-            return getOwner().equals(player.getUniqueId()) || player.hasPermission("stb.access.any");
-        case RESTRICTED:
-            return getOwner().equals(player.getUniqueId()) || player.hasPermission("stb.access.any") || SensibleToolbox.getFriendManager().isFriend(getOwner(), player.getUniqueId());
-        default:
-            return false;
+            case PUBLIC:
+                return true;
+            case PRIVATE:
+                return getOwner().equals(player.getUniqueId()) || player.hasPermission("stb.access.any");
+            case RESTRICTED:
+                return getOwner().equals(player.getUniqueId()) || player.hasPermission("stb.access.any") || SensibleToolbox.getFriendManager().isFriend(getOwner(), player.getUniqueId());
+            default:
+                return false;
         }
     }
 
@@ -277,14 +277,14 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public final boolean hasAccessRights(@Nonnull UUID uuid) {
         switch (getAccessControl()) {
-        case PUBLIC:
-            return true;
-        case PRIVATE:
-            return uuid == null || getOwner().equals(uuid);
-        case RESTRICTED:
-            return uuid == null || getOwner().equals(uuid) || SensibleToolbox.getFriendManager().isFriend(getOwner(), uuid);
-        default:
-            return false;
+            case PUBLIC:
+                return true;
+            case PRIVATE:
+                return uuid == null || getOwner().equals(uuid);
+            case RESTRICTED:
+                return uuid == null || getOwner().equals(uuid) || SensibleToolbox.getFriendManager().isFriend(getOwner(), uuid);
+            default:
+                return false;
         }
     }
 
@@ -296,16 +296,16 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      */
     public final boolean isRedstoneActive() {
         switch (getRedstoneBehaviour()) {
-        case IGNORE:
-            return true;
-        case HIGH:
-            return isIndirectlyPowered();
-        case LOW:
-            return !isIndirectlyPowered();
-        case PULSED:
-            return pulsing;
-        default:
-            return false;
+            case IGNORE:
+                return true;
+            case HIGH:
+                return isIndirectlyPowered();
+            case LOW:
+                return !isIndirectlyPowered();
+            case PULSED:
+                return pulsing;
+            default:
+                return false;
         }
     }
 
@@ -534,24 +534,24 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
         int dx = 0;
         int dz = 0;
         switch (getFacing()) {
-        case NORTH:
-            dz = -pos.getFront();
-            dx = -pos.getLeft();
-            break;
-        case SOUTH:
-            dz = pos.getFront();
-            dx = pos.getLeft();
-            break;
-        case EAST:
-            dz = -pos.getLeft();
-            dx = pos.getFront();
-            break;
-        case WEST:
-            dz = pos.getLeft();
-            dx = -pos.getFront();
-            break;
-        default:
-            break;
+            case NORTH:
+                dz = -pos.getFront();
+                dx = -pos.getLeft();
+                break;
+            case SOUTH:
+                dz = pos.getFront();
+                dx = pos.getLeft();
+                break;
+            case EAST:
+                dz = -pos.getLeft();
+                dx = pos.getFront();
+                break;
+            case WEST:
+                dz = pos.getLeft();
+                dx = -pos.getFront();
+                break;
+            default:
+                break;
         }
         return b.getRelative(dx, pos.getUp(), dz);
     }

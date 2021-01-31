@@ -212,30 +212,30 @@ public final class LocationManager {
         UpdateRecord existingRec = pendingUpdates.get(locStr);
 
         switch (op) {
-        case INSERT:
-            if (existingRec == null) {
-                // brand new insertion
-                pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.INSERT, loc));
-            } else if (existingRec.getOp() == DatabaseOperation.DELETE) {
-                // re-inserting where a block was just deleted
-                pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.UPDATE, loc));
-            }
-            break;
-        case UPDATE:
-            if (existingRec == null || existingRec.getOp() != DatabaseOperation.INSERT) {
-                pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.UPDATE, loc));
-            }
-            break;
-        case DELETE:
-            if (existingRec != null && existingRec.getOp() == DatabaseOperation.INSERT) {
-                // remove a recent insertion
-                pendingUpdates.remove(locStr);
-            } else {
-                pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.DELETE, loc));
-            }
-            break;
-        default:
-            throw new IllegalArgumentException("Unexpected operation: " + op);
+            case INSERT:
+                if (existingRec == null) {
+                    // brand new insertion
+                    pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.INSERT, loc));
+                } else if (existingRec.getOp() == DatabaseOperation.DELETE) {
+                    // re-inserting where a block was just deleted
+                    pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.UPDATE, loc));
+                }
+                break;
+            case UPDATE:
+                if (existingRec == null || existingRec.getOp() != DatabaseOperation.INSERT) {
+                    pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.UPDATE, loc));
+                }
+                break;
+            case DELETE:
+                if (existingRec != null && existingRec.getOp() == DatabaseOperation.INSERT) {
+                    // remove a recent insertion
+                    pendingUpdates.remove(locStr);
+                } else {
+                    pendingUpdates.put(locStr, new UpdateRecord(DatabaseOperation.DELETE, loc));
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unexpected operation: " + op);
         }
     }
 

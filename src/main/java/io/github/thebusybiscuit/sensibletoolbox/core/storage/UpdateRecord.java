@@ -117,11 +117,11 @@ class UpdateRecord {
     @Override
     public String toString() {
         switch (op) {
-        case FINISH:
-        case COMMIT:
-            return op.toString();
-        default:
-            return String.format("%s %s,%d,%d,%d %s", op.toString(), worldID, x, y, z, type);
+            case FINISH:
+            case COMMIT:
+                return op.toString();
+            default:
+                return String.format("%s %s,%d,%d,%d %s", op.toString(), worldID, x, y, z, type);
         }
     }
 

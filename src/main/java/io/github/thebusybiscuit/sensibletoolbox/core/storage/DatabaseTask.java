@@ -38,37 +38,37 @@ class DatabaseTask implements Runnable {
                 Debugger.getInstance().debug("DB write [" + rec + "]");
 
                 switch (rec.getOp()) {
-                case FINISH:
-                    finished = true;
-                    break;
-                case COMMIT:
-                    manager.getDatabaseConnection().getConnection().commit();
-                    break;
-                case INSERT:
-                    insertStmt.setString(1, rec.getWorldID().toString());
-                    insertStmt.setInt(2, rec.getX());
-                    insertStmt.setInt(3, rec.getY());
-                    insertStmt.setInt(4, rec.getZ());
-                    insertStmt.setString(5, rec.getType());
-                    insertStmt.setString(6, rec.getData());
-                    n = insertStmt.executeUpdate();
-                    break;
-                case UPDATE:
-                    updateStmt.setString(1, rec.getData());
-                    updateStmt.setString(2, rec.getType());
-                    updateStmt.setString(3, rec.getWorldID().toString());
-                    updateStmt.setInt(4, rec.getX());
-                    updateStmt.setInt(5, rec.getY());
-                    updateStmt.setInt(6, rec.getZ());
-                    n = updateStmt.executeUpdate();
-                    break;
-                case DELETE:
-                    deleteStmt.setString(1, rec.getWorldID().toString());
-                    deleteStmt.setInt(2, rec.getX());
-                    deleteStmt.setInt(3, rec.getY());
-                    deleteStmt.setInt(4, rec.getZ());
-                    n = deleteStmt.executeUpdate();
-                    break;
+                    case FINISH:
+                        finished = true;
+                        break;
+                    case COMMIT:
+                        manager.getDatabaseConnection().getConnection().commit();
+                        break;
+                    case INSERT:
+                        insertStmt.setString(1, rec.getWorldID().toString());
+                        insertStmt.setInt(2, rec.getX());
+                        insertStmt.setInt(3, rec.getY());
+                        insertStmt.setInt(4, rec.getZ());
+                        insertStmt.setString(5, rec.getType());
+                        insertStmt.setString(6, rec.getData());
+                        n = insertStmt.executeUpdate();
+                        break;
+                    case UPDATE:
+                        updateStmt.setString(1, rec.getData());
+                        updateStmt.setString(2, rec.getType());
+                        updateStmt.setString(3, rec.getWorldID().toString());
+                        updateStmt.setInt(4, rec.getX());
+                        updateStmt.setInt(5, rec.getY());
+                        updateStmt.setInt(6, rec.getZ());
+                        n = updateStmt.executeUpdate();
+                        break;
+                    case DELETE:
+                        deleteStmt.setString(1, rec.getWorldID().toString());
+                        deleteStmt.setInt(2, rec.getX());
+                        deleteStmt.setInt(3, rec.getY());
+                        deleteStmt.setInt(4, rec.getZ());
+                        n = deleteStmt.executeUpdate();
+                        break;
                 }
 
                 Debugger.getInstance().debug("DB write complete: rows modified = " + n);

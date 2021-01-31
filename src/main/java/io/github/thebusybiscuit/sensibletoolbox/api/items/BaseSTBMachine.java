@@ -1061,14 +1061,14 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
             if (installedCell != null) {
                 switch (chargeDirection) {
-                case MACHINE:
-                    transferred = transferCharge(installedCell, this);
-                    break;
-                case CELL:
-                    transferred = transferCharge(this, installedCell);
-                    break;
-                default:
-                    break;
+                    case MACHINE:
+                        transferred = transferCharge(installedCell, this);
+                        break;
+                    case CELL:
+                        transferred = transferCharge(this, installedCell);
+                        break;
+                    default:
+                        break;
                 }
             }
 

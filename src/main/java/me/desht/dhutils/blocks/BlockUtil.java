@@ -114,34 +114,34 @@ public final class BlockUtil {
             Sign s = (Sign) block.getState().getData();
 
             switch (s.getRotation()) {
-            case EAST:
-                plane.add(new Vector(0.125, 0.0, 0.0));
-                break;
-            case WEST:
-                plane.add(new Vector(0.875, 0.0, 0.0));
-                break;
-            case NORTH:
-                plane.add(new Vector(0.0, 0.0, 0.875));
-                break;
-            case SOUTH:
-                plane.add(new Vector(0.0, 0.0, 0.125));
-                break;
-            default:
-                break;
+                case EAST:
+                    plane.add(new Vector(0.125, 0.0, 0.0));
+                    break;
+                case WEST:
+                    plane.add(new Vector(0.875, 0.0, 0.0));
+                    break;
+                case NORTH:
+                    plane.add(new Vector(0.0, 0.0, 0.875));
+                    break;
+                case SOUTH:
+                    plane.add(new Vector(0.0, 0.0, 0.125));
+                    break;
+                default:
+                    break;
             }
         } else {
             switch (face) {
-            case EAST:
-                plane.add(new Vector(1.0, 0.0, 0.0));
-                break;
-            case SOUTH:
-                plane.add(new Vector(0.0, 0.0, 1.0));
-                break;
-            case UP:
-                plane.add(new Vector(0.0, 1.0, 0.0));
-                break;
-            default:
-                break;
+                case EAST:
+                    plane.add(new Vector(1.0, 0.0, 0.0));
+                    break;
+                case SOUTH:
+                    plane.add(new Vector(0.0, 0.0, 1.0));
+                    break;
+                case UP:
+                    plane.add(new Vector(0.0, 1.0, 0.0));
+                    break;
+                default:
+                    break;
             }
         }
 

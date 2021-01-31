@@ -57,12 +57,12 @@ public class SetcfgCommand extends AbstractCommand {
     public List<String> onTabComplete(Plugin plugin, CommandSender sender, String[] args) {
         ConfigurationSection config = plugin.getConfig();
         switch (args.length) {
-        case 1:
-            return getConfigCompletions(sender, config, args[0]);
-        case 2:
-            return getConfigValueCompletions(sender, args[0], config.get(args[0]), "", args[1]);
-        default:
-            return noCompletions(sender);
+            case 1:
+                return getConfigCompletions(sender, config, args[0]);
+            case 2:
+                return getConfigValueCompletions(sender, args[0], config.get(args[0]), "", args[1]);
+            default:
+                return noCompletions(sender);
         }
     }
 }

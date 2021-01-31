@@ -214,14 +214,14 @@ public class Pump extends AbstractProcessingMachine {
         }
 
         switch (block.getType()) {
-        case WATER:
-            block.setType(Material.AIR);
-            break;
-        case LAVA:
-            block.setType(Material.STONE);
-            break;
-        default:
-            break;
+            case WATER:
+                block.setType(Material.AIR);
+                break;
+            case LAVA:
+                block.setType(Material.STONE);
+                break;
+            default:
+                break;
         }
     }
 
@@ -235,21 +235,21 @@ public class Pump extends AbstractProcessingMachine {
 
         if (container == Material.BUCKET) {
             switch (type) {
-            case LAVA:
-                return new ItemStack(Material.LAVA_BUCKET);
-            case BUBBLE_COLUMN:
-            case WATER:
-                return new ItemStack(Material.WATER_BUCKET);
-            default:
-                return null;
+                case LAVA:
+                    return new ItemStack(Material.LAVA_BUCKET);
+                case BUBBLE_COLUMN:
+                case WATER:
+                    return new ItemStack(Material.WATER_BUCKET);
+                default:
+                    return null;
             }
         } else if (container == Material.GLASS_BOTTLE) {
             switch (type) {
-            case BUBBLE_COLUMN:
-            case WATER:
-                return new ItemStack(Material.POTION);
-            default:
-                return null;
+                case BUBBLE_COLUMN:
+                case WATER:
+                    return new ItemStack(Material.POTION);
+                default:
+                    return null;
             }
         } else {
             return null;

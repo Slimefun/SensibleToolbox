@@ -429,16 +429,16 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
 
     private double getChargeMultiplier(byte light) {
         switch (light) {
-        case 15:
-            return 1.0;
-        case 14:
-            return 0.75;
-        case 13:
-            return 0.5;
-        case 12:
-            return 0.25;
-        default:
-            return 0.0;
+            case 15:
+                return 1.0;
+            case 14:
+                return 0.75;
+            case 13:
+                return 0.5;
+            case 12:
+                return 0.25;
+            default:
+                return 0.0;
         }
     }
 

@@ -303,20 +303,20 @@ public class Cuboid implements Iterable<Block> {
     @Nonnull
     public Cuboid expand(@Nonnull CuboidDirection dir, int amount) {
         switch (dir) {
-        case NORTH:
-            return new Cuboid(worldUUID, lowerX - amount, lowerY, lowerZ, upperX, upperY, upperZ);
-        case SOUTH:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX + amount, upperY, upperZ);
-        case EAST:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ - amount, upperX, upperY, upperZ);
-        case WEST:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY, upperZ + amount);
-        case DOWN:
-            return new Cuboid(worldUUID, lowerX, lowerY - amount, lowerZ, upperX, upperY, upperZ);
-        case UP:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY + amount, upperZ);
-        default:
-            throw new IllegalArgumentException("invalid direction " + dir);
+            case NORTH:
+                return new Cuboid(worldUUID, lowerX - amount, lowerY, lowerZ, upperX, upperY, upperZ);
+            case SOUTH:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX + amount, upperY, upperZ);
+            case EAST:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ - amount, upperX, upperY, upperZ);
+            case WEST:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY, upperZ + amount);
+            case DOWN:
+                return new Cuboid(worldUUID, lowerX, lowerY - amount, lowerZ, upperX, upperY, upperZ);
+            case UP:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY + amount, upperZ);
+            default:
+                throw new IllegalArgumentException("invalid direction " + dir);
         }
     }
 
@@ -346,14 +346,14 @@ public class Cuboid implements Iterable<Block> {
     @Nonnull
     public Cuboid outset(@Nonnull CuboidDirection dir, int amount) {
         switch (dir) {
-        case HORIZONTAL:
-            return expand(CuboidDirection.NORTH, amount).expand(CuboidDirection.SOUTH, amount).expand(CuboidDirection.EAST, amount).expand(CuboidDirection.WEST, amount);
-        case VERTICAL:
-            return expand(CuboidDirection.DOWN, amount).expand(CuboidDirection.UP, amount);
-        case BOTH:
-            return outset(CuboidDirection.HORIZONTAL, amount).outset(CuboidDirection.VERTICAL, amount);
-        default:
-            throw new IllegalArgumentException("invalid direction " + dir);
+            case HORIZONTAL:
+                return expand(CuboidDirection.NORTH, amount).expand(CuboidDirection.SOUTH, amount).expand(CuboidDirection.EAST, amount).expand(CuboidDirection.WEST, amount);
+            case VERTICAL:
+                return expand(CuboidDirection.DOWN, amount).expand(CuboidDirection.UP, amount);
+            case BOTH:
+                return outset(CuboidDirection.HORIZONTAL, amount).outset(CuboidDirection.VERTICAL, amount);
+            default:
+                throw new IllegalArgumentException("invalid direction " + dir);
         }
     }
 
@@ -442,38 +442,38 @@ public class Cuboid implements Iterable<Block> {
         Cuboid face = getFace(dir.getOpposite());
 
         switch (dir) {
-        case DOWN:
-            while (face.containsOnly(Material.AIR) && face.getLowerY() > this.getLowerY()) {
-                face = face.shift(CuboidDirection.DOWN, 1);
-            }
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, face.getUpperY(), upperZ);
-        case UP:
-            while (face.containsOnly(Material.AIR) && face.getUpperY() < this.getUpperY()) {
-                face = face.shift(CuboidDirection.UP, 1);
-            }
-            return new Cuboid(worldUUID, lowerX, face.getLowerY(), lowerZ, upperX, upperY, upperZ);
-        case NORTH:
-            while (face.containsOnly(Material.AIR) && face.getLowerX() > this.getLowerX()) {
-                face = face.shift(CuboidDirection.NORTH, 1);
-            }
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, face.getUpperX(), upperY, upperZ);
-        case SOUTH:
-            while (face.containsOnly(Material.AIR) && face.getUpperX() < this.getUpperX()) {
-                face = face.shift(CuboidDirection.SOUTH, 1);
-            }
-            return new Cuboid(worldUUID, face.getLowerX(), lowerY, lowerZ, upperX, upperY, upperZ);
-        case EAST:
-            while (face.containsOnly(Material.AIR) && face.getLowerZ() > this.getLowerZ()) {
-                face = face.shift(CuboidDirection.EAST, 1);
-            }
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY, face.getUpperZ());
-        case WEST:
-            while (face.containsOnly(Material.AIR) && face.getUpperZ() < this.getUpperZ()) {
-                face = face.shift(CuboidDirection.WEST, 1);
-            }
-            return new Cuboid(worldUUID, lowerX, lowerY, face.getLowerZ(), upperX, upperY, upperZ);
-        default:
-            throw new IllegalArgumentException("Invalid direction " + dir);
+            case DOWN:
+                while (face.containsOnly(Material.AIR) && face.getLowerY() > this.getLowerY()) {
+                    face = face.shift(CuboidDirection.DOWN, 1);
+                }
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, face.getUpperY(), upperZ);
+            case UP:
+                while (face.containsOnly(Material.AIR) && face.getUpperY() < this.getUpperY()) {
+                    face = face.shift(CuboidDirection.UP, 1);
+                }
+                return new Cuboid(worldUUID, lowerX, face.getLowerY(), lowerZ, upperX, upperY, upperZ);
+            case NORTH:
+                while (face.containsOnly(Material.AIR) && face.getLowerX() > this.getLowerX()) {
+                    face = face.shift(CuboidDirection.NORTH, 1);
+                }
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, face.getUpperX(), upperY, upperZ);
+            case SOUTH:
+                while (face.containsOnly(Material.AIR) && face.getUpperX() < this.getUpperX()) {
+                    face = face.shift(CuboidDirection.SOUTH, 1);
+                }
+                return new Cuboid(worldUUID, face.getLowerX(), lowerY, lowerZ, upperX, upperY, upperZ);
+            case EAST:
+                while (face.containsOnly(Material.AIR) && face.getLowerZ() > this.getLowerZ()) {
+                    face = face.shift(CuboidDirection.EAST, 1);
+                }
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY, face.getUpperZ());
+            case WEST:
+                while (face.containsOnly(Material.AIR) && face.getUpperZ() < this.getUpperZ()) {
+                    face = face.shift(CuboidDirection.WEST, 1);
+                }
+                return new Cuboid(worldUUID, lowerX, lowerY, face.getLowerZ(), upperX, upperY, upperZ);
+            default:
+                throw new IllegalArgumentException("Invalid direction " + dir);
         }
     }
 
@@ -488,20 +488,20 @@ public class Cuboid implements Iterable<Block> {
     @Nonnull
     public Cuboid getFace(@Nonnull CuboidDirection dir) {
         switch (dir) {
-        case DOWN:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, lowerY, upperZ);
-        case UP:
-            return new Cuboid(worldUUID, lowerX, upperY, lowerZ, upperX, upperY, upperZ);
-        case NORTH:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, lowerX, upperY, upperZ);
-        case SOUTH:
-            return new Cuboid(worldUUID, upperX, lowerY, lowerZ, upperX, upperY, upperZ);
-        case EAST:
-            return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY, lowerZ);
-        case WEST:
-            return new Cuboid(worldUUID, lowerX, lowerY, upperZ, upperX, upperY, upperZ);
-        default:
-            throw new IllegalArgumentException("Invalid direction " + dir);
+            case DOWN:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, lowerY, upperZ);
+            case UP:
+                return new Cuboid(worldUUID, lowerX, upperY, lowerZ, upperX, upperY, upperZ);
+            case NORTH:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, lowerX, upperY, upperZ);
+            case SOUTH:
+                return new Cuboid(worldUUID, upperX, lowerY, lowerZ, upperX, upperY, upperZ);
+            case EAST:
+                return new Cuboid(worldUUID, lowerX, lowerY, lowerZ, upperX, upperY, lowerZ);
+            case WEST:
+                return new Cuboid(worldUUID, lowerX, lowerY, upperZ, upperX, upperY, upperZ);
+            default:
+                throw new IllegalArgumentException("Invalid direction " + dir);
         }
     }
 

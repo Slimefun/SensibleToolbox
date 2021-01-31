@@ -179,23 +179,23 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
             if (options.containsKey(opt)) {
                 try {
                     switch (options.get(opt)) {
-                    case BOOLEAN:
-                        optVals.put(opt, true);
-                        break;
-                    case STRING:
-                        i++;
-                        optVals.put(opt, tmpArgs[i]);
-                        break;
-                    case INT:
-                        i++;
-                        optVals.put(opt, Integer.parseInt(tmpArgs[i]));
-                        break;
-                    case DOUBLE:
-                        i++;
-                        optVals.put(opt, Double.parseDouble(tmpArgs[i]));
-                        break;
-                    default:
-                        throw new IllegalStateException("unexpected option type for " + tmpArgs[i]);
+                        case BOOLEAN:
+                            optVals.put(opt, true);
+                            break;
+                        case STRING:
+                            i++;
+                            optVals.put(opt, tmpArgs[i]);
+                            break;
+                        case INT:
+                            i++;
+                            optVals.put(opt, Integer.parseInt(tmpArgs[i]));
+                            break;
+                        case DOUBLE:
+                            i++;
+                            optVals.put(opt, Double.parseDouble(tmpArgs[i]));
+                            break;
+                        default:
+                            throw new IllegalStateException("unexpected option type for " + tmpArgs[i]);
                     }
                 } catch (Exception e) {
                     throw new DHUtilsException("Missing value for option '" + tmpArgs[i - 1] + "'");

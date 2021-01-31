@@ -110,12 +110,12 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     @Override
     public String[] getLore() {
         switch (getMode()) {
-        case BUILD:
-            return new String[] { "L-click block: " + ChatColor.WHITE + "preview", "R-click block: " + ChatColor.WHITE + "build", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.WHITE + "build one", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.WHITE + "EXCHANGE mode" };
-        case EXCHANGE:
-            return new String[] { "L-click block: " + ChatColor.WHITE + "exchange one block", "R-click block: " + ChatColor.WHITE + "exchange many blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.WHITE + "set target block", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.WHITE + "BUILD mode" };
-        default:
-            return new String[0];
+            case BUILD:
+                return new String[] { "L-click block: " + ChatColor.WHITE + "preview", "R-click block: " + ChatColor.WHITE + "build", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.WHITE + "build one", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.WHITE + "EXCHANGE mode" };
+            case EXCHANGE:
+                return new String[] { "L-click block: " + ChatColor.WHITE + "exchange one block", "R-click block: " + ChatColor.WHITE + "exchange many blocks", UnicodeSymbol.ARROW_UP.toUnicode() + " + R-click block: " + ChatColor.WHITE + "set target block", UnicodeSymbol.ARROW_UP.toUnicode() + " + mouse-wheel: " + ChatColor.WHITE + "BUILD mode" };
+            default:
+                return new String[0];
         }
     }
 
@@ -148,27 +148,27 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     @Override
     public String getDisplaySuffix() {
         switch (getMode()) {
-        case BUILD:
-            return "Build";
-        case EXCHANGE:
-            String s = material == null ? "" : " [" + ItemUtils.getItemName(new ItemStack(material)) + "]";
-            return "Swap " + s;
-        default:
-            return null;
+            case BUILD:
+                return "Build";
+            case EXCHANGE:
+                String s = material == null ? "" : " [" + ItemUtils.getItemName(new ItemStack(material)) + "]";
+                return "Swap " + s;
+            default:
+                return null;
         }
     }
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
         switch (getMode()) {
-        case BUILD:
-            handleBuildMode(event);
-            break;
-        case EXCHANGE:
-            handleExchangeMode(event);
-            break;
-        default:
-            break;
+            case BUILD:
+                handleBuildMode(event);
+                break;
+            case EXCHANGE:
+                handleExchangeMode(event);
+                break;
+            default:
+                break;
         }
     }
 
@@ -361,31 +361,31 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
 
     private boolean filterFace(Player player, BlockFace clickedFace, BlockFace face) {
         switch (clickedFace) {
-        case NORTH:
-        case SOUTH:
-        case EAST:
-        case WEST:
-            BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
-            double frac = pos.point.getY() % 1;
+            case NORTH:
+            case SOUTH:
+            case EAST:
+            case WEST:
+                BlockAndPosition pos = BlockUtil.getTargetPoint(player, null, 5);
+                double frac = pos.point.getY() % 1;
 
-            if (frac > 0.85 || frac < 0.15) {
-                return face.getModY() != 0;
-            } else {
-                return face.getModY() == 0;
-            }
-        case UP:
-        case DOWN:
-            BlockFace playerFace = getRotation(player.getLocation());
+                if (frac > 0.85 || frac < 0.15) {
+                    return face.getModY() != 0;
+                } else {
+                    return face.getModY() == 0;
+                }
+            case UP:
+            case DOWN:
+                BlockFace playerFace = getRotation(player.getLocation());
 
-            if (playerFace == BlockFace.EAST || playerFace == BlockFace.WEST) {
-                return face.getModZ() == 0;
-            } else if (playerFace == BlockFace.NORTH || playerFace == BlockFace.SOUTH) {
-                return face.getModX() == 0;
-            }
+                if (playerFace == BlockFace.EAST || playerFace == BlockFace.WEST) {
+                    return face.getModZ() == 0;
+                } else if (playerFace == BlockFace.NORTH || playerFace == BlockFace.SOUTH) {
+                    return face.getModX() == 0;
+                }
 
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
         }
         return true;
     }
@@ -413,17 +413,17 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     @Nonnull
     private BuildFace getBuildFaces(@Nonnull BlockFace face) {
         switch (face) {
-        case NORTH:
-        case SOUTH:
-            return BuildFace.NORTH_SOUTH;
-        case EAST:
-        case WEST:
-            return BuildFace.EAST_WEST;
-        case UP:
-        case DOWN:
-            return BuildFace.UP_DOWN;
-        default:
-            throw new IllegalArgumentException("invalid face: " + face);
+            case NORTH:
+            case SOUTH:
+                return BuildFace.NORTH_SOUTH;
+            case EAST:
+            case WEST:
+                return BuildFace.EAST_WEST;
+            case UP:
+            case DOWN:
+                return BuildFace.UP_DOWN;
+            default:
+                throw new IllegalArgumentException("invalid face: " + face);
         }
     }
 

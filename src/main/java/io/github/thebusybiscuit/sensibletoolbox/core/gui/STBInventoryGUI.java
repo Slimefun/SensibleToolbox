@@ -225,17 +225,17 @@ public class STBInventoryGUI implements InventoryGUI {
             if (containsSlot(event.getRawSlot())) {
                 // clicking inside the GUI
                 switch (getSlotType(event.getRawSlot())) {
-                case GADGET:
-                    if (gadgets[event.getRawSlot()] != null && gadgets[event.getRawSlot()].isEnabled()) {
-                        gadgets[event.getRawSlot()].onClicked(event);
-                    }
-                    break;
-                case ITEM:
-                    shouldCancel = !processGUIInventoryAction(event);
-                    Debugger.getInstance().debug("handled click for " + event.getWhoClicked().getName() + " in item slot " + event.getRawSlot() + " of " + getOwningItem() + ": cancelled = " + shouldCancel);
-                    break;
-                default:
-                    break;
+                    case GADGET:
+                        if (gadgets[event.getRawSlot()] != null && gadgets[event.getRawSlot()].isEnabled()) {
+                            gadgets[event.getRawSlot()].onClicked(event);
+                        }
+                        break;
+                    case ITEM:
+                        shouldCancel = !processGUIInventoryAction(event);
+                        Debugger.getInstance().debug("handled click for " + event.getWhoClicked().getName() + " in item slot " + event.getRawSlot() + " of " + getOwningItem() + ": cancelled = " + shouldCancel);
+                        break;
+                    default:
+                        break;
                 }
             } else if (event.getRawSlot() > 0) {
                 // clicking inside the player's inventory
@@ -288,19 +288,19 @@ public class STBInventoryGUI implements InventoryGUI {
 
     private boolean processGUIInventoryAction(InventoryClickEvent event) {
         switch (event.getAction()) {
-        case MOVE_TO_OTHER_INVENTORY:
-            return listener.onShiftClickExtract(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
-        case PLACE_ONE:
-        case PLACE_ALL:
-        case PLACE_SOME:
-        case SWAP_WITH_CURSOR:
-        case PICKUP_ALL:
-        case PICKUP_HALF:
-        case PICKUP_ONE:
-        case PICKUP_SOME:
-            return listener.onSlotClick(event.getWhoClicked(), event.getRawSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
-        default:
-            return false;
+            case MOVE_TO_OTHER_INVENTORY:
+                return listener.onShiftClickExtract(event.getWhoClicked(), event.getRawSlot(), event.getCurrentItem());
+            case PLACE_ONE:
+            case PLACE_ALL:
+            case PLACE_SOME:
+            case SWAP_WITH_CURSOR:
+            case PICKUP_ALL:
+            case PICKUP_HALF:
+            case PICKUP_ONE:
+            case PICKUP_SOME:
+                return listener.onSlotClick(event.getWhoClicked(), event.getRawSlot(), event.getClick(), event.getCurrentItem(), event.getCursor());
+            default:
+                return false;
         }
     }
 
@@ -322,14 +322,14 @@ public class STBInventoryGUI implements InventoryGUI {
     public void setSlotType(int slot, SlotType type) {
         slotTypes[slot] = type;
         switch (type) {
-        case BACKGROUND:
-            paintSlot(slot, BG_TEXTURE, true);
-            break;
-        case ITEM:
-            paintSlot(slot, null, true);
-            break;
-        default:
-            break;
+            case BACKGROUND:
+                paintSlot(slot, BG_TEXTURE, true);
+                break;
+            case ITEM:
+                paintSlot(slot, null, true);
+                break;
+            default:
+                break;
         }
     }
 

@@ -208,46 +208,46 @@ public class EnderLeash extends BaseSTBItem {
         }
 
         switch (target.getType()) {
-        case SHEEP:
-            Sheep sheep = (Sheep) target;
-            conf.set("sheared", sheep.isSheared());
-            conf.set("color", sheep.getColor().toString());
-            break;
-        case CAT:
-            Cat cat = (Cat) target;
-            conf.set("catType", cat.getCatType().toString());
-            conf.set("collarColor", cat.getCollarColor().toString());
-            break;
-        case PIG:
-            conf.set("saddled", ((Pig) target).hasSaddle());
-            break;
-        case WOLF:
-            Wolf wolf = (Wolf) target;
-            conf.set("collarColor", wolf.getCollarColor().toString());
-            conf.set("sitting", wolf.isSitting());
-            break;
-        case HORSE:
-        case MULE:
-        case DONKEY:
-        case ZOMBIE_HORSE:
-        case SKELETON_HORSE:
-            if (target instanceof Horse) {
-                Horse horse = (Horse) target;
-                conf.set("horseStyle", horse.getStyle().toString());
-                conf.set("horseColor", horse.getColor().toString());
-            } else if (target instanceof ChestedHorse) {
-                ChestedHorse chestedHorse = (ChestedHorse) target;
-                conf.set("chest", chestedHorse.isCarryingChest());
-            }
+            case SHEEP:
+                Sheep sheep = (Sheep) target;
+                conf.set("sheared", sheep.isSheared());
+                conf.set("color", sheep.getColor().toString());
+                break;
+            case CAT:
+                Cat cat = (Cat) target;
+                conf.set("catType", cat.getCatType().toString());
+                conf.set("collarColor", cat.getCollarColor().toString());
+                break;
+            case PIG:
+                conf.set("saddled", ((Pig) target).hasSaddle());
+                break;
+            case WOLF:
+                Wolf wolf = (Wolf) target;
+                conf.set("collarColor", wolf.getCollarColor().toString());
+                conf.set("sitting", wolf.isSitting());
+                break;
+            case HORSE:
+            case MULE:
+            case DONKEY:
+            case ZOMBIE_HORSE:
+            case SKELETON_HORSE:
+                if (target instanceof Horse) {
+                    Horse horse = (Horse) target;
+                    conf.set("horseStyle", horse.getStyle().toString());
+                    conf.set("horseColor", horse.getColor().toString());
+                } else if (target instanceof ChestedHorse) {
+                    ChestedHorse chestedHorse = (ChestedHorse) target;
+                    conf.set("chest", chestedHorse.isCarryingChest());
+                }
 
-            AbstractHorse h = (AbstractHorse) target;
-            conf.set("jumpStrength", h.getJumpStrength());
-            conf.set("domestication", h.getDomestication());
-            conf.set("maxDomestication", h.getMaxDomestication());
-            conf.set("inventory", BukkitSerialization.toBase64(h.getInventory()));
-            break;
-        default:
-            break;
+                AbstractHorse h = (AbstractHorse) target;
+                conf.set("jumpStrength", h.getJumpStrength());
+                conf.set("domestication", h.getDomestication());
+                conf.set("maxDomestication", h.getMaxDomestication());
+                conf.set("inventory", BukkitSerialization.toBase64(h.getInventory()));
+                break;
+            default:
+                break;
         }
         return conf;
     }
@@ -271,56 +271,56 @@ public class EnderLeash extends BaseSTBItem {
         }
 
         switch (entity.getType()) {
-        case PIG:
-            ((Pig) entity).setSaddle(conf.getBoolean("saddled"));
-            break;
-        case SHEEP:
-            Sheep sheep = (Sheep) entity;
-            sheep.setSheared(conf.getBoolean("sheared"));
-            sheep.setColor(DyeColor.valueOf(conf.getString("color")));
-            break;
-        case CAT:
-            Cat cat = (Cat) entity;
-            cat.setCatType(Type.valueOf(conf.getString("catType")));
-            cat.setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
-            break;
-        case WOLF:
-            Wolf wolf = (Wolf) entity;
-            wolf.setSitting(conf.getBoolean("sitting"));
-            wolf.setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
-            break;
-        case HORSE:
-        case MULE:
-        case DONKEY:
-        case ZOMBIE_HORSE:
-        case SKELETON_HORSE:
-            if (entity instanceof Horse) {
-                Horse h = (Horse) entity;
-                h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
-                h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
-            } else if (entity instanceof ChestedHorse) {
-                ChestedHorse chestedHorse = (ChestedHorse) entity;
-                chestedHorse.setCarryingChest(conf.getBoolean("chest"));
-            }
-
-            AbstractHorse abstractHorse = (AbstractHorse) entity;
-            abstractHorse.setJumpStrength(conf.getDouble("jumpStrength"));
-            abstractHorse.setDomestication(conf.getInt("domestication"));
-            abstractHorse.setMaxDomestication(conf.getInt("maxDomestication"));
-
-            try {
-                Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
-
-                for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {
-                    abstractHorse.getInventory().setItem(i, inv.getItem(i));
+            case PIG:
+                ((Pig) entity).setSaddle(conf.getBoolean("saddled"));
+                break;
+            case SHEEP:
+                Sheep sheep = (Sheep) entity;
+                sheep.setSheared(conf.getBoolean("sheared"));
+                sheep.setColor(DyeColor.valueOf(conf.getString("color")));
+                break;
+            case CAT:
+                Cat cat = (Cat) entity;
+                cat.setCatType(Type.valueOf(conf.getString("catType")));
+                cat.setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
+                break;
+            case WOLF:
+                Wolf wolf = (Wolf) entity;
+                wolf.setSitting(conf.getBoolean("sitting"));
+                wolf.setCollarColor(DyeColor.valueOf(conf.getString("collarColor")));
+                break;
+            case HORSE:
+            case MULE:
+            case DONKEY:
+            case ZOMBIE_HORSE:
+            case SKELETON_HORSE:
+                if (entity instanceof Horse) {
+                    Horse h = (Horse) entity;
+                    h.setColor(Horse.Color.valueOf(conf.getString("horseColor")));
+                    h.setStyle(Horse.Style.valueOf(conf.getString("horseStyle")));
+                } else if (entity instanceof ChestedHorse) {
+                    ChestedHorse chestedHorse = (ChestedHorse) entity;
+                    chestedHorse.setCarryingChest(conf.getBoolean("chest"));
                 }
-            } catch (IOException e) {
-                getProviderPlugin().getLogger().log(Level.WARNING, "Could not restore Horse Inventory", e);
-            }
 
-            break;
-        default:
-            break;
+                AbstractHorse abstractHorse = (AbstractHorse) entity;
+                abstractHorse.setJumpStrength(conf.getDouble("jumpStrength"));
+                abstractHorse.setDomestication(conf.getInt("domestication"));
+                abstractHorse.setMaxDomestication(conf.getInt("maxDomestication"));
+
+                try {
+                    Inventory inv = BukkitSerialization.fromBase64(conf.getString("inventory"));
+
+                    for (int i = 0; i < abstractHorse.getInventory().getSize(); i++) {
+                        abstractHorse.getInventory().setItem(i, inv.getItem(i));
+                    }
+                } catch (IOException e) {
+                    getProviderPlugin().getLogger().log(Level.WARNING, "Could not restore Horse Inventory", e);
+                }
+
+                break;
+            default:
+                break;
         }
     }
 

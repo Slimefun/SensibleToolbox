@@ -419,14 +419,14 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         }
 
         switch (item.getType()) {
-        case WOODEN_AXE:
-        case STONE_AXE:
-        case IRON_AXE:
-        case GOLDEN_AXE:
-        case DIAMOND_AXE:
-            return false;
-        default:
-            return true;
+            case WOODEN_AXE:
+            case STONE_AXE:
+            case IRON_AXE:
+            case GOLDEN_AXE:
+            case DIAMOND_AXE:
+                return false;
+            default:
+                return true;
         }
     }
 
