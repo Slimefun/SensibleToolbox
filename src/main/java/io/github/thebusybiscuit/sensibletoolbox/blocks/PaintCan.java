@@ -27,8 +27,6 @@ import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollection;
-import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
@@ -39,6 +37,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.LevelMonitor;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.LevelReporter;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.items.PaintBrush;
+import io.github.thebusybiscuit.sensibletoolbox.utils.ColoredMaterial;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
 
@@ -116,10 +115,10 @@ public class PaintCan extends BaseSTBBlock implements LevelReporter {
 
     @Override
     public Material getMaterial() {
-        MaterialCollection materials = MaterialCollections.getAllStainedGlassColors();
+        ColoredMaterial materials = ColoredMaterial.STAINED_GLASS;
 
         if (getPaintLevel() > 0) {
-            materials = MaterialCollections.getAllWoolColors();
+            materials = ColoredMaterial.WOOL;
         }
 
         return materials.get(color.ordinal());

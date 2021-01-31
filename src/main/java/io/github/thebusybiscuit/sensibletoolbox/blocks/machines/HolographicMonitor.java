@@ -11,7 +11,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
-import io.github.thebusybiscuit.cscorelib2.math.DoubleHandler;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
@@ -68,7 +67,7 @@ public class HolographicMonitor extends BaseSTBBlock {
         }
         this.hologram.clearLines();
 
-        for (BlockFace f : STBUtil.MAIN_HORIZONTAL_BLOCK_FACES) {
+        for (BlockFace f : STBUtil.getMainHorizontalFaces()) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
             if (net != null) {
                 double stat = net.getSupply() - net.getDemand();
@@ -80,7 +79,7 @@ public class HolographicMonitor extends BaseSTBBlock {
                     prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "-";
                 }
 
-                this.hologram.appendTextLine(prefix + " " + ChatColor.GRAY + DoubleHandler.getFancyDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t");
+                this.hologram.appendTextLine(prefix + " " + ChatColor.GRAY + STBUtil.getCompactDouble(Double.valueOf(String.valueOf(stat).replace("-", ""))) + " SCU/t");
                 break;
             }
         }

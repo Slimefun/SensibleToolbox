@@ -366,7 +366,7 @@ public class RecipeBook extends BaseSTBItem {
             return;
         }
 
-        for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
+        for (BlockFace face : STBUtil.getDirectBlockFaces()) {
             Block b = fabricationBlock.getRelative(face);
 
             if (VanillaInventoryUtils.isVanillaInventory(b) && SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.ACCESS_INVENTORIES)) {

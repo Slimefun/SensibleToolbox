@@ -25,7 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.materials.MaterialCollections;
 import io.github.thebusybiscuit.sensibletoolbox.api.LightMeterHolder;
 import io.github.thebusybiscuit.sensibletoolbox.api.RedstoneBehaviour;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
@@ -37,6 +36,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.LightMeter;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.PVCell;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
+import io.github.thebusybiscuit.sensibletoolbox.utils.ColoredMaterial;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.SunlightLevels;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
@@ -264,7 +264,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
     private void drawPVLayer(@Nonnull Block b) {
         // put a carpet on top of the main block to represent the PV cell
         DyeColor color = pvCellLife > 0 ? getCapColor() : DyeColor.GRAY;
-        Material carpet = MaterialCollections.getAllCarpetColors().get(color.ordinal());
+        Material carpet = ColoredMaterial.CARPET.get(color.ordinal());
         b.setType(carpet);
     }
 
@@ -412,7 +412,7 @@ public class BasicSolarCell extends BaseSTBMachine implements LightMeterHolder {
             ChatColor cc = STBUtil.dyeColorToChatColor(dc);
             double mult = getChargeMultiplier(effectiveLightLevel);
 
-            return GUIUtil.makeTexture(MaterialCollections.getAllWoolColors().get(dc.ordinal()), ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(effectiveLightLevel) * 100) + "%", ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
+            return GUIUtil.makeTexture(ColoredMaterial.WOOL.get(dc.ordinal()), ChatColor.WHITE + "Efficiency: " + cc + (int) (getChargeMultiplier(effectiveLightLevel) * 100) + "%", ChatColor.GRAY + "Power Output: " + getPowerOutput() * mult + " SCU/t");
         }
     }
 

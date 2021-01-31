@@ -1,8 +1,11 @@
 package io.github.thebusybiscuit.sensibletoolbox.utils;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -47,17 +50,25 @@ public final class STBUtil {
     /**
      * The block faces directly adjacent to a block.
      */
-    public static final BlockFace[] DIRECT_BLOCK_FACES = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST };
+    private static final BlockFace[] DIRECT_BLOCK_FACES = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, BlockFace.SOUTH, BlockFace.WEST };
+
     /**
      * The block faces in the four cardinal horizontal directions.
      */
-    public static final BlockFace[] MAIN_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH };
+    private static final BlockFace[] MAIN_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH };
+
     /**
      * The block faces in all eight compass directions, plus the block itself.
      */
-    public static final BlockFace[] ALL_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH };
+    private static final BlockFace[] ALL_HORIZONTAL_BLOCK_FACES = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH };
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
+
+    /**
+     * This is our {@link DecimalFormat} for decimal values.
+     * This instance is not thread-safe!
+     */
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.ROOT));
 
     private STBUtil() {}
 
@@ -97,16 +108,16 @@ public final class STBUtil {
         }
 
         switch (type) {
-        case TALL_GRASS:
-        case SUGAR_CANE:
-        case BROWN_MUSHROOM:
-        case RED_MUSHROOM:
-        case DEAD_BUSH:
-        case SWEET_BERRY_BUSH:
-        case CACTUS:
-            return true;
-        default:
-            break;
+            case TALL_GRASS:
+            case SUGAR_CANE:
+            case BROWN_MUSHROOM:
+            case RED_MUSHROOM:
+            case DEAD_BUSH:
+            case SWEET_BERRY_BUSH:
+            case CACTUS:
+                return true;
+            default:
+                break;
         }
         return false;
     }
@@ -120,29 +131,29 @@ public final class STBUtil {
      */
     public static boolean isWearable(@Nonnull Material type) {
         switch (type) {
-        case LEATHER_HELMET:
-        case LEATHER_BOOTS:
-        case LEATHER_CHESTPLATE:
-        case LEATHER_LEGGINGS:
-        case IRON_HELMET:
-        case IRON_BOOTS:
-        case IRON_CHESTPLATE:
-        case IRON_LEGGINGS:
-        case GOLDEN_HELMET:
-        case GOLDEN_BOOTS:
-        case GOLDEN_CHESTPLATE:
-        case GOLDEN_LEGGINGS:
-        case DIAMOND_HELMET:
-        case DIAMOND_BOOTS:
-        case DIAMOND_CHESTPLATE:
-        case DIAMOND_LEGGINGS:
-        case CHAINMAIL_HELMET:
-        case CHAINMAIL_BOOTS:
-        case CHAINMAIL_CHESTPLATE:
-        case CHAINMAIL_LEGGINGS:
-            return true;
-        default:
-            return false;
+            case LEATHER_HELMET:
+            case LEATHER_BOOTS:
+            case LEATHER_CHESTPLATE:
+            case LEATHER_LEGGINGS:
+            case IRON_HELMET:
+            case IRON_BOOTS:
+            case IRON_CHESTPLATE:
+            case IRON_LEGGINGS:
+            case GOLDEN_HELMET:
+            case GOLDEN_BOOTS:
+            case GOLDEN_CHESTPLATE:
+            case GOLDEN_LEGGINGS:
+            case DIAMOND_HELMET:
+            case DIAMOND_BOOTS:
+            case DIAMOND_CHESTPLATE:
+            case DIAMOND_LEGGINGS:
+            case CHAINMAIL_HELMET:
+            case CHAINMAIL_BOOTS:
+            case CHAINMAIL_CHESTPLATE:
+            case CHAINMAIL_LEGGINGS:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -164,20 +175,20 @@ public final class STBUtil {
     @Nullable
     public static Material getCropType(@Nonnull Material seedType) {
         switch (seedType) {
-        case WHEAT_SEEDS:
-            return Material.WHEAT;
-        case POTATO:
-            return Material.POTATOES;
-        case CARROT:
-            return Material.CARROTS;
-        case PUMPKIN_SEEDS:
-            return Material.PUMPKIN_STEM;
-        case MELON_SEEDS:
-            return Material.MELON_STEM;
-        case BEETROOT_SEEDS:
-            return Material.BEETROOTS;
-        default:
-            return null;
+            case WHEAT_SEEDS:
+                return Material.WHEAT;
+            case POTATO:
+                return Material.POTATOES;
+            case CARROT:
+                return Material.CARROTS;
+            case PUMPKIN_SEEDS:
+                return Material.PUMPKIN_STEM;
+            case MELON_SEEDS:
+                return Material.MELON_STEM;
+            case BEETROOT_SEEDS:
+                return Material.BEETROOTS;
+            default:
+                return null;
         }
     }
 
@@ -211,40 +222,40 @@ public final class STBUtil {
     @Nonnull
     public static ChatColor dyeColorToChatColor(@Nonnull DyeColor dyeColor) {
         switch (dyeColor) {
-        case BLACK:
-            return ChatColor.DARK_GRAY;
-        case BLUE:
-            return ChatColor.DARK_BLUE;
-        case BROWN:
-            return ChatColor.GOLD;
-        case CYAN:
-            return ChatColor.AQUA;
-        case GRAY:
-            return ChatColor.DARK_GRAY;
-        case GREEN:
-            return ChatColor.DARK_GREEN;
-        case LIGHT_BLUE:
-            return ChatColor.BLUE;
-        case LIME:
-            return ChatColor.GREEN;
-        case MAGENTA:
-            return ChatColor.LIGHT_PURPLE;
-        case ORANGE:
-            return ChatColor.GOLD;
-        case PINK:
-            return ChatColor.LIGHT_PURPLE;
-        case PURPLE:
-            return ChatColor.DARK_PURPLE;
-        case RED:
-            return ChatColor.DARK_RED;
-        case LIGHT_GRAY:
-            return ChatColor.GRAY;
-        case WHITE:
-            return ChatColor.WHITE;
-        case YELLOW:
-            return ChatColor.YELLOW;
-        default:
-            throw new IllegalArgumentException("unknown dye color" + dyeColor);
+            case BLACK:
+                return ChatColor.DARK_GRAY;
+            case BLUE:
+                return ChatColor.DARK_BLUE;
+            case BROWN:
+                return ChatColor.GOLD;
+            case CYAN:
+                return ChatColor.AQUA;
+            case GRAY:
+                return ChatColor.DARK_GRAY;
+            case GREEN:
+                return ChatColor.DARK_GREEN;
+            case LIGHT_BLUE:
+                return ChatColor.BLUE;
+            case LIME:
+                return ChatColor.GREEN;
+            case MAGENTA:
+                return ChatColor.LIGHT_PURPLE;
+            case ORANGE:
+                return ChatColor.GOLD;
+            case PINK:
+                return ChatColor.LIGHT_PURPLE;
+            case PURPLE:
+                return ChatColor.DARK_PURPLE;
+            case RED:
+                return ChatColor.DARK_RED;
+            case LIGHT_GRAY:
+                return ChatColor.GRAY;
+            case WHITE:
+                return ChatColor.WHITE;
+            case YELLOW:
+                return ChatColor.YELLOW;
+            default:
+                throw new IllegalArgumentException("unknown dye color" + dyeColor);
         }
     }
 
@@ -258,112 +269,112 @@ public final class STBUtil {
      */
     public static boolean isColorable(Material mat) {
         switch (mat) {
-        case WHITE_WOOL:
-        case ORANGE_WOOL:
-        case MAGENTA_WOOL:
-        case LIGHT_BLUE_WOOL:
-        case YELLOW_WOOL:
-        case LIME_WOOL:
-        case PINK_WOOL:
-        case GRAY_WOOL:
-        case LIGHT_GRAY_WOOL:
-        case CYAN_WOOL:
-        case PURPLE_WOOL:
-        case BLUE_WOOL:
-        case BROWN_WOOL:
-        case GREEN_WOOL:
-        case RED_WOOL:
-        case BLACK_WOOL:
-            return true;
-        case WHITE_CARPET:
-        case ORANGE_CARPET:
-        case MAGENTA_CARPET:
-        case LIGHT_BLUE_CARPET:
-        case YELLOW_CARPET:
-        case LIME_CARPET:
-        case PINK_CARPET:
-        case GRAY_CARPET:
-        case LIGHT_GRAY_CARPET:
-        case CYAN_CARPET:
-        case PURPLE_CARPET:
-        case BLUE_CARPET:
-        case BROWN_CARPET:
-        case GREEN_CARPET:
-        case RED_CARPET:
-        case BLACK_CARPET:
-            return true;
-        case GLASS:
-        case WHITE_STAINED_GLASS:
-        case ORANGE_STAINED_GLASS:
-        case MAGENTA_STAINED_GLASS:
-        case LIGHT_BLUE_STAINED_GLASS:
-        case YELLOW_STAINED_GLASS:
-        case LIME_STAINED_GLASS:
-        case PINK_STAINED_GLASS:
-        case GRAY_STAINED_GLASS:
-        case LIGHT_GRAY_STAINED_GLASS:
-        case CYAN_STAINED_GLASS:
-        case PURPLE_STAINED_GLASS:
-        case BLUE_STAINED_GLASS:
-        case BROWN_STAINED_GLASS:
-        case GREEN_STAINED_GLASS:
-        case RED_STAINED_GLASS:
-        case BLACK_STAINED_GLASS:
-            return true;
-        case GLASS_PANE:
-        case WHITE_STAINED_GLASS_PANE:
-        case ORANGE_STAINED_GLASS_PANE:
-        case MAGENTA_STAINED_GLASS_PANE:
-        case LIGHT_BLUE_STAINED_GLASS_PANE:
-        case YELLOW_STAINED_GLASS_PANE:
-        case LIME_STAINED_GLASS_PANE:
-        case PINK_STAINED_GLASS_PANE:
-        case GRAY_STAINED_GLASS_PANE:
-        case LIGHT_GRAY_STAINED_GLASS_PANE:
-        case CYAN_STAINED_GLASS_PANE:
-        case PURPLE_STAINED_GLASS_PANE:
-        case BLUE_STAINED_GLASS_PANE:
-        case BROWN_STAINED_GLASS_PANE:
-        case GREEN_STAINED_GLASS_PANE:
-        case RED_STAINED_GLASS_PANE:
-        case BLACK_STAINED_GLASS_PANE:
-            return true;
-        case TERRACOTTA:
-        case WHITE_TERRACOTTA:
-        case ORANGE_TERRACOTTA:
-        case MAGENTA_TERRACOTTA:
-        case LIGHT_BLUE_TERRACOTTA:
-        case YELLOW_TERRACOTTA:
-        case LIME_TERRACOTTA:
-        case PINK_TERRACOTTA:
-        case GRAY_TERRACOTTA:
-        case LIGHT_GRAY_TERRACOTTA:
-        case CYAN_TERRACOTTA:
-        case PURPLE_TERRACOTTA:
-        case BLUE_TERRACOTTA:
-        case BROWN_TERRACOTTA:
-        case GREEN_TERRACOTTA:
-        case RED_TERRACOTTA:
-        case BLACK_TERRACOTTA:
-            return true;
-        case WHITE_CONCRETE:
-        case ORANGE_CONCRETE:
-        case MAGENTA_CONCRETE:
-        case LIGHT_BLUE_CONCRETE:
-        case YELLOW_CONCRETE:
-        case LIME_CONCRETE:
-        case PINK_CONCRETE:
-        case GRAY_CONCRETE:
-        case LIGHT_GRAY_CONCRETE:
-        case CYAN_CONCRETE:
-        case PURPLE_CONCRETE:
-        case BLUE_CONCRETE:
-        case BROWN_CONCRETE:
-        case GREEN_CONCRETE:
-        case RED_CONCRETE:
-        case BLACK_CONCRETE:
-        default:
-            return false;
+            case WHITE_WOOL:
+            case ORANGE_WOOL:
+            case MAGENTA_WOOL:
+            case LIGHT_BLUE_WOOL:
+            case YELLOW_WOOL:
+            case LIME_WOOL:
+            case PINK_WOOL:
+            case GRAY_WOOL:
+            case LIGHT_GRAY_WOOL:
+            case CYAN_WOOL:
+            case PURPLE_WOOL:
+            case BLUE_WOOL:
+            case BROWN_WOOL:
+            case GREEN_WOOL:
+            case RED_WOOL:
+            case BLACK_WOOL:
+                return true;
+            case WHITE_CARPET:
+            case ORANGE_CARPET:
+            case MAGENTA_CARPET:
+            case LIGHT_BLUE_CARPET:
+            case YELLOW_CARPET:
+            case LIME_CARPET:
+            case PINK_CARPET:
+            case GRAY_CARPET:
+            case LIGHT_GRAY_CARPET:
+            case CYAN_CARPET:
+            case PURPLE_CARPET:
+            case BLUE_CARPET:
+            case BROWN_CARPET:
+            case GREEN_CARPET:
+            case RED_CARPET:
+            case BLACK_CARPET:
+                return true;
+            case GLASS:
+            case WHITE_STAINED_GLASS:
+            case ORANGE_STAINED_GLASS:
+            case MAGENTA_STAINED_GLASS:
+            case LIGHT_BLUE_STAINED_GLASS:
+            case YELLOW_STAINED_GLASS:
+            case LIME_STAINED_GLASS:
+            case PINK_STAINED_GLASS:
+            case GRAY_STAINED_GLASS:
+            case LIGHT_GRAY_STAINED_GLASS:
+            case CYAN_STAINED_GLASS:
+            case PURPLE_STAINED_GLASS:
+            case BLUE_STAINED_GLASS:
+            case BROWN_STAINED_GLASS:
+            case GREEN_STAINED_GLASS:
+            case RED_STAINED_GLASS:
+            case BLACK_STAINED_GLASS:
+                return true;
+            case GLASS_PANE:
+            case WHITE_STAINED_GLASS_PANE:
+            case ORANGE_STAINED_GLASS_PANE:
+            case MAGENTA_STAINED_GLASS_PANE:
+            case LIGHT_BLUE_STAINED_GLASS_PANE:
+            case YELLOW_STAINED_GLASS_PANE:
+            case LIME_STAINED_GLASS_PANE:
+            case PINK_STAINED_GLASS_PANE:
+            case GRAY_STAINED_GLASS_PANE:
+            case LIGHT_GRAY_STAINED_GLASS_PANE:
+            case CYAN_STAINED_GLASS_PANE:
+            case PURPLE_STAINED_GLASS_PANE:
+            case BLUE_STAINED_GLASS_PANE:
+            case BROWN_STAINED_GLASS_PANE:
+            case GREEN_STAINED_GLASS_PANE:
+            case RED_STAINED_GLASS_PANE:
+            case BLACK_STAINED_GLASS_PANE:
+                return true;
+            case TERRACOTTA:
+            case WHITE_TERRACOTTA:
+            case ORANGE_TERRACOTTA:
+            case MAGENTA_TERRACOTTA:
+            case LIGHT_BLUE_TERRACOTTA:
+            case YELLOW_TERRACOTTA:
+            case LIME_TERRACOTTA:
+            case PINK_TERRACOTTA:
+            case GRAY_TERRACOTTA:
+            case LIGHT_GRAY_TERRACOTTA:
+            case CYAN_TERRACOTTA:
+            case PURPLE_TERRACOTTA:
+            case BLUE_TERRACOTTA:
+            case BROWN_TERRACOTTA:
+            case GREEN_TERRACOTTA:
+            case RED_TERRACOTTA:
+            case BLACK_TERRACOTTA:
+                return true;
+            case WHITE_CONCRETE:
+            case ORANGE_CONCRETE:
+            case MAGENTA_CONCRETE:
+            case LIGHT_BLUE_CONCRETE:
+            case YELLOW_CONCRETE:
+            case LIME_CONCRETE:
+            case PINK_CONCRETE:
+            case GRAY_CONCRETE:
+            case LIGHT_GRAY_CONCRETE:
+            case CYAN_CONCRETE:
+            case PURPLE_CONCRETE:
+            case BLUE_CONCRETE:
+            case BROWN_CONCRETE:
+            case GREEN_CONCRETE:
+            case RED_CONCRETE:
+            case BLACK_CONCRETE:
+            default:
+                return false;
         }
     }
 
@@ -701,16 +712,16 @@ public final class STBUtil {
         Validate.isTrue(face.getModY() == 0 && Math.abs(face.getModX() + face.getModZ()) == 1, "invalid face " + face);
 
         switch (rotation) {
-        case 0:
-            return face;
-        case 1:
-            return BlockUtil.getLeft(face).getOppositeFace();
-        case 2:
-            return face.getOppositeFace();
-        case 3:
-            return BlockUtil.getLeft(face);
-        default:
-            throw new IllegalArgumentException("invalid rotation" + rotation);
+            case 0:
+                return face;
+            case 1:
+                return BlockUtil.getLeft(face).getOppositeFace();
+            case 2:
+                return face.getOppositeFace();
+            case 3:
+                return BlockUtil.getLeft(face);
+            default:
+                throw new IllegalArgumentException("invalid rotation" + rotation);
         }
     }
 
@@ -756,21 +767,21 @@ public final class STBUtil {
      */
     public static byte getDirectionData(BlockFace face) {
         switch (face) {
-        case SELF:
-        case DOWN:
-            return 0;
-        case UP:
-            return 1;
-        case NORTH:
-            return 2;
-        case SOUTH:
-            return 3;
-        case WEST:
-            return 4;
-        case EAST:
-            return 5;
-        default:
-            throw new IllegalArgumentException("invalid direction " + face);
+            case SELF:
+            case DOWN:
+                return 0;
+            case UP:
+                return 1;
+            case NORTH:
+                return 2;
+            case SOUTH:
+                return 3;
+            case WEST:
+                return 4;
+            case EAST:
+                return 5;
+            default:
+                throw new IllegalArgumentException("invalid direction " + face);
         }
     }
 
@@ -799,20 +810,20 @@ public final class STBUtil {
         }
 
         switch (signType) {
-        case OAK_SIGN:
-            return Material.OAK_WALL_SIGN;
-        case SPRUCE_SIGN:
-            return Material.SPRUCE_WALL_SIGN;
-        case BIRCH_SIGN:
-            return Material.BIRCH_WALL_SIGN;
-        case JUNGLE_SIGN:
-            return Material.JUNGLE_WALL_SIGN;
-        case ACACIA_SIGN:
-            return Material.ACACIA_WALL_SIGN;
-        case DARK_OAK_SIGN:
-            return Material.DARK_OAK_WALL_SIGN;
-        default:
-            return null;
+            case OAK_SIGN:
+                return Material.OAK_WALL_SIGN;
+            case SPRUCE_SIGN:
+                return Material.SPRUCE_WALL_SIGN;
+            case BIRCH_SIGN:
+                return Material.BIRCH_WALL_SIGN;
+            case JUNGLE_SIGN:
+                return Material.JUNGLE_WALL_SIGN;
+            case ACACIA_SIGN:
+                return Material.ACACIA_WALL_SIGN;
+            case DARK_OAK_SIGN:
+                return Material.DARK_OAK_WALL_SIGN;
+            default:
+                return null;
         }
     }
 
@@ -823,38 +834,38 @@ public final class STBUtil {
     @Nullable
     public static DyeColor getColorFromDye(@Nonnull Material type) {
         switch (type) {
-        case WHITE_DYE:
-            return DyeColor.WHITE;
-        case ORANGE_DYE:
-            return DyeColor.ORANGE;
-        case MAGENTA_DYE:
-            return DyeColor.MAGENTA;
-        case LIGHT_BLUE_DYE:
-            return DyeColor.LIGHT_BLUE;
-        case YELLOW_DYE:
-            return DyeColor.YELLOW;
-        case LIME_DYE:
-            return DyeColor.LIME;
-        case PINK_DYE:
-            return DyeColor.PINK;
-        case GRAY_DYE:
-            return DyeColor.GRAY;
-        case LIGHT_GRAY_DYE:
-            return DyeColor.LIGHT_GRAY;
-        case PURPLE_DYE:
-            return DyeColor.PURPLE;
-        case BLUE_DYE:
-            return DyeColor.BLUE;
-        case BROWN_DYE:
-            return DyeColor.BROWN;
-        case GREEN_DYE:
-            return DyeColor.GREEN;
-        case RED_DYE:
-            return DyeColor.RED;
-        case BLACK_DYE:
-            return DyeColor.BLACK;
-        default:
-            return null;
+            case WHITE_DYE:
+                return DyeColor.WHITE;
+            case ORANGE_DYE:
+                return DyeColor.ORANGE;
+            case MAGENTA_DYE:
+                return DyeColor.MAGENTA;
+            case LIGHT_BLUE_DYE:
+                return DyeColor.LIGHT_BLUE;
+            case YELLOW_DYE:
+                return DyeColor.YELLOW;
+            case LIME_DYE:
+                return DyeColor.LIME;
+            case PINK_DYE:
+                return DyeColor.PINK;
+            case GRAY_DYE:
+                return DyeColor.GRAY;
+            case LIGHT_GRAY_DYE:
+                return DyeColor.LIGHT_GRAY;
+            case PURPLE_DYE:
+                return DyeColor.PURPLE;
+            case BLUE_DYE:
+                return DyeColor.BLUE;
+            case BROWN_DYE:
+                return DyeColor.BROWN;
+            case GREEN_DYE:
+                return DyeColor.GREEN;
+            case RED_DYE:
+                return DyeColor.RED;
+            case BLACK_DYE:
+                return DyeColor.BLACK;
+            default:
+                return null;
         }
     }
 
@@ -881,4 +892,48 @@ public final class STBUtil {
     public static boolean isNumeric(@Nonnull String string) {
         return NUMBER_PATTERN.matcher(string).matches();
     }
+
+    @Nonnull
+    public static String getCompactDouble(double value) {
+        if (value < 0) {
+            // Negative numbers are a special case
+            return '-' + getCompactDouble(-value);
+        }
+
+        if (value < 1000.0) {
+            // Below 1K
+            return DECIMAL_FORMAT.format(value);
+        } else if (value < 1000000.0) {
+            // Thousands
+            return DECIMAL_FORMAT.format(value / 1000.0) + 'K';
+        } else if (value < 1000000000.0) {
+            // Million
+            return DECIMAL_FORMAT.format(value / 1000000.0) + 'M';
+        } else if (value < 1000000000000.0) {
+            // Billion
+            return DECIMAL_FORMAT.format(value / 1000000000.0) + 'B';
+        } else if (value < 1000000000000000.0) {
+            // Trillion
+            return DECIMAL_FORMAT.format(value / 1000000000000.0) + 'T';
+        } else {
+            // Quadrillion
+            return DECIMAL_FORMAT.format(value / 1000000000000000.0) + 'Q';
+        }
+    }
+
+    @Nonnull
+    public static BlockFace[] getDirectBlockFaces() {
+        return DIRECT_BLOCK_FACES;
+    }
+
+    @Nonnull
+    public static BlockFace[] getMainHorizontalFaces() {
+        return MAIN_HORIZONTAL_BLOCK_FACES;
+    }
+
+    @Nonnull
+    public static BlockFace[] getAllHorizontalFaces() {
+        return ALL_HORIZONTAL_BLOCK_FACES;
+    }
+
 }

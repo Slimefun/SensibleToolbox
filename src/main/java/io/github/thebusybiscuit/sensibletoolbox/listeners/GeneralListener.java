@@ -165,7 +165,7 @@ public class GeneralListener extends STBBaseListener {
         if (stb != null && !stb.isFlammable()) {
             event.setCancelled(true);
 
-            for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
+            for (BlockFace face : STBUtil.getDirectBlockFaces()) {
                 Block b = event.getBlock().getRelative(face);
 
                 if (b.getType() == Material.FIRE && ThreadLocalRandom.current().nextInt(3) != 0) {

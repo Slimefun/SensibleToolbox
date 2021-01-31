@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.math.DoubleHandler;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.EnergyNet;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
@@ -67,7 +66,7 @@ public class PowerMonitor extends BaseSTBBlock {
 
         label[2] = ChatColor.DARK_RED + "No cable attached";
 
-        for (BlockFace f : STBUtil.MAIN_HORIZONTAL_BLOCK_FACES) {
+        for (BlockFace f : STBUtil.getMainHorizontalFaces()) {
             EnergyNet net = SensibleToolbox.getEnergyNet(getRelativeLocation(f).getBlock());
 
             if (net != null) {
@@ -80,7 +79,7 @@ public class PowerMonitor extends BaseSTBBlock {
                     prefix = ChatColor.DARK_RED + "" + ChatColor.BOLD + "- " + ChatColor.RED;
                 }
 
-                label[2] = prefix + DoubleHandler.getFancyDouble(Math.abs(stat)) + " SCU/t";
+                label[2] = prefix + STBUtil.getCompactDouble(Math.abs(stat)) + " SCU/t";
                 break;
             }
         }

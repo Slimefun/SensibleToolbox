@@ -159,7 +159,7 @@ class QueueSwapper extends BukkitRunnable {
      * @return true if any face of the block is exposed
      */
     private boolean isExposed(@Nonnull Block block) {
-        for (BlockFace face : STBUtil.DIRECT_BLOCK_FACES) {
+        for (BlockFace face : STBUtil.getDirectBlockFaces()) {
             if (isExposed(block, face)) {
                 return true;
             }
