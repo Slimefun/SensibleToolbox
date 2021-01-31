@@ -1,5 +1,10 @@
 package io.github.thebusybiscuit.sensibletoolbox.listeners;
 
+import java.util.Iterator;
+
+import javax.annotation.Nullable;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -11,12 +16,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Recipe.RecipeCalculator;
 
 /**
  * Contains event handlers to ensure vanilla and STB items behave correctly
@@ -100,7 +106,11 @@ public class FurnaceListener extends STBBaseListener {
         }
     }
 
-    private boolean validateSmeltingIngredient(ItemStack stack) {
+    private boolean validateSmeltingIngredient(@Nullable ItemStack stack) {
+        if (stack == null) {
+            return false;
+        }
+
         BaseSTBItem item = SensibleToolbox.getItemRegistry().fromItemStack(stack);
 
         if (item != null) {
@@ -108,7 +118,19 @@ public class FurnaceListener extends STBBaseListener {
         } else {
             // vanilla item - need to ensure it's actually smeltable (i.e. wasn't added
             // as a furnace recipe because it's the material for some custom STB item)
-            return RecipeCalculator.getSmeltedOutput(stack.getType()) != null;
+            // return RecipeCalculator.getSmeltedOutput(stack.getType()) != null;
+            // TODO: Improve this
+            Iterator<Recipe> recipes = Bukkit.recipeIterator();
+
+            while (recipes.hasNext()) {
+                Recipe recipe = recipes.next();
+
+                if (recipe instanceof FurnaceRecipe && ((FurnaceRecipe) recipe).getInputChoice().test(stack)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -117,16 +139,16 @@ public class FurnaceListener extends STBBaseListener {
         int to = -2;
 
         switch (event.getSlotType()) {
-        case QUICKBAR:
-            from = 9;
-            to = 35;
-            break;
-        case CONTAINER:
-            from = 0;
-            to = 8;
-            break;
-        default:
-            break;
+            case QUICKBAR:
+                from = 9;
+                to = 35;
+                break;
+            case CONTAINER:
+                from = 0;
+                to = 8;
+                break;
+            default:
+                break;
         }
 
         for (int i = from; i <= to; i++) {
