@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Approve Dependency Update
-      uses: hmarr/auto-approve-action@v2.0.0
+      uses: hmarr/auto-approve-action@v2.1.0
       if: github.actor == 'renovate[bot]'
       with:
         github-token: "${{ secrets.ACCESS_TOKEN }}"
