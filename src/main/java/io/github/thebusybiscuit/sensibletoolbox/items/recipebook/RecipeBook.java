@@ -369,7 +369,7 @@ public class RecipeBook extends BaseSTBItem {
         for (BlockFace face : STBUtil.getDirectBlockFaces()) {
             Block b = fabricationBlock.getRelative(face);
 
-            if (VanillaInventoryUtils.isVanillaInventory(b) && SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.ACCESS_INVENTORIES)) {
+            if (VanillaInventoryUtils.isVanillaInventory(b) && SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.INTERACT_BLOCK)) {
                 Optional<InventoryHolder> holder = VanillaInventoryUtils.getVanillaInventory(b).map(Inventory::getHolder);
 
                 if (holder.isPresent()) {
@@ -412,23 +412,22 @@ public class RecipeBook extends BaseSTBItem {
             }
         } else {
             // in the recipe view - clicking an ingredient?
-            if (gui.getSlotType(slot) == SlotType.ITEM) {
-                if (slot == RESULT_SLOT) {
-                    // possibly fabricate the resulting item
-                    if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {
-                        tryFabrication(viewingRecipe);
-                    }
-                    // drill down into the description for an item in the recipe
-                    if (inSlot.getDurability() == 32767 && !itemListPos.containsKey(inSlot)) {
-                        inSlot.setDurability(inSlot.getType().getMaxDurability());
-                    }
+            if (gui.getSlotType(slot) == SlotType.ITEM && slot == RESULT_SLOT) {
+                // possibly fabricate the resulting item
+                if (fabricationFree || (fabricationAvailable && (viewingRecipe instanceof ShapedRecipe || viewingRecipe instanceof ShapelessRecipe))) {
+                    tryFabrication(viewingRecipe);
+                }
 
-                    if (itemListPos.containsKey(inSlot)) {
-                        trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
-                        viewingItem = itemListPos.get(inSlot);
-                        recipeNumber = 0;
-                        drawRecipePage();
-                    }
+                // drill down into the description for an item in the recipe
+                if (inSlot.getDurability() == 32767 && !itemListPos.containsKey(inSlot)) {
+                    inSlot.setDurability(inSlot.getType().getMaxDurability());
+                }
+
+                if (itemListPos.containsKey(inSlot)) {
+                    trail.push(new ItemAndRecipeNumber(viewingItem, recipeNumber));
+                    viewingItem = itemListPos.get(inSlot);
+                    recipeNumber = 0;
+                    drawRecipePage();
                 }
             }
         }
@@ -551,7 +550,7 @@ public class RecipeBook extends BaseSTBItem {
         }
     }
 
-    private void tryFabrication(Recipe recipe) {
+    private void tryFabrication(@Nonnull Recipe recipe) {
         Debugger.getInstance().debug("recipe book: attempt to fabricate " + recipe.getResult() + " for " + player.getName());
 
         fabricationFree = player.hasPermission(FREEFAB_PERMISSION);
@@ -574,7 +573,7 @@ public class RecipeBook extends BaseSTBItem {
                 if (inv != null) {
                     vanillaInventories.add(inv);
                 }
-            } else if (h instanceof BlockState && SensibleToolbox.getProtectionManager().hasPermission(player, ((BlockState) h).getBlock(), ProtectableAction.ACCESS_INVENTORIES)) {
+            } else if (h instanceof BlockState && SensibleToolbox.getProtectionManager().hasPermission(player, ((BlockState) h).getBlock(), ProtectableAction.INTERACT_BLOCK)) {
                 vanillaInventories.add(h.getInventory());
             }
         }
@@ -617,7 +616,7 @@ public class RecipeBook extends BaseSTBItem {
         }
     }
 
-    private void fabricateFree(ItemStack result) {
+    private void fabricateFree(@Nonnull ItemStack result) {
         BaseSTBItem stb = SensibleToolbox.getItemRegistry().fromItemStack(result);
 
         if (stb instanceof Chargeable) {
