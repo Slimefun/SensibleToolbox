@@ -17,11 +17,24 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.NumericGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
+import io.github.thebusybiscuit.sensibletoolbox.listeners.SoundMufflerListener;
 
+/**
+ * The {@link SoundMuffler} muffles or mutes nearby sounds.
+ * This item requires ProtocolLib to be installed.
+ * 
+ * @author desht
+ * @author TheBusyBiscuit
+ * 
+ * @see SoundMufflerListener
+ *
+ */
 public class SoundMuffler extends BaseSTBBlock {
 
     public static final int DISTANCE = 8;
-    private int volume; // 0-100
+
+    // Can be between 0-100
+    private int volume;
 
     public SoundMuffler() {
         volume = 10;
@@ -88,14 +101,18 @@ public class SoundMuffler extends BaseSTBBlock {
 
     @Override
     public void onBlockRegistered(Location loc, boolean isPlacing) {
-        ((SensibleToolboxPlugin) getProviderPlugin()).getSoundMufflerListener().registerMuffler(this);
+        SensibleToolboxPlugin plugin = ((SensibleToolboxPlugin) getProviderPlugin());
+        SoundMufflerListener listener = plugin.getSoundMufflerListener();
+        listener.registerMuffler(this);
 
         super.onBlockRegistered(loc, isPlacing);
     }
 
     @Override
     public void onBlockUnregistered(Location loc) {
-        ((SensibleToolboxPlugin) getProviderPlugin()).getSoundMufflerListener().unregisterMuffler(this);
+        SensibleToolboxPlugin plugin = ((SensibleToolboxPlugin) getProviderPlugin());
+        SoundMufflerListener listener = plugin.getSoundMufflerListener();
+        listener.unregisterMuffler(this);
 
         super.onBlockUnregistered(loc);
     }
@@ -105,6 +122,7 @@ public class SoundMuffler extends BaseSTBBlock {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             getGUI().show(event.getPlayer());
         }
+
         super.onInteractBlock(event);
     }
 
