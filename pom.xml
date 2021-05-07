@@ -198,7 +198,7 @@
         <dependency>
             <groupId>com.github.TheBusyBiscuit</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-22</version>
+            <version>4.1.15</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
