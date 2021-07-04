@@ -1,6 +1,8 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -24,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
@@ -133,6 +136,20 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
         maxCapacity = getStackCapacity() * (this.stored == null ? 64 : this.stored.getMaxStackSize());
         updateSignItemLines();
+    }
+
+    @Nullable
+    private ItemStack getStoredItemDisplay() {
+        if (this.stored != null) {
+            ItemStack displayItemStack = stored.clone();
+            ItemMeta meta = displayItemStack.getItemMeta();
+            List<String> lore = meta != null && meta.getLore() != null ? meta.getLore() : new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Stored Item");
+            meta.setLore(lore);
+            displayItemStack.setItemMeta(meta);
+            return displayItemStack;
+        }
+        return null;
     }
 
     private void updateSignQuantityLine() {
@@ -322,7 +339,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
             Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
             getProgressMeter().setMaxProgress(maxCapacity);
-            setProcessing(stored);
+            setProcessing(getStoredItemDisplay());
             setProgress(maxCapacity - (double) getStorageAmount());
             update(false);
             updateAttachedLabelSigns();
@@ -359,7 +376,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
         getProgressMeter().setMaxProgress(maxCapacity);
-        setProcessing(stored);
+        setProcessing(getStoredItemDisplay());
         setProgress(maxCapacity - (double) storageAmount);
         ItemStack output = getOutputItem();
         outputAmount = output == null ? 0 : output.getAmount();
