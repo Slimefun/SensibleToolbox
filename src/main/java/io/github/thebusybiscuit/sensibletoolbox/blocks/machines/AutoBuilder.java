@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import javax.annotation.Nonnull;
 
+import me.desht.dhutils.text.LogUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -214,10 +215,10 @@ public class AutoBuilder extends BaseSTBMachine {
             buildZ = workArea.getLowerZ();
         }
 
-        if (getBuildMode() != AutoBuilderMode.CLEAR && initInventoryPointer()) {
-            setStatus(BuilderStatus.NO_INVENTORY);
-        } else {
+        if (getBuildMode() == AutoBuilderMode.CLEAR || initInventoryPointer()) {
             setStatus(BuilderStatus.RUNNING);
+        } else {
+            setStatus(BuilderStatus.NO_INVENTORY);
         }
     }
 
