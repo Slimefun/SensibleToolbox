@@ -31,6 +31,8 @@ import me.mrCookieSlime.Slimefun.cscorelib2.recipes.MinecraftRecipe;
 
 public final class SlimefunBridge implements SlimefunAddon {
 
+    public static final RecipeType RECIPE_TYPE_MOB_DROP = new RecipeType(new NamespacedKey(SensibleToolboxPlugin.getInstance(), "mob_drop"), new CustomItem(Material.IRON_SWORD, "&bMob Drop", "&7Kill that Mob to", "&7obtain this Item"));
+
     private final SensibleToolboxPlugin plugin;
 
     public SlimefunBridge(@Nonnull SensibleToolboxPlugin plugin) {
@@ -120,7 +122,7 @@ public final class SlimefunBridge implements SlimefunAddon {
         RecipeType masher = new RecipeType(new NamespacedKey(plugin, "masher"), SlimefunItem.getByID("STB_MASHER").getItem());
         RecipeType fermenter = new RecipeType(new NamespacedKey(plugin, "fermenter"), SlimefunItem.getByID("STB_FERMENTER").getItem());
 
-        patch("STB_INFERNALDUST", RecipeType.MOB_DROP, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
+        patch("STB_INFERNALDUST", RECIPE_TYPE_MOB_DROP, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
         patch("STB_ENERGIZEDGOLDINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_ENERGIZEDGOLDDUST").getItem());
         patch("STB_QUARTZDUST", masher, new ItemStack(Material.QUARTZ));
         patch("STB_ENERGIZEDIRONINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_ENERGIZEDIRONDUST").getItem());
