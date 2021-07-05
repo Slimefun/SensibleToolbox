@@ -45,6 +45,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
     private static final long DOUBLE_CLICK_TIME = 250L;
     private ItemStack stored;
+    private ItemStack storedDisplay;
     private int storageAmount;
     private int outputAmount;
     private int maxCapacity;
@@ -130,8 +131,10 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (stored != null) {
             this.stored = stored.clone();
             this.stored.setAmount(1);
+            this.storedDisplay = getStoredItemDisplay();
         } else if (!isLocked()) {
             this.stored = null;
+            this.storedDisplay = null;
         }
 
         maxCapacity = getStackCapacity() * (this.stored == null ? 64 : this.stored.getMaxStackSize());
@@ -339,7 +342,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
             Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
             getProgressMeter().setMaxProgress(maxCapacity);
-            setProcessing(getStoredItemDisplay());
+            setProcessing(storedDisplay);
             setProgress(maxCapacity - (double) getStorageAmount());
             update(false);
             updateAttachedLabelSigns();
@@ -376,7 +379,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
         getProgressMeter().setMaxProgress(maxCapacity);
-        setProcessing(getStoredItemDisplay());
+        setProcessing(storedDisplay);
         setProgress(maxCapacity - (double) storageAmount);
         ItemStack output = getOutputItem();
         outputAmount = output == null ? 0 : output.getAmount();
