@@ -119,8 +119,9 @@ public final class SlimefunBridge implements SlimefunAddon {
 
         RecipeType masher = new RecipeType(new NamespacedKey(plugin, "masher"), SlimefunItem.getByID("STB_MASHER").getItem());
         RecipeType fermenter = new RecipeType(new NamespacedKey(plugin, "fermenter"), SlimefunItem.getByID("STB_FERMENTER").getItem());
+        RecipeType mobDrop = new RecipeType(new NamespacedKey(plugin, "mob_drop"), new CustomItem(Material.IRON_SWORD, "&bMob Drop", "&7Kill that Mob to", "&7obtain this Item"));
 
-        patch("STB_INFERNALDUST", RecipeType.MOB_DROP, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
+        patch("STB_INFERNALDUST", mobDrop, new CustomItem(Material.BLAZE_SPAWN_EGG, "&a&oBlaze"));
         patch("STB_ENERGIZEDGOLDINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_ENERGIZEDGOLDDUST").getItem());
         patch("STB_QUARTZDUST", masher, new ItemStack(Material.QUARTZ));
         patch("STB_ENERGIZEDIRONINGOT", new RecipeType(MinecraftRecipe.FURNACE), SlimefunItem.getByID("STB_ENERGIZEDIRONDUST").getItem());
