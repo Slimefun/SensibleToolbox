@@ -24,6 +24,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
+import javax.annotation.Nonnull;
+
 public class AngelicBlock extends BaseSTBBlock {
 
     public AngelicBlock() {}
