@@ -1,13 +1,17 @@
 package io.github.thebusybiscuit.sensibletoolbox;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -150,6 +154,8 @@ import io.github.thebusybiscuit.sensibletoolbox.listeners.WorldListener;
 import io.github.thebusybiscuit.sensibletoolbox.slimefun.SlimefunBridge;
 import io.github.thebusybiscuit.sensibletoolbox.utils.ItemGlow;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.papermc.lib.PaperLib;
+
 import me.desht.dhutils.DHUtilsException;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.MiscUtil;
@@ -182,6 +188,12 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     @Override
     public void onEnable() {
         instance = this;
+
+        // We wanna ensure that the Server uses a compatible version of Minecraft
+        if (isVersionUnsupported()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         LogUtils.init(this);
         new Metrics(this, 6354);
@@ -255,6 +267,51 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
 
         enabled = true;
+    }
+
+    /**
+     * This method checks for the {@link MinecraftVersion} of the {@link Server}.
+     * If the version is unsupported, a warning will be printed to the console.
+     *
+     * @return Whether the {@link MinecraftVersion} is unsupported
+     */
+    private boolean isVersionUnsupported() {
+        int majorVersion = PaperLib.getMinecraftVersion();
+
+        if (majorVersion > 0) {
+            for (MinecraftVersion supportedVersion : MinecraftVersion.values()) {
+                if (supportedVersion.isMinecraftVersion(majorVersion)) {
+                    minecraftVersion = supportedVersion;
+                    return false;
+                }
+            }
+
+            // Looks like you are using an unsupported Minecraft Version
+            getLogger().log(Level.SEVERE, "#############################################");
+            getLogger().log(Level.SEVERE, "### SensibleToolbox was not installed correctly!");
+            getLogger().log(Level.SEVERE, "### You are using the wrong version of Minecraft!");
+            getLogger().log(Level.SEVERE, "###");
+            getLogger().log(Level.SEVERE, "### You are using Minecraft v1.{0}", majorVersion);
+            getLogger().log(Level.SEVERE, "### but SensibleToolbox v{0} requires you to be using", getDescription().getVersion());
+            getLogger().log(Level.SEVERE, "### Minecraft {0}", String.join(" / ", getSupportedVersions()));
+            getLogger().log(Level.SEVERE, "#############################################");
+            return true;
+        }
+
+        getLogger().log(Level.WARNING, "We could not determine the version of Minecraft you were using (1.{0})", majorVersion);
+        return false;
+    }
+
+    private @Nonnull Collection<String> getSupportedVersions() {
+        List<String> list = new ArrayList<>();
+
+        for (MinecraftVersion version : MinecraftVersion.values()) {
+            if (version != MinecraftVersion.UNKNOWN) {
+                list.add(version.getName());
+            }
+        }
+
+        return list;
     }
 
     @Override

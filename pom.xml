@@ -20,7 +20,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- Spigot properties -->
-        <spigot.version>1.16.5</spigot.version>
+        <spigot.version>1.17</spigot.version>
         <spigot.javadocs>https://hub.spigotmc.org/javadocs/spigot/</spigot.javadocs>
 
         <!-- Default settings for sonarcloud.io -->
@@ -117,6 +117,10 @@
                             <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.bstats</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>io.papermc.lib</pattern>
+                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.paperlib</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>io.github.thebusybiscuit.cscorelib2</pattern>
                             <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.cscorelib2</shadedPattern>
                         </relocation>
@@ -198,7 +202,7 @@
         <dependency>
             <groupId>com.github.TheBusyBiscuit</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-22</version>
+            <version>RC-25</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -232,7 +236,14 @@
         <dependency>
             <groupId>com.github.thebusybiscuit</groupId>
             <artifactId>CS-CoreLib2</artifactId>
-            <version>0.30.4</version>
+            <version>0.32.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.6</version>
             <scope>compile</scope>
         </dependency>
 
