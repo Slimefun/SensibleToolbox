@@ -1,5 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
+import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -83,7 +85,13 @@ public class AngelicBlock extends BaseSTBBlock {
 
     private boolean isWithinWorldBounds(Block b) {
         Location loc = b.getLocation();
-        return loc.getY() > loc.getWorld().getMinHeight() && loc.getY() < loc.getWorld().getMaxHeight();
+        int minHeight;
+        if (SensibleToolboxPlugin.getMinecraftVersion().isAtLeast(MinecraftVersion.MINECRAFT_1_16)) {
+            minHeight = loc.getWorld().getMinHeight();
+        } else {
+            minHeight = 0;
+        }
+        return loc.getY() > minHeight && loc.getY() < loc.getWorld().getMaxHeight();
     }
 
     @Override
