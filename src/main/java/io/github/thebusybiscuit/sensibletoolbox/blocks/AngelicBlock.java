@@ -64,7 +64,7 @@ public class AngelicBlock extends BaseSTBBlock {
             Location loc = p.getEyeLocation().add(v);
             Block b = loc.getBlock();
 
-            if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.PLACE_BLOCK)) {
+            if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.PLACE_BLOCK) && isWithinWorldBounds(b)) {
                 ItemStack stack = event.getItem();
 
                 if (stack.getAmount() > 1) {
@@ -79,6 +79,11 @@ public class AngelicBlock extends BaseSTBBlock {
         }
 
         event.setCancelled(true);
+    }
+
+    private boolean isWithinWorldBounds(Block b) {
+        Location loc = b.getLocation();
+        return loc.getY() > loc.getWorld().getMinHeight() && loc.getY() < loc.getWorld().getMaxHeight();
     }
 
     @Override
