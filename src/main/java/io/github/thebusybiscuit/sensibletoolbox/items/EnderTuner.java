@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -80,16 +81,18 @@ public class EnderTuner extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        Block clicked = event.getClickedBlock();
-        BaseSTBBlock stb = clicked == null ? null : SensibleToolbox.getBlockAt(clicked.getLocation(), true);
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Block clicked = event.getClickedBlock();
+            BaseSTBBlock stb = clicked == null ? null : SensibleToolbox.getBlockAt(clicked.getLocation(), true);
 
-        if (stb instanceof EnderTunable && stb.hasAccessRights(event.getPlayer())) {
-            tuningBlock = (EnderTunable) stb;
+            if (stb instanceof EnderTunable && stb.hasAccessRights(event.getPlayer())) {
+                tuningBlock = (EnderTunable) stb;
+            }
+
+            inventoryGUI = makeTuningGUI(event.getPlayer());
+            inventoryGUI.show(event.getPlayer());
+            event.setCancelled(true);
         }
-
-        inventoryGUI = makeTuningGUI(event.getPlayer());
-        inventoryGUI.show(event.getPlayer());
-        event.setCancelled(true);
     }
 
     @Nonnull
@@ -211,9 +214,8 @@ public class EnderTuner extends BaseSTBItem {
         if (tuningBlock != null) {
             if (player instanceof Player) {
                 STBUtil.complain((Player) player);
-            } else {
-                return false;
             }
+            return false;
         }
 
         if (slot == TUNED_ITEM_SLOT && inventoryGUI.getItem(slot) != null) {
