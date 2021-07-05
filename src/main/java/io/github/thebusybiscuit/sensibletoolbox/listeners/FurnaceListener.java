@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.listeners;
 
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
@@ -134,7 +135,7 @@ public class FurnaceListener extends STBBaseListener {
         }
     }
 
-    private boolean vanillaRecipeCheck(FurnaceRecipe recipe, ItemStack stack) {
+    private boolean vanillaRecipeCheck(@Nonnull FurnaceRecipe recipe, @Nonnull ItemStack stack) {
         return recipe.getInputChoice().test(stack) && !recipe.getKey().getNamespace().equals("sensibletoolbox");
     }
 
