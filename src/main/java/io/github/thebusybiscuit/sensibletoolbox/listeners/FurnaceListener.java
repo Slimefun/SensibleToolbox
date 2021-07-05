@@ -125,13 +125,17 @@ public class FurnaceListener extends STBBaseListener {
             while (recipes.hasNext()) {
                 Recipe recipe = recipes.next();
 
-                if (recipe instanceof FurnaceRecipe && ((FurnaceRecipe) recipe).getInputChoice().test(stack)) {
+                if (recipe instanceof FurnaceRecipe && vanillaRecipeCheck((FurnaceRecipe) recipe, stack)) {
                     return true;
                 }
             }
 
             return false;
         }
+    }
+
+    private boolean vanillaRecipeCheck(FurnaceRecipe recipe, ItemStack stack) {
+        return recipe.getInputChoice().test(stack) && !recipe.getKey().getNamespace().equals("sensibletoolbox");
     }
 
     private int findNewSlot(InventoryClickEvent event) {
