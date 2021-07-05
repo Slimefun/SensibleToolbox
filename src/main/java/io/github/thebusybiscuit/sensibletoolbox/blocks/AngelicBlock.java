@@ -83,7 +83,7 @@ public class AngelicBlock extends BaseSTBBlock {
         event.setCancelled(true);
     }
 
-    private boolean isWithinWorldBounds(Block b) {
+    private boolean isWithinWorldBounds(@Nonnull Block b) {
         Location loc = b.getLocation();
         int minHeight;
         if (SensibleToolboxPlugin.getMinecraftVersion().isAtLeast(MinecraftVersion.MINECRAFT_1_16)) {
