@@ -197,10 +197,12 @@ public class STBInventoryGUI implements InventoryGUI {
                 monitor.doRepaint();
             }
         }
-        Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwningItem());
-        setOpenGUI(player, this);
-        listener.onGUIOpened(player);
-        player.openInventory(inventory);
+        if (getOpenGUI(player) == null) {
+            Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwningItem());
+            setOpenGUI(player, this);
+            listener.onGUIOpened(player);
+            player.openInventory(inventory);
+        }
     }
 
     @Override
