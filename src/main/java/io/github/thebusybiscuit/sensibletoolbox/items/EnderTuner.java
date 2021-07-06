@@ -81,7 +81,7 @@ public class EnderTuner extends BaseSTBItem {
 
     @Override
     public void onInteractItem(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) { // Make sure user is interacting intentionally (i.e. Not in a GUI)
             Block clicked = event.getClickedBlock();
             BaseSTBBlock stb = clicked == null ? null : SensibleToolbox.getBlockAt(clicked.getLocation(), true);
 
