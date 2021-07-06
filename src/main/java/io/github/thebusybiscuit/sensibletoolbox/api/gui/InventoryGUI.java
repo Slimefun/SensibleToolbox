@@ -157,6 +157,11 @@ public interface InventoryGUI {
     void show(Player player);
 
     /**
+     * Hides this GUI from all players
+     */
+    void hideForAll();
+
+    /**
      * Hide this GUI from the given player (pop it down)
      *
      * @param player

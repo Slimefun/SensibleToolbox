@@ -103,6 +103,10 @@ public class STBInventoryGUI implements InventoryGUI {
         }
     }
 
+    private boolean hasOpenGUI(Player player) {
+        return getOpenGUI(player) == null;
+    }
+
     @Override
     public void addGadget(ClickableGadget gadget) {
         int slot = gadget.getSlot();
@@ -197,11 +201,18 @@ public class STBInventoryGUI implements InventoryGUI {
                 monitor.doRepaint();
             }
         }
-        if (getOpenGUI(player) == null) {
+        if (hasOpenGUI(player)) {
             Debugger.getInstance().debug(player.getName() + " opened GUI for " + getOwningItem());
             setOpenGUI(player, this);
             listener.onGUIOpened(player);
             player.openInventory(inventory);
+        }
+    }
+
+    @Override
+    public void hideForAll() {
+        for (HumanEntity player : new ArrayList<>(inventory.getViewers())) {
+            hide((Player) player);
         }
     }
 
