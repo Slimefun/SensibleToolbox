@@ -214,10 +214,10 @@ public class AutoBuilder extends BaseSTBMachine {
             buildZ = workArea.getLowerZ();
         }
 
-        if (getBuildMode() != AutoBuilderMode.CLEAR && initInventoryPointer()) {
-            setStatus(BuilderStatus.NO_INVENTORY);
-        } else {
+        if (getBuildMode() == AutoBuilderMode.CLEAR || initInventoryPointer()) {
             setStatus(BuilderStatus.RUNNING);
+        } else {
+            setStatus(BuilderStatus.NO_INVENTORY);
         }
     }
 
