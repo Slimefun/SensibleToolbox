@@ -146,9 +146,13 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (this.stored != null) {
             ItemStack displayItemStack = stored.clone();
             ItemMeta meta = displayItemStack.getItemMeta();
-            List<String> lore = meta != null && meta.getLore() != null ? meta.getLore() : new ArrayList<>();
-            lore.add(ChatColor.GRAY + "Stored Item");
-            meta.setLore(lore);
+            List<String> newLore = new ArrayList<>();
+            if (meta != null) {
+                List<String> currentLore = meta.getLore();
+                if (currentLore != null) {newLore.addAll(currentLore);}
+            }
+            newLore.add(ChatColor.GRAY + "Stored Item");
+            meta.setLore(newLore);
             displayItemStack.setItemMeta(meta);
             return displayItemStack;
         }
