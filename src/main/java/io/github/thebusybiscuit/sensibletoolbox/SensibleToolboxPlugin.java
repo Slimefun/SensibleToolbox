@@ -172,6 +172,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     private MinecraftVersion minecraftVersion = MinecraftVersion.UNKNOWN;
 
     private ConfigurationManager configManager;
+    private boolean slimefunEnabled = false;
     private boolean protocolLibEnabled = false;
     private SoundMufflerListener soundMufflerListener;
     private boolean enabled = false;
@@ -483,6 +484,10 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             LogUtils.warning("ProtocolLib not detected - some functionality is reduced:");
             LogUtils.warning("  No glowing items, Reduced particle effects, Sound Muffler item disabled");
         }
+    }
+
+    public boolean isSlimefunEnabled() {
+        return slimefunEnabled;
     }
 
     public boolean isProtocolLibEnabled() {
