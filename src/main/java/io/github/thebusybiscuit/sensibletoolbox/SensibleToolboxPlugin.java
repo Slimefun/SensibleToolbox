@@ -259,6 +259,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         scheduleEnergyNetTicker();
 
         if (getServer().getPluginManager().isPluginEnabled("Slimefun")) {
+            slimefunEnabled = true;
             new SlimefunBridge(this);
         }
 
