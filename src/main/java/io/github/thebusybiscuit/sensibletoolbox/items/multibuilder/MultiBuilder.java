@@ -30,8 +30,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -253,14 +255,21 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
     }
 
     protected boolean canReplace(Player player, Block b) {
-        // we won't replace any block which can hold items, or any STB block, or any unbreakable block
+        // Check for non-replaceable block types.
+        // STB Blocks
         if (SensibleToolbox.getBlockAt(b.getLocation(), true) != null) {
             return false;
+        // Vanilla inventories
         } else if (VanillaInventoryUtils.isVanillaInventory(b)) {
             return false;
+        // Slimefun Blocks
+        } else if (SensibleToolboxPlugin.getInstance().isSlimefunEnabled() && BlockStorage.hasBlockInfo(b)) {
+            return false;
+        // Unbreakable Blocks
         } else if (b.getType().getHardness() >= 3600000) {
             return false;
         } else {
+            // Block is replaceable, return permission to break
             return SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK);
         }
     }
