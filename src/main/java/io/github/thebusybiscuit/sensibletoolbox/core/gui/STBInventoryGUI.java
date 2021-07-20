@@ -37,6 +37,8 @@ import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.text.LogUtils;
 
+import javax.annotation.Nonnull;
+
 public class STBInventoryGUI implements InventoryGUI {
 
     // some handy stock textures
@@ -103,7 +105,7 @@ public class STBInventoryGUI implements InventoryGUI {
         }
     }
 
-    private boolean hasOpenGUI(Player player) {
+    private boolean hasOpenGUI(@Nonnull Player player) {
         return getOpenGUI(player) == null;
     }
 
