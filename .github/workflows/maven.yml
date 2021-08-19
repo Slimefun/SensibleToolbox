@@ -31,4 +31,4 @@ jobs:
         if: success()
         with:
           name: SensibleToolbox-CN
-          path: target/SensibleToolbox-CN.jar
+          path: target/SensibleToolbox-vCN.jar
