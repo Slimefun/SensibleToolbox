@@ -18,10 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.IronCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 
 public class AutoFarm extends AutoFarmingMachine {
 
@@ -133,7 +133,7 @@ public class AutoFarm extends AutoFarmingMachine {
                     amount = (stack.getMaxStackSize() - stack.getAmount()) > 3 ? (ThreadLocalRandom.current().nextInt(2) + 1) : (stack.getMaxStackSize() - stack.getAmount());
                 }
 
-                setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + amount));
+                setInventoryItem(slot, new CustomItemStack(stack, stack.getAmount() + amount));
                 buffer = null;
                 return true;
             }

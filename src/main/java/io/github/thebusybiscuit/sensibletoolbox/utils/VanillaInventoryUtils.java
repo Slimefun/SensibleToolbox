@@ -20,9 +20,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.filters.Filter;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import me.desht.dhutils.Debugger;
 
 /**
@@ -80,7 +80,7 @@ public final class VanillaInventoryUtils {
             return 0;
         }
 
-        if (inserterId == null || !SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(inserterId), target, ProtectableAction.INTERACT_BLOCK)) {
+        if (inserterId == null || !SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(inserterId), target, Interaction.INTERACT_BLOCK)) {
             return 0;
         }
 
@@ -176,7 +176,7 @@ public final class VanillaInventoryUtils {
      */
     @Nullable
     public static ItemStack pullFromInventory(Block target, int amount, ItemStack buffer, Filter filter, @Nullable UUID pullerId) {
-        if (pullerId == null || !SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(pullerId), target, ProtectableAction.INTERACT_BLOCK)) {
+        if (pullerId == null || !SensibleToolbox.getProtectionManager().hasPermission(Bukkit.getOfflinePlayer(pullerId), target, Interaction.INTERACT_BLOCK)) {
             return null;
         }
 

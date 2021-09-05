@@ -22,9 +22,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.comphenix.protocol.ProtocolLib;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectionManager;
-import io.github.thebusybiscuit.cscorelib2.updater.GitHubBuildsUpdater;
-import io.github.thebusybiscuit.cscorelib2.updater.Updater;
 import io.github.thebusybiscuit.sensibletoolbox.api.AccessControl;
 import io.github.thebusybiscuit.sensibletoolbox.api.FriendManager;
 import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
@@ -154,6 +151,10 @@ import io.github.thebusybiscuit.sensibletoolbox.listeners.WorldListener;
 import io.github.thebusybiscuit.sensibletoolbox.slimefun.SlimefunBridge;
 import io.github.thebusybiscuit.sensibletoolbox.utils.ItemGlow;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.ProtectionManager;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.GitHubBuildsUpdater;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.PluginUpdater;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.versions.PrefixedVersion;
 import io.papermc.lib.PaperLib;
 
 import me.desht.dhutils.DHUtilsException;
@@ -264,7 +265,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
         }
 
         if (getConfig().getBoolean("options.auto-update") && getDescription().getVersion().startsWith("DEV - ")) {
-            Updater updater = new GitHubBuildsUpdater(this, getFile(), "Slimefun/SensibleToolbox/master");
+            PluginUpdater<PrefixedVersion> updater = new GitHubBuildsUpdater(this, getFile(), "Slimefun/SensibleToolbox/master");
             updater.start();
         }
 

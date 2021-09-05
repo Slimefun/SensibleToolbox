@@ -31,8 +31,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
 
-import io.github.thebusybiscuit.cscorelib2.inventory.ChestMenu;
-import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
@@ -41,6 +40,7 @@ import io.github.thebusybiscuit.sensibletoolbox.utils.HoloMessage;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import me.desht.dhutils.Debugger;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 
 public class PaintBrush extends BaseSTBItem {
 
@@ -309,13 +309,13 @@ public class PaintBrush extends BaseSTBItem {
         Painting editingPainting = painting;
 
         Art[] other = getOtherArt(painting.getArt());
-        ChestMenu menu = new ChestMenu(getProviderPlugin(), "Select Artwork");
+        ChestMenu menu = new ChestMenu("Select Artwork");
         menu.setEmptySlotsClickable(false);
         menu.setPlayerInventoryClickable(false);
 
         int i = 0;
         for (Art art : other) {
-            menu.addItem(i, new CustomItem(Material.PAINTING, art.name(), "", "&7Click to select this artwork"), (pl, slot, item, cursor, action) -> {
+            menu.addItem(i, new CustomItemStack(Material.PAINTING, art.name(), "", "&7Click to select this artwork"), (pl, slot, item, action) -> {
                 editingPainting.setArt(art);
                 setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
                 updateHeldItemStack(pl, hand);

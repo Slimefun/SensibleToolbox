@@ -21,7 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
@@ -35,6 +34,7 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircu
 import io.github.thebusybiscuit.sensibletoolbox.items.components.ToughMachineFrame;
 import io.github.thebusybiscuit.sensibletoolbox.utils.ColoredMaterial;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import me.desht.dhutils.MiscUtil;
 import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.dhutils.cuboid.CuboidDirection;
@@ -264,7 +264,7 @@ public class AutoBuilder extends BaseSTBMachine {
 
             switch (getBuildMode()) {
                 case CLEAR:
-                    if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.BREAK_BLOCK)) {
+                    if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, Interaction.BREAK_BLOCK)) {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }
@@ -290,7 +290,7 @@ public class AutoBuilder extends BaseSTBMachine {
                 case FILL:
                 case WALLS:
                 case FRAME:
-                    if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, ProtectableAction.PLACE_BLOCK)) {
+                    if (!SensibleToolbox.getProtectionManager().hasPermission(owner, b, Interaction.PLACE_BLOCK)) {
                         setStatus(BuilderStatus.NO_PERMISSION);
                         return;
                     }
