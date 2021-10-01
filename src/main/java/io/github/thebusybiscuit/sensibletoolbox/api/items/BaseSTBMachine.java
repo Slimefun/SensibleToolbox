@@ -584,7 +584,6 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     @Override
     public void onBlockUnregistered(Location loc) {
-
         // Machines broken while viewed allow items to be taken out.
         // We need to close the inventories if opened.
         getGUI().hideForAll();
