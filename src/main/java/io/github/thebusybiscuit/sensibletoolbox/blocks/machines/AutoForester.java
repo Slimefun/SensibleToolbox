@@ -19,6 +19,7 @@ import org.bukkit.inventory.ShapedRecipe;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
+import io.github.thebusybiscuit.sensibletoolbox.utils.MaterialConverter;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.blocks.Vein;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 
