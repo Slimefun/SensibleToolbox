@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import org.bukkit.Material;
 
+import lombok.NonNull;
+
 public final class MaterialConverter {
-	public static Optional<Material> getSaplingFromLog(Material log) {
+	public static Optional<Material> getSaplingFromLog(@NonNull Material log) {
 		if (!isLog(log))
 			return Optional.empty();
 
@@ -18,7 +20,7 @@ public final class MaterialConverter {
 		}
 	}
 
-	public static Optional<Material> getPlanksFromLog(Material log) {
+	public static Optional<Material> getPlanksFromLog(@NonNull Material log) {
 		if (!isLog(log))
 			return Optional.empty();
 
@@ -31,7 +33,7 @@ public final class MaterialConverter {
 		}
 	}
 
-	public static boolean isLog(Material log) {
+	public static boolean isLog(@NonNull Material log) {
 		return log.name().endsWith("_LOG") || log.name().endsWith("_WOOD");
 	}
 }
