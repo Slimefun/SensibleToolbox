@@ -62,7 +62,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
 
     private double charge;
     private ChargeDirection chargeDirection;
-    private boolean jammed; // true if no space in output slots for processing result
+    // true if no space in output slots for processing result
+    private boolean jammed;
     private EnergyCell installedCell;
     private double speedMultiplier;
     private double powerMultiplier;
@@ -76,7 +77,8 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
     private int regulatorAmount;
     private int thoroughnessAmount;
     private String chargeLabel;
-    private int charge8; // a 0..7 value representing charge boundaries
+    // a 0..7 value representing charge boundaries
+    private int charge8;
 
     protected BaseSTBMachine() {
         super();
