@@ -341,7 +341,8 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (getProcessing() != null && dropsItemsOnBreak()) {
             // dump contents on floor (could make a big mess)
             Location current = getLocation();
-            storageAmount = Math.min(4096, storageAmount); // max 64 stacks will be dropped
+            // max 64 stacks will be dropped
+            storageAmount = Math.min(4096, storageAmount);
 
             while (storageAmount > 0) {
                 ItemStack stack = stored.clone();
