@@ -24,11 +24,13 @@ import net.md_5.bungee.api.ChatColor;
 public abstract class AbstractProcessingMachine extends BaseSTBMachine {
 
     private static final long PROGRESS_INTERVAL = 10;
-    private double progress; // ticks remaining till this work cycle is done
+    // ticks remaining till this work cycle is done
+    private double progress;
     private int progressMeterId;
     private ItemStack processing;
-    private int ejectionInterval = 1; // try to eject every tick by default
-
+    // try to eject every tick by default
+    private int ejectionInterval = 1;
+    
     protected AbstractProcessingMachine() {
         super();
     }
