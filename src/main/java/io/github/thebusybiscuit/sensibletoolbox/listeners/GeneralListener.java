@@ -529,7 +529,8 @@ public class GeneralListener extends STBBaseListener {
                         break;
                     case BLOCK:
                         event.setCancelled(true);
-                        return; // if this one blocks, all subsequent blocks do too
+                        // if this one blocks, all subsequent blocks do too
+                        return;
                     case BREAK:
                         stb.breakBlock(true);
                         break;
