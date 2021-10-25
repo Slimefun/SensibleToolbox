@@ -63,7 +63,8 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     public abstract boolean execute(Location loc);
 
     public DirectionalItemRouterModule() {
-        filter = new Filter(); // default filter: blacklist, no items
+        // default filter: blacklist, no items
+        filter = new Filter();
         setFacingDirection(BlockFace.SELF);
     }
 

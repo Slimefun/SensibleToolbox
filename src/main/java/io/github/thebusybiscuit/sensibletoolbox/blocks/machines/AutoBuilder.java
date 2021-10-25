@@ -488,7 +488,8 @@ public class AutoBuilder extends BaseSTBMachine {
                 setStatus(setupWorkArea());
             }
 
-            return false; // we just put a copy of the land marker into the builder
+            // we just put a copy of the land marker into the builder
+            return false;
         } else {
             return super.onSlotClick(player, slot, click, inSlot, onCursor);
         }
@@ -509,7 +510,8 @@ public class AutoBuilder extends BaseSTBMachine {
             } else {
                 STBUtil.complain((Player) player, "Land Marker doesn't have a location set!");
             }
-            return 0; // we just put a copy of the land marker into the builder
+            // we just put a copy of the land marker into the builder
+            return 0;
         } else {
             return super.onShiftClickInsert(player, slot, toInsert);
         }
