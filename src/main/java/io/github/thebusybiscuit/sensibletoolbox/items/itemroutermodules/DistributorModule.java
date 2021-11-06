@@ -54,7 +54,8 @@ public class DistributorModule extends DirectionalItemRouterModule {
     @Override
     public boolean execute(Location loc) {
         if (getItemRouter() == null) {
-            return false; // shouldn't happen...
+            // shouldn't happen...
+            return false;
         }
 
         doPull(getFacing(), loc);
@@ -64,7 +65,8 @@ public class DistributorModule extends DirectionalItemRouterModule {
             BlockFace face = getNextNeighbour();
 
             if (face == getFacing()) {
-                return false; // shouldn't happen...
+                // shouldn't happen...
+                return false;
             }
 
             Block b = loc.getBlock();

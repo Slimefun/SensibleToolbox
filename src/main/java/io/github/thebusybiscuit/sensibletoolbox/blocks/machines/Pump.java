@@ -22,8 +22,10 @@ import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 
 public class Pump extends AbstractProcessingMachine {
 
-    private static final int PUMP_FILL_TIME = 40; // 40 ticks to fill a bucket
-    private BlockFace pumpFace = BlockFace.DOWN; // will be configurable later
+    // 40 ticks to fill a bucket
+    private static final int PUMP_FILL_TIME = 40;
+    // will be configurable later
+    private BlockFace pumpFace = BlockFace.DOWN;
 
     public Pump() {
         super();

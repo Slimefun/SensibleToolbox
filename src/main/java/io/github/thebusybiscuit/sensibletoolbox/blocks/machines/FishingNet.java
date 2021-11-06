@@ -18,7 +18,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.components.SimpleCircuit;
 
 public class FishingNet extends AbstractProcessingMachine {
 
-    private static final int FISHING_TIME = 600; // 600 ticks (30 Seconds) to catch a Fish
+    // 600 ticks (30 Seconds) to catch a Fish
+    private static final int FISHING_TIME = 600;
 
     private static final ItemStack[] fish = { new ItemStack(Material.COD), new ItemStack(Material.SALMON), new ItemStack(Material.PUFFERFISH), new ItemStack(Material.TROPICAL_FISH) }; // Catchable
                                                                                                                                                                                         // Fish

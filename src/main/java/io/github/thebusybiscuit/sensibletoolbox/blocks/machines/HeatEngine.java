@@ -76,7 +76,8 @@ public class HeatEngine extends Generator {
 
     @Override
     public int[] getOutputSlots() {
-        return new int[0]; // no output slot
+        // no output slot
+        return new int[0];
     }
 
     @Override

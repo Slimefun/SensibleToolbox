@@ -77,7 +77,8 @@ public class HyperStorageUnit extends BigStorageUnit {
 
     @Override
     public int getStackCapacity() {
-        return 33554431; // 2^31 items for a 64-item stack
+        // 2^31 items for a 64-item stack
+        return 33554431;
     }
 
     @Override
