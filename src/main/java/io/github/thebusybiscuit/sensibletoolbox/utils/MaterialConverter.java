@@ -2,9 +2,9 @@ package io.github.thebusybiscuit.sensibletoolbox.utils;
 
 import java.util.Optional;
 
-import org.bukkit.Material;
+import javax.annotation.Nonnull;
 
-import lombok.NonNull;
+import org.bukkit.Material;
 
 /**
  * A collection of miscellaneous material-related utility methods.
@@ -16,7 +16,7 @@ public final class MaterialConverter {
 	 * @param log log you want to turn into sapling
 	 * @return sapling
 	 */
-	public static Optional<Material> getSaplingFromLog(@NonNull Material log) {
+	public static Optional<Material> getSaplingFromLog(@Nonnull Material log) {
 		if (!isLog(log))
 			return Optional.empty();
 
@@ -35,7 +35,7 @@ public final class MaterialConverter {
 	 * @param log log you want to turn into planks
 	 * @return planks
 	 */
-	public static Optional<Material> getPlanksFromLog(@NonNull Material log) {
+	public static Optional<Material> getPlanksFromLog(@Nonnull Material log) {
 		if (!isLog(log))
 			return Optional.empty();
 
@@ -54,7 +54,7 @@ public final class MaterialConverter {
 	 * @param log the material to check
 	 * @return true if the stack is log; false otherwise
 	 */
-	public static boolean isLog(@NonNull Material log) {
+	public static boolean isLog(@Nonnull Material log) {
 		return log.name().endsWith("_LOG") || log.name().endsWith("_WOOD");
 	}
 }
