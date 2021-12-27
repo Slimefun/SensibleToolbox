@@ -49,7 +49,7 @@ public enum MinecraftVersion {
      * (The "Caves and Cliffs: Part II" Update)
      *
      */
-    MINECRAFT_1_18(17, "1.18.x"),
+    MINECRAFT_1_18(18, "1.18.x"),
 
     /**
      * This constant represents an exceptional state in which we were unable
