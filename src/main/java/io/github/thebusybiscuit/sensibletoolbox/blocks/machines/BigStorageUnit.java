@@ -1,6 +1,8 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -24,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice.MaterialChoice;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import io.github.bakedlibs.dough.items.ItemUtils;
@@ -43,6 +46,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     private static final String STB_LAST_BSU_INSERT = "STB_Last_BSU_Insert";
     private static final long DOUBLE_CLICK_TIME = 250L;
     private ItemStack stored;
+    private ItemStack storedDisplay;
     private int storageAmount;
     private int outputAmount;
     private int maxCapacity;
@@ -128,12 +132,32 @@ public class BigStorageUnit extends AbstractProcessingMachine {
         if (stored != null) {
             this.stored = stored.clone();
             this.stored.setAmount(1);
+            this.storedDisplay = getStoredItemDisplay();
         } else if (!isLocked()) {
             this.stored = null;
+            this.storedDisplay = null;
         }
 
         maxCapacity = getStackCapacity() * (this.stored == null ? 64 : this.stored.getMaxStackSize());
         updateSignItemLines();
+    }
+
+    @Nullable
+    private ItemStack getStoredItemDisplay() {
+        if (this.stored != null) {
+            ItemStack displayItemStack = stored.clone();
+            ItemMeta meta = displayItemStack.getItemMeta();
+            List<String> newLore = new ArrayList<>();
+            if (meta != null) {
+                List<String> currentLore = meta.getLore();
+                if (currentLore != null) {newLore.addAll(currentLore);}
+            }
+            newLore.add(ChatColor.GRAY + "Stored Item");
+            meta.setLore(newLore);
+            displayItemStack.setItemMeta(meta);
+            return displayItemStack;
+        }
+        return null;
     }
 
     private void updateSignQuantityLine() {
@@ -323,7 +347,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
 
             Debugger.getInstance().debug(2, this + " amount changed! " + oldTotalAmount + " -> " + getTotalAmount());
             getProgressMeter().setMaxProgress(maxCapacity);
-            setProcessing(stored);
+            setProcessing(storedDisplay);
             setProgress(maxCapacity - (double) getStorageAmount());
             update(false);
             updateAttachedLabelSigns();
@@ -361,7 +385,7 @@ public class BigStorageUnit extends AbstractProcessingMachine {
     @Override
     public void onBlockRegistered(Location location, boolean isPlacing) {
         getProgressMeter().setMaxProgress(maxCapacity);
-        setProcessing(stored);
+        setProcessing(storedDisplay);
         setProgress(maxCapacity - (double) storageAmount);
         ItemStack output = getOutputItem();
         outputAmount = output == null ? 0 : output.getAmount();
