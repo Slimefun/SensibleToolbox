@@ -29,7 +29,7 @@ public class EnergizedQuartz extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(1));
         InfernalDust dust = new InfernalDust();
         registerCustomIngredients(dust);

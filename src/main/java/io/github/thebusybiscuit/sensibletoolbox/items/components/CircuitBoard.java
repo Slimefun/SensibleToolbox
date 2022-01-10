@@ -29,7 +29,7 @@ public class CircuitBoard extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(2));
         recipe.addIngredient(Material.STONE_PRESSURE_PLATE);
         recipe.addIngredient(Material.GREEN_DYE);

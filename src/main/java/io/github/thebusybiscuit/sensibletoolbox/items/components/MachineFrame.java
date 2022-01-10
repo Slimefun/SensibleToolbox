@@ -29,7 +29,7 @@ public class MachineFrame extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("IBI", "B B", "IBI");
         recipe.setIngredient('B', Material.IRON_BARS);

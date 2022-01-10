@@ -28,7 +28,7 @@ public class SiliconWafer extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         // made in a smelter
         return null;
     }

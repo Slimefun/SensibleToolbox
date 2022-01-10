@@ -29,7 +29,7 @@ public class QuartzDust extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         // no vanilla recipe - made in a masher
         return null;
     }

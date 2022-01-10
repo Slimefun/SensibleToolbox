@@ -25,14 +25,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import io.github.bakedlibs.dough.items.ItemUtils;
+import io.github.bakedlibs.dough.protection.Interaction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
+
 import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.dhutils.cuboid.CuboidDirection;
 
@@ -47,13 +48,13 @@ public abstract class CombineHoe extends BaseSTBItem {
         return ChatColor.DARK_GREEN + "Seed Bag";
     }
 
-    public CombineHoe() {
+    protected CombineHoe() {
         super();
         seedType = null;
         seedAmount = 0;
     }
 
-    public CombineHoe(ConfigurationSection conf) {
+    protected CombineHoe(ConfigurationSection conf) {
         super(conf);
         setSeedAmount(conf.getInt("amount"));
         setSeedType(Material.getMaterial(conf.getString("seeds")));

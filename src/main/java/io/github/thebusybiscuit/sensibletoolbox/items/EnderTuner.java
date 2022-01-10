@@ -63,7 +63,7 @@ public class EnderTuner extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(1));
         recipe.shape("SES", "III", " G ");
         recipe.setIngredient('S', Material.GLOWSTONE_DUST);

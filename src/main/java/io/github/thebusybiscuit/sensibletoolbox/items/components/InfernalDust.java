@@ -28,7 +28,7 @@ public class InfernalDust extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         // no vanilla recipe to make infernal dust, but a custom recipe will be added
         return null;
     }

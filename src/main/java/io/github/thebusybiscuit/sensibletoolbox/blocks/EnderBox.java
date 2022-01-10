@@ -104,7 +104,7 @@ public class EnderBox extends BaseSTBBlock implements EnderTunable, STBInventory
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(1));
         recipe.shape("GDG", "GEG", "GGG");
         recipe.setIngredient('G', Material.GOLD_INGOT);

@@ -33,7 +33,7 @@ public class GoldDust extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         // Only made by the Masher
         return null;
     }

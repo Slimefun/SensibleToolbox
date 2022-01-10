@@ -26,11 +26,12 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.PotionMeta;
 
+import io.github.bakedlibs.dough.protection.Interaction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.SoilSaturation;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
+
 import me.desht.dhutils.MiscUtil;
 
 public class WateringCan extends BaseSTBItem {
@@ -101,7 +102,7 @@ public class WateringCan extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SM ", "SBS", " S ");
         recipe.setIngredient('S', Material.STONE);

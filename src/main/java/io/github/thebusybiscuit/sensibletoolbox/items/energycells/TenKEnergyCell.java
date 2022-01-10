@@ -39,7 +39,7 @@ public class TenKEnergyCell extends EnergyCell {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WWW", "WSW", "GRG");
         recipe.setIngredient('W', new MaterialChoice(Tag.PLANKS.getValues().toArray(new Material[0])));

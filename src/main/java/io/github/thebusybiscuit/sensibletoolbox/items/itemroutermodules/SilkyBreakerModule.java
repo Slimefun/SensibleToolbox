@@ -36,7 +36,7 @@ public class SilkyBreakerModule extends BreakerModule {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
         BreakerModule b = new BreakerModule();
         registerCustomIngredients(b);

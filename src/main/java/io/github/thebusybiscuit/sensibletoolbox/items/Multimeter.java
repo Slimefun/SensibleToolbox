@@ -50,7 +50,7 @@ public class Multimeter extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         SimpleCircuit sc = new SimpleCircuit();
         registerCustomIngredients(sc);
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());

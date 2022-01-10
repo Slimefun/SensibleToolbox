@@ -33,7 +33,7 @@ public class SubspaceTransponder extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         IntegratedCircuit ic = new IntegratedCircuit();
         EnergizedGoldIngot eg = new EnergizedGoldIngot();

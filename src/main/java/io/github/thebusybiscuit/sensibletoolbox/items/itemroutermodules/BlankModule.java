@@ -31,7 +31,7 @@ public class BlankModule extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(8));
         recipe.shape("PPP", "PRP", "PBP");
         recipe.setIngredient('P', Material.PAPER);

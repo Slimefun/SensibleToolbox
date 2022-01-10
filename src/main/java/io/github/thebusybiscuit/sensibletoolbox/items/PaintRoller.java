@@ -36,7 +36,7 @@ public class PaintRoller extends PaintBrush {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WWW", "III", " S ");
         recipe.setIngredient('W', Material.WHITE_WOOL);

@@ -34,7 +34,7 @@ public class UnlinkedSCURelay extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         FiftyKBatteryBox bb = new FiftyKBatteryBox();
         IntegratedCircuit ic = new IntegratedCircuit();

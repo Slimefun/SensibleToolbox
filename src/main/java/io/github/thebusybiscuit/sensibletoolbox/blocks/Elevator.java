@@ -63,7 +63,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WWW", "WPW", "WWW");
         recipe.setIngredient('W', Material.WHITE_WOOL);

@@ -39,7 +39,7 @@ public class SorterModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         registerCustomIngredients(new BlankModule());
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
         recipe.addIngredient(Material.PAPER);

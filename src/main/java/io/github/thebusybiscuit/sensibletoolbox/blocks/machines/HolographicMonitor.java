@@ -43,7 +43,7 @@ public class HolographicMonitor extends BaseSTBBlock {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GGG", "LPL", "GGG");
         PowerMonitor monitor = new PowerMonitor();

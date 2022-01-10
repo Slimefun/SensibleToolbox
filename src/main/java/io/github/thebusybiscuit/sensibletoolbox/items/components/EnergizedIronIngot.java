@@ -30,7 +30,7 @@ public class EnergizedIronIngot extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         return null;
     }
 

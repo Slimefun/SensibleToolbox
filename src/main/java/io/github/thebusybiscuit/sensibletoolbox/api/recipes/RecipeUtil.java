@@ -8,16 +8,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBMachine;
@@ -36,29 +39,48 @@ public final class RecipeUtil {
     private static final Map<ItemStack, List<ItemStack>> reverseCustomSmelts = new HashMap<>();
 
     public static void setupRecipes() {
-        for (String key : SensibleToolbox.getItemRegistry().getItemIds()) {
-            // add custom workbench recipes
-            BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(key);
-            Recipe r = item.getRecipe();
-            if (r != null) {
-                Bukkit.addRecipe(r);
-            }
-            for (Recipe r2 : item.getExtraRecipes()) {
-                Bukkit.addRecipe(r2);
-            }
+        for (String itemId : SensibleToolbox.getItemRegistry().getItemIds()) {
+            try {
+                BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(itemId);
 
-            // add custom furnace recipes
-            ItemStack stack = item.getSmeltingResult();
+                addWorkbenchRecipes(item);
+                addFurnaceRecipes(item);
+                addCustomMachineRecipes(item);
 
-            if (stack != null) {
-                Bukkit.addRecipe(new FurnaceRecipe(item.getKey(), stack, item.getMaterial(), 0, 200));
-                recordReverseSmelt(stack, item.toItemStack());
+            } catch (Exception x) {
+                SensibleToolboxPlugin.getInstance().getLogger().log(Level.SEVERE, x, () -> "Could not register recipe for item: " + itemId);
             }
+        }
+    }
 
-            // add custom processing recipes for any machine items
-            if (item instanceof BaseSTBMachine) {
-                ((BaseSTBMachine) item).addCustomRecipes(CustomRecipeManager.getManager());
-            }
+    private static void addWorkbenchRecipes(@Nonnull BaseSTBItem item) {
+        // add custom workbench recipes
+        Recipe mainRecipe = item.getMainRecipe();
+
+        if (mainRecipe != null) {
+            Bukkit.addRecipe(mainRecipe);
+        }
+
+        for (Recipe extraRecipe : item.getExtraRecipes()) {
+            Bukkit.addRecipe(extraRecipe);
+        }
+    }
+
+    private static void addFurnaceRecipes(@Nonnull BaseSTBItem item) {
+        // add custom furnace recipes
+        ItemStack stack = item.getSmeltingResult();
+
+        if (stack != null) {
+            NamespacedKey key = new NamespacedKey(SensibleToolboxPlugin.getInstance(), item.getItemTypeID() + "_furnacerecipe");
+            Bukkit.addRecipe(new FurnaceRecipe(key, stack, item.getMaterial(), 0, 200));
+            recordReverseSmelt(stack, item.toItemStack());
+        }
+    }
+
+    private static void addCustomMachineRecipes(@Nonnull BaseSTBItem item) {
+        // add custom processing recipes for any machine items
+        if (item instanceof BaseSTBMachine) {
+            ((BaseSTBMachine) item).addCustomRecipes(CustomRecipeManager.getManager());
         }
     }
 

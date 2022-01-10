@@ -135,7 +135,7 @@ public class PaintCan extends BaseSTBBlock implements LevelReporter {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GSG", "G G", "III");
         recipe.setIngredient('S', new MaterialChoice(Tag.WOODEN_SLABS));

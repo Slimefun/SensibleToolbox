@@ -80,7 +80,7 @@ public class PVCell extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         SiliconWafer sw = new SiliconWafer();
         registerCustomIngredients(sw);

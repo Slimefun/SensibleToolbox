@@ -25,7 +25,7 @@ public class PullerModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());

@@ -1,8 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
-import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
-import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
+import javax.annotation.Nonnull;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -20,11 +19,12 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.util.Vector;
 
+import io.github.bakedlibs.dough.protection.Interaction;
+import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
+import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
-
-import javax.annotation.Nonnull;
 
 public class AngelicBlock extends BaseSTBBlock {
 
@@ -50,7 +50,7 @@ public class AngelicBlock extends BaseSTBBlock {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), this.toItemStack());
         recipe.shape(" G ", "FOF");
         recipe.setIngredient('G', Material.GOLD_INGOT);

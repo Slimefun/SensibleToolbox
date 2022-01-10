@@ -36,7 +36,7 @@ public class HyperSenderModule extends AdvancedSenderModule {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         SenderModule sm = new SenderModule();
         SubspaceTransponder st = new SubspaceTransponder();
         registerCustomIngredients(sm, st);

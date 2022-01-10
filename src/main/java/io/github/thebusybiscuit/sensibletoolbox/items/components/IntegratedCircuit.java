@@ -29,7 +29,7 @@ public class IntegratedCircuit extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         SimpleCircuit sc = new SimpleCircuit();
         EnergizedGoldIngot eg = new EnergizedGoldIngot();
         SiliconWafer si = new SiliconWafer();

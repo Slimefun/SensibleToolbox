@@ -36,7 +36,7 @@ public class SpeedUpgrade extends AbstractMachineUpgrade {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         SimpleCircuit sc = new SimpleCircuit();
         registerCustomIngredients(sc);

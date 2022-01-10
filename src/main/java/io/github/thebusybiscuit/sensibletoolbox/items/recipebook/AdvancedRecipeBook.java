@@ -31,7 +31,7 @@ public class AdvancedRecipeBook extends RecipeBook {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());
         RecipeBook book = new RecipeBook();
         registerCustomIngredients(book);

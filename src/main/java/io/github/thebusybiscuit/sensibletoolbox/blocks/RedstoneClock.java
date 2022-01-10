@@ -111,7 +111,7 @@ public class RedstoneClock extends BaseSTBBlock {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe res = new ShapedRecipe(getKey(), toItemStack());
         res.shape("RSR", "STS", "RSR");
         res.setIngredient('R', Material.REDSTONE);

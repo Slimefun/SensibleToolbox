@@ -29,7 +29,7 @@ public class DenseSolar extends BasicSolarCell {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         BasicSolarCell bs = new BasicSolarCell();
         IntegratedCircuit ic = new IntegratedCircuit();

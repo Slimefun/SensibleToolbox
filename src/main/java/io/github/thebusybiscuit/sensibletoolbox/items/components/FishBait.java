@@ -28,7 +28,7 @@ public class FishBait extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         return null;
     }
 }

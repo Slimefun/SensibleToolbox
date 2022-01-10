@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+import io.github.bakedlibs.dough.protection.Interaction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 
 public class BreakerModule extends DirectionalItemRouterModule {
 
@@ -86,7 +86,7 @@ public class BreakerModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         BlankModule bm = new BlankModule();
         registerCustomIngredients(bm);
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());

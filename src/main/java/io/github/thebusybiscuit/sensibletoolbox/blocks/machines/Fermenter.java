@@ -47,7 +47,7 @@ public class Fermenter extends AbstractIOMachine {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         MachineFrame mf = new MachineFrame();
         EnergizedQuartz q = new EnergizedQuartz();
         registerCustomIngredients(mf, q);

@@ -30,7 +30,7 @@ public class EnergizedGoldDust extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(1));
         InfernalDust dust1 = new InfernalDust();
         GoldDust dust2 = new GoldDust();

@@ -68,7 +68,7 @@ public class EnderBag extends BaseSTBItem implements EnderTunable {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("WDW", "GCG", "WGW");
         recipe.setIngredient('W', Material.WHITE_WOOL);

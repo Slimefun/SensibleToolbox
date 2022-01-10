@@ -71,7 +71,7 @@ public class LandMarker extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape(" T ", " C ", " S ");
         SimpleCircuit sc = new SimpleCircuit();

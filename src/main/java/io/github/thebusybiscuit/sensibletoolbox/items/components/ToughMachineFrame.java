@@ -29,7 +29,7 @@ public class ToughMachineFrame extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         EnergizedIronIngot ingot = new EnergizedIronIngot();
         MachineFrame frame = new MachineFrame();

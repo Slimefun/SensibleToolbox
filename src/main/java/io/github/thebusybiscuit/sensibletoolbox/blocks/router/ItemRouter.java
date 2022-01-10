@@ -156,7 +156,7 @@ public class ItemRouter extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(4));
         recipe.shape("RFR", "FLF", "RFR");
         recipe.setIngredient('R', Material.REDSTONE);

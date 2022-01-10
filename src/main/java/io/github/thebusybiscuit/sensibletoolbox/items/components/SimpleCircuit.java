@@ -29,7 +29,7 @@ public class SimpleCircuit extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         CircuitBoard cb = new CircuitBoard();
         registerCustomIngredients(cb);
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack(2));

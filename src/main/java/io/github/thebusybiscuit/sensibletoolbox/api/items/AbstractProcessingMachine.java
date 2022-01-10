@@ -30,7 +30,7 @@ public abstract class AbstractProcessingMachine extends BaseSTBMachine {
     private ItemStack processing;
     // try to eject every tick by default
     private int ejectionInterval = 1;
-    
+
     protected AbstractProcessingMachine() {
         super();
     }

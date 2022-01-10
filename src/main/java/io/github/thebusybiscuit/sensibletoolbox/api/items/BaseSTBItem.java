@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.lang.Validate;
@@ -34,6 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 
+import io.github.bakedlibs.dough.data.persistent.PersistentDataAPI;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -41,7 +43,6 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUIListener;
 import io.github.thebusybiscuit.sensibletoolbox.core.STBItemRegistry;
 import io.github.thebusybiscuit.sensibletoolbox.utils.ItemGlow;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.data.persistent.PersistentDataAPI;
 
 /**
  * Represents an STB item. This is the superclass for all STB items.
@@ -183,7 +184,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *
      * @return the display suffix, or null for no suffix
      */
-    public String getDisplaySuffix() {
+    public @Nullable String getDisplaySuffix() {
         return null;
     }
 
@@ -194,7 +195,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *
      * @return the extra item lore
      */
-    public String[] getExtraLore() {
+    public @Nonnull String[] getExtraLore() {
         return new String[0];
     }
 
@@ -203,14 +204,14 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      *
      * @return the recipe, or null if the item does not have a vanilla crafting recipe
      */
-    public abstract Recipe getRecipe();
+    public abstract @Nullable Recipe getMainRecipe();
 
     /**
      * Define any alternative vanilla crafting recipes used to create the item.
      *
      * @return an array of recipes
      */
-    public Recipe[] getExtraRecipes() {
+    public @Nonnull Recipe[] getExtraRecipes() {
         return new Recipe[0];
     }
 

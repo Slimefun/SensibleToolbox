@@ -39,7 +39,7 @@ public class FiftyKEnergyCell extends EnergyCell {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         TenKEnergyCell cell = new TenKEnergyCell();
         cell.setCharge(0.0);

@@ -18,10 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import io.github.bakedlibs.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.IronCombineHoe;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 
 public class AutoFarm extends AutoFarmingMachine {
 
@@ -64,7 +64,7 @@ public class AutoFarm extends AutoFarmingMachine {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         MachineFrame frame = new MachineFrame();
         IronCombineHoe hoe = new IronCombineHoe();
         registerCustomIngredients(frame, hoe);

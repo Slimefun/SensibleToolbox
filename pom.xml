@@ -114,15 +114,15 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.bstats</shadedPattern>
+                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.libraries.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>io.papermc.lib</pattern>
-                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.paperlib</shadedPattern>
+                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.libraries.paperlib</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>io.github.thebusybiscuit.cscorelib2</pattern>
-                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.cscorelib2</shadedPattern>
+                            <pattern>io.github.bakedlibs.dough</pattern>
+                            <shadedPattern>io.github.thebusybiscuit.sensibletoolbox.libraries.dough</shadedPattern>
                         </relocation>
                     </relocations>
 
@@ -200,19 +200,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.TheBusyBiscuit</groupId>
-            <artifactId>Slimefun4</artifactId>
-            <version>RC-27</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.github.bakedlibs</groupId>
-                    <artifactId>dough-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
@@ -231,6 +218,20 @@
             <artifactId>holographicdisplays-api</artifactId>
             <version>2.4.9</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.TheBusyBiscuit</groupId>
+            <artifactId>Slimefun4</artifactId>
+            <version>RC-30</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.baked-libs</groupId>
+            <artifactId>dough-api</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

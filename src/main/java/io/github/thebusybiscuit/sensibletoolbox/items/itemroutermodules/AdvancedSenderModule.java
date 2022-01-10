@@ -70,7 +70,7 @@ public class AdvancedSenderModule extends DirectionalItemRouterModule {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         SenderModule sm = new SenderModule();
         registerCustomIngredients(sm);
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());

@@ -37,7 +37,7 @@ public class PowerMonitor extends BaseSTBBlock {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GGG", "RCR", "GGG");
         TenKEnergyCell cell = new TenKEnergyCell();

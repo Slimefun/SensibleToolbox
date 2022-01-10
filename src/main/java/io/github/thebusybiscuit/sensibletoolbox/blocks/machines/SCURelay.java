@@ -103,7 +103,7 @@ public class SCURelay extends BatteryBox {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack(2));
         UnlinkedSCURelay usr = new UnlinkedSCURelay();
         registerCustomIngredients(usr);

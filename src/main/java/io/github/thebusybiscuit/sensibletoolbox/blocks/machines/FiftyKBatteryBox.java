@@ -26,7 +26,7 @@ public class FiftyKBatteryBox extends BatteryBox {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("GGG", "GCG", "RIR");
         FiftyKEnergyCell cell = new FiftyKEnergyCell();

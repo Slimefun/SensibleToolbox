@@ -33,7 +33,7 @@ public class ThoroughnessUpgrade extends AbstractMachineUpgrade {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("ICI", "IEI", "IGI");
         IntegratedCircuit ic = new IntegratedCircuit();

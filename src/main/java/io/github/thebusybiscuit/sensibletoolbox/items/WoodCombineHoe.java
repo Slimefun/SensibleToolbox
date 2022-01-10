@@ -26,7 +26,7 @@ public class WoodCombineHoe extends CombineHoe {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SSS", "HCW", "SSS");
         recipe.setIngredient('S', Material.STRING);

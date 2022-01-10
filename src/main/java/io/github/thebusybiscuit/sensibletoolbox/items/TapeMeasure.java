@@ -76,7 +76,7 @@ public class TapeMeasure extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SSS", "SIS", "SSS");
         recipe.setIngredient('S', Material.STRING);

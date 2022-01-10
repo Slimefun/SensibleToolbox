@@ -8,12 +8,21 @@ import org.bukkit.Material;
 
 /**
  * A collection of miscellaneous material-related utility methods.
+ * 
+ * @author Catzy44
+ * 
+ * @deprecated We should replace this some day.
  */
+@Deprecated
 public final class MaterialConverter {
+
+    private MaterialConverter() {}
+
     /**
      * Turn log into sapling preserving tree type
      *
-     * @param log log you want to turn into sapling
+     * @param log
+     *            log you want to turn into sapling
      * @return sapling
      */
     public static Optional<Material> getSaplingFromLog(@Nonnull Material log) {
@@ -22,6 +31,7 @@ public final class MaterialConverter {
 
         String type = log.name().substring(0, log.name().lastIndexOf('_'));
         type = type.replace("STRIPPED_", "");
+
         try {
             return Optional.ofNullable(Material.valueOf(type + "_SAPLING"));
         } catch (IllegalArgumentException ignored) {
@@ -32,7 +42,8 @@ public final class MaterialConverter {
     /**
      * Turn log into planks preserving tree type
      *
-     * @param log log you want to turn into planks
+     * @param log
+     *            log you want to turn into planks
      * @return planks
      */
     public static Optional<Material> getPlanksFromLog(@Nonnull Material log) {
@@ -41,6 +52,7 @@ public final class MaterialConverter {
 
         String type = log.name().substring(0, log.name().lastIndexOf('_'));
         type = type.replace("STRIPPED_", "");
+
         try {
             return Optional.ofNullable(Material.valueOf(type + "_PLANKS"));
         } catch (IllegalArgumentException ignored) {
@@ -51,7 +63,8 @@ public final class MaterialConverter {
     /**
      * Check if material is log (any type)
      *
-     * @param log the material to check
+     * @param log
+     *            the material to check
      * @return true if the stack is log; false otherwise
      */
     public static boolean isLog(@Nonnull Material log) {

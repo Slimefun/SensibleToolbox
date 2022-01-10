@@ -15,6 +15,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.bakedlibs.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.recipes.STBFurnaceRecipe;
@@ -26,7 +27,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.recipes.MinecraftRecipe;
 
 public final class SlimefunBridge implements SlimefunAddon {
@@ -44,7 +44,7 @@ public final class SlimefunBridge implements SlimefunAddon {
             ItemGroup category = item.toItemStack().getType().isBlock() ? blocks : items;
             List<ItemStack> recipe = new ArrayList<>();
             RecipeType recipeType = RecipeType.NULL;
-            Recipe r = item.getRecipe();
+            Recipe r = item.getMainRecipe();
 
             if (r != null) {
                 if (r instanceof SimpleCustomRecipe) {
@@ -67,10 +67,10 @@ public final class SlimefunBridge implements SlimefunAddon {
                     recipe.add(null);
                     recipe.add(null);
                     recipe.add(null);
-                } else if (item.getRecipe() instanceof ShapelessRecipe) {
+                } else if (item.getMainRecipe() instanceof ShapelessRecipe) {
                     recipeType = new RecipeType(MinecraftRecipe.SHAPELESS_CRAFTING);
 
-                    for (ItemStack input : ((ShapelessRecipe) item.getRecipe()).getIngredientList()) {
+                    for (ItemStack input : ((ShapelessRecipe) item.getMainRecipe()).getIngredientList()) {
                         if (input == null) {
                             recipe.add(null);
                         } else {
@@ -81,13 +81,13 @@ public final class SlimefunBridge implements SlimefunAddon {
                     for (int i = recipe.size(); i < 9; i++) {
                         recipe.add(null);
                     }
-                } else if (item.getRecipe() instanceof ShapedRecipe) {
+                } else if (item.getMainRecipe() instanceof ShapedRecipe) {
                     recipeType = new RecipeType(MinecraftRecipe.SHAPED_CRAFTING);
 
-                    for (String row : ((ShapedRecipe) item.getRecipe()).getShape()) {
+                    for (String row : ((ShapedRecipe) item.getMainRecipe()).getShape()) {
                         for (int i = 0; i < 3; i++) {
                             try {
-                                recipe.add(RecipeBook.getIngredient(item, ((ShapedRecipe) item.getRecipe()).getIngredientMap().get(Character.valueOf(row.charAt(i)))));
+                                recipe.add(RecipeBook.getIngredient(item, ((ShapedRecipe) item.getMainRecipe()).getIngredientMap().get(Character.valueOf(row.charAt(i)))));
                             } catch (StringIndexOutOfBoundsException x) {
                                 recipe.add(null);
                             }

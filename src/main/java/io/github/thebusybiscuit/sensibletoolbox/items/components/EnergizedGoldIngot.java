@@ -30,7 +30,7 @@ public class EnergizedGoldIngot extends BaseSTBItem {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         return null;
     }
 

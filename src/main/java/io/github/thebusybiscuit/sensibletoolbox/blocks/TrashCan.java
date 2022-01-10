@@ -56,7 +56,7 @@ public class TrashCan extends BaseSTBBlock implements STBInventoryHolder {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), toItemStack());
         recipe.shape("SSS", "OCO", "OOO");
         recipe.setIngredient('S', Material.STONE);

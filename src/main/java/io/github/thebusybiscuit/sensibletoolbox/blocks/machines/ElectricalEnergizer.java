@@ -96,7 +96,7 @@ public class ElectricalEnergizer extends AbstractIOMachine {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         SimpleCircuit sc = new SimpleCircuit();
         MachineFrame mf = new MachineFrame();
         EnergizedGoldIngot gold = new EnergizedGoldIngot();

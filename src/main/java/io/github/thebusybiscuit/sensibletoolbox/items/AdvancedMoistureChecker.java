@@ -19,7 +19,7 @@ public class AdvancedMoistureChecker extends MoistureChecker {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         MoistureChecker mc = new MoistureChecker();
         registerCustomIngredients(mc);
         ShapelessRecipe recipe = new ShapelessRecipe(getKey(), toItemStack());

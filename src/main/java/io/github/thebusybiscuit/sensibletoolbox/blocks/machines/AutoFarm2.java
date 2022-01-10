@@ -54,7 +54,7 @@ public class AutoFarm2 extends AutoFarm {
     }
 
     @Override
-    public Recipe getRecipe() {
+    public Recipe getMainRecipe() {
         MachineFrame frame = new MachineFrame();
         GoldCombineHoe hoe = new GoldCombineHoe();
         registerCustomIngredients(frame, hoe);
