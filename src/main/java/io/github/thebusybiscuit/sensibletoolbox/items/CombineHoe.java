@@ -25,14 +25,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
-import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.SlotType;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import me.desht.dhutils.cuboid.Cuboid;
 import me.desht.dhutils.cuboid.CuboidDirection;
 
@@ -269,7 +269,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         for (Block neighbour : STBUtil.getSurroundingBlocks(b)) {
             Block above = neighbour.getRelative(BlockFace.UP);
 
-            if (!SensibleToolbox.getProtectionManager().hasPermission(player, above, ProtectableAction.PLACE_BLOCK)) {
+            if (!SensibleToolbox.getProtectionManager().hasPermission(player, above, Interaction.PLACE_BLOCK)) {
                 continue;
             }
 
@@ -297,7 +297,7 @@ public abstract class CombineHoe extends BaseSTBItem {
 
         for (Block block : cuboid) {
             if (!block.equals(b) && (STBUtil.isPlant(block.getType()) || Tag.LEAVES.isTagged(block.getType()))) {
-                if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK)) {
+                if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, Interaction.BREAK_BLOCK)) {
                     block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
                     block.breakNaturally();
                 }
@@ -311,7 +311,7 @@ public abstract class CombineHoe extends BaseSTBItem {
         int damage = ((Damageable) stack.getItemMeta()).getDamage();
 
         for (Block b1 : STBUtil.getSurroundingBlocks(b)) {
-            if (!SensibleToolbox.getProtectionManager().hasPermission(player, b1, ProtectableAction.BREAK_BLOCK)) {
+            if (!SensibleToolbox.getProtectionManager().hasPermission(player, b1, Interaction.BREAK_BLOCK)) {
                 continue;
             }
 

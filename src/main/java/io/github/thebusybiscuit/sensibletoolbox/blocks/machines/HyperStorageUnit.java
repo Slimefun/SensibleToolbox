@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.IntegratedCircuit;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
 
 public class HyperStorageUnit extends BigStorageUnit {
 

@@ -17,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import io.github.thebusybiscuit.cscorelib2.blocks.Vein;
-import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
-import io.github.thebusybiscuit.cscorelib2.materials.MaterialConverter;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.AutoFarmingMachine;
 import io.github.thebusybiscuit.sensibletoolbox.items.components.MachineFrame;
+import io.github.thebusybiscuit.sensibletoolbox.utils.MaterialConverter;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.blocks.Vein;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 
 public class AutoForester extends AutoFarmingMachine {
 
@@ -135,7 +135,7 @@ public class AutoForester extends AutoFarmingMachine {
                     stack = new ItemStack(m);
                 }
 
-                setInventoryItem(slot, new CustomItem(stack, stack.getAmount() + 1));
+                setInventoryItem(slot, new CustomItemStack(stack, stack.getAmount() + 1));
                 buffer = null;
                 return true;
             }

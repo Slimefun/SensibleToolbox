@@ -20,7 +20,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- Spigot properties -->
-        <spigot.version>1.17</spigot.version>
+        <spigot.version>1.18.1</spigot.version>
         <spigot.javadocs>https://hub.spigotmc.org/javadocs/spigot/</spigot.javadocs>
 
         <!-- Default settings for sonarcloud.io -->
@@ -67,7 +67,7 @@
         </repository>
         <repository>
             <id>worldedit-repo</id>
-            <url>https://maven.sk89q.com/repo/</url>
+            <url>https://maven.enginehub.org/repo/</url>
         </repository>
     </repositories>
 
@@ -202,12 +202,12 @@
         <dependency>
             <groupId>com.github.TheBusyBiscuit</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-25</version>
+            <version>RC-27</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>io.github.thebusybiscuit</groupId>
-                    <artifactId>cscorelib2</artifactId>
+                    <groupId>io.github.bakedlibs</groupId>
+                    <artifactId>dough-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -231,13 +231,6 @@
             <artifactId>holographicdisplays-api</artifactId>
             <version>2.4.8</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.thebusybiscuit</groupId>
-            <artifactId>CS-CoreLib2</artifactId>
-            <version>0.32.1</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>

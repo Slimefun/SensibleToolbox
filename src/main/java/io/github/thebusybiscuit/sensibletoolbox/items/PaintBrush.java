@@ -30,16 +30,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.Colorable;
-
-import io.github.thebusybiscuit.cscorelib2.inventory.ChestMenu;
-import io.github.thebusybiscuit.cscorelib2.item.CustomItem;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
+import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.ButtonGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.blocks.PaintCan;
 import io.github.thebusybiscuit.sensibletoolbox.utils.HoloMessage;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import me.desht.dhutils.Debugger;
 
 public class PaintBrush extends BaseSTBItem {
@@ -207,6 +209,9 @@ public class PaintBrush extends BaseSTBItem {
 
     @Override
     public void onInteractEntity(PlayerInteractEntityEvent event) {
+    	if(!event.getHand().equals(EquipmentSlot.HAND)) {
+    		return;
+    	}
         event.setCancelled(true);
 
         if (getPaintLevel() <= 0) {
@@ -262,10 +267,15 @@ public class PaintBrush extends BaseSTBItem {
         find(b.getRelative(BlockFace.DOWN), mat, blocks, max);
     }
 
-    @Nullable
+	@Nullable
     private DyeColor getBlockColor(@Nonnull Block b) {
         if (STBUtil.isColorable(b.getType())) {
-            return DyeColor.getByColor(getColor().getColor());
+        	String name = b.getType().name();
+        	String color = name.split("_")[0];
+			if(color.equals("LIGHT")) {
+				color += "_"+name.split("_")[1];
+			}
+			return DyeColor.valueOf(color);
         } else {
             return null;
         }
@@ -274,34 +284,38 @@ public class PaintBrush extends BaseSTBItem {
     private int paintBlocks(@Nonnull Player player, Block... blocks) {
         int painted = 0;
 
-        // TODO: Get Paint Brush working again
-        // for (Block b : blocks) {
-        // if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.PLACE_BLOCK)) {
-        // continue;
-        // }
-        //
-        // Debugger.getInstance().debug(2, "painting! " + b + " " + getPaintLevel() + " " + getColor());
-        // BaseSTBBlock stb = SensibleToolbox.getBlockAt(b.getLocation());
-        //
-        // if (stb instanceof Colorable) {
-        // ((Colorable) stb).setColor(getColor());
-        // }
-        // else {
-        // if (b.getType() == Material.GLASS) {
-        // b.setType(Material.STAINED_GLASS);
-        // }
-        // else if (b.getType() == Material.GLASS_PANE) {
-        // b.setType(Material.STAINED_GLASS_PANE);
-        // }
-        // }
-        //
-        // painted++;
-        // setPaintLevel(getPaintLevel() - 1);
-        //
-        // if (getPaintLevel() <= 0) {
-        // break;
-        // }
-        // }
+		for (Block b : blocks) {
+			if (!SensibleToolbox.getProtectionManager().hasPermission(player, b, Interaction.PLACE_BLOCK)) {
+				continue;
+			}
+
+			Debugger.getInstance().debug(2, "painting! " + b + " " + getPaintLevel() + " " + getColor());
+			
+			if (b.getType() == Material.GLASS) {
+				b.setType(Material.WHITE_STAINED_GLASS);
+			} else if (b.getType() == Material.GLASS_PANE) {
+				b.setType(Material.WHITE_STAINED_GLASS_PANE);
+			} else {
+				if (!STBUtil.isColorable(b.getType())) {
+					continue;
+				}
+
+				String name = b.getType().name();
+				String oldCol = name.split("_")[0];
+				if (oldCol.equals("LIGHT")) {
+					oldCol += "_" + name.split("_")[1];
+				}
+				name = name.replace(oldCol, getColor().name());
+				b.setType(Material.valueOf(name));
+			}
+
+			painted++;
+			setPaintLevel(getPaintLevel() - 1);
+
+			if (getPaintLevel() <= 0) {
+				break;
+			}
+		}
         return painted;
     }
 
@@ -309,25 +323,23 @@ public class PaintBrush extends BaseSTBItem {
         Painting editingPainting = painting;
 
         Art[] other = getOtherArt(painting.getArt());
-        ChestMenu menu = new ChestMenu(getProviderPlugin(), "Select Artwork");
-        menu.setEmptySlotsClickable(false);
-        menu.setPlayerInventoryClickable(false);
-
+        InventoryGUI menu = GUIUtil.createGUI(p, this,9, ChatColor.DARK_PURPLE + "Select Artwork");
+        
         int i = 0;
         for (Art art : other) {
-            menu.addItem(i, new CustomItem(Material.PAINTING, art.name(), "", "&7Click to select this artwork"), (pl, slot, item, cursor, action) -> {
-                editingPainting.setArt(art);
-                setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
-                updateHeldItemStack(pl, hand);
-                pl.playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
-                pl.closeInventory();
-                return false;
-            });
-
+        	menu.addGadget(new ButtonGadget(menu,i,new CustomItemStack(Material.PAINTING, art.name(), "", "&7Click to select this artwork"),new Runnable() {
+				@Override
+				public void run() {
+					editingPainting.setArt(art);
+	                setPaintLevel(getPaintLevel() - art.getBlockWidth() * art.getBlockHeight());
+	                updateHeldItemStack(p, hand);
+	                p.playSound(editingPainting.getLocation(), Sound.BLOCK_WATER_AMBIENT, 1.0F, 1.5F);
+	                p.closeInventory();
+				}
+        	}));
             i++;
         }
-
-        menu.open(p);
+        menu.show(p);
     }
 
     @Nonnull

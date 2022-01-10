@@ -2,6 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.MinecraftVersion;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -19,7 +20,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.util.Vector;
 
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
@@ -68,7 +68,7 @@ public class AngelicBlock extends BaseSTBBlock {
             Location loc = p.getEyeLocation().add(v);
             Block b = loc.getBlock();
 
-            if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.PLACE_BLOCK) && isWithinWorldBounds(b)) {
+            if (b.isEmpty() && SensibleToolbox.getProtectionManager().hasPermission(p, b, Interaction.PLACE_BLOCK) && isWithinWorldBounds(b)) {
                 ItemStack stack = event.getItem();
 
                 if (stack.getAmount() > 1) {
@@ -102,7 +102,7 @@ public class AngelicBlock extends BaseSTBBlock {
         Player p = event.getPlayer();
         Block b = event.getBlock();
 
-        if (SensibleToolbox.getProtectionManager().hasPermission(p, b, ProtectableAction.BREAK_BLOCK)) {
+        if (SensibleToolbox.getProtectionManager().hasPermission(p, b, Interaction.BREAK_BLOCK)) {
             b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
             breakBlock(false);
             STBUtil.giveItems(p, toItemStack());

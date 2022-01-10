@@ -31,8 +31,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
-import io.github.thebusybiscuit.cscorelib2.inventory.ItemUtils;
-import io.github.thebusybiscuit.cscorelib2.protection.ProtectableAction;
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
 import io.github.thebusybiscuit.sensibletoolbox.api.SensibleToolbox;
 import io.github.thebusybiscuit.sensibletoolbox.api.energy.Chargeable;
@@ -42,6 +40,8 @@ import io.github.thebusybiscuit.sensibletoolbox.items.energycells.TenKEnergyCell
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.blocks.BlockAndPosition;
 import me.desht.dhutils.blocks.BlockUtil;
@@ -270,7 +270,7 @@ public class MultiBuilder extends BaseSTBItem implements Chargeable {
             return false;
         } else {
             // Block is replaceable, return permission to break
-            return SensibleToolbox.getProtectionManager().hasPermission(player, b, ProtectableAction.BREAK_BLOCK);
+            return SensibleToolbox.getProtectionManager().hasPermission(player, b, Interaction.BREAK_BLOCK);
         }
     }
 
