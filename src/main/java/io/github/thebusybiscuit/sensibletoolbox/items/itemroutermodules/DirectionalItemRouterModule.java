@@ -227,11 +227,6 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     }
 
     @Override
-    public boolean onSlotClick() {
-        return null;
-    }
-
-    @Override
     public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
         return true;
     }
