@@ -227,16 +227,18 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     }
 
     @Override
-    public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
-        if (onCursor.getType() == Material.AIR) {
-            gui.getInventory().setItem(slot, null);
-        } else {
-            ItemStack stack = onCursor.clone();
-            stack.setAmount(1);
-            gui.getInventory().setItem(slot, stack);
-        }
-        return false;
+    public boolean onSlotClick() {
+        return null;
     }
+
+
+
+
+
+
+
+
+
 
     @Override
     public boolean onPlayerInventoryClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
