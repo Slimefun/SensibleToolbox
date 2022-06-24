@@ -250,7 +250,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             RecipeUtil.setupRecipes();
             RecipeBook.buildRecipes();
 
-            protectionManager = new ProtectionManager(getServer());
+            protectionManager = new ProtectionManager(this);
         });
 
         getServer().getScheduler().runTaskTimer(this, LocationManager.getManager()::tick, 1L, 1L);
