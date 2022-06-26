@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -73,7 +73,7 @@ public class Elevator extends BaseSTBBlock implements Colorable {
 
     @Nullable
     public Elevator findOtherElevator(@Nonnull BlockFace direction) {
-        Validate.isTrue(direction == BlockFace.UP || direction == BlockFace.DOWN, "direction must be UP or DOWN");
+        Preconditions.checkArgument(direction == BlockFace.UP || direction == BlockFace.DOWN, "direction must be UP or DOWN");
 
         Block b = getLocation().getBlock();
         Elevator res = null;

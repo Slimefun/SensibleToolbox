@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +32,7 @@ public final class BukkitSerialization {
     }
 
     public static String toBase64(@Nonnull Inventory inventory, int maxItems) {
-        Validate.notNull(inventory, "Cannot serialize a 'null' Inventory!");
+        Preconditions.checkArgument(inventory != null, "Cannot serialize a 'null' Inventory!");
         if (maxItems <= 0 || maxItems > inventory.getSize()) {
             maxItems = inventory.getSize();
         }

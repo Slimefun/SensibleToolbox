@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -110,7 +110,7 @@ public abstract class BaseSTBItem implements Comparable<BaseSTBItem>, InventoryG
      */
     public final boolean checkPlayerPermission(@Nonnull Permissible player, @Nonnull ItemAction action) {
         String prefix = SensibleToolboxPlugin.getInstance().getItemRegistry().getPermissionPrefix(this);
-        Validate.notNull(prefix, "Can't determine permission node prefix for " + getItemTypeID());
+        Preconditions.checkArgument(prefix != null, "Can't determine permission node prefix for " + getItemTypeID());
         return player.hasPermission(prefix + "." + action.getNode() + "." + getItemTypeID());
     }
 

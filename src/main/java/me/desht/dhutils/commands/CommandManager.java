@@ -8,7 +8,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,7 +31,7 @@ public class CommandManager {
     }
 
     public void registerCommand(@Nonnull AbstractCommand cmd) {
-        Validate.notNull(cmd, "Command cannot be null!");
+        Preconditions.checkArgument(cmd != null, "Command cannot be null!");
 
         Debugger.getInstance().debug(2, "register command: " + cmd.getClass().getName());
         cmdList.add(cmd);

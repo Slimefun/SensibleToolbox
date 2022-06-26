@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -128,7 +128,7 @@ public class STBInventoryGUI implements InventoryGUI {
 
     @Override
     public int addMonitor(MonitorGadget gadget) {
-        Validate.isTrue(gadget.getSlots().length > 0, "Gadget has no slots!");
+        Preconditions.checkArgument(gadget.getSlots().length > 0, "Gadget has no slots!");
         monitors.add(gadget);
         for (int slot : gadget.getSlots()) {
             setSlotType(slot, SlotType.GADGET);
@@ -138,19 +138,19 @@ public class STBInventoryGUI implements InventoryGUI {
 
     @Override
     public ItemStack getItem(int slot) {
-        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
+        Preconditions.checkArgument(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
         return inventory.getItem(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
-        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
+        Preconditions.checkArgument(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
         inventory.setItem(slot, stack);
     }
 
     @Override
     public ClickableGadget getGadget(int slot) {
-        Validate.isTrue(getSlotType(slot) == SlotType.GADGET, "Slot " + slot + " is not a gadget slot");
+        Preconditions.checkArgument(getSlotType(slot) == SlotType.GADGET, "Slot " + slot + " is not a gadget slot");
         return gadgets[slot];
     }
 

@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.listeners;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -149,7 +149,7 @@ public class GeneralListener extends STBBaseListener {
         if (stb != null) {
             // sanity check: we should only get here if the item is an STB block, since
             // onBlockPrePlaceCheck() will have cancelled the event if it wasn't
-            Validate.isTrue(stb instanceof BaseSTBBlock, "trying to place a non-block STB item? " + stb.getItemTypeID());
+            Preconditions.checkArgument(stb instanceof BaseSTBBlock, "trying to place a non-block STB item? " + stb.getItemTypeID());
             ((BaseSTBBlock) stb).placeBlock(event.getBlock(), event.getPlayer(), STBUtil.getFaceFromYaw(event.getPlayer().getLocation().getYaw()).getOppositeFace());
 
             if (event.isCancelled()) {

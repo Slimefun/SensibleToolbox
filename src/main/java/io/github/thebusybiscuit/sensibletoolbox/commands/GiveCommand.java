@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -57,7 +57,7 @@ public class GiveCommand extends AbstractCommand {
 
         String id = args[0].replace(" ", "").toLowerCase(Locale.ROOT);
         BaseSTBItem item = SensibleToolbox.getItemRegistry().getItemById(id);
-        Validate.notNull(item, "Unknown SensibleToolbox item: " + args[0]);
+        Preconditions.checkArgument(item != null, "Unknown SensibleToolbox item: " + args[0]);
         target.getInventory().addItem(item.toItemStack(amount));
         MiscUtil.statusMessage(target, "You received " + amount + " x &6" + item.getItemName() + "&-.");
         return true;

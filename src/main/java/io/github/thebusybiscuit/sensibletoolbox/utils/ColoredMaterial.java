@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
@@ -190,8 +190,9 @@ public enum ColoredMaterial {
      *            The {@link Material Materials} for this {@link ColoredMaterial}.
      */
     ColoredMaterial(@Nonnull Material[] materials) {
-        Validate.noNullElements(materials, "The List cannot contain any null elements");
-        Validate.isTrue(materials.length == 16, "Expected 16, received: " + materials.length + ". Did you miss a color?");
+        //This one I wasn't sure of, so I'm guessing
+        Preconditions.checkArgument(materials != null, "The List cannot contain any null elements");
+        Preconditions.checkArgument(materials.length == 16, "Expected 16, received: " + materials.length + ". Did you miss a color?");
 
         list = Collections.unmodifiableList(Arrays.asList(materials));
     }
@@ -217,7 +218,7 @@ public enum ColoredMaterial {
      */
     @Nonnull
     public Material get(int index) {
-        Validate.isTrue(index >= 0 && index < 16, "The index must be between 0 and 15 (inclusive).");
+        Preconditions.checkArgument(index >= 0 && index < 16, "The index must be between 0 and 15 (inclusive).");
 
         return list.get(index);
     }
@@ -232,7 +233,7 @@ public enum ColoredMaterial {
      */
     @Nonnull
     public Material get(@Nonnull DyeColor color) {
-        Validate.notNull(color, "Color cannot be null!");
+        Preconditions.checkArgument(color != null, "Color cannot be null!");
 
         return get(color.ordinal());
     }

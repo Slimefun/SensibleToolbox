@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -49,8 +49,8 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
     @ParametersAreNonnullByDefault
     public STBItemRegistry(Plugin plugin, String registryKey) {
-        Validate.notNull(plugin, "The Plugin cannot be null");
-        Validate.notNull(registryKey, "The registry cannot be null");
+        Preconditions.checkArgument(plugin != null, "The Plugin cannot be null");
+        Preconditions.checkArgument(registryKey != null, "The registry cannot be null");
 
         this.namespacedKey = new NamespacedKey(plugin, registryKey);
     }
@@ -85,7 +85,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
         }
 
         String id = item.getItemTypeID();
-        Validate.isTrue(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
+        Preconditions.checkArgument(id.length() <= MAX_ITEM_ID_LENGTH, "Item ID '" + id + "' is too long! (32 chars max)");
 
         ReflectionDetails<T> details = new ReflectionDetails<>((Class<T>) item.getClass());
         reflectionDetailsMap.put(id, details);
@@ -146,7 +146,7 @@ public class STBItemRegistry implements ItemRegistry, Keyed {
 
     @Nonnull
     private Configuration getItemAttributes(@Nonnull ItemStack stack) {
-        Validate.notNull(stack, "ItemStack cannot be null!");
+        Preconditions.checkArgument(stack != null, "ItemStack cannot be null!");
 
         if (!stack.hasItemMeta()) {
             return new MemoryConfiguration();

@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -544,9 +544,9 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
     @Override
     public <T> T onConfigurationValidate(ConfigurationManager configurationManager, String key, T oldVal, T newVal) {
         if (key.equals("save_interval")) {
-            Validate.isTrue((Integer) newVal > 0, "save_interval must be > 0");
+            Preconditions.checkArgument((Integer) newVal > 0, "save_interval must be > 0");
         } else if (key.equals("energy.tick_rate")) {
-            Validate.isTrue((Integer) newVal > 0, "energy.tick_rate must be > 0");
+            Preconditions.checkArgument((Integer) newVal > 0, "energy.tick_rate must be > 0");
         } else if (key.startsWith("gui.texture.")) {
             STBUtil.parseMaterialSpec(newVal.toString());
         } else if (key.equals("default_access")) {

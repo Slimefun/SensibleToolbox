@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,7 +48,7 @@ public class EnderStorageManager implements Listener {
     }
 
     public GlobalEnderHolder getGlobalInventoryHolder(int frequency) {
-        Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
+        Preconditions.checkArgument(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
         GlobalEnderHolder h = globalInvs.get(frequency);
 
         if (h == null) {
@@ -67,7 +67,7 @@ public class EnderStorageManager implements Listener {
     }
 
     public PlayerEnderHolder getPlayerInventoryHolder(OfflinePlayer player, Integer frequency) {
-        Validate.isTrue(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
+        Preconditions.checkArgument(frequency > 0 && frequency <= MAX_ENDER_FREQUENCY, "Frequency out of range: " + frequency);
         Map<Integer, PlayerEnderHolder> map = playerInvs.get(player.getUniqueId());
 
         if (map == null) {
@@ -105,7 +105,7 @@ public class EnderStorageManager implements Listener {
                 File newDir = new File(storageDir, f.getName());
                 mkdir(newDir);
                 File newFile = new File(newDir, "1");
-                Validate.isTrue(f.renameTo(newFile), "can't move " + f + " to " + newFile);
+                Preconditions.checkArgument(f.renameTo(newFile), "can't move " + f + " to " + newFile);
             }
 
             for (File f : oldDir.listFiles()) {
@@ -125,7 +125,7 @@ public class EnderStorageManager implements Listener {
     }
 
     void mkdir(File dir) {
-        Validate.isTrue(dir.mkdir(), "can't create directory: " + dir);
+        Preconditions.checkArgument(dir.mkdir(), "can't create directory: " + dir);
     }
 
     void setChanged(EnderStorageHolder holder) {

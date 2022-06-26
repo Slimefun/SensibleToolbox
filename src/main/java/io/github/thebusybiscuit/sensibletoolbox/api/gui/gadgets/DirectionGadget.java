@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -30,8 +30,8 @@ public class DirectionGadget extends ClickableGadget {
     public DirectionGadget(InventoryGUI gui, int slot, ItemStack mainTexture) {
         super(gui, slot);
 
-        Validate.isTrue(gui.getOwningItem() instanceof Directional, "DirectionalGadget can only be used on a directional item!");
-        Validate.isTrue(slot >= 9 && slot < gui.getInventory().getSize() - 9 && slot % 9 > 0 && slot % 9 < 8, "DirectionalGadget can't be placed at edge of inventory window!");
+        Preconditions.checkArgument(gui.getOwningItem() instanceof Directional, "DirectionalGadget can only be used on a directional item!");
+        Preconditions.checkArgument(slot >= 9 && slot < gui.getInventory().getSize() - 9 && slot % 9 > 0 && slot % 9 < 8, "DirectionalGadget can't be placed at edge of inventory window!");
 
         this.mainTexture = mainTexture;
         this.allowSelf = true;

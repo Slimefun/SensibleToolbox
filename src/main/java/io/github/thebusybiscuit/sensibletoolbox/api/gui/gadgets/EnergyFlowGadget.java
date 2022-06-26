@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -33,7 +33,7 @@ public class EnergyFlowGadget extends CyclerGadget<EnergyFlow> {
     public EnergyFlowGadget(InventoryGUI gui, int slot, BlockFace face) {
         super(gui, slot, face.toString());
 
-        Validate.isTrue(gui.getOwningItem() instanceof BatteryBox, "Energy flow gadget can only be used on a battery box!");
+        Preconditions.checkArgument(gui.getOwningItem() instanceof BatteryBox, "Energy flow gadget can only be used on a battery box!");
 
         this.face = face;
         add(EnergyFlow.IN, ChatColor.DARK_AQUA, Material.BLUE_WOOL, "Device accepts energy", "on this face");
