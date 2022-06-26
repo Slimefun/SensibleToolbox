@@ -1,5 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.items.itemroutermodules;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Directional;
 
 import io.github.bakedlibs.dough.items.ItemUtils;
@@ -36,6 +38,8 @@ import io.github.thebusybiscuit.sensibletoolbox.blocks.router.ItemRouter;
 import io.github.thebusybiscuit.sensibletoolbox.utils.UnicodeSymbol;
 import io.github.thebusybiscuit.sensibletoolbox.utils.VanillaInventoryUtils;
 
+import javax.annotation.Nullable;
+
 public abstract class DirectionalItemRouterModule extends ItemRouterModule implements Filtering, Directional {
 
     private static final String LIST_ITEM = ChatColor.LIGHT_PURPLE + UnicodeSymbol.CENTERED_POINT.toUnicode() + " " + ChatColor.AQUA;
@@ -51,6 +55,7 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
     private BlockFace direction;
     private boolean terminator;
     private InventoryGUI gui;
+    private ItemStack item;
     private final int[] filterSlots = { 1, 2, 3, 10, 11, 12, 19, 20, 21 };
 
     /**
@@ -224,6 +229,30 @@ public abstract class DirectionalItemRouterModule extends ItemRouterModule imple
         newLore[lore.length] = "L-click Block: " + ChatColor.WHITE + " Set direction";
         newLore[lore.length + 1] = UnicodeSymbol.ARROW_UP.toUnicode() + " + L-click Air: " + ChatColor.WHITE + " Unset direction";
         return newLore;
+    }
+
+    @Override
+    public boolean onSlotClick(HumanEntity player, int slot, ClickType click, ItemStack inSlot, ItemStack onCursor) {
+        if (onCursor.getType() == Material.AIR) {
+            gui.getInventory().setItem(slot, null);
+        } else {
+            ItemStack item = onCursor.clone();
+            ItemMeta meta = item.getItemMeta();
+            List<String> lore = new ArrayList<>();
+
+            if (meta != null) {
+                List<String> currentLore = meta.getLore();
+                if (currentLore != null) {lore.addAll(currentLore);}
+            }
+
+            lore.add(ChatColor.DARK_GRAY + "Filtered Item");
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+
+            item.setAmount(1);
+            gui.getInventory().setItem(slot,item);
+        }
+        return false;
     }
 
     @Override
