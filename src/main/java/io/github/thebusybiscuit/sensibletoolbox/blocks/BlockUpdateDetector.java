@@ -1,6 +1,5 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
-import org.apache.commons.lang.math.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,6 +20,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.AccessControlGad
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.NumericGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.RedstoneBehaviourGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
+import io.github.thebusybiscuit.sensibletoolbox.utils.IntRange;
+
 import me.desht.dhutils.Debugger;
 
 public class BlockUpdateDetector extends BaseSTBBlock {

@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
-import org.apache.commons.lang.math.IntRange;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +18,7 @@ import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets.NumericGadget;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.listeners.SoundMufflerListener;
+import io.github.thebusybiscuit.sensibletoolbox.utils.IntRange;
 
 /**
  * The {@link SoundMuffler} muffles or mutes nearby sounds.
