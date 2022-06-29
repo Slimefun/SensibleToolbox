@@ -357,7 +357,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             }
         }
 
-        s.append(Strings.repeat(" ", 15 - s.length()));
+        s.append(Strings.repeat(" ", 16 - s.length()));
         chargeLabel = s.toString();
     }
 
