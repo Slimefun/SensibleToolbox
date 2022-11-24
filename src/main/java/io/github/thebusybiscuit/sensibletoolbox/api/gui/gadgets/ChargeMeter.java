@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

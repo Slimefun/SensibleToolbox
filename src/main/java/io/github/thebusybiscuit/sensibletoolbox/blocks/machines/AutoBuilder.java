@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;

@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
-import org.apache.commons.lang.math.IntRange;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

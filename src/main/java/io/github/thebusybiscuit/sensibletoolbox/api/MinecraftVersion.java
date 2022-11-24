@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.Server;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
@@ -50,6 +50,8 @@ public enum MinecraftVersion {
      *
      */
     MINECRAFT_1_18(18, "1.18.x"),
+
+    MINECRAFT_1_19(19, "1.19.x"),
 
     /**
      * This constant represents an exceptional state in which we were unable

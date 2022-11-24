@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.IntRange;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.IntRange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

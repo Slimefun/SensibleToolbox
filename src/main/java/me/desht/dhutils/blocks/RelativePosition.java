@@ -1,6 +1,6 @@
 package me.desht.dhutils.blocks;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 

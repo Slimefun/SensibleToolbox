@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api.recipes;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.inventory.ItemStack;
 
 /**

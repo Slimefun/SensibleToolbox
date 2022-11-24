@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.items;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.math.IntRange;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

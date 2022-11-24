@@ -9,7 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -269,7 +269,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      * Check if this block may be interacted with by the player of the given
      * UUID, based on its current security settings. Note that no player
      * permission check is done here; see
-     * {@link BaseSTBItem#checkPlayerPermission(org.bukkit.entity.Player, me.desht.sensibletoolbox.api.items.BaseSTBItem.ItemAction)}.
+     * .
      *
      * @param uuid
      *            the UUID to check

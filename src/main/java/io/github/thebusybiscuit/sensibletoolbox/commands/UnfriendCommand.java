@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.commands;
 
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
