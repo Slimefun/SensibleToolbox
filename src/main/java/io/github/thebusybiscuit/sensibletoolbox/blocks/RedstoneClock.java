@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks;
 
 import java.awt.Color;
 
-import org.apache.commons.lang.math.IntRange;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.IntRange;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

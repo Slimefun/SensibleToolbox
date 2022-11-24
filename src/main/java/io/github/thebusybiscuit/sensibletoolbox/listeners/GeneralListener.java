@@ -3,7 +3,7 @@ package io.github.thebusybiscuit.sensibletoolbox.listeners;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

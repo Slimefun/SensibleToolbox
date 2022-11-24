@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.filters;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;

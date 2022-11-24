@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.apache.commons.lang.Validate;
+import io.github.thebusybiscuit.sensibletoolbox.helpers.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -250,7 +250,7 @@ public class SensibleToolboxPlugin extends JavaPlugin implements ConfigurationLi
             RecipeUtil.setupRecipes();
             RecipeBook.buildRecipes();
 
-            protectionManager = new ProtectionManager(getServer());
+            protectionManager = new ProtectionManager(instance);
         });
 
         getServer().getScheduler().runTaskTimer(this, LocationManager.getManager()::tick, 1L, 1L);
