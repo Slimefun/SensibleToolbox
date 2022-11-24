@@ -16,6 +16,9 @@ public class Validate {
     }
 
     public static void noNullElements(Object[] objs, String s) {
+        if(objs == null) {
+            throwException(new IOException("Argument is null!"));
+        }
         for(int i = 0; i < objs.length; i++) {
             if(objs[i] == null) {
                 throwException(new IOException(s));
