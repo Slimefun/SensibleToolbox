@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -302,7 +302,7 @@ public class PaintCan extends BaseSTBBlock implements LevelReporter {
         ChatColor cc = STBUtil.dyeColorToChatColor(getColor());
         res[1] = cc.toString() + getColor();
         res[2] = getPaintLevel() + "/" + getMaxPaintLevel();
-        res[3] = cc + StringUtils.repeat("◼", (getPaintLevel() * 13) / getMaxPaintLevel());
+        res[3] = cc + Strings.repeat("◼", (getPaintLevel() * 13) / getMaxPaintLevel());
         return res;
     }
 

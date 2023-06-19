@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.IntRange;
+import com.google.common.base.Preconditions;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -34,6 +34,8 @@ import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBBlock;
 import io.github.thebusybiscuit.sensibletoolbox.api.items.BaseSTBItem;
 import io.github.thebusybiscuit.sensibletoolbox.utils.BukkitSerialization;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.IntRange;
+
 import me.desht.dhutils.Debugger;
 import me.desht.dhutils.text.LogUtils;
 
@@ -128,7 +130,7 @@ public class STBInventoryGUI implements InventoryGUI {
 
     @Override
     public int addMonitor(MonitorGadget gadget) {
-        Validate.isTrue(gadget.getSlots().length > 0, "Gadget has no slots!");
+        Preconditions.checkArgument(gadget.getSlots().length > 0, "Gadget has no slots!");
         monitors.add(gadget);
         for (int slot : gadget.getSlots()) {
             setSlotType(slot, SlotType.GADGET);
@@ -138,19 +140,19 @@ public class STBInventoryGUI implements InventoryGUI {
 
     @Override
     public ItemStack getItem(int slot) {
-        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
+        Preconditions.checkArgument(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
         return inventory.getItem(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
-        Validate.isTrue(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
+        Preconditions.checkArgument(getSlotType(slot) == SlotType.ITEM, "Slot " + slot + " is not an item slot");
         inventory.setItem(slot, stack);
     }
 
     @Override
     public ClickableGadget getGadget(int slot) {
-        Validate.isTrue(getSlotType(slot) == SlotType.GADGET, "Slot " + slot + " is not a gadget slot");
+        Preconditions.checkArgument(getSlotType(slot) == SlotType.GADGET, "Slot " + slot + " is not a gadget slot");
         return gadgets[slot];
     }
 

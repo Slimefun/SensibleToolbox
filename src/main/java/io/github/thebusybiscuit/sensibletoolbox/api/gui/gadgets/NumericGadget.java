@@ -1,7 +1,7 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.IntRange;
+import com.google.common.base.Preconditions;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.GUIUtil;
 import io.github.thebusybiscuit.sensibletoolbox.api.gui.InventoryGUI;
 import io.github.thebusybiscuit.sensibletoolbox.utils.STBUtil;
+import io.github.thebusybiscuit.sensibletoolbox.utils.IntRange;
 
 /**
  * A GUI gadget which allows an integer value to be displayed
@@ -67,7 +68,7 @@ public class NumericGadget extends ClickableGadget {
         } else if (event.isRightClick()) {
             newValue += event.isShiftClick() ? altIncr : incr;
         }
-        newValue = Math.max(Math.min(newValue, range.getMaximumInteger()), range.getMinimumInteger());
+        newValue = Math.max(Math.min(newValue, range.getMaximumInt()), range.getMinimumInt());
         if (newValue != value && callback.run(newValue)) {
             value = newValue;
             event.setCurrentItem(getTexture());
@@ -86,7 +87,7 @@ public class NumericGadget extends ClickableGadget {
      *            the new value
      */
     public void setValue(int value) {
-        Validate.isTrue(range.containsInteger(value), "Value " + value + " is out of range");
+        Preconditions.checkArgument(range.containsInteger(value), "Value " + value + " is out of range");
         this.value = value;
         updateGUI();
     }
@@ -95,8 +96,8 @@ public class NumericGadget extends ClickableGadget {
     public ItemStack getTexture() {
         ItemMeta meta = icon.getItemMeta();
         meta.setDisplayName(ChatColor.YELLOW + title + ": " + ChatColor.AQUA + value);
-        String max = range.getMaximumInteger() == Integer.MAX_VALUE ? "\u221e" : Integer.toString(range.getMaximumInteger());
-        String min = range.getMaximumInteger() == Integer.MIN_VALUE ? "-\u221e" : Integer.toString(range.getMinimumInteger());
+        String max = range.getMaximumInt() == Integer.MAX_VALUE ? "\u221e" : Integer.toString(range.getMaximumInt());
+        String min = range.getMaximumInt() == Integer.MIN_VALUE ? "-\u221e" : Integer.toString(range.getMinimumInt());
         String[] lore = { "Valid value range: " + min + "-" + max, "L-Click: -" + incr, "R-Click: +" + incr, "With Shift held, +/-" + altIncr };
         meta.setLore(GUIUtil.makeLore(lore));
         icon.setItemMeta(meta);

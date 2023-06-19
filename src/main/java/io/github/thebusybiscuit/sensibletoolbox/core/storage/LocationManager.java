@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -114,7 +114,7 @@ public final class LocationManager {
     }
 
     public void addTicker(@Nonnull BaseSTBBlock stb) {
-        Validate.notNull(stb, "Cannot add a ticker that is null!");
+        Preconditions.checkArgument(stb != null, "Cannot add a ticker that is null!");
 
         Location loc = stb.getLocation();
         World w = loc.getWorld();

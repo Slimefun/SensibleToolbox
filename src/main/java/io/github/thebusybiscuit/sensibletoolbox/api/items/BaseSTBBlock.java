@@ -9,7 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -519,9 +519,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *             if the new location is null or the block's current location is non-null
      */
     public final void setLocation(BlockAccess blockAccess, Location loc) {
-        Validate.notNull(blockAccess, "Do not call this method directly");
-        Validate.notNull(loc, "Location must not be null");
-        Validate.isTrue(persistableLocation == null, "Attempt to change the location of existing STB block @ " + persistableLocation);
+        Preconditions.checkArgument(blockAccess != null, "Do not call this method directly");
+        Preconditions.checkArgument(loc != null, "Location must not be null");
+        Preconditions.checkArgument(persistableLocation == null, "Attempt to change the location of existing STB block @ " + persistableLocation);
         persistableLocation = new PersistableLocation(loc);
     }
 
@@ -565,7 +565,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            the block's new location
      */
     public final void moveTo(BlockAccess blockAccess, final Location oldLoc, final Location newLoc) {
-        Validate.notNull(blockAccess, "Don't call this method directly");
+        Preconditions.checkArgument(blockAccess != null, "Don't call this method directly");
 
         oldLoc.getBlock().removeMetadata(BaseSTBBlock.STB_BLOCK, SensibleToolbox.getPluginInstance());
         for (RelativePosition pos : getBlockStructure()) {
@@ -637,7 +637,7 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
      *            is being restored from persisted data
      */
     public final void preRegister(BlockAccess blockAccess, Location location, boolean isPlacing) {
-        Validate.notNull(blockAccess, "Don't call this method directly");
+        Preconditions.checkArgument(blockAccess != null, "Don't call this method directly");
         location.getBlock().setMetadata(BaseSTBBlock.STB_BLOCK, new FixedMetadataValue(SensibleToolboxPlugin.getInstance(), this));
 
         for (RelativePosition pos : getBlockStructure()) {
@@ -1045,9 +1045,9 @@ public abstract class BaseSTBBlock extends BaseSTBItem {
     }
 
     private boolean placeLabelSign(@Nonnull Block signBlock, @Nonnull BlockFace face, @Nonnull Material signType) {
-        Validate.notNull(signBlock, "The Sign Block cannot be null");
-        Validate.notNull(face, "The Face cannot be null");
-        Validate.notNull(signType, "The Sign Type cannot be null");
+        Preconditions.checkArgument(signBlock != null, "The Sign Block cannot be null");
+        Preconditions.checkArgument(face != null, "The Face cannot be null");
+        Preconditions.checkArgument(signType != null, "The Sign Type cannot be null");
 
         if (!signBlock.isEmpty() && !Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
             // something in the way!

@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -31,13 +31,13 @@ public class ProgressMeter extends MonitorGadget {
     public ProgressMeter(InventoryGUI gui) {
         super(gui);
 
-        Validate.isTrue(getGUI().getOwningBlock() instanceof AbstractProcessingMachine, "Attempt to install progress meter in non-processing machine " + getGUI().getOwningBlock());
+        Preconditions.checkArgument(getGUI().getOwningBlock() instanceof AbstractProcessingMachine, "Attempt to install progress meter in non-processing machine " + getGUI().getOwningBlock());
 
         machine = (AbstractProcessingMachine) getGUI().getOwningBlock();
-        Validate.isTrue(machine.getProgressCounterSlot() > 0 || machine.getProgressItemSlot() > 0, "At least one of counter slot and item slot must be >= 0!");
+        Preconditions.checkArgument(machine.getProgressCounterSlot() > 0 || machine.getProgressItemSlot() > 0, "At least one of counter slot and item slot must be >= 0!");
 
         this.progressIcon = machine.getProgressIcon().clone();
-        Validate.isTrue(progressIcon.getType().getMaxDurability() > 0, "Material " + progressIcon + " doesn't have a durability!");
+        Preconditions.checkArgument(progressIcon.getType().getMaxDurability() > 0, "Material " + progressIcon + " doesn't have a durability!");
     }
 
     @Override

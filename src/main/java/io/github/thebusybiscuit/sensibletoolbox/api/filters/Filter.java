@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.filters;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class Filter implements Cloneable {
      * @return true if the filter should pass the item; false otherwise
      */
     public boolean shouldPass(@Nonnull ItemStack stack) {
-        Validate.notNull(stack, "Cannot filter null ItemStacks");
+        Preconditions.checkArgument(stack != null, "Cannot filter null ItemStacks");
 
         if (filteredItems.isEmpty()) {
             return !whiteList;
@@ -197,7 +197,7 @@ public class Filter implements Cloneable {
      *            the filtering type
      */
     public void setFilterType(@Nonnull FilterType filterType) {
-        Validate.notNull(filterType, "FilterType cannot be null!");
+        Preconditions.checkArgument(filterType != null, "FilterType cannot be null!");
         this.filterType = filterType;
     }
 }

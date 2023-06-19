@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
@@ -34,7 +34,7 @@ public class CustomRecipeCollection {
      *            wildcarded (data value ignored)
      */
     public void addCustomRecipe(@Nonnull CustomRecipe recipe, boolean allowWild) {
-        Validate.notNull(recipe, "A custom recipe cannot be null");
+        Preconditions.checkArgument(recipe != null, "A custom recipe cannot be null");
         String key = recipe.makeKey(false);
         ProcessingResult pr = new ProcessingResult(recipe.getResult(), recipe.getProcessingTime());
         recipes.put(key, pr);

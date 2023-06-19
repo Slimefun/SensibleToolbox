@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -69,7 +69,7 @@ public class ShowCommand extends AbstractCommand {
 
             if (hasOption("w")) {
                 World w = Bukkit.getWorld(getStringOption("w"));
-                Validate.notNull(w, "Unknown world: " + getStringOption("w"));
+                Preconditions.checkArgument(w != null, "Unknown world: " + getStringOption("w"));
                 show(pager, w, id);
             } else {
                 for (World w : Bukkit.getWorlds()) {
@@ -127,13 +127,13 @@ public class ShowCommand extends AbstractCommand {
             try {
                 Location loc = MiscUtil.parseLocation(locStr);
                 item = LocationManager.getManager().get(loc);
-                Validate.notNull(item, "No STB block at " + locStr);
+                Preconditions.checkArgument(item != null, "No STB block at " + locStr);
             } catch (IllegalArgumentException e) {
                 throw new DHUtilsException(e.getMessage());
             }
         }
 
-        Validate.notNull(item, "No valid STB item/block found");
+        Preconditions.checkArgument(item != null, "No valid STB item/block found");
 
         YamlConfiguration conf = item.freeze();
         pager.add(ChatColor.AQUA.toString() + item + ":");

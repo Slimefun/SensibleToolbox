@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.api;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Server;
 
 import io.github.thebusybiscuit.sensibletoolbox.SensibleToolboxPlugin;
@@ -50,6 +50,18 @@ public enum MinecraftVersion {
      *
      */
     MINECRAFT_1_18(18, "1.18.x"),
+    /**
+     * This constant represents Minecraft (Java Edition) Version 1.19
+     * (The "The Wild Update" Update)
+     *
+     */
+    MINECRAFT_1_19(19, "1.19.x"),
+    /**
+     * This constant represents Minecraft (Java Edition) Version 1.20
+     * (The "Trails and Tales" Update)
+     *
+     */
+    MINECRAFT_1_20(20, "1.20.x"),
 
     /**
      * This constant represents an exceptional state in which we were unable
@@ -151,7 +163,7 @@ public enum MinecraftVersion {
      * @return Whether this {@link MinecraftVersion} is newer or equal to the given {@link MinecraftVersion}
      */
     public boolean isAtLeast(@Nonnull MinecraftVersion version) {
-        Validate.notNull(version, "A Minecraft version cannot be null!");
+        Preconditions.checkArgument(version != null, "A Minecraft version cannot be null!");
 
         if (this == UNKNOWN) {
             return false;
@@ -171,7 +183,7 @@ public enum MinecraftVersion {
      * @return Whether this {@link MinecraftVersion} is older than the given one
      */
     public boolean isBefore(@Nonnull MinecraftVersion version) {
-        Validate.notNull(version, "A Minecraft version cannot be null!");
+        Preconditions.checkArgument(version != null, "A Minecraft version cannot be null!");
 
         if (this == UNKNOWN) {
             return true;

@@ -11,8 +11,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Strings;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -357,7 +357,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
             }
         }
 
-        s.append(StringUtils.repeat(" ", 15 - s.length()));
+        s.append(Strings.repeat(" ", 15 - s.length()));
         chargeLabel = s.toString();
     }
 
@@ -405,7 +405,7 @@ public abstract class BaseSTBMachine extends BaseSTBBlock implements ChargeableB
      *             if the given slot has not previously been configured to hold items
      */
     protected void setInventoryItem(int slot, ItemStack item) {
-        Validate.isTrue(getGUI().getSlotType(slot) == SlotType.ITEM, "Attempt to insert item into non-item slot");
+        Preconditions.checkArgument(getGUI().getSlotType(slot) == SlotType.ITEM, "Attempt to insert item into non-item slot");
         getInventory().setItem(slot, item != null && item.getAmount() > 0 ? item : null);
         update(false);
     }

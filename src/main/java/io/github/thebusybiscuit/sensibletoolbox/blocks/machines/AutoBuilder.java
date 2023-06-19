@@ -2,7 +2,7 @@ package io.github.thebusybiscuit.sensibletoolbox.blocks.machines;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -195,7 +195,7 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     public void setBuildMode(@Nonnull AutoBuilderMode buildMode) {
-        Validate.notNull(buildMode, "The Build mode cannot be null");
+        Preconditions.checkArgument(buildMode != null, "The Build mode cannot be null");
         this.buildMode = buildMode;
         setStatus(workArea == null ? BuilderStatus.NO_WORKAREA : BuilderStatus.READY);
     }
@@ -245,7 +245,7 @@ public class AutoBuilder extends BaseSTBMachine {
     }
 
     private void setStatus(@Nonnull BuilderStatus status) {
-        Validate.notNull(status, "The Status cannot be null");
+        Preconditions.checkArgument(status != null, "The Status cannot be null");
 
         if (status != this.status) {
             this.status = status;

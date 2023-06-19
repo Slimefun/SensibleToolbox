@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Strings;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -562,7 +562,7 @@ public final class STBUtil {
      *            the player
      */
     public static void complain(@Nonnull Player player) {
-        Validate.notNull(player, "Cannot complain to nobody");
+        Preconditions.checkArgument(player != null, "Cannot complain to nobody");
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
     }
 
@@ -660,7 +660,8 @@ public final class STBUtil {
         boolean glowing = false;
 
         for (int i = 1; i < fields.length; i++) {
-            if (StringUtils.isNumeric(fields[i])) {
+            // I went with STBUtil here, I couldn't figure out an alternative.
+            if (STBUtil.isNumeric(fields[i])) {
                 amount = Integer.parseInt(fields[i]);
             } else if (fields[i].equalsIgnoreCase("glow")) {
                 glowing = true;
@@ -687,8 +688,8 @@ public final class STBUtil {
      * @return the number of 90-degree rotations between the faces
      */
     public static int getFaceRotation(BlockFace face1, BlockFace face2) {
-        Validate.isTrue(face1.getModY() == 0 && Math.abs(face1.getModX() + face1.getModZ()) == 1, "invalid face " + face1);
-        Validate.isTrue(face2.getModY() == 0 && Math.abs(face2.getModX() + face2.getModZ()) == 1, "invalid face " + face2);
+        Preconditions.checkArgument(face1.getModY() == 0 && Math.abs(face1.getModX() + face1.getModZ()) == 1, "invalid face " + face1);
+        Preconditions.checkArgument(face2.getModY() == 0 && Math.abs(face2.getModX() + face2.getModZ()) == 1, "invalid face " + face2);
 
         if (face1 == face2) {
             return 0;
@@ -710,7 +711,7 @@ public final class STBUtil {
      * @return the rotated face
      */
     public static BlockFace getRotatedFace(BlockFace face, int rotation) {
-        Validate.isTrue(face.getModY() == 0 && Math.abs(face.getModX() + face.getModZ()) == 1, "invalid face " + face);
+        Preconditions.checkArgument(face.getModY() == 0 && Math.abs(face.getModX() + face.getModZ()) == 1, "invalid face " + face);
 
         switch (rotation) {
             case 0:
@@ -751,8 +752,8 @@ public final class STBUtil {
      */
     public static void levelToDurability(ItemStack stack, int val, int max) {
         short maxDur = stack.getType().getMaxDurability();
-        Validate.isTrue(maxDur > 0, "Item stack " + stack + " does not have a durability bar!");
-        Validate.isTrue(val >= 0 && val <= max, "Value " + val + " out of range 0.." + max);
+        Preconditions.checkArgument(maxDur > 0, "Item stack " + stack + " does not have a durability bar!");
+        Preconditions.checkArgument(val >= 0 && val <= max, "Value " + val + " out of range 0.." + max);
         float d = val / (float) max;
         short dur = (short) (maxDur * d);
         stack.setDurability((short) (Math.max(1, maxDur - dur)));
@@ -800,7 +801,7 @@ public final class STBUtil {
      */
     @Nullable
     public static Material getWallSign(@Nonnull Material signType) {
-        Validate.notNull(signType, "The Sign Type cannot be null");
+        Preconditions.checkArgument(signType != null, "The Sign Type cannot be null");
 
         if (SensibleToolboxPlugin.getMinecraftVersion().isAtLeast(MinecraftVersion.MINECRAFT_1_16)) {
             if (signType == Material.CRIMSON_SIGN) {
@@ -886,7 +887,7 @@ public final class STBUtil {
      */
     @Nullable
     public static String getPlayerNameFromUUID(@Nonnull UUID uuid) {
-        Validate.notNull(uuid, "UUID cannot be null!");
+        Preconditions.checkArgument(uuid != null, "UUID cannot be null!");
         return Bukkit.getOfflinePlayer(uuid).getName();
     }
 

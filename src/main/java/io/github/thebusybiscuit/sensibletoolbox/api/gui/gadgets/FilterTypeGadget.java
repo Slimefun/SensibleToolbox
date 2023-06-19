@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -27,7 +27,7 @@ public class FilterTypeGadget extends CyclerGadget<FilterType> {
     public FilterTypeGadget(InventoryGUI gui, int slot) {
         super(gui, slot, "Filter Type");
 
-        Validate.isTrue(gui.getOwningItem() instanceof Filtering, "Filter Type gadget can only be added to filtering items!");
+        Preconditions.checkArgument(gui.getOwningItem() instanceof Filtering, "Filter Type gadget can only be added to filtering items!");
 
         add(FilterType.MATERIAL, ChatColor.GRAY, Material.STONE, "Match material only");
         add(FilterType.ITEM_META, ChatColor.LIGHT_PURPLE, Material.ENCHANTED_BOOK, "Match material, block metadata", "and item metadata (NBT)");

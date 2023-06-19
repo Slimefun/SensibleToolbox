@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.sensibletoolbox.api.gui.gadgets;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +31,7 @@ public class ChargeMeter extends MonitorGadget {
     public ChargeMeter(InventoryGUI gui) {
         super(gui);
 
-        Validate.isTrue(getOwner() instanceof ChargeableBlock, "Attempt to add charge meter to non-chargeable block!");
+        Preconditions.checkArgument(getOwner() instanceof ChargeableBlock, "Attempt to add charge meter to non-chargeable block!");
 
         chargeable = (ChargeableBlock) getOwner();
         this.indicator = new ItemStack(Material.LEATHER_HELMET);

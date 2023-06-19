@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +35,7 @@ public class FriendCommand extends STBAbstractCommand {
 
         if (args.length >= 1) {
             UUID id = getID(args[0]);
-            Validate.notNull(id, "Unknown player: " + args[0]);
+            Preconditions.checkArgument(id != null, "Unknown player: " + args[0]);
             fm.addFriend(target.getUniqueId(), id);
             MiscUtil.statusMessage(sender, target.getName() + " is now friends with " + args[0]);
         } else if (args.length == 0) {
